@@ -1,5 +1,6 @@
 # Render Blueprint — deploy with: Render dashboard → New → Blueprint → pick this repo.
-# Free web service + managed Postgres. Set the `sync: false` secrets in the dashboard.
+# Free web service; database + file storage are external (Supabase).
+# Set every `sync: false` value in the dashboard when prompted.
 services:
   - type: web
     name: nero
@@ -23,9 +24,7 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         sync: false             # e.g. https://nero.onrender.com
       - key: DATABASE_URL
-        fromDatabase:
-          name: nero-db
-          property: connectionString
+        sync: false             # paste your Supabase POOLER connection string (URI)
       # Object storage for uploads (Cloudflare R2 / S3) — set when ready:
       - key: USE_S3_MEDIA
         value: "0"              # flip to "1" once the bucket + keys below are set
@@ -44,8 +43,4 @@ services:
       - key: SENTRY_DSN
         sync: false             # optional error tracking
 
-databases:
-  - name: nero-db
-    plan: free                  # NOTE: Render's free Postgres expires ~30 days
-    databaseName: nero
-    region: frankfurt
+# No Render database — Postgres is hosted on Supabase (set DATABASE_URL above).
