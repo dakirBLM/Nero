@@ -315,7 +315,8 @@ if os.environ.get('USE_S3_MEDIA') == '1':
             'secret_key': os.environ['S3_SECRET_ACCESS_KEY'],
             'region_name': os.environ.get('S3_REGION', 'auto'),
             'signature_version': 's3v4',
-            'addressing_style': 'virtual',
+            # Supabase requires 'path'; Cloudflare R2 / AWS S3 use 'virtual'.
+            'addressing_style': os.environ.get('S3_ADDRESSING_STYLE', 'virtual'),
             'querystring_auth': True,    # generate signed URLs
             'querystring_expire': 900,   # 15 minutes
             'file_overwrite': False,
