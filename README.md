@@ -51,3 +51,5 @@ Follow these simple steps to run the project on your own machine:
 ## Tech Stack & Security
 - **Backend:** Django 4.2 (Python 3), SQLite
 
+# Nero
+# Nero
