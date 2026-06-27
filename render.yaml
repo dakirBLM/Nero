@@ -42,6 +42,11 @@ services:
         value: "path"            # Supabase requires path-style (R2/S3 use virtual)
       - key: SENTRY_DSN
         sync: false             # optional error tracking
+      # Google login (optional): set both to enable "Continue with Google"
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
       # Email (optional): leave blank to log emails instead of sending. To send,
       # set EMAIL_HOST + creds from a provider (Brevo/Resend/Gmail).
       - key: EMAIL_HOST

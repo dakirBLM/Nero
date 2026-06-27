@@ -37,28 +37,30 @@ def _sync_user_type_from_profile(user):
     return has_patient_profile, has_clinic_profile
 
 def _get_google_login_url(request):
-    """Return Google login URL only when a Google SocialApp is configured for an available site."""
+    """Return the Google login URL when Google OAuth is configured either via
+    settings (GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET env vars) OR via a DB SocialApp."""
     try:
+        # 1) Settings-based config (12-factor: env vars build the provider APP).
+        providers = getattr(settings, 'SOCIALACCOUNT_PROVIDERS', {}) or {}
+        google_app = (providers.get('google', {}) or {}).get('APP', {}) or {}
+        if google_app.get('client_id'):
+            return '/accounts/social/google/login/'
+
+        # 2) Fallback: a Google SocialApp row linked to the current site (admin).
         from allauth.socialaccount.models import SocialApp
 
         site_obj = None
         site_id = getattr(settings, 'SITE_ID', None)
-
         if site_id:
             site_obj = Site.objects.filter(id=site_id).first()
-
         if site_obj is None:
             site_obj = Site.objects.filter(domain=request.get_host()).first()
-
         if site_obj is None:
             return None
 
-        app_exists = SocialApp.objects.filter(provider='google', sites=site_obj).exists()
-        if not app_exists:
-            return None
-
-        # Keep URL in sync with allauth route configuration.
-        return '/accounts/social/google/login/'
+        if SocialApp.objects.filter(provider='google', sites=site_obj).exists():
+            return '/accounts/social/google/login/'
+        return None
     except Exception:
         return None
 
