@@ -1,977 +1,177 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Choose Your Path - NERO</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(180deg, #6CA8C9 0%, #6CA8C9 30%, white 100%);
-            overflow-x: hidden;
-        }
-
-        /* ================= MAIN CONTAINER ================= */
-        .main-container {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* ================= NAV BAR ================= */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 25px 60px 15px;
-            position: relative;
-            z-index: 100;
-        }
-
-        /* Logo - Made White */
-        .logo-container {
-            width: 150px;
-            height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            filter: brightness(0) invert(1);
-        }
-
-        .logo {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Navigation link back to home */
-        .nav-link {
-            border: 3px solid white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: transparent;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* ================= HEADER SECTION ================= */
-        .header-section {
-            text-align: center;
-            margin: 40px 0 60px;
-            color: white;
-        }
-
-        .page-title {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            line-height: 1.1;
-        }
-
-        .page-subtitle {
-            font-size: 20px;
-            opacity: 0.95;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* ================= CHOICE CARDS ================= */
-        .choice-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto 60px;
-            padding: 0 20px;
-        }
-
-        .choice-card {
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-            transition: all 0.5s ease;
-            display: flex;
-            flex-direction: column;
-            height: 600px;
-            position: relative;
-            border: none;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: rgba(0,0,0,0);
-        }
-
-        .choice-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
-        }
-
-        /* Ensure tap-activated state is visible across all viewports */
-        .choice-card.active .card-hover-content {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .choice-card.active .card-main-content {
-            opacity: 0;
-            transform: translateY(-20px);
-            pointer-events: none;
-        }
-
-        /* Entire Card as Background Image */
-        .card-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.8s ease;
-            z-index: 1;
-        }
-
-        .choice-card:hover .card-background {
-            transform: scale(1.1);
-        }
-
-        /* Overlay for entire card */
-        .card-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.85) 100%);
-            z-index: 2;
-            transition: background 0.5s ease;
-        }
-
-        .choice-card:hover .card-overlay {
-            background: linear-gradient(to bottom, rgba(108, 168, 201, 0.05) 0%, rgba(108, 168, 201, 0.3) 50%, rgba(108, 168, 201, 0.95) 100%);
-        }
-        
-        .choice-card.active .card-overlay {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.9) 100%);
-        }
-
-        /* Card Content Container */
-        .card-content {
-            position: relative;
-            z-index: 3;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 40px;
-            color: white;
-            justify-content: flex-end;
-        }
-
-        /* Initial Content (Before Hover) */
-        .card-main-content {
-            transition: all 0.5s ease;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .card-title {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: white;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-badge {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Hover Content */
-        .card-hover-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            z-index: 5;
-            pointer-events: none;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .choice-card:hover .card-hover-content {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .choice-card:hover .card-main-content {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        /* When a card is activated (tapped), make hover content scrollable and compact */
-        .choice-card.active .card-hover-content {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 20px;
-            justify-content: center;
-        }
-
-        .choice-card.active .hover-title { font-size: 20px; }
-        .choice-card.active .hover-subtitle { font-size: 13px; max-width: 100%; }
-        .choice-card.active .hover-features li { font-size: 13px; }
-        .choice-card.active .hover-actions .btn { font-size: 14px; padding: 10px 16px; }
-        .choice-card.active .card-badge { padding: 8px 18px; font-size: 14px; }
-
-        /* Hover Content Sections */
-        .hover-header {
-            text-align: center;
-        }
-
-        .hover-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: white;
-        }
-
-        .hover-subtitle {
-            font-size: 18px;
-            opacity: 0.9;
-            line-height: 1.5;
-            max-width: 400px;
-            margin: 0 auto 30px;
-        }
-
-        .hover-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .hover-features li {
-            padding: 12px 0;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .hover-features li:last-child {
-            border-bottom: none;
-        }
-
-        .hover-features li:before {
-            content: "✓";
-            color: white;
-            font-weight: 700;
-            font-size: 18px;
-            background: rgba(255, 255, 255, 0.2);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hover-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: auto;
-            padding-top: 10px;
-        }
-
-        /* ================= BUTTONS ================= */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: white;
-            color: #6CA8C9;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: #f8f9fa;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
-        }
-
-        /* Music Toggle Button (same style as landing page) */
-        .music-toggle{
-            position:fixed;
-            bottom:30px;
-            right:30px;
-            width:60px;
-            height:60px;
-            border-radius:50%;
-            background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
-            border:3px solid white;
-            box-shadow:0 8px 25px rgba(0,0,0,0.3);
-            cursor:pointer;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:1000;
-            transition:all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            animation:float 3s ease-in-out infinite;
-        }
-
-        .music-toggle:hover{ transform:scale(1.15) translateY(-5px); box-shadow:0 12px 35px rgba(0,0,0,0.4); }
-        .music-toggle:active{ transform:scale(0.95); }
-        .music-toggle.playing{ background:linear-gradient(135deg, #6CA8C9, #5B9AB8); animation:pulse 1.5s ease-in-out infinite, float 3s ease-in-out infinite; }
-        .music-icon{ font-size:20px; color:#6CA8C9; transition:all 0.3s ease; }
-        .music-toggle.playing .music-icon{ color:white; }
-
-        /* ================= FOOTER ================= */
-        .footer {
-            background: #2c5282;
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            margin-top: 60px;
-        }
-
-        .footer p {
-            margin: 8px 0;
-            font-size: 14px;
-        }
-
-        .footer a {
-            color: white;
-            text-decoration: underline;
-            opacity: 0.9;
-            transition: opacity 0.3s ease;
-        }
-
-        .footer a:hover {
-            opacity: 1;
-        }
-
-        /* ================= ANIMATIONS ================= */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        /* ================= RESPONSIVE DESIGN ================= */
-        @media (max-width: 1200px) {
-            .choice-cards {
-                max-width: 900px;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .choice-cards {
-                grid-template-columns: 1fr;
-                max-width: 600px;
-            }
-            
-            .choice-card {
-                height: 550px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 16px 20px 12px;
-                flex-direction: column;
-                gap: 12px;
-                align-items: center;
-            }
-
-            .logo-container {
-                width: 100px;
-                height: 100px;
-            }
-
-            .header-section {
-                margin: 24px 0 30px;
-            }
-
-            .page-title {
-                font-size: 30px;
-            }
-
-            .page-subtitle {
-                font-size: 16px;
-                padding: 0 16px;
-            }
-
-            .choice-cards {
-                padding: 0 18px;
-                gap: 22px;
-            }
-
-            .card-content {
-                padding: 22px;
-            }
-
-            .choice-card {
-                height: 580px;
-                min-height: 580px;
-            }
-
-            .card-title {
-                font-size: 28px;
-            }
-
-            .card-badge {
-                font-size: 15px;
-                padding: 8px 22px;
-            }
-
-            .hover-title {
-                font-size: 24px;
-            }
-
-            .hover-subtitle {
-                font-size: 15px;
-            }
-
-            .hover-features li {
-                font-size: 14px;
-            }
-
-            /* Enable tap-to-toggle active state on mobile: show hover content when .active is present */
-            .choice-card.active .card-hover-content { 
-                opacity: 1; 
-                transform: translateY(0); 
-                pointer-events: auto; 
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                display: flex;
-                flex-direction: column;
-            }
-            .choice-card.active .card-main-content { opacity: 0; transform: translateY(-20px); }
-            
-            /* Sticky buttons at bottom on mobile active state */
-            .choice-card.active .hover-actions {
-                position: sticky;
-                bottom: 0;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.95));
-                padding: 15px 0;
-                margin-left: -14px;
-                margin-right: -14px;
-                margin-bottom: -14px;
-                padding-left: 14px;
-                padding-right: 14px;
-                margin-top: auto;
-                flex-shrink: 0;
-                border-top: 1px solid rgba(255,255,255,0.1);
-            }
-            
-            /* Allow keyboard focus to show hover content */
-            .choice-card:focus-within .card-hover-content { opacity: 1; transform: translateY(0); pointer-events: auto; }
-            .choice-card:focus { outline: 2px solid rgba(108,168,201,0.35); }
-        }
-
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 12px 16px 10px;
-            }
-
-            .nav-link {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-
-            .page-title {
-                font-size: 28px;
-            }
-
-            .page-subtitle {
-                font-size: 15px;
-            }
-
-            .choice-cards {
-                padding: 0 12px;
-            }
-
-            .card-content {
-                padding: 18px;
-            }
-
-            .choice-card {
-                height: 540px;
-                min-height: 540px;
-            }
-
-            .card-title {
-                font-size: 24px;
-            }
-
-            .hover-title {
-                font-size: 20px;
-            }
-
-            .hover-subtitle {
-                font-size: 14px;
-            }
-
-            .btn {
-                padding: 12px 20px;
-                font-size: 15px;
-            }
-
-            .hover-features li {
-                font-size: 13px;
-            }
-
-            /* Ensure the hover actions are reachable on small screens */
-            .card-hover-content .hover-actions .btn { width: 100%; }
-            
-            /* Sticky buttons on active state */
-            .choice-card.active .hover-actions {
-                position: sticky;
-                bottom: 0;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.95));
-                padding: 15px 0;
-                margin-left: -22px;
-                margin-right: -22px;
-                margin-bottom: -22px;
-                padding-left: 22px;
-                padding-right: 22px;
-                margin-top: auto;
-                flex-shrink: 0;
-                border-top: 1px solid rgba(255,255,255,0.1);
-            }
-        }
-
-        @media (max-width: 360px) {
-            .logo-container { width: 84px; height: 84px; }
-            .page-title { font-size: 22px; }
-            .choice-card { 
-                height: 500px; 
-                min-height: 500px;
-            }
-            .card-content { padding: 14px; }
-            .card-title { font-size: 20px; }
-            .card-badge { padding: 8px 14px; font-size: 14px; }
-            .card-hover-content { padding: 20px; }
-            
-            /* Sticky buttons on active state */
-            .choice-card.active .hover-actions {
-                position: sticky;
-                bottom: 0;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.95));
-                padding: 15px 0;
-                margin-left: -18px;
-                margin-right: -18px;
-                margin-bottom: -18px;
-                padding-left: 18px;
-                padding-right: 18px;
-                margin-top: auto;
-                flex-shrink: 0;
-                border-top: 1px solid rgba(255,255,255,0.1);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NERO — Patient or Clinic?</title>
+<link rel="icon" type="image/png" href="{% static 'n.png' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --ink:#0c2a3a;--muted:#5b7a89;--brand:#6CA8C9;--brand-600:#4a8fb3;--brand-700:#356f8f;--brand-900:#0f3a52;
+  --mint:#5fd6c4;--accent:#ff7a59;--accent-600:#f2643f;--card:#fff;--ring:rgba(108,168,201,.35);
+  --shadow:0 20px 55px rgba(15,58,82,.18);--radius:24px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink);min-height:100vh;
+  background:linear-gradient(160deg,#0f3a52 0%,#2f6f93 38%,#6CA8C9 100%);
+  overflow-x:hidden;position:relative;
+}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;pointer-events:none;animation:float 10s ease-in-out infinite;z-index:0}
+.blob.b1{width:360px;height:360px;background:#5fd6c4;top:-100px;right:-60px}
+.blob.b2{width:320px;height:320px;background:#ff7a59;bottom:-140px;left:-80px;opacity:.3;animation-delay:2s}
+.shell{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 24px}
+
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:22px;color:#fff}
+.brand img{width:42px;height:42px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.15);padding:4px}
+.back{display:inline-flex;align-items:center;gap:8px;color:#fff;font-weight:700;padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.4);transition:background .2s,transform .2s}
+.back:hover{background:rgba(255,255,255,.26);transform:translateY(-2px)}
+
+.head{text-align:center;color:#fff;margin:26px 0 44px}
+.head .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);padding:7px 14px;border-radius:999px}
+.head h1{font-size:clamp(30px,4.6vw,50px);font-weight:900;letter-spacing:-.02em;margin:16px 0 10px}
+.head p{font-size:18px;color:rgba(255,255,255,.9)}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding-bottom:30px}
+.card{
+  background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;transition:transform .3s ease,box-shadow .3s ease;
+  opacity:0;transform:translateY(34px);animation:rise .7s ease forwards;
+}
+.card:nth-child(2){animation-delay:.12s}
+.card:hover{transform:translateY(-8px);box-shadow:0 30px 70px rgba(15,58,82,.32)}
+.card .media{position:relative;height:190px;overflow:hidden}
+.card .media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card:hover .media img{transform:scale(1.06)}
+.card .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,58,82,.05),rgba(15,58,82,.55))}
+.badge{position:absolute;top:16px;left:16px;z-index:2;font-size:12px;font-weight:800;letter-spacing:.08em;color:#fff;padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px)}
+.card.patient .badge{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
+.card.clinic .badge{background:linear-gradient(135deg,#5fd6c4,#2f9e8c)}
+.card .body{padding:26px 28px 30px;display:flex;flex-direction:column;flex:1}
+.card .body h2{font-size:26px;font-weight:900;margin-bottom:6px}
+.card .body .desc{color:var(--muted);font-size:15px;margin-bottom:18px}
+.card ul{list-style:none;margin:0 0 22px;padding:0}
+.card li{display:flex;align-items:flex-start;gap:11px;padding:7px 0;font-size:15px;font-weight:500;color:#234}
+.card li i{margin-top:4px;font-size:14px}
+.card.patient li i{color:var(--brand-600)}
+.card.clinic li i{color:#2f9e8c}
+.actions{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:800;font-size:16px;border-radius:14px;padding:15px 22px;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+.btn i{transition:transform .25s}.btn:hover i{transform:translateX(4px)}
+.card.patient .btn-primary{background:linear-gradient(135deg,#4a8fb3,#0f3a52);color:#fff;box-shadow:0 12px 26px rgba(15,58,82,.3)}
+.card.clinic .btn-primary{background:linear-gradient(135deg,#5fd6c4,#2f9e8c);color:#063;box-shadow:0 12px 26px rgba(47,158,140,.3)}
+.btn-primary:hover{transform:translateY(-3px)}
+.btn-secondary{background:#eef6fa;color:var(--brand-900);border:1.5px solid var(--ring)}
+.btn-secondary:hover{background:#e1eff6;transform:translateY(-2px)}
+
+.foot{text-align:center;color:rgba(255,255,255,.85);padding:26px 0 50px;font-size:14px}
+.foot a{color:#bdeee6;font-weight:700}
+
+.music-toggle{position:fixed;bottom:26px;right:26px;width:58px;height:58px;border-radius:50%;background:#fff;border:3px solid #fff;box-shadow:0 10px 28px rgba(15,58,82,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;transition:all .4s cubic-bezier(.68,-.55,.265,1.55);animation:float 3s ease-in-out infinite}
+.music-toggle:hover{transform:scale(1.12) translateY(-4px)}
+.music-toggle.playing{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
+.music-icon{font-size:22px;color:#6CA8C9}
+.music-toggle.playing .music-icon{color:#fff;animation:musicBounce .6s ease-in-out infinite}
+@keyframes musicBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes rise{to{opacity:1;transform:none}}
+
+@media(max-width:820px){.cards{grid-template-columns:1fr}.brand span{display:none}}
+</style>
 </head>
 <body>
-    <!-- Main Container (PJAX swap target) -->
-    <div id="pjax-container" class="main-container">
-        <!-- Navigation Header -->
-        <nav class="navbar">
-            <div class="logo-container">
-                <img src="{% static 'logo1.png' %}" class="logo" alt="NERO Logo">
-            </div>
-            <a href="{% url 'landing_page' %}" class="nav-link">
-                ← Back to Home
-            </a>
-        </nav>
+<span class="blob b1"></span><span class="blob b2"></span>
 
-        <!-- Main Content -->
-        <main>
-            <!-- Header Section -->
-            <div class="header-section fade-in">
-                <h1 class="page-title">Choose Your Path</h1>
-                <p class="page-subtitle">Select how you want to use NERO Medical Platform</p>
-            </div>
+<div class="shell">
+  <nav class="nav">
+    <a href="{% url 'landing_page' %}" class="brand"><img src="{% static 'logo1.png' %}" alt="NERO"> <span>NERO</span></a>
+    <a href="{% url 'landing_page' %}" class="back"><i class="fa-solid fa-arrow-left"></i> Back to home</a>
+  </nav>
 
-            <!-- Choice Cards -->
-            <div class="choice-cards">
-                <!-- Patient Card -->
-                <div class="choice-card fade-in">
-                    <!-- Background Image for entire card -->
-                      <img src="{% static 'patient.jpeg' %}"  
-                         class="card-background" 
-                         alt="Patient receiving medical care">
-                    
-                    <!-- Overlay -->
-                    <div class="card-overlay"></div>
-                    
-                    <!-- Card Content -->
-                    <div class="card-content">
-                        <!-- Initial Content (Before Hover) -->
-                        <div class="card-main-content">
-                            <div class="card-badge">PATIENT</div>
-                            <h2 class="card-title">I'm a Patient</h2>
-                            <p style="font-size: 18px; opacity: 0.9; max-width: 400px; margin-top: 10px;">
-                                Click to discover personalized healthcare
-                            </p>
-                        </div>
-                        
-                        <!-- Hover Content -->
-                        <div class="card-hover-content">
-                            <div class="hover-header">
-                                <h3 class="hover-title">Personalized Healthcare</h3>
-                                <p class="hover-subtitle">
-                                    Get matched with specialized clinics based on your medical needs and preferences.
-                                </p>
-                            </div>
-                            
-                            <ul class="hover-features">
-                                <li>AI-powered clinic matching</li>
-                                <li>Secure medical record storage</li>
-                                <li>Easy appointment scheduling</li>
-                                <li>Progress tracking & follow-ups</li>
-                            </ul>
-                            
-                            <div class="hover-actions">
-                                <a href="{% url 'patient_signup' %}" class="btn btn-primary">
-                                    Sign Up as Patient
-                                </a>
-                                <a href="{% url 'login' %}" class="btn btn-secondary">
-                                    Existing patient? Login here
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Clinic Card -->
-                <div class="choice-card fade-in" style="animation-delay: 0.2s">
-                    <!-- Background Image for entire card -->
-                    <img src="{% static 'uvodka-1.jpg' %}" 
-                         class="card-background" 
-                         alt="Modern medical clinic">
-                    
-                    <!-- Overlay -->
-                    <div class="card-overlay"></div>
-                    
-                    <!-- Card Content -->
-                    <div class="card-content">
-                        <!-- Initial Content (Before Hover) -->
-                        <div class="card-main-content">
-                            <div class="card-badge">CLINIC</div>
-                            <h2 class="card-title">I'm a Clinic</h2>
-                            <p style="font-size: 18px; opacity: 0.9; max-width: 400px; margin-top: 10px;">
-                                Click to connect with patients
-                            </p>
-                        </div>
-                        
-                        <!-- Hover Content -->
-                        <div class="card-hover-content">
-                            <div class="hover-header">
-                                <h3 class="hover-title">Professional Medical Platform</h3>
-                                <p class="hover-subtitle">
-                                    Connect with patients needing specialized care and manage your clinic efficiently.
-                                </p>
-                            </div>
-                            
-                            <ul class="hover-features">
-                                <li>Patient management dashboard</li>
-                                <li>Medical record access</li>
-                                <li>Appointment scheduling system</li>
-                                <li>Secure patient communication</li>
-                            </ul>
-                            
-                            <div class="hover-actions">
-                                <a href="{% url 'clinic_signup' %}" class="btn btn-primary">
-                                    Sign Up as Clinic
-                                </a>
-                                <a href="{% url 'login' %}" class="btn btn-secondary">
-                                    Existing clinic? Login here
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+  <div class="head">
+    <span class="eyebrow">👋 Welcome to Nero</span>
+    <h1>How would you like to continue?</h1>
+    <p>Choose your path — you can always reach the other side later.</p>
+  </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 NERO Medical Platform. All rights reserved.</p>
-            <p>Need help choosing? <a href="mailto:support@nero-medical.com">Contact our support team</a></p>
-        </footer>
+  <div class="cards">
+    <!-- PATIENT -->
+    <div class="card patient">
+      <div class="media"><span class="badge">PATIENT</span><img src="{% static 'patient.jpeg' %}" alt="Patient receiving rehabilitation care"></div>
+      <div class="body">
+        <h2>I'm a patient</h2>
+        <p class="desc">Find specialized rehabilitation clinics, share your records securely, and book the care that fits you.</p>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Match with clinics for your condition</li>
+          <li><i class="fa-solid fa-check"></i> Securely upload your medical records</li>
+          <li><i class="fa-solid fa-check"></i> Chat with clinics &amp; book appointments</li>
+        </ul>
+        <div class="actions">
+          <a href="{% url 'patient_signup' %}" class="btn btn-primary">Sign up as patient <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'login' %}" class="btn btn-secondary">Existing patient? Log in</a>
+        </div>
+      </div>
     </div>
 
-    <!-- Music controls: ensure a single persistent player across pages. Create only when missing. -->
+    <!-- CLINIC -->
+    <div class="card clinic">
+      <div class="media"><span class="badge">CLINIC</span><img src="{% static 'uvodka-1.jpg' %}" alt="Modern rehabilitation clinic"></div>
+      <div class="body">
+        <h2>I'm a clinic</h2>
+        <p class="desc">Showcase your services, reach the right patients, and manage your practice end-to-end.</p>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Build a profile with services, photos &amp; videos</li>
+          <li><i class="fa-solid fa-check"></i> Review patient records &amp; chat with prospects</li>
+          <li><i class="fa-solid fa-check"></i> Manage appointments from request to recovery</li>
+        </ul>
+        <div class="actions">
+          <a href="{% url 'clinic_signup' %}" class="btn btn-primary">Sign up as clinic <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'login' %}" class="btn btn-secondary">Existing clinic? Log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        // PJAX-aware initialization (re-run after content swaps)
-        window.pjaxInit = function(){
-            // Enhanced hover effects for cards
-            document.querySelectorAll('.choice-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-10px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
+  <div class="foot">Need help choosing? <a href="mailto:support@nero-medical.com">Contact our support team</a></div>
+</div>
 
-            // Click handlers for cards (optional for mobile)
-            document.querySelectorAll('.choice-card').forEach(card => {
-                // make card focusable for keyboard users
-                if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
-
-                card.addEventListener('click', function(e) {
-                    // if a link was clicked, let it proceed (PJAX will handle navigation)
-                    if (e.target.closest('a')) return;
-
-                    // toggle active state on tap/click for mobile to reveal actions
-                    this.classList.toggle('active');
-                    this.setAttribute('aria-expanded', this.classList.contains('active'));
-                });
-
-                // keyboard support: Enter/Space to toggle, and when active Enter follows primary action
-                card.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        if (!this.classList.contains('active')) {
-                            this.classList.add('active');
-                            this.setAttribute('aria-expanded', 'true');
-                            this.focus();
-                            return;
-                        }
-                        // if active, activate first primary action link
-                        const primary = this.querySelector('.hover-actions .btn-primary');
-                        if (primary) {
-                            const a = primary.closest && primary.closest('a') ? primary.closest('a') : primary;
-                            if (a) a.click();
-                        }
-                    }
-                });
-            });
-
-            // Button hover effects
-            document.querySelectorAll('.btn').forEach(button => {
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-3px)';
-                });
-                
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Logo click to go back to landing page
-            const logo = document.querySelector('.logo');
-            if (logo) {
-                logo.addEventListener('click', function() {
-                    window.location.href = "{% url 'landing_page' %}";
-                });
-            }
-
-            // Keyboard navigation support
-            document.addEventListener('keydown', function(e) {
-                const cards = document.querySelectorAll('.choice-card');
-                if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                    const currentCard = document.activeElement.closest && document.activeElement.closest('.choice-card');
-                    if (currentCard) {
-                        const index = Array.from(cards).indexOf(currentCard);
-                        if (e.key === 'ArrowRight' && index < cards.length - 1) {
-                            cards[index + 1].focus();
-                        } else if (e.key === 'ArrowLeft' && index > 0) {
-                            cards[index - 1].focus();
-                        }
-                    }
-                }
-            });
-
-            // Fade-in animations and image preloads
-            document.querySelectorAll('.fade-in').forEach(el => el.style.opacity = '1');
-            const imageUrls = [
-                'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1516549655669-df3d5f888b75?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'
-            ];
-            imageUrls.forEach(url => { const img = new Image(); img.src = url; });
-            console.log('NERO Choice Page initialized');
-        };
-
-        // Run initializers on load
-        window.addEventListener('load', function(){ if (window.pjaxInit) window.pjaxInit(); });
-
-        // Music helper: create controls only if missing (avoids duplicate players and restarts)
-        (function(){
-            const STORAGE_KEY_PLAYING = 'nero_music_playing';
-            const STORAGE_KEY_TIME = 'nero_music_time';
-
-            let musicToggle = document.getElementById('musicToggle');
-            let bgMusic = document.getElementById('bgMusic');
-
-            // Create missing elements individually to avoid inconsistent states across PJAX navigation
-            if (!musicToggle) {
-                musicToggle = document.createElement('button');
-                musicToggle.className = 'music-toggle';
-                musicToggle.id = 'musicToggle';
-                musicToggle.setAttribute('aria-label', 'Toggle background music');
-                musicToggle.innerHTML = '<span class="music-icon">🔇</span>';
-                // ensure visible/interactable
-                musicToggle.style.zIndex = '2000';
-                musicToggle.style.display = 'flex';
-                musicToggle.style.pointerEvents = 'auto';
-                document.body.appendChild(musicToggle);
-            }
-
-            if (!bgMusic) {
-                bgMusic = document.createElement('audio');
-                bgMusic.id = 'bgMusic';
-                bgMusic.loop = true;
-                bgMusic.preload = 'auto';
-                bgMusic.style.display = 'none';
-                const s = document.createElement('source');
-                s.src = "{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}";
-                s.type = 'audio/mpeg';
-                bgMusic.appendChild(s);
-                document.body.appendChild(bgMusic);
-            }
-
-            let saveInterval = null;
-            function updateButton(paused){ const icon = musicToggle.querySelector('.music-icon'); musicToggle.classList.toggle('playing', !paused); musicToggle.setAttribute('aria-pressed', String(!paused)); if (icon) icon.textContent = paused ? '🔇' : '🔊'; }
-            function startSaving(){ if (saveInterval) clearInterval(saveInterval); saveInterval = setInterval(() => { try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); } catch(e){} }, 250); }
-            function stopSaving(){ if (saveInterval) { clearInterval(saveInterval); saveInterval = null; } try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); } catch(e){} }
-            function markPlaying(isPlaying){ try { localStorage.setItem(STORAGE_KEY_PLAYING, isPlaying ? 'true' : 'false'); } catch(e){} }
-
-            try { const wasSavedPlayingInit = localStorage.getItem(STORAGE_KEY_PLAYING) === 'true'; if (wasSavedPlayingInit) updateButton(false); else updateButton(bgMusic.paused); } catch(e){ updateButton(bgMusic.paused); }
-
-            musicToggle.addEventListener('click', function(e){ e.preventDefault(); if (bgMusic.paused) { const p = bgMusic.play(); if (p && typeof p.then === 'function') { p.then(() => { updateButton(false); markPlaying(true); startSaving(); }).catch(err => { console.warn('Audio playback failed:', err); updateButton(true); markPlaying(false); }); } else { updateButton(false); markPlaying(true); startSaving(); } } else { bgMusic.pause(); updateButton(true); markPlaying(false); stopSaving(); } });
-
-            (function tryResume(){ const wasPlaying = localStorage.getItem(STORAGE_KEY_PLAYING) === 'true'; function getLatestSavedTime(){ try { const tA = localStorage.getItem(STORAGE_KEY_TIME); const tsA = parseInt(localStorage.getItem(STORAGE_KEY_TIME + '_ts') || '0', 10) || 0; const tB = localStorage.getItem(STORAGE_KEY_TIME + '_bak'); const tsB = parseInt(localStorage.getItem(STORAGE_KEY_TIME + '_bak_ts') || '0', 10) || 0; if (tsB > tsA && tB) return parseFloat(tB || '0'); if (tA) return parseFloat(tA || '0'); } catch(e){} return 0; } const savedTime = getLatestSavedTime(); if (!wasPlaying) { updateButton(bgMusic.paused); return; } function resumeNow(){ if (!isNaN(savedTime) && savedTime > 0) { try { bgMusic.currentTime = Math.min(savedTime, bgMusic.duration || savedTime); } catch(e){} } const p = bgMusic.play(); if (p && typeof p.then === 'function') { p.then(() => { updateButton(false); markPlaying(true); startSaving(); }).catch(err => { console.warn('Resume audio failed:', err); }); } else { updateButton(false); markPlaying(true); startSaving(); } } if (bgMusic.readyState >= 2) { resumeNow(); } else { bgMusic.addEventListener('canplay', resumeNow, { once: true }); } })();
-
-            document.addEventListener('visibilitychange', function(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); } catch(e){} });
-            window.addEventListener('beforeunload', function(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); } catch(e){} });
-
-            function saveNow(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); localStorage.setItem(STORAGE_KEY_PLAYING, bgMusic && !bgMusic.paused ? 'true' : 'false'); } catch(e){} }
-            document.addEventListener('click', function(e){ try { const a = e.target.closest && e.target.closest('a'); if (!a) return; const href = a.getAttribute('href') || ''; if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return; const isExternal = href.indexOf('://') !== -1 && !href.startsWith(location.origin); if (isExternal) return; saveNow(); } catch(e){} }, true);
-            document.addEventListener('submit', function(){ try { saveNow(); } catch(e){} }, true);
-        })();
-
-        // Simple PJAX navigation for same-origin internal links to preserve audio
-        (function(){
-            async function handleLinkClick(e){
-                const a = e.target.closest('a');
-                if (!a) return;
-                const href = a.getAttribute('href');
-                if (!href || href.startsWith('mailto:') || href.startsWith('tel:') || a.target === '_blank') return;
-                // Only handle same-origin internal routes
-                const url = new URL(href, window.location.href);
-                if (url.origin !== window.location.origin) return;
-
-                e.preventDefault();
-                try{
-                    const res = await fetch(url.href, { credentials: 'same-origin' });
-                    if (!res.ok) { window.location.href = url.href; return; }
-                    const text = await res.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/html');
-                    const newContainer = doc.getElementById('pjax-container');
-                    if (!newContainer) { window.location.href = url.href; return; }
-                    // replace head to ensure styles/scripts in head are applied
-                    try { document.head.innerHTML = doc.head.innerHTML; } catch(e) { console.warn('Head replace failed', e); }
-                    const container = document.getElementById('pjax-container');
-                    container.innerHTML = newContainer.innerHTML;
-                    // update title
-                    const newTitle = doc.querySelector('title');
-                    if (newTitle) document.title = newTitle.textContent;
-                    history.pushState({}, '', url.href);
-                    if (window.pjaxInit) window.pjaxInit();
-                }catch(err){ console.error('PJAX failed, falling back', err); window.location.href = url.href; }
-            }
-
-            document.addEventListener('click', function(e){
-                const a = e.target.closest && e.target.closest('a');
-                if (!a) return;
-                // ignore anchors that reference same-page fragments
-                const href = a.getAttribute('href') || '';
-                if (href.startsWith('#')) return;
-                handleLinkClick(e);
-            });
-
-            window.addEventListener('popstate', function(){
-                // reload location to reflect history change (could improve to fetch)
-                fetch(location.href, { credentials: 'same-origin' }).then(res => res.text()).then(text => {
-                    const doc = new DOMParser().parseFromString(text, 'text/html');
-                    try { document.head.innerHTML = doc.head.innerHTML; } catch(e) { console.warn('Head replace failed', e); }
-                    const newContainer = doc.getElementById('pjax-container');
-                    if (newContainer) document.getElementById('pjax-container').innerHTML = newContainer.innerHTML;
-                    if (window.pjaxInit) window.pjaxInit();
-                }).catch(()=> location.reload());
-            });
-        })();
-    </script>
+<!-- Background music (persists across the site) -->
+<button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false">
+  <span class="music-icon">🔇</span>
+</button>
+<audio id="bgMusic" loop preload="auto" style="display:none">
+  <source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg">
+</audio>
+<script>
+(function(){
+  const KEY_PLAYING='nero_music_playing', KEY_TIME='nero_music_time';
+  const toggle=document.getElementById('musicToggle'), audio=document.getElementById('bgMusic');
+  if(!toggle||!audio) return;
+  let saver=null;
+  function setIcon(paused){const i=toggle.querySelector('.music-icon');toggle.classList.toggle('playing',!paused);toggle.setAttribute('aria-pressed',String(!paused));if(i)i.textContent=paused?'🔇':'🔊';}
+  function save(){try{localStorage.setItem(KEY_TIME,String(audio.currentTime));localStorage.setItem(KEY_PLAYING,audio.paused?'false':'true');}catch(e){}}
+  function startSaving(){if(saver)clearInterval(saver);saver=setInterval(save,400);}
+  function stopSaving(){if(saver){clearInterval(saver);saver=null;}save();}
+  document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a');if(a){const h=a.getAttribute('href')||'';if(h&&!h.startsWith('#')&&!h.startsWith('mailto:')&&!h.startsWith('tel:'))save();}},true);
+  try{setIcon(localStorage.getItem(KEY_PLAYING)!=='true'?audio.paused:false);}catch(e){setIcon(audio.paused);}
+  toggle.addEventListener('click',()=>{
+    if(audio.paused){const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);try{localStorage.setItem(KEY_PLAYING,'true');}catch(e){}startSaving();}).catch(()=>{});}
+    else{audio.pause();setIcon(true);try{localStorage.setItem(KEY_PLAYING,'false');}catch(e){}stopSaving();}
+  });
+  (function(){
+    let wasPlaying=false,t=0;try{wasPlaying=localStorage.getItem(KEY_PLAYING)==='true';t=parseFloat(localStorage.getItem(KEY_TIME)||'0');}catch(e){}
+    if(!wasPlaying){setIcon(audio.paused);return;}
+    function go(){try{if(!isNaN(t)&&t>0)audio.currentTime=t;}catch(e){}const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);startSaving();}).catch(()=>{});}
+    if(audio.readyState>=1)go();else audio.addEventListener('canplay',go,{once:true});
+  })();
+  window.addEventListener('beforeunload',save);
+})();
+</script>
 </body>
 </html>
