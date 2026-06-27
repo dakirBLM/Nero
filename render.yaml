@@ -42,5 +42,17 @@ services:
         value: "path"            # Supabase requires path-style (R2/S3 use virtual)
       - key: SENTRY_DSN
         sync: false             # optional error tracking
+      # Email (optional): leave blank to log emails instead of sending. To send,
+      # set EMAIL_HOST + creds from a provider (Brevo/Resend/Gmail).
+      - key: EMAIL_HOST
+        sync: false             # e.g. smtp-relay.brevo.com
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false             # e.g. Nero <you@yourdomain.com>
 
 # No Render database — Postgres is hosted on Supabase (set DATABASE_URL above).
