@@ -1,0 +1,1754 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Smart Recommendations • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 240ms cubic-bezier(.2,.9,.2,1);
+        }
+        .main-header--hidden  { transform: translateY(-110%); }
+        .main-header--visible { transform: translateY(0); }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px calc(24px + env(safe-area-inset-right)) 12px calc(24px + env(safe-area-inset-left));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container { width: 120px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .logo-gradient {
+            width: 100%; height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain; mask-repeat: no-repeat; mask-position: center;
+            display: block;
+        }
+        .logo-fallback { width: 100%; height: 100%; object-fit: contain; display: none; }
+        @keyframes gradientShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) { .logo-gradient{display:none} .logo-fallback{display:block} }
+
+        .search-container { flex: 1; max-width: 500px; margin: 0 32px; position: relative; }
+        .search-bar {
+            width: 100%; padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb; border-radius: 100px;
+            background: #f9fafb; font-size: 14px; transition: all 0.2s ease; height: 44px;
+        }
+        .search-bar:focus { outline: none; border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .search-bar::placeholder { color: #9ca3af; }
+        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 16px; pointer-events: none; }
+
+        .search-results {
+            display: none; position: absolute; top: 110%; left: 0; right: 0;
+            background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10); z-index: 2000; max-height: 360px; overflow-y: auto;
+        }
+        .results-section-title { padding: 10px 14px; font-weight: 700; color: #334155; background: linear-gradient(90deg,rgba(249,250,251,0.6),transparent); border-bottom: 1px solid #eef2ff; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .results-list { list-style: none; margin: 0; padding: 6px 0; }
+        .results-list li { padding: 0 12px; border-radius: 8px; margin: 6px 8px; }
+        .results-list li a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; color: #0f172a; transition: background 0.14s ease, transform 0.12s ease; border-radius: 8px; }
+        .results-list li a:hover { background: #f8fafc; transform: translateX(3px); }
+
+        .nav-icons { display: flex; align-items: center; gap: 20px; }
+        .nav-icon { position: relative; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #6b7280; cursor: pointer; transition: all 0.2s ease; text-decoration: none; background: #f8fafc; }
+        .nav-icon:hover { background: linear-gradient(135deg,#f3f4f6,#e5e7eb); color: #3b82f6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.15); }
+        .nav-icon.active { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: white; box-shadow: 0 4px 12px rgba(59,130,246,0.25); }
+        .notification-badge { position: absolute; top: -2px; right: -2px; background: linear-gradient(135deg,#ef4444,#dc2626); color: white; font-size: 11px; min-width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; font-weight: 600; }
+
+        .user-menu { display: flex; align-items: center; gap: 12px; padding-left: 12px; border-left: 1px solid #e5e7eb; position: relative; }
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid transparent; background: linear-gradient(white,white) padding-box, linear-gradient(135deg,#3b82f6,#8b5cf6) border-box; transition: all 0.3s ease; }
+        .user-avatar:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .avatar-dropdown { display: none; position: absolute; right: 0; top: calc(100% + 8px); background: white; border: 1px solid #e5e7eb; box-shadow: 0 8px 24px rgba(16,24,40,0.08); border-radius: 12px; min-width: 200px; z-index: 3000; overflow: hidden; }
+        .dropdown-header { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; background: linear-gradient(135deg,#f8fafc,#f1f5f9); }
+        .dropdown-header strong { color: #1f2937; font-size: 14px; }
+        .dropdown-list { list-style: none; margin: 0; padding: 8px 0; }
+        .dropdown-list li a { display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #4b5563; text-decoration: none; transition: all 0.2s ease; font-size: 14px; }
+        .dropdown-list li a:hover { background: #f9fafb; color: #3b82f6; padding-left: 20px; }
+        .dropdown-list li a i { width: 18px; text-align: center; }
+
+        /* ===== LAYOUT ===== */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px calc(24px + env(safe-area-inset-right)) 24px calc(24px + env(safe-area-inset-left));
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar-left { position: sticky; top: 88px; height: fit-content; }
+        .profile-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .avatar-wrap { position: relative; display: inline-block; border-radius: 50%; z-index: 3; }
+        .avatar-wrap::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%), radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%); filter: blur(8px); z-index: 2; pointer-events: none; animation: avatarPulse 2.4s ease-in-out infinite; }
+        .avatar-wrap::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(82,39,255,0.18); box-shadow: 0 0 12px rgba(82,39,255,0.12), 0 0 6px rgba(255,159,252,0.06); z-index: 1; pointer-events: none; animation: avatarSpin 6s linear infinite; }
+        @keyframes avatarPulse { 0%{transform:scale(0.96);opacity:0.7} 50%{transform:scale(1.06);opacity:1} 100%{transform:scale(0.96);opacity:0.7} }
+        @keyframes avatarSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; position: relative; z-index: 4; }
+        .profile-info h3 { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+        .profile-info p { font-size: 14px; color: #6b7280; }
+        .sidebar-nav { background: white; border-radius: 16px; padding: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #f1f5f9; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #6b7280; text-decoration: none; transition: all 0.2s ease; border-left: 3px solid transparent; font-size: 14px; }
+        .nav-item:hover { background: linear-gradient(90deg,rgba(59,130,246,0.05),transparent); color: #3b82f6; padding-left: 24px; }
+        .nav-item.active { background: linear-gradient(90deg,rgba(59,130,246,0.1),transparent); color: #3b82f6; border-left-color: #3b82f6; font-weight: 500; }
+        .nav-item.smart-rec { position: relative; overflow: hidden; }
+        .nav-item.smart-rec.active { background: linear-gradient(105deg,rgba(99,194,241,0.12) 0%,rgba(92,246,220,0.08) 50%,transparent 100%); border-left-color: #1a82c7; color: #3982e1; }
+        .nav-item.smart-rec.active::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,transparent 0%,rgba(92,192,246,0.08) 40%,rgba(99,241,170,0.12) 60%,transparent 100%); background-size: 200% 100%; animation: smartSweep 2.4s ease-in-out infinite; }
+        @keyframes smartSweep { 0%{background-position:-100% 0} 100%{background-position:200% 0} }
+        .nav-item.smart-rec .brain-icon { position: relative; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+        .nav-item.smart-rec.active .brain-icon i { animation: brainPulse 2s ease-in-out infinite; color: #2993c5; }
+        @keyframes brainPulse { 0%,100%{transform:scale(1);filter:drop-shadow(0 0 0px #fff)} 50%{transform:scale(1.18);filter:drop-shadow(0 0 5px #63c9f1)} }
+        .nav-item.smart-rec .ai-dots { display: none; margin-left: auto; align-items: center; gap: 3px; }
+        .nav-item.smart-rec.active .ai-dots { display: flex; }
+        .ai-dot { width: 5px; height: 5px; border-radius: 50%; background: #63e5f1; animation: dotBounce 1.2s ease-in-out infinite; }
+        .ai-dot:nth-child(2) { animation-delay: .2s; background: #1bc3f1; }
+        .ai-dot:nth-child(3) { animation-delay: .4s; background: #8bedfa; }
+        @keyframes dotBounce { 0%,80%,100%{transform:translateY(0);opacity:0.6} 40%{transform:translateY(-4px);opacity:1} }
+        .nav-item i { width: 20px; text-align: center; font-size: 16px; }
+        .nav-badge { margin-left: auto; background: linear-gradient(135deg,#3b82f6,#1d8ad8); color: white; font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: 600; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+        .page-header {
+            background: white; border-radius: 16px; padding: 24px 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #f1f5f9;
+            position: relative; overflow: hidden;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .page-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg,#00ffbf,#0564f2,#2ed4e3); animation: gradientShift 6s linear infinite; }
+        .page-title { font-size: 26px; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .page-title .icon-box { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg,#eff6ff,#dbeafe); display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 20px; }
+        .page-subtitle { color: #6b7280; font-size: 15px; }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-wrap {
+            background: white; border-radius: 16px; padding: 20px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #f1f5f9;
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 0;
+            transition: background 0.4s ease;
+        }
+
+        .progress-step.done:not(:last-child)::after {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .step-circle {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700;
+            position: relative; z-index: 1;
+            transition: all 0.3s ease;
+            background: #f1f5f9;
+            color: #9ca3af;
+            border: 2px solid #e5e7eb;
+        }
+
+        .progress-step.done .step-circle {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+
+        .progress-step.active .step-circle {
+            background: white;
+            color: #3b82f6;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+            animation: stepPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes stepPulse {
+            0%,100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.12); }
+            50%      { box-shadow: 0 0 0 7px rgba(59,130,246,0.06); }
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #9ca3af;
+            margin-top: 6px;
+            text-align: center;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+
+        .progress-step.active .step-label { color: #3b82f6; font-weight: 600; }
+        .progress-step.done  .step-label { color: #6b7280; }
+
+        /* ===== STEP SCREENS ===== */
+        .step-screen {
+            display: none;
+            animation: stepIn 0.35s cubic-bezier(.2,.9,.2,1) both;
+        }
+        .step-screen.active { display: flex; flex-direction: column; gap: 16px; }
+
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateX(24px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes stepInBack {
+            from { opacity: 0; transform: translateX(-24px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .step-screen.going-back { animation: stepInBack 0.32s cubic-bezier(.2,.9,.2,1) both; }
+
+        /* Step card shell */
+        .step-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .step-eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #3b82f6;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* ===== STEP 1 — CLINIC TYPE CARDS ===== */
+        .clinic-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .ct-card {
+            position: relative;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(.2,.9,.2,1);
+            overflow: hidden;
+            background: white;
+        }
+
+        .ct-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--ct-color, #3b82f6);
+            opacity: 0;
+            transition: opacity 0.22s;
+        }
+
+        .ct-card:hover {
+            border-color: var(--ct-color, #3b82f6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .ct-card:hover::before { opacity: 1; }
+
+        .ct-card.selected {
+            border-color: var(--ct-color, #3b82f6);
+            background: var(--ct-bg, #eff6ff);
+            box-shadow: 0 0 0 1px var(--ct-color, #3b82f6), 0 8px 24px rgba(59,130,246,0.12);
+        }
+
+        .ct-card.selected::before { opacity: 1; }
+
+        .ct-card input[type="checkbox"] {
+            position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+        }
+
+        .ct-check {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: transparent;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .ct-card.selected .ct-check {
+            background: var(--ct-color, #3b82f6);
+            border-color: var(--ct-color, #3b82f6);
+            color: white;
+        }
+
+        .ct-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .ct-desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        /* ===== STEP 2 — MEDICAL RECORD ===== */
+        .record-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .record-card {
+            position: relative;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+        }
+
+        .record-card:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.08);
+            transform: translateX(3px);
+        }
+
+        .record-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 0 0 1px #3b82f6, 0 4px 16px rgba(59,130,246,0.12);
+        }
+
+        .record-card input[type="radio"] {
+            position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+        }
+
+        .record-avatar {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .record-card.selected .record-avatar {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .record-info { flex: 1; min-width: 0; }
+        .record-name { font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 3px; }
+        .record-diag { font-size: 13px; color: #6b7280; overflow-wrap: anywhere; }
+
+        .record-radio-dot {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .record-radio-dot::after {
+            content: '';
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .record-card.selected .record-radio-dot {
+            border-color: #3b82f6;
+        }
+
+        .record-card.selected .record-radio-dot::after { opacity: 1; }
+
+        .no-records-msg {
+            text-align: center;
+            padding: 40px 20px;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            color: #6b7280;
+        }
+
+        /* ===== STEP 3 — LOCATION ===== */
+        .continent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .loc-card {
+            position: relative;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+        }
+
+        .loc-card:hover {
+            border-color: #93c5fd;
+            background: #f8fbff;
+        }
+
+        .loc-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .loc-card input[type="checkbox"] {
+            position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+        }
+
+        .loc-name { font-size: 13px; font-weight: 500; color: #374151; }
+        .loc-card.selected .loc-name { color: #1d4ed8; font-weight: 600; }
+
+        .loc-tick {
+            margin-left: auto;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; color: transparent;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+
+        .loc-card.selected .loc-tick {
+            background: #3b82f6; border-color: #3b82f6; color: white;
+        }
+
+        .country-section { margin-top: 16px; }
+        .country-section-title {
+            font-size: 13px; font-weight: 600; color: #374151;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+
+        .country-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .country-tag {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .country-tag input[type="checkbox"] {
+            position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+        }
+
+        .country-tag .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            color: #4b5563;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .country-tag .tag-pill:hover { border-color: #93c5fd; color: #1d4ed8; background: #f0f6ff; }
+
+        .country-tag input:checked + .tag-pill {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+        }
+
+        .country-hint { font-size: 12px; color: #9ca3af; margin-top: 8px; font-style: italic; }
+
+        /* ===== STEP 4 — SERVICE ===== */
+        .service-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sug-tag {
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sug-tag:hover { border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; }
+        .sug-tag.picked { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(59,130,246,0.25); }
+
+        .service-input-wrap { position: relative; }
+
+        .service-input {
+            width: 100%;
+            padding: 14px 16px 14px 46px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1f2937;
+            background: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .service-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        .service-input::placeholder { color: #9ca3af; }
+
+        .service-input-icon {
+            position: absolute;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /* ===== NAV BUTTONS ===== */
+        .step-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 4px;
+        }
+
+        .btn {
+            border: 0; border-radius: 10px; padding: 11px 22px;
+            font-weight: 600; cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 14px; font-family: inherit; transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: white; box-shadow: 0 4px 12px rgba(59,130,246,0.25); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,0.3); }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-ghost { background: transparent; color: #6b7280; border: 1.5px solid #e5e7eb; }
+        .btn-ghost:hover { background: #f3f4f6; color: #374151; }
+
+        .btn-secondary { background: #f1f5f9; color: #374151; border: 1px solid #e5e7eb; }
+        .btn-secondary:hover { background: #e5e7eb; }
+
+        /* ===== ERROR MSG ===== */
+        .step-error {
+            display: none;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #dc2626;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-error.visible { display: flex; }
+
+        /* ===== RESULTS (Step 2 of old flow) ===== */
+        @keyframes cardEntrance { from{opacity:0;transform:translateY(14px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes dataFlow { 0%{background-position:-100% 0} 100%{background-position:200% 0} }
+        @keyframes scanLine { 0%{top:0%;opacity:0} 5%,95%{opacity:1} 100%{top:100%;opacity:0} }
+        @keyframes pulseRing { 0%{box-shadow:0 0 0 0 rgba(99,102,241,0.4)} 70%{box-shadow:0 0 0 8px rgba(99,102,241,0)} 100%{box-shadow:0 0 0 0 rgba(99,102,241,0)} }
+        @keyframes cornerPing { 0%,100%{opacity:.35;transform:scale(1)} 50%{opacity:1;transform:scale(1.6)} }
+        @keyframes badgeShimmer { 0%{background-position:-100% 0} 100%{background-position:200% 0} }
+
+        .results-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+
+        .clinic-card {
+            border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            background: #fff; transition: border-color .25s, box-shadow .25s, transform .25s;
+            position: relative; overflow: hidden;
+            animation: cardEntrance .35s ease-out both; cursor: pointer;
+        }
+        .clinic-card:nth-child(1){animation-delay:.05s} .clinic-card:nth-child(2){animation-delay:.10s}
+        .clinic-card:nth-child(3){animation-delay:.15s} .clinic-card:nth-child(4){animation-delay:.20s}
+        .clinic-card:nth-child(5){animation-delay:.25s} .clinic-card:nth-child(6){animation-delay:.30s}
+
+        .clinic-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:linear-gradient(90deg,#6366f1,#3b82f6,#06b6d4,#6366f1); background-size:200% 100%; opacity:0; transition:opacity .25s; }
+        .clinic-card::after  { content:''; position:absolute; left:0;right:0;top:0; height:1px; background:linear-gradient(90deg,transparent,rgba(99,102,241,.5),rgba(6,182,212,.4),transparent); opacity:0; pointer-events:none; }
+        .clinic-card:hover { border-color:#a5b4fc; box-shadow:0 8px 28px rgba(99,102,241,.13),0 2px 8px rgba(0,0,0,.06); transform:translateY(-3px); }
+        .clinic-card:hover::before { opacity:1; animation:dataFlow 2s linear infinite; }
+        .clinic-card:hover::after  { animation:scanLine 1.8s linear infinite; }
+        .corner-dot { position:absolute; width:6px;height:6px; border-radius:50%; background:#6366f1; opacity:0; transition:opacity .2s; pointer-events:none; }
+        .corner-dot.tl{top:6px;left:6px;} .corner-dot.tr{top:6px;right:6px;}
+        .clinic-card:hover .corner-dot { opacity:1; animation:cornerPing 1.4s ease-in-out infinite; }
+        .clinic-card:hover .corner-dot.tr { animation-delay:.7s; }
+        .clinic-card:has(input[type="checkbox"]:checked) { border-color:#6366f1; background:linear-gradient(145deg,#fafbff 0%,#f0f4ff 100%); box-shadow:0 0 0 1px #6366f1, 0 8px 24px rgba(99,102,241,.14); }
+        .clinic-card:has(input[type="checkbox"]:checked)::before { opacity:1; animation:dataFlow 1.6s linear infinite; }
+        .clinic-card:has(input[type="checkbox"]:checked) .corner-dot { opacity:1; animation:cornerPing 1.4s ease-in-out infinite; }
+        .clinic-card:has(input[type="checkbox"]:checked) .corner-dot.tr { animation-delay:.7s; }
+        .clinic-card:has(input[type="checkbox"]:checked) .clinic-photo { animation:pulseRing 1.6s ease-out infinite; }
+        .clinic-card-top { display:flex; align-items:center; gap:12px; }
+        .clinic-photo { width:48px;height:48px; border-radius:10px; object-fit:cover; background:linear-gradient(135deg,#eef2ff,#e0e7ff); display:flex;align-items:center;justify-content:center; font-weight:800;color:#6366f1;font-size:20px; flex-shrink:0; transition:box-shadow .2s; }
+        .clinic-card-title { flex:1; min-width:0; }
+        .clinic-name { font-size:15px;font-weight:700;color:#1e1b4b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+        .clinic-location { font-size:12px;color:#6b7280;display:flex;align-items:center;gap:4px;margin-top:2px; }
+        .clinic-location i { font-size:11px; }
+        .clinic-rating-badge { display:flex;align-items:center;gap:6px;padding:6px 12px;background:linear-gradient(135deg,#fef3c7,#fef08a);border-radius:8px;border:1px solid #fcd34d;flex-shrink:0; }
+        .rating-stars { display:flex;gap:3px;align-items:center; }
+        .rating-stars i { font-size:12px;color:#d97706;opacity:0.3;transition:opacity .2s; }
+        .rating-stars i.filled { opacity:1;color:#f59e0b; }
+        .rating-value { font-size:12px;font-weight:700;color:#92400e;margin-left:4px; }
+        .match-score-badge { display:flex;align-items:center;gap:4px;padding:6px 12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-radius:8px;border:1px solid #93c5fd;flex-shrink:0;font-size:12px;font-weight:700;color:#1e40af; }
+        .match-score-badge i { font-size:11px;color:#3b82f6; }
+        .clinic-meta { display:flex;flex-wrap:wrap;gap:6px; }
+        .clinic-chip { display:inline-flex;align-items:center;gap:4px; padding:3px 9px;border-radius:999px; font-size:12px;font-weight:500; background:#f8f9ff;color:#4b5563;border:1px solid #e5e7eb; }
+        .clinic-chip.green { background:#f0fdf4;color:#15803d;border-color:#bbf7d0; }
+        .clinic-chip.blue  { background:#eef2ff;color:#4338ca;border-color:#c7d2fe; }
+        .clinic-chip i { font-size:10px; }
+        .clinic-card-footer { display:flex;align-items:center;justify-content:space-between; padding-top:10px;border-top:1px solid #f1f5f9; }
+        .clinic-select-label { display:flex;align-items:center;gap:8px;cursor:pointer; font-size:13px;font-weight:600;color:#6b7280;user-select:none; }
+        .clinic-select-label input[type="checkbox"] { display:none; }
+        .clinic-toggle { width:36px;height:20px;border-radius:999px;background:#e5e7eb; position:relative;transition:background .2s;flex-shrink:0; }
+        .clinic-toggle::after { content:'';position:absolute;top:3px;left:3px; width:14px;height:14px;border-radius:50%;background:white; box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s; }
+        .clinic-select-label input:checked ~ .clinic-toggle { background:linear-gradient(135deg,#6366f1,#3b82f6); }
+        .clinic-select-label input:checked ~ .clinic-toggle::after { transform:translateX(16px); }
+        .clinic-select-label input:checked ~ span { color:#6366f1; }
+        .match-badge { display:inline-flex;align-items:center;gap:4px; background:linear-gradient(110deg,#dcfce7 0%,#bbf7d0 40%,#d1fae5 60%,#bbf7d0 100%); background-size:200% 100%; color:#15803d;font-size:11px;font-weight:700; padding:4px 10px;border-radius:20px;letter-spacing:.3px; animation:badgeShimmer 3s linear infinite; }
+
+        /* ===== ACCOMMODATION FORM STYLING ===== */
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1f2937;
+            background: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:hover {
+            border-color: #d1d5db;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control:disabled {
+            background: #f1f5f9;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%226b7280%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 18px;
+            padding-right: 40px;
+        }
+
+        .form-control:invalid {
+            border-color: #fecaca;
+            background-color: #fef2f2;
+        }
+
+        /* ===== COMPANIONS OPTIONS ===== */
+        #companions-options label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+        }
+
+        #companions-options label:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        #companions-options input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        #companions-options input[type="checkbox"]:checked + span {
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        /* messages */
+        .messages-wrap { display: grid; gap: 8px; margin-bottom: 16px; }
+        .msg-card { background: white; border-radius: 12px; padding: 12px 16px; border-left: 4px solid #16a34a; box-shadow: 0 1px 4px rgba(0,0,0,0.06); font-size: 14px; color: #1f2937; }
+        .msg-card.msg-error   { border-left-color: #dc2626; }
+        .msg-card.msg-warning { border-left-color: #d97706; }
+
+        /* results step pills */
+        .steps { display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap; }
+        .step-pill { flex:1;min-width:140px;border:1px solid #e5e7eb;border-radius:999px;padding:9px 14px;text-align:center;font-size:13px;font-weight:500;color:#6b7280;background:#f9fafb;transition:all 0.2s ease; }
+        .step-pill.active { background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;border-color:transparent;box-shadow:0 4px 12px rgba(59,130,246,0.25); }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideInRight { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar-left { position: static; }
+            .results-grid { grid-template-columns: 1fr; }
+            .clinic-type-grid { grid-template-columns: repeat(2,1fr); }
+            .form-row-2 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .header-container { flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: flex-start; }
+            .logo-container { order: 1; width: 88px; height: 44px; flex: 0 0 auto; }
+            .search-container { order: 2; flex: 1 1 auto; min-width: 120px; max-width: calc(100% - 120px); margin: 0 8px 0 0; }
+            .nav-icons { order: 3; flex: 0 0 auto; display: flex; gap: 10px; margin-top: 8px; }
+            .user-menu { order: 3; flex: 0 0 auto; margin-left: auto; border-left: 0; padding-left: 0; margin-top: 8px; }
+            .main-layout { padding: 16px; }
+            .sidebar-left { display: none; }
+            .main-content { gap: 14px; }
+            .page-header { padding: 18px; }
+            .page-title { font-size: 20px; }
+            .step-card { padding: 18px; }
+            .clinic-type-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .continent-grid { grid-template-columns: repeat(2,1fr); }
+            .step-nav { flex-direction: column; gap: 8px; }
+            .step-nav .btn { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .clinic-type-grid { grid-template-columns: 1fr; }
+            .continent-grid { grid-template-columns: repeat(2,1fr); }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo-fallback" alt="NERO Logo">
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon" title="Home"><i class="fas fa-home"></i></a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon" title="Messages">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}<div class="notification-badge">{{ total_unread }}</div>{% endif %}
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon" title="Find Clinics"><i class="fas fa-search"></i></a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon" title="Appointments"><i class="fas fa-calendar-alt"></i></a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Settings"><i class="fas fa-cog"></i></a>
+            </div>
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                        <div class="user-avatar" id="avatarImg" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;">{{ patient.user.username|first|upper }}</div>
+                    {% endif %}
+                </button>
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header"><strong>{{ patient.user.username }}</strong></div>
+                    <ul class="dropdown-list">
+                        <li><a href="{% url 'logout' %}" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar-left">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        {% if patient.profile_picture %}
+                            <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:24px;">{{ patient.user.username|first|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ patient.user.username }}</h3>
+                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                    </div>
+                </div>
+                <div style="font-size:14px;color:#6b7280;line-height:1.4;padding-top:12px;border-top:1px solid #f1f5f9;">
+                    <i class="fas fa-quote-left" style="color:#3b82f6;margin-right:4px;"></i>
+                    {{ patient.bio|default:"Find the best clinic for your needs." }}
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'search_clinics' %}" class="nav-item"><i class="fas fa-search"></i> Find Clinics</a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item"><i class="fas fa-file-medical-alt"></i> Medical Records</a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+                <a href="{% url 'recommendations:questionnaire' %}" class="nav-item smart-rec active">
+                    <span class="brain-icon"><i class="fas fa-brain"></i></span>
+                    Smart Recommendations
+                    <span class="ai-dots"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></span>
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item"><i class="fas fa-users"></i> Community</a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
+                    <i class="fas fa-comments"></i> Messages
+                    {% if total_unread and total_unread > 0 %}<div class="nav-badge">{{ total_unread }}</div>{% endif %}
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <span class="icon-box"><i class="fas fa-brain"></i></span>
+                    Smart Recommendations
+                </div>
+                <p class="page-subtitle">Answer a few questions and we'll match you with the best clinics worldwide.</p>
+            </div>
+
+            {% if has_searched %}
+            <!-- ===== RESULTS VIEW ===== -->
+            <div class="step-card" style="animation:fadeIn 0.3s ease-out;">
+                <div class="steps">
+                    <div class="step-pill"><i class="fas fa-filter"></i> Step 1–5: Your Filters</div>
+                    <div class="step-pill active"><i class="fas fa-paper-plane"></i> Dispatch to Matching Clinics</div>
+                </div>
+
+                <div style="font-size:14px;font-weight:600;color:#1f2937;margin-bottom:4px;">Matching analysis completed</div>
+                <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">Clinic names and scores are hidden at this stage. Your request will be sent automatically to all matching clinics.</p>
+
+                <form method="post" action="{% url 'recommendations:send_requests' %}" id="auto-dispatch-form" data-autosend="{% if match_count or results %}1{% else %}0{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="medical_record_id" value="{{ form_data.medical_record_id }}">
+                    <input type="hidden" name="service" value="{{ form_data.service }}">
+                    <input type="hidden" name="accommodation_type" value="{{ form_data.accommodation_type }}">
+                    <input type="hidden" name="companions_count" value="{{ form_data.companions_count }}">
+                    <input type="hidden" name="treatment_start_date" value="{{ form_data.treatment_start_date }}">
+                    <input type="hidden" name="treatment_end_date" value="{{ form_data.treatment_end_date }}">
+                    {% for country in form_data.countries %}<input type="hidden" name="country" value="{{ country }}">{% endfor %}
+                    {% for continent in form_data.continents %}<input type="hidden" name="continent" value="{{ continent }}">{% endfor %}
+                    {% for clinic_type in form_data.clinic_types %}<input type="hidden" name="clinic_type" value="{{ clinic_type }}">{% endfor %}
+
+                    <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:20px;color:#475569;">
+                        {% if match_count %}
+                            <strong style="color:#0f172a;">{{ match_count }} matching clinic{{ match_count|pluralize }}</strong> will receive your request package.
+                        {% else %}
+                            No matching clinics found. Try adjusting your filters.
+                        {% endif %}
+                    </div>
+
+                    {% for clinic_id in matched_clinic_ids %}
+                        <input type="hidden" name="all_result_clinics" value="{{ clinic_id }}">
+                    {% endfor %}
+                    {% if not matched_clinic_ids %}
+                        {% for clinic in results %}
+                            <input type="hidden" name="all_result_clinics" value="{{ clinic.id }}">
+                        {% endfor %}
+                    {% endif %}
+
+                    <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9;flex-wrap:wrap;">
+                        <a href="{% url 'recommendations:questionnaire' %}?medical_record_id={{ form_data.medical_record_id }}" class="btn btn-ghost">
+                            <i class="fas fa-rotate-left"></i> Change Filters
+                        </a>
+                        <div style="font-size:13px;color:#64748b;display:flex;align-items:center;gap:8px;">
+                            <i class="fas fa-spinner fa-spin" style="color:#3b82f6;"></i>
+                            Sending automatically to matching clinics...
+                        </div>
+                        <input type="hidden" name="send_all" value="1">
+                    </div>
+                </form>
+            </div>
+
+            {% else %}
+            <!-- ===== WIZARD FLOW ===== -->
+
+            <!-- Progress bar -->
+            <div class="progress-wrap">
+                <div class="progress-steps">
+                    <div class="progress-step active" id="prog-1">
+                        <div class="step-circle"><i class="fas fa-hospital"></i></div>
+                        <div class="step-label">Clinic type</div>
+                    </div>
+                    <div class="progress-step" id="prog-2">
+                        <div class="step-circle"><i class="fas fa-file-medical"></i></div>
+                        <div class="step-label">Medical record</div>
+                    </div>
+                    <div class="progress-step" id="prog-3">
+                        <div class="step-circle"><i class="fas fa-globe"></i></div>
+                        <div class="step-label">Location</div>
+                    </div>
+                    <div class="progress-step" id="prog-4">
+                        <div class="step-circle"><i class="fas fa-hotel"></i></div>
+                        <div class="step-label">Accommodation</div>
+                    </div>
+                    <div class="progress-step" id="prog-5">
+                        <div class="step-circle"><i class="fas fa-stethoscope"></i></div>
+                        <div class="step-label">Treatment</div>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'recommendations:recommendation_result' %}" id="wizard-form" autocomplete="off">
+                {% csrf_token %}
+
+                <!-- ══ STEP 1: Clinic Type ══ -->
+                <div class="step-screen active" id="screen-1">
+                    <div class="step-card">
+                        <div class="step-eyebrow"><i class="fas fa-hospital"></i> Step 1 of 4</div>
+                        <div class="step-title">What type of clinic are you looking for?</div>
+                        <div class="step-desc">Choose one or more specialties that match your healthcare needs. Each type focuses on different treatments and expertise.</div>
+
+                        <div class="clinic-type-grid" id="ct-grid">
+                            <!-- Populated by JS from clinic_types context -->
+                        </div>
+
+                        <div class="step-error" id="err-1"><i class="fas fa-exclamation-circle"></i> Please select at least one clinic type.</div>
+
+                        <div class="step-nav" style="border-top:none;padding-top:16px;margin-top:16px;">
+                            <span></span>
+                            <button type="button" class="btn btn-primary" onclick="goNext(1)">
+                                Continue <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 2: Medical Record ══ -->
+                <div class="step-screen" id="screen-2">
+                    <div class="step-card">
+                        <div class="step-eyebrow"><i class="fas fa-file-medical"></i> Step 2 of 4</div>
+                        <div class="step-title">Which medical record should we send?</div>
+                        <div class="step-desc">Select the record that best describes your current condition. Clinics will review this to assess compatibility.</div>
+
+                        <div style="display:flex;justify-content:flex-end;margin:8px 0 14px;">
+                            <a href="{% url 'medical_record_create' %}?next={% url 'recommendations:questionnaire' %}" class="btn btn-ghost">
+                                <i class="fas fa-plus"></i> Create New Medical Record
+                            </a>
+                        </div>
+
+                        <div class="record-list">
+                            {% for record in medical_records %}
+                            <label class="record-card" for="rec_{{ record.id }}">
+                                <input type="radio" id="rec_{{ record.id }}" name="medical_record_id" value="{{ record.id }}"
+                                    {% if preselected_record_id == record.id|stringformat:'s' %}checked{% endif %}>
+                                <div class="record-avatar"><i class="fas fa-file-medical-alt"></i></div>
+                                <div class="record-info">
+                                    <div class="record-name">{{ record.first_name }} {{ record.last_name }}</div>
+                                    <div class="record-diag">{{ record.main_diagnosis|default:'No diagnosis noted' }}</div>
+                                </div>
+                                <div class="record-radio-dot"></div>
+                            </label>
+                            {% empty %}
+                            <div class="no-records-msg">
+                                <i class="fas fa-folder-open" style="font-size:32px;color:#d1d5db;display:block;margin-bottom:12px;"></i>
+                                <strong>No medical records yet</strong>
+                                <p style="font-size:13px;margin-top:6px;">You need to create a medical record first before sending requests to clinics.</p>
+                                <a href="{% url 'medical_record_create' %}?next={% url 'recommendations:questionnaire' %}" class="btn btn-primary" style="margin-top:16px;">
+                                    <i class="fas fa-plus"></i> Create Medical Record
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="step-error" id="err-2"><i class="fas fa-exclamation-circle"></i> Please select a medical record.</div>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-ghost" onclick="goBack(2)"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(2)">Continue <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 3: Location ══ -->
+                <div class="step-screen" id="screen-3">
+                    <div class="step-card">
+                        <div class="step-eyebrow"><i class="fas fa-globe"></i> Step 3 of 4</div>
+                        <div class="step-title">Where would you like to receive treatment?</div>
+                        <div class="step-desc">Pick a continent to see available countries, then select the specific countries you're open to.</div>
+
+                        <!-- Continent pills -->
+                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-map" style="color:#3b82f6;margin-right:6px;"></i> Select continent</div>
+                        <div class="continent-grid">
+                            <label class="loc-card" for="continent_all">
+                                <input type="checkbox" id="continent_all" name="continent" value="all">
+                                <span class="loc-name">All continents</span>
+                                <span class="loc-tick"><i class="fas fa-check"></i></span>
+                            </label>
+                            {% for c in continents %}
+                            <label class="loc-card" for="continent_{{ forloop.counter }}">
+                                <input type="checkbox" id="continent_{{ forloop.counter }}" name="continent" value="{{ c }}">
+                                <span class="loc-name">{{ c }}</span>
+                                <span class="loc-tick"><i class="fas fa-check"></i></span>
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Country tags — hidden until continent is chosen -->
+                        <div class="country-section" id="country-section" style="display:none;">
+                            <div class="country-section-title"><i class="fas fa-flag" style="color:#3b82f6;"></i> Select country</div>
+                            <div class="country-grid" id="country-options"></div>
+                            <div class="country-hint" id="countryHint"></div>
+                        </div>
+
+                        <div class="step-error" id="err-3"><i class="fas fa-exclamation-circle"></i> Please select at least one continent and one country.</div>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-ghost" onclick="goBack(3)"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(3)">Continue <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 4: Accommodation ══ -->
+                <div class="step-screen" id="screen-4">
+                    <div class="step-card">
+                        <div class="step-eyebrow"><i class="fas fa-hotel"></i> Step 4 of 5</div>
+                        <div class="step-title">Do you need accommodation support?</div>
+                        <div class="step-desc">Choose your accommodation preference. If accommodation is required, include expected companions and treatment dates.</div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label">Accommodation type <span style="color:#ef4444;">*</span></label>
+                                <select name="accommodation_type" id="accommodation_type" class="form-control" required>
+                                    <option value="">Select accommodation type</option>
+                                    <option value="no_accommodation">No accommodation</option>
+                                    <option value="single_room">Single room</option>
+                                    <option value="double_room">Double room</option>
+                                    <option value="double_suite">Double suite</option>
+                                    <option value="quad_suite">Quad suite</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="companions-group" style="display:none;">
+                                <label class="form-label">Companions count <span id="companions-required-badge" style="color:#ef4444;">*</span></label>
+                                <input type="number" name="companions_count" id="companions_count" min="0" value="0" class="form-control" disabled>
+                            </div>
+                        </div>
+
+                        <div id="companions-options" style="display:none;margin:-8px 0 16px 0;">
+                            <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;transition:all 0.2s ease;background:#f9fafb;">
+                                <input type="checkbox" id="coming-alone" style="width:18px;height:18px;cursor:pointer;" onchange="toggleComingAlone()">
+                                <span style="font-weight:500;color:#1f2937;flex:1;"><i class="fas fa-user" style="color:#3b82f6;margin-right:6px;"></i>I will come alone</span>
+                            </label>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label">Treatment start date <span style="color:#ef4444;">*</span></label>
+                                <input type="date" name="treatment_start_date" id="treatment_start_date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Treatment end date <span style="color:#ef4444;">*</span></label>
+                                <input type="date" name="treatment_end_date" id="treatment_end_date" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="step-error" id="err-4"><i class="fas fa-exclamation-circle"></i> Please select accommodation type and valid treatment dates. Companions count is required when accommodation is needed.</div>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-ghost" onclick="goBack(4)"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(4)">Continue <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ STEP 5: Treatment ══ -->
+                <div class="step-screen" id="screen-5">
+                    <div class="step-card">
+                        <div class="step-eyebrow"><i class="fas fa-stethoscope"></i> Step 5 of 5</div>
+                        <div class="step-title">What treatment or service do you need?</div>
+                        <div class="step-desc">Describe the treatment, procedure, or therapy you're looking for. Be as specific as you like — the more detail, the better the match.</div>
+
+                        <!-- Quick-pick suggestions -->
+                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-bolt" style="color:#f59e0b;margin-right:6px;"></i> Quick picks</div>
+                        <div class="service-suggestions" id="sug-wrap">
+                            <span class="sug-tag" data-val="Neurological rehabilitation"><i class="fas fa-brain"></i> Neuro rehab</span>
+                            <span class="sug-tag" data-val="Orthopedic surgery"><i class="fas fa-bone"></i> Orthopedic surgery</span>
+                            <span class="sug-tag" data-val="Post-operative recovery"><i class="fas fa-procedures"></i> Post-op recovery</span>
+                            <span class="sug-tag" data-val="Cardiac rehabilitation"><i class="fas fa-heart-pulse"></i> Cardiac rehab</span>
+                            <span class="sug-tag" data-val="Oncology treatment"><i class="fas fa-ribbon"></i> Oncology</span>
+                            <span class="sug-tag" data-val="Physical therapy"><i class="fas fa-dumbbell"></i> Physical therapy</span>
+                            <span class="sug-tag" data-val="Spinal treatment"><i class="fas fa-user-injured"></i> Spinal treatment</span>
+                        </div>
+
+                        <div class="service-input-wrap" style="margin-top:4px;">
+                            <i class="fas fa-search service-input-icon"></i>
+                            <input type="text" id="service" name="service" class="service-input"
+                                   placeholder="e.g. knee replacement, stroke rehabilitation, IVF treatment…">
+                        </div>
+
+                        <div class="step-error" id="err-5"><i class="fas fa-exclamation-circle"></i> Please describe the treatment or service you need.</div>
+
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-ghost" onclick="goBack(5)"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i class="fas fa-search"></i> Find Matching Clinics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+            {% endif %}
+
+        </div><!-- /.main-content -->
+    </main>
+
+    <script>
+    // ===== DATA FROM DJANGO =====
+    const clinicFilterData  = JSON.parse('{{ clinic_filter_data_json|escapejs }}');
+    const fixedClinicTypes  = '{{ clinic_types|join:"||"|escapejs }}'.split('||').filter(Boolean);
+
+    // ===== CLINIC TYPE CARD DEFINITIONS (icon + colour per type) =====
+    const CT_STYLES = {
+        default: { icon: 'fas fa-hospital', color: '#3b82f6', bg: '#eff6ff' },
+    };
+
+    // Map common type name keywords → icon / colour
+    function ctStyle(name) {
+        const n = name.toLowerCase();
+        if (n.includes('rehab'))      return { icon:'fas fa-person-walking', color:'#10b981', bg:'#f0fdf4' };
+        if (n.includes('ortho') || n.includes('bone') || n.includes('spine') || n.includes('spinal'))
+                                       return { icon:'fas fa-bone',            color:'#f59e0b', bg:'#fffbeb' };
+        if (n.includes('cardio') || n.includes('heart'))
+                                       return { icon:'fas fa-heart-pulse',     color:'#ef4444', bg:'#fef2f2' };
+        if (n.includes('neuro'))       return { icon:'fas fa-brain',           color:'#8b5cf6', bg:'#f5f3ff' };
+        if (n.includes('oncol') || n.includes('cancer'))
+                                       return { icon:'fas fa-ribbon',          color:'#ec4899', bg:'#fdf2f8' };
+        if (n.includes('dent'))        return { icon:'fas fa-tooth',           color:'#06b6d4', bg:'#ecfeff' };
+        if (n.includes('eye') || n.includes('ophthal'))
+                                       return { icon:'fas fa-eye',             color:'#6366f1', bg:'#eef2ff' };
+        if (n.includes('pediatr') || n.includes('child'))
+                                       return { icon:'fas fa-baby',            color:'#f97316', bg:'#fff7ed' };
+        if (n.includes('general') || n.includes('internal'))
+                                       return { icon:'fas fa-stethoscope',     color:'#3b82f6', bg:'#eff6ff' };
+        if (n.includes('plastic') || n.includes('aesthet') || n.includes('cosmet'))
+                                       return { icon:'fas fa-star',            color:'#a855f7', bg:'#faf5ff' };
+        if (n.includes('gyn') || n.includes('obstet') || n.includes('women'))
+                                       return { icon:'fas fa-venus',           color:'#ec4899', bg:'#fdf2f8' };
+        if (n.includes('mental') || n.includes('psych') || n.includes('behav'))
+                                       return { icon:'fas fa-head-side-virus', color:'#8b5cf6', bg:'#f5f3ff' };
+        if (n.includes('physical') || n.includes('physio'))
+                                       return { icon:'fas fa-dumbbell',        color:'#10b981', bg:'#f0fdf4' };
+        return CT_STYLES.default;
+    }
+
+    // Build clinic type cards
+    (function buildCtCards() {
+        const grid = document.getElementById('ct-grid');
+        if (!grid || !fixedClinicTypes.length) {
+            if (grid) grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;">No clinic types available.</p>';
+            return;
+        }
+        fixedClinicTypes.forEach((name, i) => {
+            const s  = ctStyle(name);
+            const id = `ct_${i}`;
+            const card = document.createElement('label');
+            card.className = 'ct-card';
+            card.setAttribute('for', id);
+            card.style.setProperty('--ct-color', s.color);
+            card.style.setProperty('--ct-bg',    s.bg);
+            card.innerHTML = `
+                <input type="checkbox" id="${id}" name="clinic_type" value="${name}">
+                <div class="ct-check"><i class="fas fa-check"></i></div>
+                <div class="ct-name">${name}</div>
+                <div class="ct-desc">Clinics specializing in ${name.toLowerCase()} care and treatments.</div>
+            `;
+            card.addEventListener('change', () => syncCtCard(card));
+            // Also handle clicks on the whole card
+            card.addEventListener('click', () => { setTimeout(() => syncCtCard(card), 0); });
+            grid.appendChild(card);
+        });
+
+        function syncCtCard(card) {
+            const cb = card.querySelector('input[type="checkbox"]');
+            if (cb && cb.checked) card.classList.add('selected');
+            else card.classList.remove('selected');
+        }
+    })();
+
+    // Record card selection sync
+    document.querySelectorAll('.record-card').forEach(card => {
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio && radio.checked) card.classList.add('selected');
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.record-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        });
+        radio?.addEventListener('change', () => {
+            document.querySelectorAll('.record-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        });
+    });
+
+    // Location cards sync
+    function syncLocCard(card) {
+        const cb = card.querySelector('input[type="checkbox"]');
+        if (cb && cb.checked) card.classList.add('selected');
+        else card.classList.remove('selected');
+    }
+
+    document.querySelectorAll('.loc-card').forEach(card => {
+        card.addEventListener('change', () => syncLocCard(card));
+        card.addEventListener('click', () => { setTimeout(() => syncLocCard(card), 0); });
+    });
+
+    // Continent → country refresh
+    const continentOptions = document.querySelector('[id^="continent_"]')?.closest('.continent-grid');
+    const countryOptionsEl = document.getElementById('country-options');
+    const countryHint      = document.getElementById('countryHint');
+
+    function checkedValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+    }
+    function uniqueSorted(arr) {
+        return Array.from(new Set(arr.filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    }
+    function enforceAllBehavior(name, changedEl) {
+        if (!changedEl) return;
+        if (changedEl.value === 'all' && changedEl.checked) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(el => { if (el.value !== 'all') el.checked = false; });
+        }
+        if (changedEl.value !== 'all' && changedEl.checked) {
+            const allEl = document.querySelector(`input[name="${name}"][value="all"]`);
+            if (allEl) allEl.checked = false;
+        }
+        // Re-sync loc-card classes
+        document.querySelectorAll('.loc-card').forEach(card => syncLocCard(card));
+    }
+
+    function refreshCountryOptions() {
+        const selectedContinents = checkedValues('continent');
+        const allContinents = selectedContinents.includes('all');
+        const countrySection = document.getElementById('country-section');
+
+        // If no continent chosen yet, hide country section entirely
+        if (!selectedContinents.length) {
+            if (countrySection) countrySection.style.display = 'none';
+            if (countryOptionsEl) countryOptionsEl.innerHTML = '';
+            return;
+        }
+
+        // Show country section
+        if (countrySection) countrySection.style.display = '';
+
+        const rows = clinicFilterData.filter(r =>
+            allContinents || selectedContinents.includes(r.continent)
+        );
+        const countries = uniqueSorted(rows.map(r => r.country));
+        if (!countryOptionsEl) return;
+        countryOptionsEl.innerHTML = '';
+
+        if (countries.length) {
+            // All countries option
+            const allWrap = document.createElement('label');
+            allWrap.className = 'country-tag';
+            allWrap.setAttribute('for', 'country_all');
+            allWrap.innerHTML = `<input type="checkbox" id="country_all" name="country" value="all"><span class="tag-pill"><i class="fas fa-globe"></i> All countries</span>`;
+            allWrap.querySelector('input').addEventListener('change', e => enforceAllBehavior('country', e.target));
+            countryOptionsEl.appendChild(allWrap);
+
+            countries.forEach((country, idx) => {
+                const id = `country_${idx}`;
+                const wrap = document.createElement('label');
+                wrap.className = 'country-tag';
+                wrap.setAttribute('for', id);
+                wrap.innerHTML = `<input type="checkbox" id="${id}" name="country" value="${country}"><span class="tag-pill">${country}</span>`;
+                wrap.querySelector('input').addEventListener('change', e => enforceAllBehavior('country', e.target));
+                countryOptionsEl.appendChild(wrap);
+            });
+        }
+
+        if (countryHint) {
+            countryHint.textContent = countries.length
+                ? `${countries.length} countries available — select any combination`
+                : 'No countries available for this continent.';
+        }
+    }
+
+    // Wire continent change
+    document.querySelectorAll('input[name="continent"]').forEach(cb => {
+        cb.addEventListener('change', function() {
+            enforceAllBehavior('continent', this);
+            refreshCountryOptions();
+        });
+    });
+
+    refreshCountryOptions();
+
+    // ===== ACCOMMODATION TYPE TOGGLE =====
+    const accommodationTypeSelect = document.getElementById('accommodation_type');
+    const companionsCountInput = document.getElementById('companions_count');
+    const companionsGroup = document.getElementById('companions-group');
+    const companionsRequiredBadge = document.getElementById('companions-required-badge');
+    const companionsOptions = document.getElementById('companions-options');
+    const comingAloneCheckbox = document.getElementById('coming-alone');
+
+    function updateCompanionsState() {
+        const accType = accommodationTypeSelect?.value;
+        if (accType === 'no_accommodation') {
+            // Hide companions group and options entirely
+            if (companionsGroup) {
+                companionsGroup.style.display = 'none';
+            }
+            if (companionsOptions) {
+                companionsOptions.style.display = 'none';
+            }
+            if (companionsCountInput) {
+                companionsCountInput.disabled = true;
+                companionsCountInput.removeAttribute('required');
+                companionsCountInput.value = '0';
+            }
+            if (comingAloneCheckbox) {
+                comingAloneCheckbox.checked = false;
+            }
+        } else if (accType && accType !== '') {
+            // Show companions group and options
+            if (companionsGroup) {
+                companionsGroup.style.display = '';
+            }
+            if (companionsOptions) {
+                companionsOptions.style.display = '';
+            }
+            if (companionsCountInput) {
+                companionsCountInput.disabled = false;
+                companionsCountInput.setAttribute('required', 'required');
+            }
+        } else {
+            // No selection yet - hide it
+            if (companionsGroup) {
+                companionsGroup.style.display = 'none';
+            }
+            if (companionsOptions) {
+                companionsOptions.style.display = 'none';
+            }
+            if (companionsCountInput) {
+                companionsCountInput.disabled = true;
+                companionsCountInput.removeAttribute('required');
+            }
+        }
+    }
+
+    function toggleComingAlone() {
+        if (comingAloneCheckbox?.checked) {
+            // Set companions to 0 and make it read-only
+            if (companionsCountInput) {
+                companionsCountInput.value = '0';
+                companionsCountInput.setAttribute('readonly', 'readonly');
+            }
+        } else {
+            // Allow editing companions count
+            if (companionsCountInput) {
+                companionsCountInput.removeAttribute('readonly');
+                companionsCountInput.value = '0';
+            }
+        }
+    }
+
+    accommodationTypeSelect?.addEventListener('change', updateCompanionsState);
+    comingAloneCheckbox?.addEventListener('change', toggleComingAlone);
+    
+    // Initialize on page load
+    updateCompanionsState();
+
+    // ===== AUTO-SELECT NEW MEDICAL RECORD & JUMP TO LOCATION ===== 
+    (function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const newRecordId = urlParams.get('new_record_id');
+        
+        if (newRecordId) {
+            // Auto-select the newly created medical record
+            setTimeout(() => {
+                const radioButton = document.querySelector(`input[name="medical_record_id"][value="${newRecordId}"]`);
+                if (radioButton) {
+                    radioButton.checked = true;
+                    // Trigger change event to update UI
+                    radioButton.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Auto-select clinic types (Step 1) to enable navigation
+                    const clinicTypeCheckboxes = document.querySelectorAll('input[name="clinic_type"]');
+                    if (clinicTypeCheckboxes.length > 0 && !document.querySelector('input[name="clinic_type"]:checked')) {
+                        clinicTypeCheckboxes[0].checked = true;
+                        clinicTypeCheckboxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Jump to Location step (step 3)
+                    showStep(3, false);
+                    
+                    // Show success notification
+                    const notification = document.createElement('div');
+                    notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:14px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:9999;font-weight:500;display:flex;align-items:center;gap:8px;animation:slideInRight 0.3s ease;';
+                    notification.innerHTML = '<i class="fas fa-check-circle"></i> Medical record created and selected!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => { notification.remove(); }, 3000);
+                    
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }, 100);
+        }
+    })();
+
+    // ===== SERVICE SUGGESTIONS =====
+    document.querySelectorAll('.sug-tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+            const val = tag.dataset.val;
+            const input = document.getElementById('service');
+            if (input) input.value = val;
+            document.querySelectorAll('.sug-tag').forEach(t => t.classList.remove('picked'));
+            tag.classList.add('picked');
+        });
+    });
+
+    // ===== STEP NAVIGATION =====
+    let currentStep = 1;
+
+    function showStep(n, back) {
+        document.querySelectorAll('.step-screen').forEach(s => {
+            s.classList.remove('active', 'going-back');
+        });
+        const screen = document.getElementById(`screen-${n}`);
+        if (screen) {
+            screen.classList.add('active');
+            if (back) screen.classList.add('going-back');
+        }
+
+        // Update progress
+        for (let i = 1; i <= 5; i++) {
+            const prog = document.getElementById(`prog-${i}`);
+            if (!prog) continue;
+            prog.classList.remove('active', 'done');
+            if (i < n)  prog.classList.add('done');
+            if (i === n) prog.classList.add('active');
+        }
+
+        currentStep = n;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function validateStep(n) {
+        document.querySelectorAll('.step-error').forEach(e => e.classList.remove('visible'));
+
+        if (n === 1) {
+            const checked = document.querySelectorAll('input[name="clinic_type"]:checked');
+            if (!checked.length) { document.getElementById('err-1').classList.add('visible'); return false; }
+        }
+        if (n === 2) {
+            const rec = document.querySelector('input[name="medical_record_id"]:checked');
+            if (!rec) { document.getElementById('err-2').classList.add('visible'); return false; }
+        }
+        if (n === 3) {
+            const conts = document.querySelectorAll('input[name="continent"]:checked');
+            const cnts  = document.querySelectorAll('input[name="country"]:checked');
+            if (!conts.length || !cnts.length) { document.getElementById('err-3').classList.add('visible'); return false; }
+        }
+        if (n === 4) {
+            const accType = document.getElementById('accommodation_type');
+            const companions = document.getElementById('companions_count');
+            const start = document.getElementById('treatment_start_date');
+            const end = document.getElementById('treatment_end_date');
+            if (!accType || !accType.value) {
+                document.getElementById('err-4').classList.add('visible');
+                return false;
+            }
+            if (accType.value !== 'no_accommodation') {
+                // Accommodation needed - validate dates and companions
+                if (!start?.value || !end?.value || end.value < start.value) {
+                    document.getElementById('err-4').classList.add('visible');
+                    return false;
+                }
+                if (companions && (companions.value === '' || companions.value === null)) {
+                    document.getElementById('err-4').classList.add('visible');
+                    return false;
+                }
+            } else {
+                // No accommodation - only validate treatment dates still required
+                if (!start?.value || !end?.value || end.value < start.value) {
+                    document.getElementById('err-4').classList.add('visible');
+                    return false;
+                }
+            }
+        }
+        if (n === 5) {
+            const svc = document.getElementById('service');
+            if (!svc || !svc.value.trim()) { document.getElementById('err-5').classList.add('visible'); return false; }
+        }
+        return true;
+    }
+
+    function goNext(from) {
+        if (!validateStep(from)) return;
+        showStep(from + 1, false);
+    }
+
+    function goBack(from) {
+        showStep(from - 1, true);
+    }
+
+    // Submit guard
+    document.getElementById('wizard-form')?.addEventListener('submit', function(e) {
+        if (!validateStep(5)) { e.preventDefault(); return false; }
+    });
+
+    // ===== AVATAR DROPDOWN =====
+    const avatarBtn = document.getElementById('avatarBtn');
+    const avatarDropdown = document.getElementById('avatarDropdown');
+    if (avatarBtn && avatarDropdown) {
+        avatarBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = avatarDropdown.style.display === 'block';
+            avatarDropdown.style.display = isOpen ? 'none' : 'block';
+            avatarBtn.setAttribute('aria-expanded', !isOpen);
+        });
+        document.addEventListener('click', () => { avatarDropdown.style.display = 'none'; });
+        avatarDropdown.addEventListener('click', e => e.stopPropagation());
+    }
+
+    // ===== SEARCH =====
+    const dashSearchBar     = document.getElementById('dashboard-search-bar');
+    const dashSearchResults = document.getElementById('dashboard-search-results');
+    let dashSearchTimeout;
+
+    if (dashSearchBar) {
+        dashSearchBar.addEventListener('input', function() {
+            clearTimeout(dashSearchTimeout);
+            const query = this.value.trim();
+            if (!query) { dashSearchResults.style.display = 'none'; dashSearchResults.innerHTML = ''; return; }
+            dashSearchTimeout = setTimeout(() => {
+                dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                dashSearchResults.style.display = 'block';
+                fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
+                    credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => { if (!res.ok) throw new Error(); return res.text(); })
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    let results = '';
+                    temp.querySelectorAll('.results-section').forEach(section => {
+                        const title = section.querySelector('h3');
+                        const list  = section.querySelector('ul');
+                        if (title && list) {
+                            list.classList.add('results-list');
+                            results += `<div class="results-section-title"><i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>${title.textContent}</div>${list.outerHTML}`;
+                        }
+                    });
+                    if (!results) results = `<div style="padding:40px 20px;text-align:center;color:#6b7280;"><i class="fas fa-search" style="font-size:24px;margin-bottom:12px;"></i><p>No results for "${query}"</p></div>`;
+                    dashSearchResults.innerHTML = results;
+                    dashSearchResults.style.display = 'block';
+                })
+                .catch(() => { dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Search failed.</div>'; dashSearchResults.style.display = 'block'; });
+            }, 300);
+        });
+
+        const searchContainer = document.querySelector('.search-container');
+        dashSearchResults.addEventListener('click', e => e.stopPropagation());
+        document.addEventListener('click', e => { if (searchContainer && !searchContainer.contains(e.target)) dashSearchResults.style.display = 'none'; });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') dashSearchResults.style.display = 'none'; });
+    }
+
+    // ===== HEADER HIDE/SHOW =====
+    (function() {
+        const header = document.querySelector('.main-header');
+        if (!header) return;
+        header.classList.add('main-header--visible');
+        let lastScroll = 0, raf = null;
+        function handle() {
+            const cur = window.pageYOffset || 0;
+            const dy  = cur - lastScroll;
+            if (Math.abs(dy) >= 8) {
+                if (dy > 0 && cur > 120) { header.classList.add('main-header--hidden'); header.classList.remove('main-header--visible'); }
+                else                     { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); }
+            }
+            lastScroll = cur <= 0 ? 0 : cur;
+            raf = null;
+        }
+        window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(handle); }, { passive: true });
+        window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+    })();
+
+    // ===== AUTO-DISPATCH AFTER MATCH =====
+    (function () {
+        const autoForm = document.getElementById('auto-dispatch-form');
+        if (!autoForm) return;
+        if (autoForm.dataset.autosend !== '1') return;
+        // Submit on next tick so the user briefly sees the "sending" state.
+        setTimeout(() => {
+            autoForm.submit();
+        }, 250);
+    })();
+
+    // ===== CLICKABLE CLINIC CARDS =====
+    document.querySelectorAll('.clinic-card[data-href]').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('input, button, label, a, .clinic-card-footer')) return;
+            const href = this.getAttribute('data-href');
+            if (href) window.location.href = href;
+        });
+    });
+    </script>
+</body>
+</html>

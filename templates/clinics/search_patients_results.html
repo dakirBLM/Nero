@@ -1,0 +1,31 @@
+{% if patient_results %}
+    {% for patient in patient_results %}
+    <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}" class="patient-card">
+        <div class="patient-avatar">
+            {% if patient.profile_picture %}
+                <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}">
+            {% else %}
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">{{ patient.full_name|first|upper }}</div>
+            {% endif %}
+        </div>
+
+        <div class="patient-info">
+            <h3 class="patient-name">{{ patient.full_name }}</h3>
+            <div class="patient-meta">
+                <span class="patient-detail"><i class="fas fa-phone"></i> {{ patient.phone_number|default:"Phone not set" }}</span>
+                <span class="patient-detail">@{{ patient.user.username }}</span>
+            </div>
+        </div>
+
+        <div class="patient-actions" aria-hidden="true">
+            <div class="patient-btn primary" style="pointer-events:none;opacity:0.9;"><i class="fas fa-comment"></i> Chat</div>
+        </div>
+    </a>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-users"></i></div>
+        <h4 class="empty-title">No patients found</h4>
+        <p class="empty-text">Try a different name or username.</p>
+    </div>
+{% endif %}

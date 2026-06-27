@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic View - Medical Record</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #1a1a1a; }
+        .container { max-width: 1200px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 32px; }
+        h1 { font-size: 2rem; margin-bottom: 16px; }
+        h2 { font-size: 1.2rem; margin-top: 32px; margin-bottom: 12px; color: #3b82f6; }
+        .section { margin-bottom: 24px; }
+        .row { display: flex; flex-wrap: wrap; margin-bottom: 8px; }
+        .label { width: 260px; font-weight: 600; color: #374151; }
+        .value { flex: 1; color: #1f2937; }
+        .divider { border-bottom: 1px solid #e5e7eb; margin: 24px 0; }
+        .files { margin-top: 16px; }
+        .file-link { color: #3b82f6; text-decoration: underline; }
+        .badge { display: inline-block; background: #f0f9ff; color: #3b82f6; border-radius: 20px; padding: 2px 12px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Medical Record: {{ medical_record.first_name }} {{ medical_record.last_name }}</h1>
+    <div class="section">
+        <h2>Personal Information</h2>
+        <div class="row"><span class="label">Full Name:</span><span class="value">{{ medical_record.first_name }} {{ medical_record.last_name }}</span></div>
+        <div class="row"><span class="label">Gender:</span><span class="value">{{ medical_record.get_gender_display }}</span></div>
+        <div class="row"><span class="label">Date of Birth:</span><span class="value">{{ medical_record.date_of_birth }}</span></div>
+        <div class="row"><span class="label">Country:</span><span class="value">{{ medical_record.country }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>Medical Information</h2>
+        <div class="row"><span class="label">Main Diagnosis:</span><span class="value">{{ medical_record.main_diagnosis }}</span></div>
+        <div class="row"><span class="label">Detailed Diagnosis:</span><span class="value">{{ medical_record.detailed_diagnosis|default:'-' }}</span></div>
+        <div class="row"><span class="label">Injury Date:</span><span class="value">{{ medical_record.injury_date }}</span></div>
+        <div class="row"><span class="label">Movement Ability:</span><span class="value">{{ medical_record.get_movement_ability_display }}</span></div>
+        <div class="row"><span class="label">Height (cm):</span><span class="value">{{ medical_record.height }}</span></div>
+        <div class="row"><span class="label">Weight (kg):</span><span class="value">{{ medical_record.weight }}</span></div>
+        <div class="row"><span class="label">BMI:</span><span class="value">{{ medical_record.calculate_bmi|floatformat:1 }}</span></div>
+        <div class="row"><span class="label">Current Medications:</span><span class="value">{{ medical_record.current_medications|default:'None' }}</span></div>
+        <div class="row"><span class="label">Allergies:</span><span class="value">{{ medical_record.allergies|default:'None' }}</span></div>
+        <div class="row"><span class="label">Previous Surgeries:</span><span class="value">{{ medical_record.previous_surgeries|default:'None' }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>Mobility Aids</h2>
+        <div class="row"><span class="label">Uses Wheelchair:</span><span class="value">{{ medical_record.uses_wheelchair|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Walker:</span><span class="value">{{ medical_record.uses_walker|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Crutch:</span><span class="value">{{ medical_record.uses_crutch|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Electric Wheelchair:</span><span class="value">{{ medical_record.uses_electric_wheelchair|yesno:"Yes,No" }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>General Patient Condition</h2>
+        <div class="row"><span class="label">Bowel Control:</span><span class="value">{{ medical_record.bowel_control|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Urine Control:</span><span class="value">{{ medical_record.urine_control|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Permanent Catheter:</span><span class="value">{{ medical_record.uses_permanent_catheter|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Intermittent Catheter:</span><span class="value">{{ medical_record.uses_intermittent_catheter|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Medical Condom:</span><span class="value">{{ medical_record.uses_medical_condom|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Diapers:</span><span class="value">{{ medical_record.uses_diapers|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Can Breathe Normally:</span><span class="value">{{ medical_record.can_breathe_normally|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Can Eat Independently:</span><span class="value">{{ medical_record.can_eat_independently|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Can Dress Independently:</span><span class="value">{{ medical_record.can_dress_independently|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Is Aware and Cooperative:</span><span class="value">{{ medical_record.is_aware_and_cooperative|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Is Self-Reliant:</span><span class="value">{{ medical_record.is_self_reliant|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Feeding Tube:</span><span class="value">{{ medical_record.uses_feeding_tube|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Stool Tube:</span><span class="value">{{ medical_record.uses_stool_tube|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Urine Tube:</span><span class="value">{{ medical_record.uses_urine_tube|yesno:"Yes,No" }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>Medical Conditions</h2>
+        <div class="row"><span class="label">Has Bedsores:</span><span class="value">{{ medical_record.has_bedsores|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has Diabetes:</span><span class="value">{{ medical_record.has_diabetes|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Uses Insulin:</span><span class="value">{{ medical_record.uses_insulin|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has Heart Problems:</span><span class="value">{{ medical_record.has_heart_problems|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has High Blood Pressure:</span><span class="value">{{ medical_record.has_high_blood_pressure|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has Infectious Diseases:</span><span class="value">{{ medical_record.has_infectious_diseases|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has Vein Thrombosis:</span><span class="value">{{ medical_record.has_vein_thrombosis|yesno:"Yes,No" }}</span></div>
+        <div class="row"><span class="label">Has Depression:</span><span class="value">{{ medical_record.has_depression|yesno:"Yes,No" }}</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>Files</h2>
+        <div class="files">
+            {% if medical_record.medical_reports %}
+                <div><a href="{% url 'secure_medical_report_download' medical_record.id %}" class="file-link" download>Download Medical Report</a></div>
+            {% endif %}
+            {% if medical_record.patient_movement_video %}
+                <div><a href="{% url 'secure_medical_report_download' medical_record.id %}" class="file-link" target="_blank">View Movement Video</a></div>
+            {% endif %}
+            {% if not medical_record.medical_reports and not medical_record.patient_movement_video %}
+                <div>No files attached.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div class="section">
+        <h2>Accommodation & Treatment Booking</h2>
+        {% if appointment %}
+        {% if appointment.requested_service %}
+            <div class="row"><span class="label">Requested Service:</span><span class="value" style="color: #3b82f6; font-weight: 600;">{{ appointment.requested_service }}</span></div>
+            {% endif %}
+            <div class="row"><span class="label">Needs Accommodation:</span><span class="value">{{ appointment.needs_accommodation|yesno:"Yes,No" }}</span></div>
+            <div class="row"><span class="label">Accommodation Type:</span><span class="value">{{ appointment.get_accommodation_type_display|default:'Not provided' }}</span></div>
+            <div class="row"><span class="label">Companions Count:</span><span class="value">{{ appointment.companions_count|default:'0' }}</span></div>
+            <div class="row"><span class="label">Treatment Start Date:</span><span class="value">{{ appointment.treatment_start_date|default:'Not provided' }}</span></div>
+            <div class="row"><span class="label">Treatment End Date:</span><span class="value">{{ appointment.treatment_end_date|default:'Not provided' }}</span></div>
+
+            <div class="row"><span class="label">Booking Status:</span><span class="value">{{ appointment.get_status_display }}</span></div>
+        {% else %}
+            <div class="row"><span class="value">No booking details found for this clinic and medical record yet.</span></div>
+        {% endif %}
+    </div>
+    <div class="divider"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'chat/chat_room.html' %}
+{% block content %}
+    <h2>Chat with {{ other.clinic.clinic_name }}</h2>
+    <div class="chat-messages">
+        {% for message in messages %}
+            <div class="message {% if message.sender == patient.user %}sent{% else %}received{% endif %}">
+                <span>{{ message.content }}</span>
+                <span class="timestamp">{{ message.timestamp|date:'H:i' }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Message form here -->
+{% endblock %}

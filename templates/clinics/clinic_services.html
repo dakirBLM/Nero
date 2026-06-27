@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="max-width:900px;margin:32px auto;padding:20px;background:white;border-radius:12px;">
+    <h2 style="font-size:20px;margin-bottom:12px;color:#1f2937;">Services for {{ clinic.clinic_name }}</h2>
+    {% if services and services.count > 0 %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+            {% for service in services %}
+            <div style="padding:12px;border:1px solid #eef2ff;border-radius:10px;background:#fff;">
+                <h3 style="margin:0 0 8px 0;font-size:16px;color:#0f172a;">{{ service.name }}</h3>
+                <p style="margin:0;color:#475569;font-size:14px;">{{ service.description|default:'No description provided.' }}</p>
+                <p style="margin-top:8px;font-weight:600;color:#334155;">Price: {{ service.price|default:'N/A' }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color:#64748b;">No services listed yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

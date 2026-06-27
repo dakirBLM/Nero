@@ -1,0 +1,2610 @@
+{% load static file_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Medical Record • NERO</title>
+    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles - Matching Dashboard */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            /* prevent accidental horizontal scrolling on small screens */
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header - Exact Match */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 320ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease, box-shadow 320ms ease;
+            will-change: transform, opacity;
+        }
+
+        .main-header--hidden {
+            transform: translateY(-110%) translateZ(0);
+            opacity: 0;
+            box-shadow: none;
+        }
+
+        .main-header--visible {
+            transform: translateY(0) translateZ(0);
+            opacity: 1;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo - Exact Match */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar - Exact Match */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Force dashboard header search styling to avoid overrides */
+        .main-header .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .main-header .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .main-header .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .main-header .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Navigation Icons - Modernized - Exact Match */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu - Exact Match */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown - Exact Match */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout - Matching Dashboard */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* Left Sidebar - Matching Dashboard */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%), 
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(82,39,255,0.18);
+            box-shadow: 0 0 12px rgba(82,39,255,0.12), 0 0 6px rgba(255,159,252,0.06);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.96); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - Modernized Icons - Matching Dashboard */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Breadcrumb - Matching Dashboard Style */
+        .breadcrumb {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .breadcrumb-separator {
+            color: #d1d5db;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* Form Header */
+        .form-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #5ca9f6 100%);
+            color: white;
+            padding: 32px;
+            position: relative;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            animation: gradientShift 6s linear infinite;
+        }
+
+        .form-header-content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-header-content p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Progress Bar */
+        .form-progress {
+            margin-top: 24px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+            z-index: 2;
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+        }
+
+        .step-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 0 auto 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-icon.active {
+            background: white;
+            color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .step-icon.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        /* Form Content */
+        .form-content {
+            padding: 32px;
+        }
+
+        /* Step Navigation */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 32px;
+        }
+
+        .step-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Buttons - Matching Dashboard Style */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1da9d8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1577cd);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        }
+
+        .btn-text {
+            background: transparent;
+            color: #6b7280;
+            padding: 12px;
+        }
+
+        .btn-text:hover {
+            color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        /* Step Header */
+        .step-header {
+            margin-bottom: 32px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-description {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        /* Form Controls */
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        input.error,
+        select.error,
+        textarea.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Checkbox and Radio Styling */
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-item input[type="checkbox"],
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label,
+        .radio-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .checkbox-item:hover label,
+        .radio-item:hover label {
+            color: #1f2937;
+        }
+
+        /* Toggleable Sections */
+        .toggle-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-section.collapsed {
+            padding: 15px 20px;
+        }
+
+        .toggle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .toggle-section.collapsed .toggle-header {
+            margin-bottom: 0;
+        }
+
+        .toggle-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .toggle-content {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .toggle-section.collapsed .toggle-content {
+            margin-top: 0;
+            max-height: 0;
+            opacity: 0;
+            display: none;
+        }
+
+        /* File Upload Preview */
+        .file-upload {
+            position: relative;
+        }
+
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0ea5e9;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .file-remove {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .file-remove:hover {
+            background: #fee2e2;
+        }
+
+        /* Error Messages */
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .error-list {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error-list strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .error-list ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .error-list li {
+            margin-bottom: 5px;
+        }
+
+        /* Help Text */
+        .help-text {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* Search Results (from dashboard) */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Responsive Design - Matching Dashboard */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-left {
+                position: static;
+            }
+            
+            .search-container {
+                max-width: 300px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .search-container {
+                order: 3;
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin: 12px 0 0 0;
+            }
+            
+            .main-layout {
+                padding: 16px;
+            }
+            
+            .form-header,
+            .form-content {
+                padding: 24px;
+            }
+            
+            .step-navigation {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            
+            .step-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+            
+            .progress-steps::before,
+            .progress-bar {
+                display: none;
+            }
+            
+            .progress-step {
+                flex: 1;
+                min-width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Mobile header tweaks: compact logo + search beside it */
+            .logo-container {
+                width: 64px;
+                height: 40px;
+                flex: 0 0 64px;
+            }
+            /* Place search next to logo on small screens with a compact width */
+            .header-container {
+                align-items: center;
+                gap: 8px;
+            }
+            .search-container {
+                order: 0;
+                flex: 1 1 auto;
+                max-width: calc(100% - 96px);
+                margin: 0 8px 0 8px;
+                min-width: 0;
+            }
+            .search-bar {
+                height: 36px;
+                padding: 8px 12px 8px 38px;
+                font-size: 13px;
+            }
+            .nav-icons {
+                gap: 10px;
+                display: flex;
+            }
+            .user-menu {
+                padding-left: 8px;
+            }
+            
+            /* keep other mobile form tweaks */
+            .form-header {
+                padding: 20px;
+            }
+            .step-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation - Matching Dashboard */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container,
+        .breadcrumb {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading States - Matching Dashboard */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Utility Classes - Matching Dashboard */
+        .text-gradient {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header - Exact Match with Dashboard -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons - Modern Font Awesome -->
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ patient.user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ patient.user.username }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                    {% if patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            {{ patient.user.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ patient.user.username }}</h3>
+                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                    </div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                    <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
+                    {{ patient.bio|default:"Complete your medical record for personalized care." }}
+                </div>
+            </div>
+
+           <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'search_clinics' %}" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    Find Clinics
+                </a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item active">
+                    <i class="fas fa-file-medical-alt"></i>
+                    Medical Records
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    Smart Recommendations
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Community
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'patient_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="{% url 'patient_medical_records' %}">Medical Records</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>{{ medical_record.id|default:'New Medical Record' }}</span>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Form Header -->
+                <div class="form-header">
+                    <div class="form-header-content">
+                        <h1><i class="fas fa-file-medical-alt"></i> Complete Your Medical Record</h1>
+                        <p>Provide comprehensive information for personalized healthcare recommendations</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="form-progress">
+                            <div class="progress-steps">
+                                <div class="progress-step" data-step="1">
+                                    <div class="step-icon active"><i class="fas fa-user"></i></div>
+                                    <div class="step-label">Personal</div>
+                                </div>
+                                <div class="progress-step" data-step="2">
+                                    <div class="step-icon"><i class="fas fa-stethoscope"></i></div>
+                                    <div class="step-label">Medical</div>
+                                </div>
+                                <div class="progress-step" data-step="3">
+                                    <div class="step-icon"><i class="fas fa-wheelchair"></i></div>
+                                    <div class="step-label">Mobility</div>
+                                </div>
+                                <div class="progress-step" data-step="4">
+                                    <div class="step-icon"><i class="fas fa-heartbeat"></i></div>
+                                    <div class="step-label">Health</div>
+                                </div>
+                                <div class="progress-step" data-step="5">
+                                    <div class="step-icon"><i class="fas fa-file-upload"></i></div>
+                                    <div class="step-label">Files</div>
+                                </div>
+                                <div class="progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div class="form-content">
+                    {% if medical_form.errors %}
+                    <div class="error-list">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Please correct the following errors:</strong>
+                        <ul>
+                            {% for field, errors in medical_form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field|title }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" id="medicalRecordForm">
+                        {% csrf_token %}
+                        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                        
+                        <!-- Step 1: Personal Information -->
+                        <div class="form-step active" data-step="1">
+                            <div class="step-header">
+                                <h2 class="step-title"><i class="fas fa-user"></i> Personal Information</h2>
+                                <p class="step-description">Basic information about the patient</p>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="id_first_name">
+                                        <i class="fas fa-user"></i> First Name <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.first_name }}
+                                    {% if medical_form.first_name.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.first_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_last_name">
+                                        <i class="fas fa-user"></i> Last Name <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.last_name }}
+                                    {% if medical_form.last_name.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.last_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_gender">
+                                        <i class="fas fa-venus-mars"></i> Gender <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.gender }}
+                                    {% if medical_form.gender.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.gender.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_date_of_birth">
+                                        <i class="fas fa-birthday-cake"></i> Date of Birth <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.date_of_birth }}
+                                    {% if medical_form.date_of_birth.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.date_of_birth.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> Patient must be at least 13 years old</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_address">
+                                        <i class="fas fa-map-marker-alt"></i> Address <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.address }}
+                                    {% if medical_form.address.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.address.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_country">
+                                        <i class="fas fa-globe"></i> Country <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.country }}
+                                    {% if medical_form.country.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.country.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_email">
+                                        <i class="fas fa-envelope"></i> Email Address
+                                    </label>
+                                    {{ medical_form.email }}
+                                    {% if medical_form.email.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_mobile_number">
+                                        <i class="fas fa-phone"></i> Mobile Number
+                                    </label>
+                                    {{ medical_form.mobile_number }}
+                                    {% if medical_form.mobile_number.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.mobile_number.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_whatsapp_number">
+                                        <i class="fab fa-whatsapp"></i> WhatsApp Number
+                                    </label>
+                                    {{ medical_form.whatsapp_number }}
+                                    {% if medical_form.whatsapp_number.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.whatsapp_number.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                        <i class="fas fa-times"></i>
+                                        Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-primary next-step" data-next="2">
+                                        Next: Medical Details
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Medical Details -->
+                        <div class="form-step" data-step="2">
+                            <div class="step-header">
+                                <h2 class="step-title"><i class="fas fa-stethoscope"></i> Medical Details</h2>
+                                <p class="step-description">Medical history and current conditions</p>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="id_main_diagnosis">
+                                        <i class="fas fa-diagnoses"></i> Main Diagnosis <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.main_diagnosis }}
+                                    {% if medical_form.main_diagnosis.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.main_diagnosis.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_injury_date">
+                                        <i class="fas fa-calendar-alt"></i> Injury/Illness Date <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.injury_date }}
+                                    {% if medical_form.injury_date.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.injury_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_height">
+                                        <i class="fas fa-ruler-vertical"></i> Height (cm) <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.height }}
+                                    {% if medical_form.height.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.height.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> Enter height in centimeters</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_weight">
+                                        <i class="fas fa-weight"></i> Weight (kg) <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.weight }}
+                                    {% if medical_form.weight.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.weight.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> Enter weight in kilograms</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_current_medications">
+                                        <i class="fas fa-pills"></i> Current Medications <span class="required">*</span>
+                                    </label>
+                                    <label class="form-label" for="id_current_medications_choice">Any current medications?</label>
+                                    <select id="id_current_medications_choice" class="form-control" style="margin-bottom: 10px;">
+                                        <option value="no">No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                    {{ medical_form.current_medications }}
+                                    {% if medical_form.current_medications.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.current_medications.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_allergies">
+                                        <i class="fas fa-allergies"></i> Allergies <span class="required">*</span>
+                                    </label>
+                                    <label class="form-label" for="id_allergies_choice">Any allergies?</label>
+                                    <select id="id_allergies_choice" class="form-control" style="margin-bottom: 10px;">
+                                        <option value="no">No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                    {{ medical_form.allergies }}
+                                    {% if medical_form.allergies.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.allergies.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_previous_surgeries">
+                                        <i class="fas fa-procedures"></i> Previous Surgeries <span class="required">*</span>
+                                    </label>
+                                    <label class="form-label" for="id_previous_surgeries_choice">Any previous surgeries?</label>
+                                    <select id="id_previous_surgeries_choice" class="form-control" style="margin-bottom: 10px;">
+                                        <option value="no">No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                    {{ medical_form.previous_surgeries }}
+                                    {% if medical_form.previous_surgeries.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.previous_surgeries.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-text prev-step" data-prev="1">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Previous
+                                    </button>
+                                    <button type="button" class="btn btn-primary next-step" data-next="3">
+                                        Next: Mobility Assessment
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Mobility Assessment -->
+                        <div class="form-step" data-step="3">
+                            <div class="step-header">
+                                <h2 class="step-title"><i class="fas fa-wheelchair"></i> Mobility Assessment</h2>
+                                <p class="step-description">Information about movement ability and assistive devices</p>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <!-- Movement Ability -->
+                                <div class="form-group">
+                                    <label class="form-label" for="id_movement_ability">
+                                        <i class="fas fa-walking"></i> Movement Ability <span class="required">*</span>
+                                    </label>
+                                    {{ medical_form.movement_ability }}
+                                    {% if medical_form.movement_ability.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.movement_ability.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Assistive Devices Toggle Section -->
+                                <div class="toggle-section" id="assistiveDevicesSection">
+                                    <div class="toggle-header" onclick="toggleSection('assistiveDevicesSection')">
+                                        <div class="toggle-title">
+                                            <i class="fas fa-chevron-down toggle-icon"></i>
+                                            <i class="fas fa-wheelchair"></i> Assistive Devices Used
+                                        </div>
+                                    </div>
+                                    <div class="toggle-content">
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_wheelchair }}
+                                            <label for="id_uses_wheelchair">Uses Wheelchair</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_walker }}
+                                            <label for="id_uses_walker">Uses Walker</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_crutch }}
+                                            <label for="id_uses_crutch">Uses Crutch</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_electric_wheelchair }}
+                                            <label for="id_uses_electric_wheelchair">Uses Electric Wheelchair</label>
+                                        </div>
+                                    </div>
+                                    {% if medical_form.uses_wheelchair.errors or medical_form.uses_walker.errors or medical_form.uses_crutch.errors or medical_form.uses_electric_wheelchair.errors %}
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable assistive devices</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Bladder & Bowel Function Toggle Section -->
+                                <div class="toggle-section" id="bladderBowelSection">
+                                    <div class="toggle-header" onclick="toggleSection('bladderBowelSection')">
+                                        <div class="toggle-title">
+                                            <i class="fas fa-chevron-down toggle-icon"></i>
+                                            <i class="fas fa-toilet"></i> Bladder & Bowel Function
+                                        </div>
+                                    </div>
+                                    <div class="toggle-content">
+                                        <div class="checkbox-item">
+                                            {{ medical_form.bowel_control }}
+                                            <label for="id_bowel_control">Bowel Control</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.urine_control }}
+                                            <label for="id_urine_control">Urine Control</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_permanent_catheter }}
+                                            <label for="id_uses_permanent_catheter">Uses Permanent Catheter</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_intermittent_catheter }}
+                                            <label for="id_uses_intermittent_catheter">Uses Intermittent Catheter</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_medical_condom }}
+                                            <label for="id_uses_medical_condom">Uses Medical Condom</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_diapers }}
+                                            <label for="id_uses_diapers">Uses Diapers</label>
+                                        </div>
+                                    </div>
+                                    {% if medical_form.bowel_control.errors or medical_form.urine_control.errors %}
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable options</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Independent Functions Toggle Section -->
+                                <div class="toggle-section" id="independentFunctionsSection">
+                                    <div class="toggle-header" onclick="toggleSection('independentFunctionsSection')">
+                                        <div class="toggle-title">
+                                            <i class="fas fa-chevron-down toggle-icon"></i>
+                                            <i class="fas fa-user-check"></i> Independent Functions
+                                        </div>
+                                    </div>
+                                    <div class="toggle-content">
+                                        <div class="checkbox-item">
+                                            {{ medical_form.can_breathe_normally }}
+                                            <label for="id_can_breathe_normally">Can Breathe Normally</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.can_eat_independently }}
+                                            <label for="id_can_eat_independently">Can Eat Independently</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.can_dress_independently }}
+                                            <label for="id_can_dress_independently">Can Dress Independently</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.is_aware_and_cooperative }}
+                                            <label for="id_is_aware_and_cooperative">Is Aware and Cooperative</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.is_self_reliant }}
+                                            <label for="id_is_self_reliant">Is Self-Reliant</label>
+                                        </div>
+                                    </div>
+                                    {% if medical_form.can_breathe_normally.errors or medical_form.can_eat_independently.errors %}
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable functions</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Medical Tubes Toggle Section -->
+                                <div class="toggle-section" id="medicalTubesSection">
+                                    <div class="toggle-header" onclick="toggleSection('medicalTubesSection')">
+                                        <div class="toggle-title">
+                                            <i class="fas fa-chevron-down toggle-icon"></i>
+                                            <i class="fas fa-tube"></i> Medical Tubes
+                                        </div>
+                                    </div>
+                                    <div class="toggle-content">
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_feeding_tube }}
+                                            <label for="id_uses_feeding_tube">Uses Feeding Tube</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_stool_tube }}
+                                            <label for="id_uses_stool_tube">Uses Stool Tube</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            {{ medical_form.uses_urine_tube }}
+                                            <label for="id_uses_urine_tube">Uses Urine Tube</label>
+                                        </div>
+                                    </div>
+                                    {% if medical_form.uses_feeding_tube.errors or medical_form.uses_stool_tube.errors or medical_form.uses_urine_tube.errors %}
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable medical tubes</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-text prev-step" data-prev="2">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Previous
+                                    </button>
+                                    <button type="button" class="btn btn-primary next-step" data-next="4">
+                                        Next: Health Conditions
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Health Conditions -->
+                        <div class="form-step" data-step="4">
+                            <div class="step-header">
+                                <h2 class="step-title"><i class="fas fa-heartbeat"></i> Health Conditions</h2>
+                                <p class="step-description">Existing medical conditions and health status</p>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_bedsores }}
+                                    <label for="id_has_bedsores">Has Bedsores</label>
+                                    {% if medical_form.has_bedsores.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_bedsores.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_diabetes }}
+                                    <label for="id_has_diabetes">Has Diabetes</label>
+                                    {% if medical_form.has_diabetes.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_diabetes.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.uses_insulin }}
+                                    <label for="id_uses_insulin">Uses Insulin</label>
+                                    {% if medical_form.uses_insulin.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.uses_insulin.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_heart_problems }}
+                                    <label for="id_has_heart_problems">Has Heart Problems</label>
+                                    {% if medical_form.has_heart_problems.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_heart_problems.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_high_blood_pressure }}
+                                    <label for="id_has_high_blood_pressure">Has High Blood Pressure</label>
+                                    {% if medical_form.has_high_blood_pressure.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_high_blood_pressure.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_infectious_diseases }}
+                                    <label for="id_has_infectious_diseases">Has Infectious Diseases</label>
+                                    {% if medical_form.has_infectious_diseases.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_infectious_diseases.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_vein_thrombosis }}
+                                    <label for="id_has_vein_thrombosis">Has Vein Thrombosis</label>
+                                    {% if medical_form.has_vein_thrombosis.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_vein_thrombosis.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="checkbox-item">
+                                    {{ medical_form.has_depression }}
+                                    <label for="id_has_depression">Has Depression</label>
+                                    {% if medical_form.has_depression.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_depression.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-text prev-step" data-prev="3">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Previous
+                                    </button>
+                                    <button type="button" class="btn btn-primary next-step" data-next="5">
+                                        Next: File Uploads
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 5: File Uploads -->
+                        <div class="form-step" data-step="5">
+                            <div class="step-header">
+                                <h2 class="step-title"><i class="fas fa-file-upload"></i> File Uploads</h2>
+                                <p class="step-description">Upload medical reports and movement videos</p>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group file-upload">
+                                    <label class="form-label" for="id_medical_reports">
+                                        <i class="fas fa-file-medical"></i> Medical Reports
+                                    </label>
+                                    {{ medical_form.medical_reports }}
+                                    <input type="file" name="medical_report_files" id="id_medical_report_files" multiple accept=".pdf,.jpg,.jpeg,.png" style="margin-top:10px;">
+                                    {% if medical_form.medical_reports.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.medical_reports.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> You can upload one or many files (PDF/JPG/JPEG/PNG, max 3MB each).</div>
+                                    <div class="file-preview" id="medicalReportsPreview" style="display: none;">
+                                        <div class="file-icon">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </div>
+                                        <div class="file-info">
+                                            <div class="file-name" id="medicalReportsName"></div>
+                                            <div class="file-size" id="medicalReportsSize"></div>
+                                        </div>
+                                        <button type="button" class="file-remove" onclick="clearFile('medical_reports')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    {% if medical_record and medical_record.medical_reports %}
+                                    <div class="file-preview" id="existingMedicalReportPreview" style="display: flex; margin-top:12px;">
+                                        <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                                        <div class="file-info">
+                                            <div class="file-name">Existing medical report</div>
+                                            <div class="file-size">{{ medical_record.medical_reports.name|basename }}</div>
+                                        </div>
+                                        <a href="{% url 'secure_medical_report_download' medical_record.id %}" class="action-btn download" style="margin-left:12px; padding:8px 10px;">
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                        <button type="button" class="file-remove" onclick="clearFile('medical_reports')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                    {% if medical_record_reports %}
+                                        {% for report in medical_record_reports %}
+                                        <div class="file-preview" style="display:flex; margin-top:12px;">
+                                            <div class="file-icon"><i class="fas fa-file-medical"></i></div>
+                                            <div class="file-info">
+                                                <div class="file-name">Additional report</div>
+                                                <div class="file-size">{{ report.file.name|basename }}</div>
+                                            </div>
+                                            <a href="{% url 'secure_encrypted_media' report.file.name %}" class="action-btn download" style="margin-left:12px; padding:8px 10px;">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group file-upload">
+                                    <label class="form-label" for="id_patient_movement_video">
+                                        <i class="fas fa-video"></i> Movement Video
+                                    </label>
+                                    {{ medical_form.patient_movement_video }}
+                                    <input type="file" name="movement_video_files" id="id_movement_video_files" multiple accept=".mp4" style="margin-top:10px;">
+                                    {% if medical_form.patient_movement_video.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.patient_movement_video.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> You can upload one or many MP4 videos (max 50MB each).</div>
+                                    <div class="file-preview" id="movementVideoPreview" style="display: none;">
+                                        <div class="file-icon">
+                                            <i class="fas fa-file-video"></i>
+                                        </div>
+                                        <div class="file-info">
+                                            <div class="file-name" id="movementVideoName"></div>
+                                            <div class="file-size" id="movementVideoSize"></div>
+                                        </div>
+                                        <button type="button" class="file-remove" onclick="clearFile('patient_movement_video')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    {% if medical_record and medical_record.patient_movement_video %}
+                                    <div class="file-preview" id="existingMovementVideoPreview" style="display: flex; margin-top:12px;">
+                                        <div class="file-icon"><i class="fas fa-file-video"></i></div>
+                                        <div class="file-info">
+                                            <div class="file-name">Existing movement video</div>
+                                            <div class="file-size">{{ medical_record.patient_movement_video.name|basename }}</div>
+                                        </div>
+                                        <a href="{% url 'secure_movement_video_view' medical_record.id %}" target="_blank" class="action-btn view" style="margin-left:12px; padding:8px 10px;">
+                                            <i class="fas fa-play"></i> Play
+                                        </a>
+                                        <button type="button" class="file-remove" onclick="clearFile('patient_movement_video')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                    {% if medical_record_videos %}
+                                        {% for video in medical_record_videos %}
+                                        <div class="file-preview" style="display:flex; margin-top:12px;">
+                                            <div class="file-icon"><i class="fas fa-file-video"></i></div>
+                                            <div class="file-info">
+                                                <div class="file-name">Additional movement video</div>
+                                                <div class="file-size">{{ video.file.name|basename }}</div>
+                                            </div>
+                                            <a href="{% url 'secure_encrypted_media' video.file.name %}" target="_blank" class="action-btn view" style="margin-left:12px; padding:8px 10px;">
+                                                <i class="fas fa-play"></i> Play
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-text prev-step" data-prev="4">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Previous
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                                        <i class="fas fa-check-circle"></i>
+                                        Submit Medical Record
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Avatar dropdown - Same as dashboard
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+        
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !isOpen);
+            });
+            
+            document.addEventListener('click', function() {
+                avatarDropdown.style.display = 'none';
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            });
+            
+            avatarDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Search functionality - Same as dashboard
+        const dashSearchBar = document.getElementById('dashboard-search-bar');
+        const dashSearchResults = document.getElementById('dashboard-search-results');
+        let dashSearchTimeout;
+
+        // Only attach search handlers if both elements are present
+        if (dashSearchBar && dashSearchResults) {
+            dashSearchBar.addEventListener('input', function() {
+                clearTimeout(dashSearchTimeout);
+                const query = this.value.trim();
+
+                if (!query) {
+                    dashSearchResults.style.display = 'none';
+                    dashSearchResults.innerHTML = '';
+                    return;
+                }
+
+                dashSearchTimeout = setTimeout(() => {
+                    dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                    dashSearchResults.style.display = 'block';
+
+                    fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Search failed');
+                        return res.text();
+                    })
+                    .then(html => {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+
+                        let results = '';
+                        const sections = temp.querySelectorAll('.results-section');
+
+                        if (sections && sections.length) {
+                            sections.forEach(section => {
+                                const title = section.querySelector('h3');
+                                const list = section.querySelector('ul');
+
+                                if (title && list) {
+                                    list.classList.add('results-list');
+                                    results += `
+                                        <div class="results-section-title">
+                                            <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                            ${title.textContent}
+                                        </div>
+                                        ${list.outerHTML}
+                                    `;
+                                }
+                            });
+                        }
+
+                        if (!results) {
+                            results = `
+                                <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                    <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                    <p>No results found for "${query}"</p>
+                                </div>
+                            `;
+                        }
+
+                        dashSearchResults.innerHTML = results;
+                        dashSearchResults.style.display = 'block';
+                    })
+                    .catch(err => {
+                        dashSearchResults.innerHTML = `
+                            <div style="padding: 20px; text-align: center; color: #ef4444;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>Search failed. Please try again.</p>
+                            </div>
+                        `;
+                        dashSearchResults.style.display = 'block';
+                    });
+                }, 300);
+            });
+        }
+
+        // Hide search results when clicking outside the search container or pressing Escape
+        (function() {
+            const searchContainer = document.querySelector('.search-container');
+            if (!searchContainer || !dashSearchResults) return;
+
+            // Prevent clicks inside results from closing immediately
+            dashSearchResults.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchContainer.contains(e.target)) {
+                    dashSearchResults.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') dashSearchResults.style.display = 'none';
+            });
+        })();
+
+        // Initialize multi-step form
+        document.addEventListener('DOMContentLoaded', function() {
+            function initYesNoExplanation(textareaId, selectId) {
+                const textarea = document.getElementById(textareaId);
+                const select = document.getElementById(selectId);
+                if (!textarea || !select) return;
+
+                const noText = "I don't have any";
+
+                function syncFromSelect() {
+                    if (select.value === 'yes') {
+                        if ((textarea.value || '').trim() === noText) {
+                            textarea.value = '';
+                        }
+                        textarea.readOnly = false;
+                        textarea.required = true;
+                        textarea.placeholder = 'Please explain the situation in detail';
+                    } else {
+                        textarea.value = noText;
+                        textarea.readOnly = true;
+                        textarea.required = false;
+                        textarea.placeholder = '';
+                        clearFieldError(textarea);
+                    }
+                }
+
+                // Initialize based on existing data (important for edit mode)
+                const existing = (textarea.value || '').trim();
+                select.value = (existing && existing.toLowerCase() !== noText.toLowerCase()) ? 'yes' : 'no';
+                syncFromSelect();
+
+                select.addEventListener('change', syncFromSelect);
+            }
+
+            initYesNoExplanation('id_current_medications', 'id_current_medications_choice');
+            initYesNoExplanation('id_allergies', 'id_allergies_choice');
+            initYesNoExplanation('id_previous_surgeries', 'id_previous_surgeries_choice');
+
+            // Add error classes to form fields with errors
+            {% for field in medical_form %}
+                {% if field.errors %}
+                    const fieldElement = document.getElementById('id_{{ field.name }}');
+                    if (fieldElement) {
+                        fieldElement.classList.add('error');
+                    }
+                {% endif %}
+            {% endfor %}
+            
+            // Set up step navigation
+            document.querySelectorAll('.next-step').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const currentStep = this.closest('.form-step');
+                    const stepNumber = currentStep.getAttribute('data-step');
+                    const nextStepNumber = this.getAttribute('data-next');
+                    
+                    if (validateStep(stepNumber)) {
+                        goToStep(nextStepNumber);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.prev-step').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prevStepNumber = this.getAttribute('data-prev');
+                    goToStep(prevStepNumber);
+                });
+            });
+            
+            // File preview functionality
+            const medicalReportsInput = document.getElementById('id_medical_reports');
+            const movementVideoInput = document.getElementById('id_patient_movement_video');
+            
+            if (medicalReportsInput) {
+                medicalReportsInput.addEventListener('change', function(e) {
+                    previewFile(this, 'medicalReports');
+                });
+            }
+            
+            if (movementVideoInput) {
+                movementVideoInput.addEventListener('change', function(e) {
+                    previewFile(this, 'movementVideo');
+                });
+            }
+            
+            // Form submission
+            document.getElementById('medicalRecordForm').addEventListener('submit', function(e) {
+                // Validate all steps before submission
+                let allValid = true;
+                for (let i = 1; i <= 5; i++) {
+                    if (!validateStep(i.toString())) {
+                        allValid = false;
+                        goToStep(i.toString());
+                        break;
+                    }
+                }
+                
+                if (!allValid) {
+                    e.preventDefault();
+                    showNotification('Please fix all errors before submitting.', 'error');
+                    return false;
+                }
+                
+                // Show loading state
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                return true;
+            });
+            
+            // Initialize date limits
+            const today = new Date().toISOString().split('T')[0];
+            const dobField = document.getElementById('id_date_of_birth');
+            const injuryField = document.getElementById('id_injury_date');
+            
+            if (dobField) dobField.max = today;
+            if (injuryField) injuryField.max = today;
+            
+            // Auto-calculate age
+            if (dobField) {
+                dobField.addEventListener('change', function() {
+                    const dob = new Date(this.value);
+                    const age = calculateAge(dob);
+                    if (age < 13) {
+                        showFieldError(this, 'Patient must be at least 13 years old');
+                        this.value = '';
+                    } else {
+                        clearFieldError(this);
+                    }
+                });
+            }
+            
+            // Email validation
+            const emailField = document.getElementById('id_email');
+            if (emailField) {
+                emailField.addEventListener('blur', function() {
+                    if (this.value && !isValidEmail(this.value)) {
+                        showFieldError(this, 'Please enter a valid email address');
+                    } else {
+                        clearFieldError(this);
+                    }
+                });
+            }
+            
+            // Initialize animations
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // Initialize progress and step UI based on the active step on load
+            const activeStepEl = document.querySelector('.form-step.active');
+            const initialStep = activeStepEl ? activeStepEl.getAttribute('data-step') : '1';
+            goToStep(initialStep);
+        });
+        
+        // Toggle section function
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
+        }
+        
+        // Function to navigate between steps
+        function goToStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show target step
+            const targetStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                
+                // Update progress bar
+                const progressPercentage = (Number(stepNumber) / 5) * 100;
+                const progressBar = document.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = `${progressPercentage}%`;
+                }
+                
+                // Update step icons
+                document.querySelectorAll('.step-icon').forEach((icon, index) => {
+                    const stepNum = index + 1;
+                    icon.classList.remove('active', 'completed');
+                    
+                    if (stepNum == stepNumber) {
+                        icon.classList.add('active');
+                    } else if (stepNum < stepNumber) {
+                        icon.classList.add('completed');
+                    }
+                });
+                
+                // Scroll to top of form
+                const formContent = document.querySelector('.form-content');
+                if (formContent) {
+                    formContent.scrollTop = 0;
+                }
+            }
+        }
+        
+        // Function to validate current step
+        function validateStep(stepNumber) {
+            let isValid = true;
+            const currentStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+            
+            if (!currentStep) return true;
+            
+            // Check required fields in current step
+            currentStep.querySelectorAll('[required]').forEach(field => {
+                if (field.type === 'checkbox') {
+                    // For checkboxes, just clear any existing errors
+                    clearFieldError(field);
+                } else if (field.type === 'select-one') {
+                    // For select fields
+                    if (!field.value) {
+                        showFieldError(field, 'This field is required');
+                        isValid = false;
+                    } else {
+                        clearFieldError(field);
+                    }
+                } else if (!field.value.trim()) {
+                    // For text inputs, textareas, etc.
+                    showFieldError(field, 'This field is required');
+                    isValid = false;
+                } else {
+                    clearFieldError(field);
+                }
+            });
+            
+            // Special validation for step 1
+            if (stepNumber === '1') {
+                const dobField = document.getElementById('id_date_of_birth');
+                if (dobField && dobField.value) {
+                    const dob = new Date(dobField.value);
+                    const age = calculateAge(dob);
+                    if (age < 13) {
+                        showFieldError(dobField, 'Patient must be at least 13 years old');
+                        isValid = false;
+                    }
+                }
+            }
+            
+            // Special validation for step 1
+            if (stepNumber === '1') {
+                const emailField = document.getElementById('id_email');
+                if (emailField && emailField.value && !isValidEmail(emailField.value)) {
+                    showFieldError(emailField, 'Please enter a valid email address');
+                    isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = currentStep.querySelector('.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            return isValid;
+        }
+        
+        // Helper function to show field error
+        function showFieldError(field, message) {
+            field.classList.add('error');
+            
+            // Remove existing error message
+            const existingError = field.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            field.parentNode.insertBefore(errorDiv, field.nextSibling);
+        }
+        
+        // Helper function to clear field error
+        function clearFieldError(field) {
+            field.classList.remove('error');
+            
+            // Remove error message
+            const errorDiv = field.parentNode.querySelector('.error-message');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+        
+        // Helper function to calculate age
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+        
+        // Helper function to validate email
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // File preview function
+        function previewFile(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const preview = document.getElementById(`${previewId}Preview`);
+                const nameElement = document.getElementById(`${previewId}Name`);
+                const sizeElement = document.getElementById(`${previewId}Size`);
+                
+                if (preview && nameElement && sizeElement) {
+                    nameElement.textContent = file.name;
+                    sizeElement.textContent = formatFileSize(file.size);
+                    preview.style.display = 'flex';
+                    
+                    // Validate file size
+                    const maxSize = previewId === 'medicalReports' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB or 50MB
+                    if (file.size > maxSize) {
+                        showFieldError(input, `File size exceeds maximum allowed size (${formatFileSize(maxSize)})`);
+                        clearFile(input.name);
+                    } else {
+                        clearFieldError(input);
+                    }
+                }
+            }
+        }
+        
+        // Clear file function
+        function clearFile(fieldName) {
+            const input = document.getElementById(`id_${fieldName}`);
+            const previewId = fieldName === 'medical_reports' ? 'medicalReports' : 'movementVideo';
+            const preview = document.getElementById(`${previewId}Preview`);
+            
+            if (input) {
+                input.value = '';
+            }
+            if (preview) {
+                preview.style.display = 'none';
+            }
+            if (input) {
+                clearFieldError(input);
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : type === 'error' ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                    style.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to submit form
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn) {
+                    submitBtn.click();
+                }
+            }
+            
+            // Escape to cancel
+            if (e.key === 'Escape') {
+                if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+                    window.history.back();
+                }
+            }
+        });
+
+        // Improved header hide/show animation: hide when scrolling down, show when scrolling up
+        (function(){
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+
+            // Ensure visible state initially
+            header.classList.add('main-header--visible');
+
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let lastTime = performance.now();
+            let raf = null;
+
+            function handle() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const now = performance.now();
+                const dy = current - lastScroll;
+                const dt = Math.max(1, now - lastTime);
+
+                // Small deadzone to avoid flicker
+                if (Math.abs(dy) < 8) {
+                    // keep current state
+                } else if (dy > 0 && current > 120) {
+                    // scrolling down: hide
+                    header.classList.add('main-header--hidden');
+                    header.classList.remove('main-header--visible');
+                } else {
+                    // scrolling up: show
+                    header.classList.remove('main-header--hidden');
+                    header.classList.add('main-header--visible');
+                }
+
+                lastScroll = current <= 0 ? 0 : current;
+                lastTime = now;
+                raf = null;
+            }
+
+            window.addEventListener('scroll', function(){
+                if (raf == null) raf = window.requestAnimationFrame(handle);
+            }, {passive: true});
+
+            // Reveal header on resize or when tab becomes visible
+            window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,2534 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ clinic.clinic_name }} • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* EXACT SAME STYLES AS PATIENT DASHBOARD */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header - EXACT SAME */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.28s ease;
+            will-change: transform;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo - EXACT SAME */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar - EXACT SAME */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; opacity: 1; }
+
+        /* Navigation Icons - EXACT SAME */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu - EXACT SAME */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Author link styling: make avatar/name links look like regular text */
+        a.author-link {
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        a.author-link:hover {
+            text-decoration: none;
+            color: inherit;
+            transform: translateY(-1px);
+        }
+
+        a.author-link:focus {
+            outline: 2px solid rgba(59,130,246,0.18);
+            outline-offset: 2px;
+        }
+
+        a.author-link img { display: block; border: none; }
+
+        /* Avatar Dropdown - EXACT SAME */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout - EXACT SAME */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
+        }
+
+        /* Left Sidebar - EXACT SAME */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%),
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(39, 201, 255, 0.3);
+            box-shadow: 0 0 12px rgba(208, 255, 39, 0.218), 0 0 6px rgba(229, 255, 159, 0.361);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.96); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - EXACT SAME STYLING */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Feed - EXACT SAME */
+        .main-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Create Post - EXACT SAME */
+        .create-post {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .post-input {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .post-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .media-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .media-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .media-btn:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .media-btn i {
+            font-size: 14px;
+        }
+
+        /* filename preview inside media button */
+        .file-name {
+            margin-left: 8px;
+            font-size: 13px;
+            color: #334155;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .post-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Posts Section - EXACT SAME */
+        .update-card {
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .update-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .update-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+        }
+
+        .update-info h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .update-info .time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .update-content p {
+            margin: 0 0 8px 0;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .update-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        /* Right Sidebar - EXACT SAME */
+        .sidebar-right {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        /* Patient Suggestions - Same styling as clinic suggestions */
+        .patient-suggestions {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .suggestions-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .suggestions-title i {
+            color: #3b82f6;
+        }
+
+        .patient-card {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #f9fafb;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+        }
+
+        .patient-card:hover {
+            background: white;
+            border-color: #e5e7eb;
+            transform: translateX(4px);
+        }
+
+        .patient-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #f1f5f9;
+        }
+
+        .patient-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .patient-info p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        /* Community Card - EXACT SAME */
+        .community-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .community-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .community-title i {
+            color: #10b981;
+        }
+
+        .community-members {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .member-item:hover {
+            background: #f9fafb;
+            transform: translateX(4px);
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #10b981, #059669) border-box;
+        }
+
+        .member-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .member-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Search Results - EXACT SAME */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Tabs for Clinic Dashboard - Using same styling */
+        .content-tabs {
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gallery Grid - EXACT SAME as patient dashboard */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            height: 120px;
+            background: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Services Grid - EXACT SAME styling as posts */
+        .services-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .service-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .service-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        /* Make uploaded service photos much more prominent */
+        .service-icon.has-photo {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 14px;
+            background: #f8fafc;
+            border: 1px solid #eef2ff;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .service-icon.has-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 14px;
+        }
+
+        .service-actions {
+            margin-top: 14px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .service-delete-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            color: #fff;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .service-delete-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(239, 68, 68, 0.28);
+        }
+
+        .profile-avatar-link {
+            display: inline-block;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 999px;
+        }
+
+        .profile-avatar-link:focus {
+            outline: 2px solid rgba(59,130,246,0.18);
+            outline-offset: 3px;
+        }
+
+        /* Patients List - EXACT SAME as patient cards */
+        .patients-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .clinic-patient-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .clinic-patient-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Stats Grid - EXACT SAME */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Contact Info - EXACT SAME */
+        .contact-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-icon {
+            width: 20px;
+            height: 20px;
+            color: #64748b;
+        }
+
+        /* Animations - EXACT SAME */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .create-post,
+        .update-card,
+        .patient-suggestions,
+        .community-card,
+        .service-item,
+        .clinic-patient-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading spinner - EXACT SAME */
+        .loading-logo {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            animation: logoSpin 1s linear infinite;
+        }
+
+        @keyframes logoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Respect reduced motion and small screens */
+        @media (prefers-reduced-motion: reduce), (max-width: 480px) {
+            .shiny-text { animation: none !important; background-position: 50% center !important; }
+        }
+
+        /* Loading States - EXACT SAME */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Utility Classes - EXACT SAME */
+        .text-gradient {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Desktop default: post pagination control is mobile-only. */
+        .mobile-show-more-wrap,
+        .show-more-btn {
+            display: none;
+        }
+
+        .post-description.clamped {
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .learn-more-btn {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .learn-more-btn:hover {
+            text-decoration: underline;
+        }
+
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        }
+
+        /* Empty State - EXACT SAME */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            margin-top: 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: #9ca3af;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #64748b;
+            max-width: 400px;
+            margin: 0 auto 24px;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design - EXACT SAME */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left, .sidebar-right {
+                position: static;
+            }
+
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Keep logo + search on first row; place nav icons + user menu on the next row */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 1 1 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+            }
+
+            .main-layout {
+                padding: 16px;
+            }
+
+            .media-options {
+                flex-wrap: wrap;
+            }
+
+            .tab-nav {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1 0 auto;
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Very small screens: keep logo+search first line, icons+menu on one line below */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 1 1 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .media-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+
+            .service-icon.has-photo {
+                height: 160px;
+            }
+            /* Mobile helper: hide posts beyond the first N and show button */
+            .mobile-hidden { display: none !important; }
+            .mobile-show-more-wrap { display: block; }
+            .show-more-btn {
+                display: block;
+                margin: 12px auto;
+                padding: 10px 16px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                color: white;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            /* Hide header when scrolling down on mobile */
+            .main-header { transition: transform 0.28s ease; will-change: transform; }
+            .main-header.hidden { transform: translateY(-120%); }
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header - EXACT SAME AS PATIENT DASHBOARD -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo - EXACT SAME -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar - EXACT SAME -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search patients, clinics, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons - EXACT SAME STYLING, DIFFERENT LINKS FOR CLINIC -->
+            <div class="nav-icons">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-icon active">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'clinic_settings' %}" class="nav-icon" title="Clinic Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu - EXACT SAME -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if clinic.profile_picture %}
+                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ clinic.clinic_name|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ clinic.clinic_name }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content - EXACT SAME LAYOUT -->
+    <main class="main-layout">
+        <!-- Left Sidebar - EXACT SAME STRUCTURE -->
+        <aside class="sidebar-left">
+            <!-- Profile Card - EXACT SAME STYLING -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <a class="profile-avatar-link" href="{% url 'clinic_datils_clinic' clinic.id %}" aria-label="Open clinic details">
+                        <div class="avatar-wrap">
+                            {% if clinic.profile_picture %}
+                                <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                            {% else %}
+                                <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                    {{ clinic.clinic_name|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                    <div class="profile-info">
+                        <h3>{{ clinic.clinic_name }}</h3>
+                    </div>
+                </div>
+
+                <!-- Stats Grid - EXACT SAME -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number"> {{ total_appointments |default:"0" }}</div>
+                        <div class="stat-label">Appointments</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">⭐ {{ display_rating|floatformat:1 }}</div>
+                        <div class="stat-label">Rating ({{ reviews_count|default:0 }})</div>
+                    </div>
+                </div>
+
+                <!-- Contact Info - EXACT SAME -->
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        {{ clinic.full_address|default:"Address not set" }}
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                        </svg>
+                        {{ clinic.phone_number|default:"Phone not set" }}
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        {{ clinic.contact_email|default:"Email not set" }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation - EXACT SAME STYLING, CLINIC LINKS -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    Find Patients
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'clinic_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Feed -->
+        <section class="main-feed">
+            <!-- Create Post - EXACT SAME -->
+            <div class="create-post">
+                <form method="post" enctype="multipart/form-data" action="{% url 'clinic_dashboard' %}" style="margin-bottom:0;">
+                    {% csrf_token %}
+                    {% if post_error %}
+                        <div style="color:#ef4444; margin-bottom:8px; padding: 8px 12px; background: #fef2f2; border-radius: 8px;">
+                            <i class="fas fa-exclamation-circle"></i> {{ post_error }}
+                        </div>
+                    {% endif %}
+                    <textarea class="post-input" name="post_content" placeholder="Share clinic updates, health tips, or success stories...">{% if request.POST.post_content %}{{ request.POST.post_content }}{% endif %}</textarea>
+                    <div class="post-actions">
+                        <div class="media-options">
+                            <label class="media-btn" style="cursor:pointer;">
+                                <i class="fas fa-image"></i>
+                                Photo
+                                <input type="file" name="post_image" accept="image/*" style="display:none;">
+                            </label>
+                            <label class="media-btn" style="cursor:pointer;">
+                                <i class="fas fa-video"></i>
+                                Video
+                                <input type="file" name="post_video" accept="video/*" style="display:none;">
+                            </label>
+                        </div>
+                        <button class="post-btn" type="submit">
+                            <i class="fas fa-paper-plane"></i> Post Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabs for Clinic Content -->
+            <div class="content-tabs">
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('updates')">Updates</button>
+                    <button class="tab-btn" onclick="switchTab('gallery')">Gallery</button>
+                    <button class="tab-btn" onclick="switchTab('services')">Services</button>
+                    <button class="tab-btn" onclick="switchTab('patients')">Patients</button>
+                </div>
+            </div>
+
+            <!-- Updates Tab -->
+            <div id="updates-tab" class="tab-content active">
+
+
+                <!-- All Posts Section -->
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 700; color: #6366f1; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+
+                    </h3>
+                    {% if posts %}
+                    <div class="posts-container">
+                        {% for post in posts %}
+                        <div class="update-card">
+                            <div class="update-header">
+                                {% if post.author and post.author.patient %}
+                                    <a class="author-link" href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ post.author.patient.id }}">
+                                        {% if post.author.patient.profile_picture %}
+                                            <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                                        {% else %}
+                                            <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                                {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                {% else %}
+                                    <a class="author-link" href="{% url 'clinic_datils_clinic' post.clinic.id %}">
+                                        {% if post.clinic.profile_picture %}
+                                            <img src="{{ post.clinic.profile_picture.url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
+                                        {% else %}
+                                            <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                                {{ post.clinic.clinic_name|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                {% endif %}
+                                <div class="update-info">
+                                    <div class="post-name">
+                                        {% if post.author and post.author.patient %}
+                                            <a class="author-link" href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ post.author.patient.id }}">{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}</a>
+                                        {% else %}
+                                            <a class="author-link" href="{% url 'clinic_datils_clinic' post.clinic.id %}">{{ post.clinic.clinic_name }}</a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</div>
+                                </div>
+                            </div>
+                            <div class="update-content">
+                                <p class="post-description">{{ post.description|linebreaksbr }}</p>
+                                {% if post.image %}
+                                    <img src="{{ post.image.url }}" alt="Post Image" class="update-image">
+                                {% endif %}
+                                {% if post.video %}
+                                    <video controls class="update-image">
+                                        <source src="{{ post.video.url }}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mobile-show-more-wrap" style="text-align:center;">
+                        <button id="showMorePostsBtn" class="show-more-btn" type="button">Show more</button>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-newspaper"></i></div>
+                        <h4 class="empty-title">No Posts Yet</h4>
+                        <p class="empty-text">Be the first to share an update with the community.</p>
+                        <button class="post-btn" onclick="document.querySelector('.post-input').focus()">Create First Post</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery-tab" class="tab-content">
+                <div class="create-post">
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-images"></i>
+                            Clinic Gallery
+                        </h3>
+                        {% if request.user == clinic.user %}
+                        <button class="post-btn" onclick="openAddPhotoModal()">
+                            <i class="fas fa-plus"></i> Add Photo
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if gallery_images %}
+                    <div class="gallery-grid">
+                        {% for image in gallery_images|slice:":8" %}
+                        <div class="gallery-item" onclick="openGalleryModal('{{ image.image.url }}', '{% if image.caption %}{{ image.caption|escapejs|addslashes }}{% else %}Clinic Photo{% endif %}')">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Clinic Photo' }}">
+                            {% if image.caption %}
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 8px; color: white; font-size: 11px;">
+                                {{ image.caption|truncatechars:30 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if gallery_images.count > 8 %}
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="post-btn" onclick="openGalleryModal()">
+                            <i class="fas fa-images"></i> View All {{ gallery_images.count }} Photos
+                        </button>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-images"></i></div>
+                        <h4 class="empty-title">No Gallery Photos</h4>
+                        <p class="empty-text">Add photos to showcase your clinic facilities and build trust with patients.</p>
+                        {% if request.user == clinic.user %}
+                        <button class="post-btn" onclick="openAddPhotoModal()">Add First Photo</button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Services Tab -->
+            <div id="services-tab" class="tab-content">
+                <div class="create-post">
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-stethoscope"></i>
+                            Our Services
+                        </h3>
+                        {% if request.user == clinic.user %}
+                        <button class="post-btn" onclick="openAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if services %}
+                    <div class="services-grid">
+                        {% for service in services %}
+                        <div class="service-item">
+                            <div class="service-icon{% if service.photo %} has-photo{% endif %}">
+                                {% if service.photo %}
+                                    <img src="{{ service.photo.url }}" alt="{{ service.service_name }}">
+                                {% else %}
+                                    <i class="fas fa-stethoscope"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h4 style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">{{ service.service_name }}</h4>
+                                <p style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">{{ service.description|default:"Professional medical service" }}</p>
+                                {% if service.price_range %}
+                                <span style="display: inline-block; padding: 4px 12px; background: #10b981; color: white; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                    {{ service.price_range }}
+                                </span>
+                                {% endif %}
+
+                                {% if request.user == clinic.user %}
+                                <div class="service-actions">
+                                    <form method="post" action="{% url 'delete_clinic_service' service.id %}" onsubmit="return confirm('Delete this service?');" style="margin:0;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="service-delete-btn">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-stethoscope"></i></div>
+                        <h4 class="empty-title">No Services Listed</h4>
+                        <p class="empty-text">Add medical services to inform patients about what you offer.</p>
+                        {% if request.user == clinic.user %}
+                        <button class="post-btn" onclick="openAddServiceModal()">Add First Service</button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Patients Tab -->
+            <div id="patients-tab" class="tab-content">
+                <div class="create-post">
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-user-injured"></i>
+                            My Patients
+                        </h3>
+
+                    </div>
+
+                    {% if assigned_patients_unique %}
+                    <div class="patients-list">
+                        {% for assignment in assigned_patients_unique %}
+                        <div class="clinic-patient-card">
+                            <div class="update-header">
+                                {% if assignment.patient.profile_picture %}
+                                <img src="{{ assignment.patient.profile_picture.url }}" alt="{{ assignment.patient.full_name }}" class="update-avatar">
+                                {% else %}
+                                <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                    {{ assignment.patient.full_name|first|upper }}
+                                </div>
+                                {% endif %}
+                                <div class="update-info">
+                                    <div class="post-name">{{ assignment.patient.full_name }}</div>
+                                    <div class="post-time"><i class="fas fa-calendar"></i> Assigned {{ assignment.date_assigned|date:"M d, Y" }}</div>
+                                </div>
+                            </div>
+                            {% if assignment.patient.city %}
+                            <p style="color: #6b7280; font-size: 14px; margin: 8px 0; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-map-marker-alt"></i> {{ assignment.patient.city }}
+                            </p>
+                            {% endif %}
+                            {# Primary Diagnosis removed per request - do not display here #}
+                            <div style="display: flex; gap: 12px;">
+
+                                {% if assignment.patient.user %}
+                                <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ assignment.patient.id }}" class="post-btn" style="flex: 1; text-align: center; background: #f3f4f6; color: #374151;">
+                                    <i class="fas fa-comment"></i> Chat
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-user-injured"></i></div>
+                        <h4 class="empty-title">No Assigned Patients</h4>
+                        <p class="empty-text">You don't have any patients assigned to your clinic yet. Start by finding patients in need of care.</p>
+                        <a href="{% url 'search_patients' %}" class="post-btn">
+                            <i class="fas fa-search"></i> Find Patients
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Sidebar - EXACT SAME STRUCTURE -->
+        <aside class="sidebar-right">
+            <!-- Patient Suggestions (instead of clinic suggestions) -->
+            <div class="patient-suggestions">
+                <h3 class="suggestions-title">
+                    <i class="fas fa-user-injured"></i>
+                    Active Patients
+                </h3>
+                    {% if active_patients %}
+                    {% for patient in active_patients|slice:":5" %}
+                    <div class="patient-card clickable" data-chat-url="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}">
+                        {% if patient.profile_picture %}
+                            <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}" class="patient-avatar">
+                        {% else %}
+                            <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                        <div class="patient-info" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;">
+                            <div style="text-decoration:none;color:inherit;flex:1;">
+                                <h4 style="margin:0;font-size:14px;font-weight:600;">{{ patient.full_name }}</h4>
+                            </div>
+                            <a href="{% url 'patient_detail' patient.id %}" title="View patient details" class="patient-detail-link" style="color:#6b7280;font-size:14px;text-decoration:none;">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: #6b7280; padding: 20px; text-align: center;">
+                        <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <p>No active patients available.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Medical Community - EXACT SAME -->
+            <div class="community-card">
+                <h3 class="community-title">
+                    <i class="fas fa-heartbeat"></i>
+                    Active Community
+                </h3>
+                <div class="community-members">
+                    {% if community_patients %}
+                        {% for patient in community_patients|slice:":3" %}
+                        <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}" class="member-item">
+                            <div style="position: relative;">
+                                {% if patient.profile_picture %}
+                                    <img src="{{ patient.profile_picture.url }}" class="member-avatar" alt="{{ patient.full_name }}">
+                                {% else %}
+                                    <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                        {{ patient.full_name|slice:":2"|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="online-dot"></div>
+                            </div>
+                            <div class="member-info">
+                                <h4>{{ patient.full_name }}</h4>
+                                <p><i class="fas fa-map-marker-alt"></i> {{ patient.medical_records.first.address|default:"Location" }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% elif active_clinics %}
+                        {% for clinic in active_clinics|slice:":5" %}
+                        <a href="{% url 'clinic_detail' clinic.id %}" class="member-item">
+                            <div style="position: relative;">
+                                {% if clinic.profile_picture %}
+                                    <img src="{{ clinic.profile_picture.url }}" class="member-avatar" alt="{{ clinic.clinic_name }}">
+                                {% else %}
+                                    <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                        {{ clinic.clinic_name|slice:":2"|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="online-dot"></div>
+                            </div>
+                            <div class="member-info">
+                                <h4>{{ clinic.clinic_name }}</h4>
+                                <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> Online now</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="color: #6b7280; padding: 20px; text-align: center;">
+                            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
+                            <p>No active community members available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modals -->
+    <div id="galleryModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow: hidden;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Clinic Gallery</h3>
+                <button onclick="closeModal('galleryModal')" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 24px; overflow-y: auto; max-height: calc(90vh - 80px);" id="galleryModalContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Photo Modal -->
+    <div id="addPhotoModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 16px; max-width: 500px; width: 100%;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Add Photo to Gallery</h3>
+                <button onclick="closeModal('addPhotoModal')" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 24px;">
+                <form method="post" enctype="multipart/form-data" action="{% url 'clinic_dashboard' %}">
+                    {% csrf_token %}
+                    {{ gallery_form.non_field_errors }}
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Select Photo</label>
+                        {{ gallery_form.image }}
+                        {% if gallery_form.image.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ gallery_form.image.errors }}</div>{% endif %}
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Caption (Optional)</label>
+                        {{ gallery_form.caption }}
+                        {% if gallery_form.caption.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ gallery_form.caption.errors }}</div>{% endif %}
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" onclick="closeModal('addPhotoModal')" style="background: #f3f4f6; color: #374151; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 500; cursor: pointer;">Cancel</button>
+                        <button type="submit" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">Upload Photo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div id="addServiceModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 16px; max-width: 500px; width: 100%;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Add New Service</h3>
+                <button onclick="closeModal('addServiceModal')" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer;">×</button>
+            </div>
+            <div style="padding: 24px;">
+                <form method="post" action="{% url 'clinic_dashboard' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ service_form.non_field_errors }}
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Service Name</label>
+                        {{ service_form.service_name }}
+                        {% if service_form.service_name.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ service_form.service_name.errors }}</div>{% endif %}
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Description</label>
+                        {{ service_form.description }}
+                        {% if service_form.description.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ service_form.description.errors }}</div>{% endif %}
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Service Photo (Optional)</label>
+                        {{ service_form.photo }}
+                        {% if service_form.photo.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ service_form.photo.errors }}</div>{% endif %}
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Price Range (Optional)</label>
+                        {{ service_form.price_range }}
+                        {% if service_form.price_range.errors %}<div style="color:#ef4444; font-size:13px; margin-top:4px;">{{ service_form.price_range.errors }}</div>{% endif %}
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" onclick="closeModal('addServiceModal')" style="background: #f3f4f6; color: #374151; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 500; cursor: pointer;">Cancel</button>
+                        <button type="submit" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; cursor: pointer;">Add Service</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // EXACT SAME JAVASCRIPT AS PATIENT DASHBOARD
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize animations
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // Avatar dropdown - EXACT SAME
+            const avatarBtn = document.getElementById('avatarBtn');
+            const avatarDropdown = document.getElementById('avatarDropdown');
+
+            if (avatarBtn) {
+                avatarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = avatarDropdown.style.display === 'block';
+                    avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                    avatarBtn.setAttribute('aria-expanded', !isOpen);
+                });
+
+                document.addEventListener('click', function() {
+                    avatarDropdown.style.display = 'none';
+                    avatarBtn.setAttribute('aria-expanded', 'false');
+                });
+
+                avatarDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // Make patient suggestion cards clickable (open or create chat)
+            document.querySelectorAll('.patient-card.clickable').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // If the click originated from the patient-detail link, allow that link
+                    if (e.target.closest('.patient-detail-link')) return;
+                    const url = this.getAttribute('data-chat-url');
+                    if (url) window.location.href = url;
+                });
+            });
+
+            // Search functionality - EXACT SAME
+            const dashSearchBar = document.getElementById('dashboard-search-bar');
+            const dashSearchResults = document.getElementById('dashboard-search-results');
+            let dashSearchTimeout;
+
+            if (dashSearchBar) {
+                dashSearchBar.addEventListener('input', function() {
+                    clearTimeout(dashSearchTimeout);
+                    const query = this.value.trim();
+
+                    if (!query) {
+                        dashSearchResults.style.display = 'none';
+                        dashSearchResults.innerHTML = '';
+                        return;
+                    }
+
+                    dashSearchTimeout = setTimeout(() => {
+                        dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                        dashSearchResults.style.display = 'block';
+
+                        fetch("{% url 'search_all' %}?q=" + encodeURIComponent(query), {
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Search failed');
+                            return res.text();
+                        })
+                        .then(html => {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+
+                            let results = '';
+                            const sections = temp.querySelectorAll('.results-section');
+
+                            if (sections && sections.length) {
+                                sections.forEach(section => {
+                                    const title = section.querySelector('h3');
+                                    const list = section.querySelector('ul');
+
+                                    if (title && list) {
+                                        list.classList.add('results-list');
+                                        results += `
+                                            <div class="results-section-title">
+                                                <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                                ${title.textContent}
+                                            </div>
+                                            ${list.outerHTML}
+                                        `;
+                                    }
+                                });
+                            }
+
+                            // Fallback: server returned raw patient cards (.patient-card)
+                            if (!results) {
+                                const patientCards = temp.querySelectorAll('.patient-card');
+                                if (patientCards && patientCards.length) {
+                                    results = `<div class="results-header"><div class="results-count">${patientCards.length} patients found</div><div></div></div>` + temp.innerHTML;
+                                }
+                            }
+
+                            if (!results) {
+                                results = `
+                                    <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                        <p>No results found for "${query}"</p>
+                                    </div>
+                                `;
+                            }
+
+                            dashSearchResults.innerHTML = results;
+                            // Rewrite links so clinic users open clinic-chat for patients
+                            // and visit clinic detail pages for clinics.
+                            (function rewriteSearchLinks() {
+                                try {
+                                    const clinicChatBase = "{% url 'start_chat_with_patient_clinic' %}?patient_id=";
+                                    const clinicDetailTemplate = "{% url 'clinic_datils_clinic' 0 %}";
+                                    const clinicDetailPrefix = clinicDetailTemplate.replace(/0\/?$/, '');
+
+                                    const anchors = dashSearchResults.querySelectorAll('a');
+                                    anchors.forEach(a => {
+                                        const href = a.getAttribute('href') || '';
+
+                                        // Skip if already correct clinic detail link
+                                        if (href.includes('/detail-clinic/')) return;
+
+                                        // Patient links: user_id param or /user/ path
+                                        const userMatch = href.match(/[?&]user_id=(\d+)/) || href.match(/\/user\/(\d+)\/?$/);
+                                        if (userMatch) {
+                                            a.setAttribute('href', clinicChatBase + userMatch[1]);
+                                            return;
+                                        }
+
+                                        // Clinic links: /detail/, /clinic/, or /clinics/ paths
+                                        const clinicMatch = href.match(/\/detail\/(\d+)\/?$/) ||
+                                                           href.match(/\/clinic\/(\d+)\/?$/) ||
+                                                           href.match(/\/clinics\/(\d+)\/?$/);
+                                        if (clinicMatch) {
+                                            a.setAttribute('href', clinicDetailPrefix + clinicMatch[1] + '/');
+                                            return;
+                                        }
+                                    });
+                                } catch (e) {
+                                    console.error('Link rewrite failed', e);
+                                }
+                            })();
+
+                            dashSearchResults.style.display = 'block';
+                        })
+                        .catch(err => {
+                            dashSearchResults.innerHTML = `
+                                <div style="padding: 20px; text-align: center; color: #ef4444;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <p>Search failed. Please try again.</p>
+                                </div>
+                            `;
+                            dashSearchResults.style.display = 'block';
+                        });
+                    }, 300);
+                });
+            }
+
+            // Auto-expand textarea - EXACT SAME
+            const postInput = document.querySelector('.post-input');
+            if (postInput) {
+                postInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+
+            // Hide search results when clicking outside - EXACT SAME
+            (function() {
+                const searchContainer = document.querySelector('.search-container');
+                if (!searchContainer || !dashSearchResults) return;
+
+                dashSearchResults.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!searchContainer.contains(e.target)) {
+                        dashSearchResults.style.display = 'none';
+                    }
+                });
+
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') dashSearchResults.style.display = 'none';
+                });
+            })();
+
+            // Media upload preview - EXACT SAME
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function(e) {
+                    const fileName = this.files[0]?.name || '';
+                    const label = this.closest('.media-btn');
+                    if (!label) return;
+
+                    let nameSpan = label.querySelector('.file-name');
+                    if (!nameSpan) {
+                        nameSpan = document.createElement('span');
+                        nameSpan.className = 'file-name';
+                        label.appendChild(nameSpan);
+                    }
+                    nameSpan.textContent = fileName;
+                });
+            });
+
+            // Add hover effects to interactive elements - EXACT SAME
+            document.querySelectorAll('.clickable, .nav-item, .media-btn, .post-btn, .patient-card, .member-item').forEach(el => {
+                el.style.transition = 'all 0.2s ease';
+            });
+
+            // Form submission loading state - EXACT SAME
+            document.querySelector('form').addEventListener('submit', function() {
+                const postBtn = this.querySelector('.post-btn');
+                if (postBtn) {
+                    postBtn.innerHTML = "<img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Posting...";
+                    postBtn.classList.add('loading');
+                }
+            });
+
+            // Like button functionality - EXACT SAME
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!this.classList.contains('liked')) {
+                        this.classList.add('liked');
+                        this.innerHTML = '<i class="fas fa-thumbs-up"></i> Liked';
+                        this.style.color = '#3b82f6';
+                    } else {
+                        this.classList.remove('liked');
+                        this.innerHTML = '<i class="fas fa-thumbs-up"></i> Like';
+                        this.style.color = '';
+                    }
+                });
+            });
+
+            // Rewrite post author links: clinics -> clinic detail, patients -> start or open clinic chat
+            (function rewritePostAuthorLinks(){
+                try {
+                    const clinicChatBase = "{% url 'start_chat_with_patient_clinic' %}?patient_id=";
+                    const clinicDetailTemplate = "{% url 'clinic_datils_clinic' 0 %}";
+                    const clinicDetailPrefix = clinicDetailTemplate.replace(/0\/?$/, '');
+
+                    const postNodes = Array.from(document.querySelectorAll('.update-card, .post-card'));
+                    postNodes.forEach(card => {
+                        // Prefer explicit author-link class if present
+                        let authorAnchor = card.querySelector('a.author-link');
+                        if (!authorAnchor) {
+                            authorAnchor = card.querySelector('.update-header a, .post-header a, .post-info a, .update-info a');
+                        }
+                        if (!authorAnchor) return;
+
+                        const href = authorAnchor.getAttribute('href') || '';
+
+                        // Skip if already correct clinic detail link
+                        if (href.includes('/detail-clinic/')) return;
+
+                        // Patient link detection via query param or /user/ path
+                        const userMatch = href.match(/[?&]user_id=(\d+)/) || href.match(/\/user\/(\d+)\/?$/);
+                        if (userMatch) {
+                            authorAnchor.setAttribute('href', clinicChatBase + userMatch[1]);
+                            return;
+                        }
+
+                        // Clinic detail detection: /detail/, /clinic/, or /clinics/ paths
+                        const clinicMatch = href.match(/\/detail\/(\d+)\/?$/) ||
+                                           href.match(/\/clinic\/(\d+)\/?$/) ||
+                                           href.match(/\/clinics\/(\d+)\/?$/);
+                        if (clinicMatch) {
+                            authorAnchor.setAttribute('href', clinicDetailPrefix + clinicMatch[1] + '/');
+                            return;
+                        }
+                    });
+                } catch (e) {
+                    console.error('rewritePostAuthorLinks failed', e);
+                }
+            })();
+        });
+
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            const tabContent = document.getElementById(tabName + '-tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+
+                // Add animation to new content
+                tabContent.style.animation = 'none';
+                setTimeout(() => {
+                    tabContent.style.animation = 'fadeIn 0.3s ease-out';
+                }, 10);
+            }
+
+            // Activate selected tab button
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                if (tab.textContent.trim().toLowerCase().includes(tabName.toLowerCase())) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function openGalleryModal(imageUrl = null, caption = null) {
+            const modalContent = document.getElementById('galleryModalContent');
+            if (modalContent) {
+                if (imageUrl) {
+                    // Show single image
+                    modalContent.innerHTML = `
+                        <div style="text-align: center;">
+                            <img src="${imageUrl}" alt="${caption}"
+                                 style="max-width: 100%; max-height: 60vh; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                            <p style="color: #475569; font-size: 15px; font-weight: 500; padding: 16px; background: #f8fafc; border-radius: 8px;">
+                                ${caption || 'Clinic Photo'}
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    // Show all images
+                    modalContent.innerHTML = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px;">
+                            {% for image in gallery_images %}
+                            <div style="cursor: pointer; transition: transform 0.2s ease;"
+                                 onclick="openGalleryModal('{{ image.image.url }}', '{{ image.caption|escapejs|default_if_none:'Clinic Photo' }}')"
+                                 onmouseenter="this.style.transform='scale(1.05)'"
+                                 onmouseleave="this.style.transform='scale(1)'">
+                                <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Clinic Photo' }}"
+                                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                <p style="font-size: 13px; color: #64748b; text-align: center; font-weight: 500;">
+                                    {{ image.caption|default:"Clinic Photo"|truncatechars:30 }}
+                                </p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    `;
+                }
+
+                openModal('galleryModal');
+            }
+        }
+
+        function openAddPhotoModal() {
+            openModal('addPhotoModal');
+        }
+
+        function openAddServiceModal() {
+            openModal('addServiceModal');
+        }
+
+        // Close modals on outside click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    if (modal.style.display === 'flex') {
+                        closeModal(modal.id);
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        // Clinic presence ping
+        (function() {
+            const pingUrl = '{% url "clinic_ping" %}';
+            const ping = () => fetch(pingUrl, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } }).catch(() => {});
+            ping();
+            setInterval(ping, 60000);
+            document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') ping(); });
+        })();
+    </script>
+    <script>
+        // Post description clamp with Learn more / Show less for long content
+        (function() {
+            function initPostDescriptionToggles() {
+                const MAX_CHARS = 280;
+                const descriptions = document.querySelectorAll('.update-content .post-description');
+                descriptions.forEach((desc) => {
+                    if (desc.dataset.learnMoreReady === '1') return;
+                    const textLength = (desc.textContent || '').trim().length;
+                    if (textLength <= MAX_CHARS) {
+                        desc.dataset.learnMoreReady = '1';
+                        return;
+                    }
+
+                    desc.classList.add('clamped');
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'learn-more-btn';
+                    btn.textContent = 'Learn more';
+
+                    btn.addEventListener('click', function() {
+                        const expanded = desc.classList.toggle('clamped') === false;
+                        btn.textContent = expanded ? 'Show less' : 'Learn more';
+                    });
+
+                    desc.insertAdjacentElement('afterend', btn);
+                    desc.dataset.learnMoreReady = '1';
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initPostDescriptionToggles);
+            } else {
+                initPostDescriptionToggles();
+            }
+        })();
+    </script>
+    <script>
+        // Mobile: show only first 3 posts and reveal 3 more on each click
+        (function(){
+            const MOBILE_QUERY = '(max-width: 480px)';
+            if (!window.matchMedia) return;
+            function initMobilePosts(){
+                if (!window.matchMedia(MOBILE_QUERY).matches) return;
+                const posts = Array.from(document.querySelectorAll('.posts-container .update-card'));
+                const BATCH = 3;
+                if (!posts.length) return;
+                let visibleCount = Math.min(BATCH, posts.length);
+                const btn = document.getElementById('showMorePostsBtn');
+                function refresh(){
+                    posts.forEach((p,i)=> {
+                        if (i < visibleCount) p.classList.remove('mobile-hidden');
+                        else p.classList.add('mobile-hidden');
+                    });
+                    if (!btn) return;
+                    if (visibleCount >= posts.length) btn.style.display = 'none';
+                    else btn.style.display = 'inline-block';
+                }
+                refresh();
+                if (btn){
+                    btn.addEventListener('click', function(){
+                        visibleCount = Math.min(visibleCount + BATCH, posts.length);
+                        refresh();
+                    });
+                }
+            }
+            // Initialize on DOM ready
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMobilePosts);
+            else initMobilePosts();
+            // Re-init on resize
+            window.addEventListener('resize', function(){
+                // when switching to mobile, re-run; when switching away, reveal all
+                if (!window.matchMedia(MOBILE_QUERY).matches){
+                    document.querySelectorAll('.posts-container .update-card').forEach(p=>p.classList.remove('mobile-hidden'));
+                    const btn = document.getElementById('showMorePostsBtn'); if (btn) btn.style.display = 'none';
+                } else {
+                    initMobilePosts();
+                }
+            });
+        })();
+    </script>
+    <script>
+        // Mobile header: hide on scroll down, show on scroll up
+        (function(){
+            const MQ = '(max-width: 768px)';
+            if (!window.matchMedia) return;
+            let enabled = false; // start disabled so toggleListener can add the listener when needed
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+            let lastY = window.pageYOffset || document.documentElement.scrollTop;
+            function onScroll(){
+                const y = window.pageYOffset || document.documentElement.scrollTop;
+                const delta = y - lastY;
+                if (Math.abs(delta) < 10) return; // small jitter
+                if (y > lastY && y > 60) {
+                    header.classList.add('hidden');
+                } else if (y < lastY) {
+                    header.classList.remove('hidden');
+                }
+                lastY = y;
+            }
+            function toggleListener(){
+                const now = window.matchMedia(MQ).matches;
+                if (now && !enabled) {
+                    window.addEventListener('scroll', onScroll, {passive:true});
+                    enabled = true;
+                } else if (!now && enabled) {
+                    window.removeEventListener('scroll', onScroll);
+                    header.classList.remove('hidden');
+                    enabled = false;
+                }
+            }
+            toggleListener();
+            window.addEventListener('resize', toggleListener);
+        })();
+    </script>
+</body>
+</html>

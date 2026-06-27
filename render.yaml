@@ -1,0 +1,47 @@
+# Render Blueprint — deploy with: Render dashboard → New → Blueprint → pick this repo.
+# Free web service + managed Postgres. Set the `sync: false` secrets in the dashboard.
+services:
+  - type: web
+    name: nero
+    runtime: python
+    plan: free
+    region: frankfurt          # change to the region nearest your users
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "python manage.py migrate --noinput && gunicorn Nero_platform.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true     # Render generates a strong random value
+      - key: ENCRYPTION_KEY
+        sync: false             # set manually: Fernet.generate_key()
+      - key: ALLOWED_HOSTS
+        sync: false             # e.g. nero.onrender.com,yourdomain.com
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false             # e.g. https://nero.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nero-db
+          property: connectionString
+      # Object storage for uploads (Cloudflare R2 / S3) — set when ready:
+      - key: USE_S3_MEDIA
+        value: "0"              # flip to "1" once the bucket + keys below are set
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false             # optional error tracking
+
+databases:
+  - name: nero-db
+    plan: free                  # NOTE: Render's free Postgres expires ~30 days
+    databaseName: nero
+    region: frankfurt

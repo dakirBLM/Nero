@@ -1,0 +1,718 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - NERO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #6CA8C9 0%, #6CA8C9 30%, white 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ================= NAV BAR ================= */
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Logo - Made White */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Navigation link */
+        .nav-link {
+            border: 3px solid white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ================= LOGIN CONTAINER ================= */
+        .login-container {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 480px;
+            margin: 30px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #6CA8C9;
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #2c5282;
+            gap: 15px;
+        }
+
+        /* Login Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c5282;
+        }
+
+        .login-subtitle {
+            color: #4a5568;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        /* ================= FORM STYLES ================= */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c5282;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 52px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            background: rgba(108, 168, 201, 0.12);
+            color: #2c5282;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6CA8C9;
+            box-shadow: 0 0 0 3px rgba(108, 168, 201, 0.2);
+        }
+
+        /* ================= BUTTONS ================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #6CA8C9;
+            color: white;
+            box-shadow: 0 8px 25px rgba(108, 168, 201, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a97b8;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(108, 168, 201, 0.4);
+        }
+
+        .social-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0 10px;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .social-divider::before,
+        .social-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .btn-google {
+            border: 1px solid rgba(66, 133, 244, 0.18);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 55%, #f1f8ff 100%);
+            color: #1e293b;
+            box-shadow: 0 10px 24px rgba(66, 133, 244, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+
+        .btn-google:hover {
+            border-color: rgba(66, 133, 244, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(66, 133, 244, 0.14), 0 0 0 1px rgba(66, 133, 244, 0.08) inset;
+        }
+
+        .social-buttons {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-google-patient {
+            border-left: 5px solid #34a853;
+        }
+
+        .btn-google-clinic {
+            border-left: 5px solid #4285f4;
+        }
+
+        .google-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            display: inline-block;
+            padding: 2px;
+            border-radius: 999px;
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.08);
+        }
+
+        .social-caption {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* ================= LINKS SECTION ================= */
+        .links-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .links-text {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .link {
+            color: #6CA8C9;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .link:hover {
+            color: #2c5282;
+            background: rgba(108, 168, 201, 0.1);
+        }
+
+        .link-divider {
+            color: #e2e8f0;
+            font-weight: 300;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: #2c5282;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            width: 100%;
+        }
+
+        .footer p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+        }
+
+        /* ================= ERROR MESSAGES ================= */
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .error-message strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .error-message ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .error-message li {
+            margin-bottom: 5px;
+        }
+
+        /* ================= ANIMATIONS ================= */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* ================= RESPONSIVE DESIGN ================= */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .login-container {
+                padding: 36px 20px;
+                margin: 18px;
+                max-width: 420px;
+            }
+
+            .login-title {
+                font-size: 32px;
+            }
+
+            .links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .link-divider {
+                display: none;
+            }
+
+            .btn {
+                padding: 16px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 12px 16px;
+                align-items: center;
+            }
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                align-self: center;
+                width: auto;
+            }
+
+            .login-container {
+                padding: 24px 16px;
+            }
+
+            .login-title {
+                font-size: 28px;
+            }
+
+            .login-subtitle {
+                font-size: 16px;
+            }
+
+            .form-control {
+                padding: 14px 16px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+
+            .link {
+                font-size: 15px;
+            }
+        }
+
+        /* Ensure links and logo don't overflow on very small devices */
+        @media (max-width: 360px) {
+            .logo-container { width: 84px; height: 84px; }
+            .login-container { margin: 12px; padding: 20px 12px; }
+            .nav-link { padding: 8px 12px; font-size: 14px; }
+        }
+
+        /* ================= REMEMBER ME CHECKBOX ================= */
+        .remember-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .remember-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .remember-label {
+            font-size: 15px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        /* ================= FORGOT PASSWORD ================= */
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-link {
+            color: #6CA8C9;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="{% static 'logo1.png' %}" class="logo" alt="NERO Logo">
+        </div>
+        <a href="{% url 'choice_page' %}" class="nav-link">
+            Get Started
+        </a>
+    </nav>
+
+    <!-- Login Container -->
+    <div class="login-container fade-in">
+        <a href="{% url 'choice_page' %}" class="back-link">
+            ← Back to Choices
+        </a>
+
+        <div class="login-header">
+            <h1 class="login-title">Login to NERO</h1>
+            <p class="login-subtitle">Access your medical platform account</p>
+        </div>
+
+        <!-- Error Messages -->
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="error-message">
+                <strong>⚠ Error</strong>
+                <p>{{ message }}</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Login Form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                  <label for="identifier" class="form-label">Username or Email</label>
+                  <input type="text" id="identifier" name="identifier" class="form-control"
+                      placeholder="Enter your username or email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password" aria-pressed="false">
+                        <svg id="eyeOpenIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg id="eyeClosedIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+                            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a21.77 21.77 0 0 1 5.06-7.94"></path>
+                            <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.77 21.77 0 0 1-3.17 4.72"></path>
+                            <path d="M1 1l22 22"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="forgot-password">
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+            </div>
+
+            <!-- Remember Me Checkbox -->
+            <div class="remember-group">
+                <input type="checkbox" id="remember" name="remember" class="remember-checkbox">
+                <label for="remember" class="remember-label">Remember me</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Login to Account
+            </button>
+
+            <div class="social-divider">or use google</div>
+
+            {% if google_login_url %}
+            <a href="{{ google_login_url }}" class="btn btn-google">
+                <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.2-1.4 3.5-5.5 3.5-3.3 0-6.1-2.8-6.1-6.2s2.7-6.2 6.1-6.2c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 2.7 14.6 1.8 12 1.8 6.7 1.8 2.4 6.2 2.4 11.5S6.7 21.2 12 21.2c6.9 0 9.1-4.8 9.1-7.2 0-.5 0-.9-.1-1.3H12z"/>
+                    <path fill="#34A853" d="M2.4 7.9l3.2 2.3c.8-2.3 3-4 5.6-4 1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 2.7 14.6 1.8 12 1.8 8.2 1.8 4.9 4 2.4 7.9z"/>
+                    <path fill="#FBBC05" d="M12 21.2c2.5 0 4.7-.8 6.3-2.3l-2.9-2.4c-.8.6-2 1.1-3.4 1.1-2.6 0-4.9-1.7-5.7-4.1l-3.2 2.5c2.4 3.9 5.8 5.2 8.9 5.2z"/>
+                    <path fill="#4285F4" d="M21.1 14c.1-.4.1-.8.1-1.3s0-.9-.1-1.3H12v3.9h5.5c-.3 1.4-1.2 2.5-2.4 3.3l2.9 2.4c1.7-1.6 3.1-4 3.1-7z"/>
+                </svg>
+                Continue with Google
+            </a>
+            {% else %}
+            <p style="margin-top: 10px; color: #64748b; font-size: 14px; text-align: center;">
+                Google login is not configured yet. Add Google Client ID/Secret in Admin > Social applications.
+            </p>
+            {% endif %}
+        </form>
+
+        <!-- Signup Links -->
+        <div class="links-section">
+            <p class="links-text">Don't have an account?</p>
+            <div class="links">
+                <a href="{% url 'patient_signup' %}" class="link">Sign up as Patient</a>
+                <span class="link-divider">|</span>
+                <a href="{% url 'clinic_signup' %}" class="link">Sign up as Clinic</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 NERO Medical Platform. All rights reserved.</p>
+        <p>Need help? <a href="mailto:support@nero-medical.com">Contact our support team</a></p>
+    </footer>
+
+    <script>
+        // Form input focus effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('.form-label').style.color = '#6CA8C9';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('.form-label').style.color = '#2c5282';
+            });
+        });
+
+        // Button hover effects
+        document.querySelector('.btn-primary').addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+
+        document.querySelector('.btn-primary').addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+
+        // Link hover effects
+        document.querySelectorAll('.link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.color = '#2c5282';
+            });
+
+            link.addEventListener('mouseleave', function() {
+                this.style.color = '#6CA8C9';
+            });
+        });
+
+        // Back link hover effect
+        document.querySelector('.back-link').addEventListener('mouseenter', function() {
+            this.style.gap = '15px';
+        });
+
+        document.querySelector('.back-link').addEventListener('mouseleave', function() {
+            this.style.gap = '10px';
+        });
+
+        // Forgot password link functionality
+        document.querySelector('.forgot-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = prompt('Please enter your email address to reset your password:');
+            if (email) {
+                alert('Password reset instructions have been sent to ' + email);
+                // In a real application, you would send a password reset email here
+            }
+        });
+
+        // Password visibility toggle
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const eyeOpenIcon = document.getElementById('eyeOpenIcon');
+        const eyeClosedIcon = document.getElementById('eyeClosedIcon');
+
+        passwordToggle.addEventListener('click', function() {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            eyeOpenIcon.style.display = isHidden ? 'none' : 'block';
+            eyeClosedIcon.style.display = isHidden ? 'block' : 'none';
+            passwordToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+            passwordToggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+        });
+
+        // Auto-focus username field on page load
+        window.addEventListener('load', function() {
+            document.getElementById('identifier').focus();
+
+            // Initialize animations
+            document.querySelector('.fade-in').style.opacity = '1';
+
+            console.log('NERO Login Page loaded successfully');
+        });
+
+        // Logo click to go back to landing page
+        document.querySelector('.logo').addEventListener('click', function() {
+            window.location.href = "{% url 'landing_page' %}";
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const identifier = document.getElementById('identifier').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!identifier || !password) {
+                e.preventDefault();
+                alert('Please fill in both username/email and password fields.');
+                return false;
+            }
+
+            // Add loading state to button
+            const submitBtn = this.querySelector('.btn-primary');
+            submitBtn.innerHTML = 'Logging in...';
+            submitBtn.disabled = true;
+        });
+
+        // Music controls removed from login page per request
+    </script>
+</body>
+</html>

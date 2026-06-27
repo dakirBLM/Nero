@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DHAKIR BOULMECHAOUR // SYS.INIT</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23020609'/><rect x='2' y='2' width='60' height='60' rx='10' fill='none' stroke='%2300c3ff' stroke-width='2' opacity='0.6'/><text x='50%25' y='54%25' font-family='monospace' font-size='28' font-weight='bold' fill='%2300c3ff' text-anchor='middle' dominant-baseline='middle'>DB</text><rect x='8' y='52' width='48' height='2' rx='1' fill='%2300c3ff' opacity='0.4'/></svg>">
+<style>
+  :root {
+    --blue: #00c3ff;
+    --blue-dim: #0077aa;
+    --blue-glow: #00c3ff28;
+    --blue-glow2: #00c3ff55;
+    --darker: #020609;
+    --panel: rgba(5,18,35,0.88);
+    --border: rgba(0,195,255,0.18);
+    --border-hover: rgba(0,195,255,0.55);
+    --text: #a8d8f0;
+    --text-dim: #5a8aaa;
+    --white: #e8f4ff;
+    --cyan: #00eeff;
+    --purple: #7b5ea7;
+    --amber: #f59e0b;
+    --red: #f43f5e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--darker);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,100,200,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.65) 100%);
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  #matrix-bg { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.1; }
+
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 1;
+    background-image: linear-gradient(rgba(0,195,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,195,255,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 2; filter: blur(80px); opacity: 0.06; }
+  .orb-1 { width: 500px; height: 500px; background: #0066ff; top: -100px; right: -100px; animation: orbFloat 12s ease-in-out infinite; }
+  .orb-2 { width: 400px; height: 400px; background: #00ccff; bottom: 10%; left: -100px; animation: orbFloat 16s ease-in-out infinite reverse; }
+  @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,20px)} }
+
+  .container { position: relative; z-index: 10; max-width: 1120px; margin: 0 auto; padding: 20px 16px; }
+
+  /* BOOT */
+  #boot-screen {
+    position: fixed; inset: 0; background: #000; z-index: 10000;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 0.82rem; color: var(--blue);
+    padding: 24px; transition: opacity 0.6s;
+  }
+  #boot-text { width: 100%; max-width: 680px; line-height: 2; }
+  #boot-text div { opacity: 0; transition: opacity 0.2s; }
+  .boot-ok { color: #22c55e; }
+  .boot-warn { color: var(--amber); }
+  .boot-hi { color: var(--cyan); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* HEADER */
+  header {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative;
+    backdrop-filter: blur(20px);
+    animation: fadeUp 0.7s ease both;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, var(--blue), var(--cyan), transparent);
+  }
+  header::after {
+    content: '';
+    position: absolute; top:-80px; right:-80px;
+    width:300px; height:300px;
+    background: radial-gradient(circle, rgba(0,195,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-inner {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  /* PHOTO */
+  .photo-zone {
+    width: 140px; height: 175px;
+    border: 1px solid var(--border-hover);
+    border-radius: 12px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 0 30px var(--blue-glow);
+    cursor: pointer; transition: box-shadow 0.3s;
+  }
+  .photo-zone:hover { box-shadow: 0 0 40px var(--blue-glow2); }
+  .photo-zone img { width:100%; height:100%; object-fit:cover; border-radius:11px; }
+  .photo-placeholder { text-align:center; color:var(--blue-dim); font-size:0.62rem; letter-spacing:1px; font-family:'Space Mono',monospace; padding:10px; }
+  .photo-scan {
+    position:absolute; top:0; left:-100%; width:50%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(0,195,255,0.12), transparent);
+    animation: scan 3s linear infinite; pointer-events:none;
+  }
+  @keyframes scan { to { left: 200%; } }
+
+  /* NAME BLOCK */
+  .status-bar {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    color: var(--blue-dim); letter-spacing: 2px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .status-dot { width:7px; height:7px; border-radius:50%; background:var(--blue); animation:pulse 2s infinite; box-shadow:0 0 8px var(--blue); flex-shrink:0; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+  h1 { font-family:'Syne',sans-serif; font-size:2.8rem; font-weight:800; color:var(--white); line-height:1.05; letter-spacing:-1px; }
+  h1 .accent { color:var(--blue); text-shadow:0 0 30px var(--blue-glow2); }
+
+  .glitch { position:relative; display:inline-block; }
+  .glitch::before, .glitch::after { content:attr(data-text); position:absolute; top:0; left:0; width:100%; height:100%; font-family:inherit; font-size:inherit; font-weight:inherit; color:inherit; }
+  .glitch::before { color:var(--cyan); animation:glitch1 5s infinite; clip-path:polygon(0 0,100% 0,100% 40%,0 40%); opacity:0.6; }
+  .glitch::after { color:var(--purple); animation:glitch2 5s infinite; clip-path:polygon(0 60%,100% 60%,100% 100%,0 100%); opacity:0.6; }
+  @keyframes glitch1 { 0%,88%,100%{transform:translate(0)} 90%{transform:translate(-3px,1px)} 93%{transform:translate(2px,-1px)} 96%{transform:translate(0)} }
+  @keyframes glitch2 { 0%,88%,100%{transform:translate(0)} 90%{transform:translate(3px,2px)} 93%{transform:translate(-2px,0)} 96%{transform:translate(0)} }
+
+  .subtitle { font-family:'Space Mono',monospace; font-size:0.68rem; color:var(--blue); letter-spacing:2px; margin-top:8px; line-height:1.6; }
+  .tagline { margin-top:12px; font-size:0.86rem; color:var(--text); opacity:0.75; line-height:1.7; font-weight:300; max-width:520px; }
+
+  .contact-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .contact-chip {
+    font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--blue);
+    border:1px solid var(--border); border-radius:6px; padding:6px 12px;
+    letter-spacing:0.5px; text-decoration:none; transition:all 0.25s;
+    background:rgba(0,195,255,0.04);
+  }
+  .contact-chip:hover { background:rgba(0,195,255,0.12); border-color:var(--blue); box-shadow:0 0 14px var(--blue-glow); color:var(--white); transform:translateY(-1px); }
+
+  /* PANELS */
+  .panel {
+    background: var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:24px; margin-bottom:16px; position:relative; backdrop-filter:blur(20px);
+    animation:fadeUp 0.7s ease both; overflow:hidden; transition:border-color 0.3s;
+  }
+  .panel:hover { border-color:rgba(0,195,255,0.3); }
+  .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(0,195,255,0.3), transparent); }
+
+  .panel-title {
+    font-family:'Space Mono',monospace; font-size:0.65rem; font-weight:700;
+    color:var(--blue); letter-spacing:4px; margin-bottom:20px;
+    display:flex; align-items:center; gap:10px; text-transform:uppercase;
+  }
+  .panel-title .arrow { color:var(--cyan); }
+  .panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, var(--border), transparent); }
+
+  /* SKILL GROUPS */
+  .skill-groups { display:flex; flex-direction:column; gap:16px; }
+  .skill-group-label {
+    font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--text-dim);
+    letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .skill-group-label::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue); box-shadow:0 0 6px var(--blue); flex-shrink:0; }
+  .skill-group-label.sec::before { background:var(--red); box-shadow:0 0 6px var(--red); }
+  .skill-group-label.fe::before { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+  .skills-row { display:flex; flex-wrap:wrap; gap:7px; }
+
+  .skill-tag {
+    font-family:'Space Mono',monospace; font-size:0.7rem;
+    border:1px solid var(--border); border-radius:6px; padding:5px 14px;
+    color:var(--text); letter-spacing:1px; position:relative; overflow:hidden;
+    transition:all 0.3s; cursor:default; background:rgba(0,195,255,0.03);
+  }
+  .skill-tag::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--blue),var(--cyan)); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; z-index:-1; border-radius:5px; }
+  .skill-tag:hover { color:#000; border-color:var(--blue); box-shadow:0 0 16px var(--blue-glow2); transform:translateY(-2px); }
+  .skill-tag:hover::before { transform:scaleX(1); }
+  .skill-tag.sec { border-color:rgba(244,63,94,0.25); color:var(--text); }
+  .skill-tag.sec::before { background:linear-gradient(135deg,var(--red),#ff6b8a); }
+  .skill-tag.sec:hover { border-color:var(--red); box-shadow:0 0 16px rgba(244,63,94,0.4); }
+  .skill-tag.fe { border-color:rgba(245,158,11,0.25); }
+  .skill-tag.fe::before { background:linear-gradient(135deg,var(--amber),#fcd34d); }
+  .skill-tag.fe:hover { border-color:var(--amber); box-shadow:0 0 16px rgba(245,158,11,0.4); }
+
+  /* EXPERIENCE */
+  .exp-item { margin-bottom:26px; padding-left:22px; border-left:2px solid rgba(0,195,255,0.2); position:relative; }
+  .exp-item:last-child { margin-bottom:0; }
+  .exp-item::before { content:''; position:absolute; left:-5px; top:5px; width:8px; height:8px; border-radius:50%; background:var(--blue); box-shadow:0 0 10px var(--blue); }
+  .exp-role { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; color:var(--white); }
+  .exp-org { font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--blue-dim); letter-spacing:1px; margin:4px 0 10px; }
+  .exp-desc { font-size:0.8rem; color:var(--text); line-height:1.8; opacity:0.8; font-weight:300; }
+  .exp-desc li { margin-bottom:4px; list-style:none; padding-left:18px; position:relative; }
+  .exp-desc li::before { content:'→'; position:absolute; left:0; color:var(--blue); font-size:0.75rem; }
+
+  /* PROJECTS */
+  .projects-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
+  .project-card { border:1px solid var(--border); border-radius:12px; padding:18px; position:relative; overflow:hidden; transition:all 0.3s; background:rgba(0,195,255,0.02); }
+  .project-card:hover { border-color:rgba(0,195,255,0.4); box-shadow:0 8px 32px rgba(0,195,255,0.1); transform:translateY(-4px); background:rgba(0,195,255,0.04); }
+  .project-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--blue),var(--cyan)); transform:scaleX(0); transition:transform 0.4s; }
+  .project-card:hover::after { transform:scaleX(1); }
+  .project-name { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; color:var(--white); margin-bottom:8px; }
+  .project-lang { display:inline-block; font-family:'Space Mono',monospace; font-size:0.6rem; border:1px solid rgba(0,195,255,0.3); border-radius:4px; color:var(--blue); padding:2px 9px; letter-spacing:1px; margin-bottom:9px; background:rgba(0,195,255,0.06); }
+  .project-desc { font-size:0.76rem; color:var(--text); opacity:0.75; line-height:1.65; font-weight:300; }
+  .project-link { display:inline-flex; align-items:center; gap:4px; margin-top:10px; font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--blue-dim); text-decoration:none; letter-spacing:1px; transition:all 0.2s; border-bottom:1px solid transparent; }
+  .project-link:hover { color:var(--blue); border-bottom-color:var(--blue); }
+
+  /* EDUCATION */
+  .edu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+  .edu-card { border:1px solid var(--border); border-radius:10px; padding:14px; background:rgba(0,195,255,0.02); transition:all 0.3s; }
+  .edu-card:hover { border-color:rgba(0,195,255,0.3); transform:translateY(-2px); }
+  .edu-year { font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--amber); letter-spacing:2px; margin-bottom:5px; }
+  .edu-inst { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; color:var(--white); margin-bottom:3px; }
+  .edu-degree { font-size:0.73rem; color:var(--text-dim); font-weight:300; }
+
+  /* LANGUAGES */
+  .lang-list { display:flex; flex-direction:column; gap:13px; }
+  .lang-item { display:flex; align-items:center; gap:12px; }
+  .lang-name { font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:2px; min-width:72px; color:var(--white); }
+  .lang-bar-wrap { flex:1; height:3px; background:rgba(0,195,255,0.1); border-radius:2px; overflow:hidden; }
+  .lang-bar { height:100%; background:linear-gradient(90deg,var(--blue),var(--cyan)); border-radius:2px; box-shadow:0 0 10px var(--blue); animation:barGrow 1.5s cubic-bezier(0.4,0,0.2,1) both; }
+  @keyframes barGrow { from { width: 0 !important; } }
+  .lang-level { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--blue); min-width:26px; text-align:right; letter-spacing:1px; }
+
+  /* BOTTOM GRID */
+  .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+  /* INTERESTS */
+  .interest-list { display:flex; flex-wrap:wrap; gap:7px; }
+  .interest-item { font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text); border:1px solid var(--border); border-radius:20px; padding:5px 13px; opacity:0.8; letter-spacing:0.5px; transition:all 0.2s; background:rgba(0,195,255,0.02); }
+  .interest-item:hover { border-color:rgba(0,195,255,0.4); color:var(--white); background:rgba(0,195,255,0.07); }
+
+  /* FOOTER */
+  footer { border:1px solid var(--border); border-radius:12px; padding:14px 24px; text-align:center; margin-top:16px; font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--text-dim); letter-spacing:3px; animation:fadeUp 0.7s ease 0.5s both; background:var(--panel); backdrop-filter:blur(20px); }
+
+  .cursor { display:inline-block; width:7px; height:0.9em; background:var(--blue); vertical-align:middle; border-radius:1px; animation:cursorBlink 1s step-end infinite; box-shadow:0 0 6px var(--blue); }
+  @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  .corner-tl,.corner-br,.corner-tr,.corner-bl { position:absolute; width:14px; height:14px; }
+  .corner-tl { top:-1px; left:-1px; border-top:2px solid var(--blue); border-left:2px solid var(--blue); border-radius:2px 0 0 0; }
+  .corner-tr { top:-1px; right:-1px; border-top:2px solid var(--blue); border-right:2px solid var(--blue); border-radius:0 2px 0 0; }
+  .corner-bl { bottom:-1px; left:-1px; border-bottom:2px solid var(--blue); border-left:2px solid var(--blue); border-radius:0 0 0 2px; }
+  .corner-br { bottom:-1px; right:-1px; border-bottom:2px solid var(--blue); border-right:2px solid var(--blue); border-radius:0 0 2px 0; }
+
+  .panel:nth-child(1){animation-delay:0.05s}
+  .panel:nth-child(2){animation-delay:0.1s}
+  .panel:nth-child(3){animation-delay:0.15s}
+  .panel:nth-child(4){animation-delay:0.2s}
+
+  /* ===================== MOBILE ===================== */
+  @media (max-width: 768px) {
+    .container { padding: 14px 12px; }
+
+    /* Header: photo on top centered, then name below */
+    .header-inner {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .photo-zone { width: 120px; height: 150px; }
+
+    h1 { font-size: 2.2rem; letter-spacing: -0.5px; }
+    h1 span[style] { font-size: 1.5rem !important; }
+
+    .status-bar { justify-content: center; }
+    .tagline { max-width: 100%; font-size: 0.82rem; }
+    .contact-row { justify-content: center; }
+
+    /* Stack bottom grid */
+    .bottom-grid { grid-template-columns: 1fr; }
+
+    /* Panels full padding */
+    .panel { padding: 18px 16px; }
+    header { padding: 20px 16px; }
+
+    /* Skills wrap nicely */
+    .skills-row { gap: 6px; }
+    .skill-tag { font-size: 0.65rem; padding: 4px 11px; }
+
+    /* Projects single col on very small */
+    .projects-grid { grid-template-columns: 1fr; }
+
+    /* Edu 1 col */
+    .edu-grid { grid-template-columns: 1fr 1fr; }
+
+    .boot-hi, .boot-ok, .boot-warn { font-size: 0.75rem; }
+    #boot-screen { font-size: 0.75rem; padding: 16px; }
+  }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 1.8rem; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .contact-chip { font-size: 0.6rem; padding: 5px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="boot-screen">
+  <div id="boot-text"></div>
+</div>
+
+<canvas id="matrix-bg"></canvas>
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container" id="main-content" style="display:none">
+
+  <header>
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div class="corner-bl"></div><div class="corner-br"></div>
+    <div class="header-inner">
+      <div class="photo-zone" id="photo-zone" title="Click to change photo">
+        <img id="profile-photo" src="1000038773.png" alt="Profile Photo" style="display:block;">
+        <div class="photo-placeholder" id="photo-placeholder" style="display:none;">
+          <div style="font-size:2rem;margin-bottom:8px;opacity:0.4;">◈</div>
+          INSERT PHOTO
+        </div>
+        <div class="photo-scan"></div>
+      </div>
+      <div class="name-block">
+        <div class="status-bar">
+          <div class="status-dot"></div>
+          SYS.ONLINE &nbsp;·&nbsp; VSB-TUO &nbsp;·&nbsp; OSTRAVA, CZ
+        </div>
+        <h1>
+          <span class="glitch" data-text="DHAKIR"><span class="accent">DHAKIR</span></span><br>
+          <span class="glitch" data-text="BOULMECHAOUR" style="font-size:1.9rem;letter-spacing:-0.5px;">BOULMECHAOUR</span>
+        </h1>
+        <div class="subtitle">
+          BACKEND &amp; SYSTEMS ENGINEER &nbsp;//&nbsp; FULL-STACK DEV &nbsp;//&nbsp; CS STUDENT
+        </div>
+        <p class="tagline">
+          3rd-year Computer Science student at VSB-TUO, Ostrava.<br>
+          Focused on systems, security &amp; backend engineering.<br>
+          Builder of real tools. Solver of hard problems.
+        </p>
+        <div class="contact-row">
+          <a class="contact-chip" href="tel:+420722449000">📞 +420 722 449 000</a>
+          <a class="contact-chip" href="mailto:dakirboulmchaour@gmail.com">✉ dakirboulmchaour@gmail.com</a>
+          <a class="contact-chip" href="https://github.com/dakirBLM" target="_blank">⌥ github/dakirBLM</a>
+          <a class="contact-chip" href="https://www.linkedin.com/in/dhakir-boulmechaour-b9584327a/" target="_blank">◈ LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SKILLS -->
+  <div class="panel">
+    <div class="panel-title"><span class="arrow">▸</span> TECH_STACK</div>
+    <div class="skill-groups">
+
+      <div>
+        <div class="skill-group-label sec">SYSTEMS &amp; SECURITY</div>
+        <div class="skills-row">
+          <div class="skill-tag sec">C / C++</div>
+          <div class="skill-tag sec">TCP/IP Sockets</div>
+          <div class="skill-tag sec">SSL / TLS</div>
+          <div class="skill-tag sec">Multi-threading</div>
+          <div class="skill-tag sec">System Design</div>
+          <div class="skill-tag sec">Intrusion Prevention</div>
+          <div class="skill-tag sec">OS Programming</div>
+          <div class="skill-tag sec">Network Security</div>
+        <div class="skill-tag sec">Linux</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">BACKEND</div>
+        <div class="skills-row">
+          <div class="skill-tag">Python</div>
+          <div class="skill-tag">Django</div>
+          <div class="skill-tag">SQL / PostgreSQL</div>
+          <div class="skill-tag">REST APIs</div>
+          <div class="skill-tag">Git</div>
+          <div class="skill-tag">Docker</div>
+          <div class="skill-tag">CI/CD</div>
+          <div class="skill-tag">Azure</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label fe">FRONTEND &amp; DATA</div>
+        <div class="skills-row">
+          <div class="skill-tag fe">HTML / CSS / JS</div>
+          <div class="skill-tag fe">Figma</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="panel">
+    <div class="panel-title"><span class="arrow">▸</span> PROJECTS</div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-name">Secure C++ Chat Server</div>
+        <div class="project-lang">C++</div>
+        <p class="project-desc">Multi-client TCP server with SSL/TLS encryption, user authentication, intrusion prevention system, and real-time monitoring dashboard.</p>
+      </div>
+      <div class="project-card">
+        <div class="project-name">Patient Management System</div>
+        <div class="project-lang">Python / Django</div>
+        <p class="project-desc">Serving 200+ daily patients. Automates payment calculations & PDF report generation. Reduced administrative time by 60%.</p>
+        <a class="project-link" href="https://github.com/dakirBLM/-Patient-Management-System-for-Clinics" target="_blank">↗ View Repository</a>
+      </div>
+      <div class="project-card">
+        <div class="project-name">Network Battleship</div>
+        <div class="project-lang">C++</div>
+        <p class="project-desc">Multiplayer Battleship game over TCP sockets with multi-threading for simultaneous player management and real-time turn coordination.</p>
+        <a class="project-link" href="https://github.com/dakirBLM/Socket-Battleship-C-Threads-" target="_blank">↗ View Repository</a>
+      </div>
+      <div class="project-card">
+        <div class="project-name">NASMA E-Commerce</div>
+        <div class="project-lang">Python / Django</div>
+        <p class="project-desc">Full-stack multi-language e-commerce platform. Product catalog, shopping cart, payment integration. PostgreSQL + responsive frontend.</p>
+        <a class="project-link" href="https://github.com/dakirBLM/NASMA-Perfume-E-Shop" target="_blank">↗ View Repository</a>
+      </div>
+      <div class="project-card">
+        <div class="project-name">Healthcare Platform</div>
+        <div class="project-lang">Python / Django</div>
+        <p class="project-desc">Trilingual (AR/EN/CZ) portal with Argon2 hashing, CSRF, IP-blocking middleware for brute-force prevention, RBAC, and admin dashboard.</p>
+      </div>
+      <div class="project-card">
+        <div class="project-name">TCP Task Manager</div>
+        <div class="project-lang">C / C++</div>
+        <p class="project-desc">Multi-threaded TCP client-server implementing producer-consumer with semaphores and priority queues. OS-level concurrency control.</p>
+        <a class="project-link" href="https://github.com/dakirBLM/TCP-Multi-Client-Task-Manager-Producer-Consumer-with-Priority-Queue" target="_blank">↗ View Repository</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="panel">
+    <div class="panel-title"><span class="arrow">▸</span> EXPERIENCE</div>
+    <div class="exp-item">
+      <div class="exp-role">Freelance Software Developer</div>
+      <div class="exp-org">SELF-EMPLOYED — Ostrava, Czech Republic</div>
+      <ul class="exp-desc">
+        <li>Built Django-based Patient Management System serving 200+ daily patients</li>
+        <li>Created trilingual (Arabic/English/Czech) healthcare websites with full admin dashboard</li>
+        <li>Automated email notifications, pricing control, and patient form submissions</li>
+        <li>Developed full-stack e-commerce platform with payment integration and PostgreSQL backend</li>
+      </ul>
+    </div>
+    <div class="exp-item">
+      <div class="exp-role">Volunteer Organizer & Erasmus Buddy</div>
+      <div class="exp-org">GDG Constantine & ESN — Algeria</div>
+      <ul class="exp-desc">
+        <li>Organized and monitored hackathons and technology events</li>
+        <li>Erasmus Student Buddy — supporting international students in academic & social integration</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="panel-title"><span class="arrow">▸</span> EDUCATION</div>
+      <div class="edu-grid">
+        <div class="edu-card">
+          <div class="edu-year">2023 → PRESENT</div>
+          <div class="edu-inst">VSB-TU Ostrava</div>
+          <div class="edu-degree">B.Sc. Computer Science</div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-year">2022 → 2023</div>
+          <div class="edu-inst">Constantine 2 Univ.</div>
+          <div class="edu-degree">B.Sc. CS & Mathematics</div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-year">2019 → 2022</div>
+          <div class="edu-inst">Houari Boumediene HS</div>
+          <div class="edu-degree">Natural Science & Tech</div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-year">2022 → 2023</div>
+          <div class="edu-inst">ULC Language Center</div>
+          <div class="edu-degree">English Language — C1</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="panel">
+        <div class="panel-title"><span class="arrow">▸</span> LANGUAGES</div>
+        <div class="lang-list">
+          <div class="lang-item">
+            <div class="lang-name">ARABIC</div>
+            <div class="lang-bar-wrap"><div class="lang-bar" style="width:100%;animation-delay:0.4s"></div></div>
+            <div class="lang-level">C2</div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">ENGLISH</div>
+            <div class="lang-bar-wrap"><div class="lang-bar" style="width:90%;animation-delay:0.6s"></div></div>
+            <div class="lang-level">C1</div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">FRENCH</div>
+            <div class="lang-bar-wrap"><div class="lang-bar" style="width:72%;animation-delay:0.8s"></div></div>
+            <div class="lang-level">B2</div>
+          </div>
+          <div class="lang-item">
+            <div class="lang-name">GERMAN</div>
+            <div class="lang-bar-wrap"><div class="lang-bar" style="width:20%;animation-delay:1s"></div></div>
+            <div class="lang-level">A1</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="arrow">▸</span> INTERESTS</div>
+        <div class="interest-list">
+          <div class="interest-item">🏊 Swimming</div>
+          <div class="interest-item">🥊 Boxing</div>
+          <div class="interest-item">⚽ Football</div>
+          <div class="interest-item">🎻 Violin</div>
+          <div class="interest-item">✈ Travel</div>
+          <div class="interest-item">🔐 Cybersecurity</div>
+          <div class="interest-item">🌐 Networking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    DHAKIR BOULMECHAOUR &nbsp;//&nbsp; <span id="year"></span> &nbsp;//&nbsp; github.com/dakirBLM <span class="cursor"></span>
+  </footer>
+
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// MATRIX RAIN
+const canvas = document.getElementById('matrix-bg');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+const chars = '01アイウエオカキクケコ<>{}[]//\\ABCDEFGHIJKLMNOP';
+const fontSize = 13;
+let drops = Array(Math.floor(canvas.width / fontSize)).fill(1);
+window.addEventListener('resize', () => { resizeCanvas(); drops = Array(Math.floor(canvas.width/fontSize)).fill(1); });
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(2,6,9,0.06)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = fontSize + 'px Space Mono';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = Math.random() > 0.96 ? '#ffffff' : Math.random() > 0.5 ? '#00c3ff' : '#004466';
+    ctx.fillText(char, i * fontSize, y * fontSize);
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 55);
+
+// BOOT
+const bootLines = [
+  {t:'UEFI Secure Boot v3.1 ........', c:''},
+  {t:'RAM: 16384MB DDR5 ............. [OK]', c:'boot-ok'},
+  {t:'NVMe SSD detected ............. [OK]', c:'boot-ok'},
+  {t:'Loading network stack .........', c:''},
+  {t:'SSL/TLS 1.3 ................... [ENABLED]', c:'boot-ok'},
+  {t:'Firewall ...................... [ACTIVE]', c:'boot-ok'},
+  {t:'', c:''},
+  {t:'> Scanning identity record ...', c:'boot-hi'},
+  {t:'> Subject     : DHAKIR BOULMECHAOUR', c:'boot-hi'},
+  {t:'> Location    : OSTRAVA, CZ [49.8°N 18.2°E]', c:'boot-hi'},
+  {t:'> Role        : BACKEND & SYSTEMS ENGINEER', c:'boot-hi'},
+  {t:'> Focus       : SYSTEMS / SECURITY / FULL-STACK', c:'boot-hi'},
+  {t:'> Clearance   : GRANTED ✓', c:'boot-ok'},
+  {t:'', c:''},
+  {t:'SYSTEM READY.', c:'boot-warn'},
+];
+const bootEl = document.getElementById('boot-text');
+const bootScreen = document.getElementById('boot-screen');
+const main = document.getElementById('main-content');
+let lineIdx = 0;
+function typeBootLine() {
+  if (lineIdx >= bootLines.length) {
+    setTimeout(() => {
+      bootScreen.style.opacity = '0';
+      setTimeout(() => { bootScreen.style.display='none'; main.style.display='block'; }, 600);
+    }, 600);
+    return;
+  }
+  const {t, c} = bootLines[lineIdx];
+  const p = document.createElement('div');
+  p.textContent = t || '\u00a0';
+  if (c) p.className = c;
+  p.style.opacity = '0';
+  bootEl.appendChild(p);
+  requestAnimationFrame(() => { p.style.transition='opacity 0.2s'; p.style.opacity='1'; });
+  lineIdx++;
+  setTimeout(typeBootLine, t==='' ? 80 : t.startsWith('>') ? 180 : 100);
+}
+typeBootLine();
+
+// PHOTO
+const photoZone = document.getElementById('photo-zone');
+const photoImg = document.getElementById('profile-photo');
+const photoPlaceholder = document.getElementById('photo-placeholder');
+photoZone.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { photoImg.src=ev.target.result; photoImg.style.display='block'; photoPlaceholder.style.display='none'; };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Appointments • {{ clinic.clinic_name }} • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body { overflow-x: hidden; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ── Header ── */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.28s ease;
+            will-change: transform;
+        }
+
+        .main-header.hidden { transform: translateY(-110%); }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback { width: 100%; height: 100%; object-fit: contain; display: none; }
+
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; }
+
+        .nav-icons { display: flex; align-items: center; gap: 20px; }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16,24,40,0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong { color: #1f2937; font-size: 14px; }
+        .dropdown-list { list-style: none; margin: 0; padding: 8px 0; }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover { background: #f9fafb; color: #3b82f6; padding-left: 20px; }
+        .dropdown-list li a i { width: 18px; text-align: center; }
+
+        /* ── Layout ── */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar-left { position: sticky; top: 88px; height: fit-content; }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+            flex-shrink: 0;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%),
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(39,201,255,0.3);
+            box-shadow: 0 0 12px rgba(208,255,39,0.218), 0 0 6px rgba(229,255,159,0.361);
+            z-index: 1;
+            pointer-events: none;
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0%   { transform: scale(0.96); opacity: 0.7; }
+            50%  { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; position: relative; z-index: 4; }
+
+        .profile-info h3 { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+        .profile-info p  { font-size: 14px; color: #6b7280; }
+
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover { background: linear-gradient(90deg, rgba(59,130,246,0.05), transparent); color: #3b82f6; padding-left: 24px; }
+        .nav-item.active { background: linear-gradient(90deg, rgba(59,130,246,0.1), transparent); color: #3b82f6; border-left-color: #3b82f6; font-weight: 500; }
+        .nav-item i { width: 20px; text-align: center; font-size: 16px; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* ── Main content ── */
+        .main-content { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+        .flash-messages {
+            display: grid;
+            gap: 10px;
+        }
+
+        .flash-message {
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid transparent;
+            background: #f8fafc;
+            color: #1f2937;
+            transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.35s ease, margin 0.35s ease, padding 0.35s ease;
+            max-height: 120px;
+            overflow: hidden;
+        }
+
+        .flash-message.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+            max-height: 0;
+            margin: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+        }
+
+        .flash-message.success {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        .flash-message.error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .flash-message.warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+
+        .flash-message.info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        .appointments-and-calendar {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .page-title { font-size: 28px; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .page-subtitle { color: #6b7280; font-size: 16px; }
+
+        /* ── Quick actions ── */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .quick-actions::-webkit-scrollbar { display: none; }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .action-btn:hover { background: #f9fafb; color: #1f2937; border-color: #d1d5db; }
+        .action-btn.active { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border-color: #3b82f6; }
+
+        /* ── Stats ── */
+        .appointment-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+        .stat-number { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+        .stat-label  { font-size: 14px; color: #6b7280; font-weight: 500; }
+        .stat-total    { color: #3b82f6; }
+        .stat-pending  { color: #f59e0b; }
+        .stat-accepted { color: #10b981; }
+        .stat-payed    { color: #2563eb; }
+        .stat-upcoming { color: #8b5cf6; }
+
+        /* ── Stats grid in sidebar ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-item { background: #f8fafc; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #f1f5f9; transition: all 0.2s ease; }
+        .stat-item:hover { background: #f1f5f9; transform: translateY(-2px); }
+
+        /* ─────────────────────────────────────────
+           APPOINTMENT CARD — redesigned
+        ───────────────────────────────────────── */
+
+        .appointments-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .appointment-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeSlideIn 0.35s ease-out both;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .appointment-card:nth-child(1) { animation-delay: 0.05s; }
+        .appointment-card:nth-child(2) { animation-delay: 0.10s; }
+        .appointment-card:nth-child(3) { animation-delay: 0.15s; }
+        .appointment-card:nth-child(4) { animation-delay: 0.20s; }
+        .appointment-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* Status stripe */
+        .status-stripe {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            border-radius: 16px 0 0 16px;
+        }
+
+        .stripe-pending                                      { background: #f59e0b; animation: stripePulse 2.2s ease-in-out infinite; }
+        .stripe-accepted_record_accepted_accommodation      { background: #10b981; animation: stripeBreathe 3s ease-in-out infinite; }
+        .stripe-accepted_record_accommodation_change_requested { background: #f97316; animation: stripePulse 1.5s ease-in-out infinite; }
+        .stripe-rejected_medical_record                    { background: #ef4444; }
+        .stripe-cancelled                                   { background: #ef4444; }
+        .stripe-waiting_for_payment                         { background: #f59e0b; animation: stripePulse 2s ease-in-out infinite; }
+        .stripe-paid                                        { background: #3b82f6; }
+        .stripe-upcoming                                    { background: #8b5cf6; }
+        /* Legacy status support */
+        .stripe-accepted                      { background: #10b981; animation: stripeBreathe 3s ease-in-out infinite; }
+        .stripe-payed                         { background: #3b82f6; }
+        .stripe-payment_pending               { background: #f59e0b; animation: stripePulse 2s ease-in-out infinite; }
+        .stripe-clinic_date_change_proposed   { background: #f97316; animation: stripePulse 1.5s ease-in-out infinite; }
+        .stripe-patient_date_change_requested { background: #8b5cf6; animation: stripePulse 2s ease-in-out infinite; }
+        .stripe-awaiting_accommodation        { background: #06b6d4; animation: stripeBreathe 2.5s ease-in-out infinite; }
+        .stripe-completed                     { background: #d1d5db; }
+        .stripe-rejected                      { background: #ef4444; }
+
+        @keyframes stripePulse   { 0%,100%{opacity:1} 50%{opacity:.35} }
+        @keyframes stripeBreathe { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+        .card-inner { padding: 20px 20px 20px 22px; }
+
+        /* Card head */
+        .card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .patient-row { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 0; }
+
+        .patient-avatar-new {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: white;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .patient-avatar-new img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; }
+
+        .patient-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 3px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .requested-date { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 5px; }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: 0.2px;
+        }
+
+        .badge-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+        .badge-pending             { background: #fef3c7; color: #92400e; }
+        .badge-pending .badge-dot  { background: #f59e0b; animation: dotPulse 2.2s ease-in-out infinite; }
+
+        .badge-accepted_record_accepted_accommodation             { background: #d1fae5; color: #065f46; }
+        .badge-accepted_record_accepted_accommodation .badge-dot  { background: #10b981; animation: dotBreathe 3s ease-in-out infinite; }
+
+        .badge-accepted_record_accommodation_change_requested             { background: #ffedd5; color: #9a3412; }
+        .badge-accepted_record_accommodation_change_requested .badge-dot  { background: #f97316; animation: dotPulse 1.5s ease-in-out infinite; }
+
+        .badge-rejected_medical_record             { background: #fee2e2; color: #991b1b; }
+        .badge-rejected_medical_record .badge-dot  { background: #ef4444; }
+
+        .badge-cancelled             { background: #fee2e2; color: #991b1b; }
+        .badge-cancelled .badge-dot  { background: #ef4444; }
+
+        .badge-waiting_for_payment             { background: #fef3c7; color: #92400e; }
+        .badge-waiting_for_payment .badge-dot  { background: #f59e0b; animation: dotPulse 2s ease-in-out infinite; }
+
+        .badge-paid             { background: #dbeafe; color: #1e40af; }
+        .badge-paid .badge-dot  { background: #3b82f6; }
+
+        .badge-upcoming             { background: #ede9fe; color: #5b21b6; }
+        .badge-upcoming .badge-dot  { background: #8b5cf6; animation: dotBreathe 2.5s ease-in-out infinite; }
+
+        /* Legacy badge support */
+        .badge-accepted             { background: #d1fae5; color: #065f46; }
+        .badge-accepted .badge-dot  { background: #10b981; animation: dotBreathe 3s ease-in-out infinite; }
+
+        .badge-payed             { background: #dbeafe; color: #1e40af; }
+        .badge-payed .badge-dot  { background: #3b82f6; }
+
+        .badge-payment_pending             { background: #fef3c7; color: #92400e; }
+        .badge-payment_pending .badge-dot  { background: #f59e0b; animation: dotPulse 2s ease-in-out infinite; }
+
+        .badge-clinic_date_change_proposed             { background: #ffedd5; color: #9a3412; }
+        .badge-clinic_date_change_proposed .badge-dot  { background: #f97316; animation: dotPulse 1.5s ease-in-out infinite; }
+
+        .badge-patient_date_change_requested             { background: #ede9fe; color: #5b21b6; }
+        .badge-patient_date_change_requested .badge-dot  { background: #8b5cf6; animation: dotPulse 2s ease-in-out infinite; }
+
+        .badge-awaiting_accommodation             { background: #cffafe; color: #164e63; }
+        .badge-awaiting_accommodation .badge-dot  { background: #06b6d4; animation: dotBreathe 2.5s ease-in-out infinite; }
+
+        .badge-completed             { background: #f3f4f6; color: #4b5563; }
+        .badge-completed .badge-dot  { background: #9ca3af; }
+
+        .badge-rejected             { background: #fee2e2; color: #991b1b; }
+        .badge-rejected .badge-dot  { background: #ef4444; }
+
+        @keyframes dotPulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
+        @keyframes dotBreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+        /* Meta grid */
+        .appt-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .meta-cell {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 14px;
+            transition: background 0.15s;
+            min-width: 0;
+        }
+
+        .meta-key {
+            font-size: 10px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .meta-val {
+            font-size: 13px;
+            color: #1f2937;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .meta-val .sub { display: block; font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+        /* Highlighted cells */
+        .meta-cell.cell-highlight { background: #eff6ff; border-color: #bfdbfe; animation: cellHighlight 0.5s ease-out; }
+        .meta-cell.cell-highlight .meta-key { color: #1d4ed8; }
+        .meta-cell.cell-highlight .meta-val { color: #1e40af; font-weight: 500; }
+
+        .meta-cell.cell-warning { background: #fffbeb; border-color: #fcd34d; }
+        .meta-cell.cell-warning .meta-key { color: #92400e; }
+        .meta-cell.cell-warning .meta-val { color: #78350f; font-weight: 500; }
+
+        .meta-cell.cell-success { background: #f0fdf4; border-color: #bbf7d0; }
+        .meta-cell.cell-success .meta-key { color: #065f46; }
+        .meta-cell.cell-success .meta-val { color: #047857; font-weight: 500; }
+
+        .meta-cell.cell-waiting { background: #faf5ff; border-color: #e9d5ff; }
+        .meta-cell.cell-waiting .meta-key { color: #6b21a8; }
+        .meta-cell.cell-waiting .meta-val { color: #7e22ce; }
+
+        @keyframes cellHighlight { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:scale(1)} }
+
+        /* Notes */
+        .note-block {
+            border-left: 3px solid;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .note-block .note-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .note-patient { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+        .note-clinic  { border-color: #f97316; background: #fff7ed; color: #9a3412; }
+        .note-reply   { border-color: #06b6d4; background: #ecfeff; color: #155e75; }
+
+        /* Divider */
+        .card-divider { border: none; border-top: 1px solid #f1f5f9; margin: 14px 0; }
+
+        /* ── Action sections (forms) ── */
+        .action-section {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .action-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-badge-warn    { background: #fef3c7; color: #92400e; }
+        .action-badge-info    { background: #dbeafe; color: #1e40af; }
+        .action-badge-neutral { background: #f3f4f6; color: #374151; }
+
+        .action-section.section-warn   { border-color: #fcd34d; background: #fffbeb; }
+        .action-section.section-warn .action-section-title { color: #92400e; }
+
+        .action-section.section-propose { border-color: #c4b5fd; background: #faf5ff; }
+        .action-section.section-propose .action-section-title { color: #6b21a8; }
+
+        /* Form layout */
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .form-row-1 { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .form-control {
+            padding: 9px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #1f2937;
+            background: white;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+
+        textarea.form-control { resize: vertical; min-height: 72px; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary  { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+
+        .btn-success  { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-success:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+
+        .btn-danger   { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .btn-danger:hover   { background: #fecaca; transform: translateY(-1px); }
+
+        .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+        .btn-secondary:hover { background: #e5e7eb; transform: translateY(-1px); }
+
+        .google-calendar-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(from 0deg, #4285f4 0 25%, #34a853 25% 50%, #fbbc05 50% 75%, #ea4335 75% 100%);
+            box-shadow: 0 4px 10px rgba(66, 133, 244, 0.16);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .google-calendar-badge::before {
+            content: 'G';
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.96);
+            color: #4285f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .btn-sm { padding: 7px 13px; font-size: 12px; }
+        .btn-full { width: 100%; justify-content: center; }
+        .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        /* Action bar */
+        .appointment-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 32px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: #f0f9ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: #0ea5e9;
+            font-size: 36px;
+        }
+
+        .empty-state h3  { font-size: 22px; font-weight: 600; color: #1f2937; margin-bottom: 12px; }
+        .empty-state p   { color: #6b7280; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+        /* ── Calendar ── */
+        .calendar-preview {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .calendar-title  { font-size: 16px; font-weight: 600; color: #1f2937; }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .calendar-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 28px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .calendar-dates {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            grid-auto-rows: 44px;
+            width: 100%;
+        }
+
+        .calendar-date {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: #374151;
+        }
+
+        .calendar-date:hover          { background: #f3f4f6; }
+        .calendar-date.today          { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .calendar-date.has-appointment{ background: #f0f9ff; border: 2px solid #3b82f6; color: #3b82f6; font-weight: 700; }
+        .calendar-date.selected-date  { border: 2px solid #3b82f6; box-shadow: 0 4px 12px rgba(59,130,246,0.15); }
+        .calendar-date.range-start,
+        .calendar-date.range-end {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            color: white;
+            border: 2px solid #0f766e;
+            font-weight: 800;
+            box-shadow: 0 6px 14px rgba(20,184,166,0.22);
+        }
+        .calendar-date.range-middle {
+            background: #ecfeff;
+            border: 2px solid #67e8f9;
+            color: #0f766e;
+            font-weight: 700;
+        }
+        .calendar-date.range-start.range-end {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-color: #7c3aed;
+        }
+        .calendar-date.has-appointment.range-middle {
+            background: #f0fdff;
+        }
+
+        .year-calendar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .month-grid    { background: white; border-radius: 10px; padding: 10px; border: 1px solid #eef2ff; }
+        .month-title   { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #1f2937; text-align: center; }
+        .month-days    { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+        .month-day     { height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #6b7280; }
+        .month-date    { height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 5px; font-size: 11px; cursor: pointer; color: #374151; }
+        .month-date:hover { background: #f3f4f6; }
+        .month-date.has-appointment { background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-weight: 700; }
+        .month-date.range-start,
+        .month-date.range-end {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            color: white;
+            border: 1px solid #0f766e;
+            font-weight: 800;
+        }
+        .month-date.range-middle {
+            background: #ecfeff;
+            border: 1px solid #67e8f9;
+            color: #0f766e;
+            font-weight: 700;
+        }
+        .month-date.range-start.range-end {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-color: #7c3aed;
+        }
+
+        /* ── Loading ── */
+        .loading-logo {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            animation: logoSpin 0.9s linear infinite;
+        }
+
+        @keyframes logoSpin { to { transform: rotate(360deg); } }
+
+        /* ── Search results ── */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0; right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list { list-style: none; margin: 0; padding: 6px 0; }
+        .results-list li { padding: 0 12px; border-radius: 8px; margin: 4px 8px; }
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            border-radius: 8px;
+            transition: background 0.14s ease, transform 0.12s ease;
+        }
+        .results-list li a:hover { background: #f8fafc; transform: translateX(3px); }
+
+        .result-avatar {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+            background: #f8fafc;
+        }
+
+        .result-info { display: flex; flex-direction: column; min-width: 0; }
+        .result-name { font-size: 14px; font-weight: 600; color: #0f172a; }
+        .result-meta { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .no-results { padding: 28px 20px; text-align: center; color: #64748b; }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .appointments-and-calendar { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; padding: 16px; }
+            .sidebar-left { position: static; display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .header-container { flex-wrap: wrap; gap: 8px 12px; align-items: center; padding: 10px 16px; }
+            .logo-container { order: 1; width: 88px; height: 44px; flex: 0 0 auto; }
+            .search-container { order: 2; flex: 1 1 auto; min-width: 120px; max-width: calc(100% - 120px); margin: 0 8px 0 0; }
+            .nav-icons { order: 3; gap: 10px; display: flex; flex: 0 0 auto; }
+            .user-menu { order: 3; flex: 0 0 auto; display: flex; justify-content: flex-end; align-items: center; margin-top: 0; margin-left: auto; border-left: 0; padding-left: 0; }
+            .page-title { font-size: 22px; }
+            .page-subtitle { font-size: 14px; }
+            .appointment-stats { grid-template-columns: repeat(2, 1fr); }
+            .stat-card { padding: 18px; }
+            .stat-number { font-size: 28px; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .form-row-3 { grid-template-columns: 1fr; }
+            .year-calendar { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 540px) {
+            .main-layout { padding: 12px; }
+            .header-container { flex-wrap: wrap; padding: 10px 14px; gap: 8px; }
+            .logo-container { order: 1; width: 72px; height: 36px; flex: 0 0 auto; }
+            .search-container { order: 2; flex: 1 1 auto; margin: 0 8px 0 6px; min-width: 0; }
+            .nav-icons { order: 3; gap: 8px; flex: 0 0 auto; }
+            .user-menu { order: 3; border-left: none; padding-left: 4px; margin-left: auto; }
+            .appointment-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 14px 10px; border-radius: 12px; }
+            .stat-number { font-size: 24px; }
+            .stat-label  { font-size: 12px; }
+            .page-header { padding: 16px; }
+            .page-title  { font-size: 18px; gap: 8px; }
+            .page-subtitle { font-size: 13px; }
+            .quick-actions { margin-top: 14px; gap: 8px; }
+            .action-btn    { padding: 8px 14px; font-size: 13px; border-radius: 10px; }
+            .appointments-list { gap: 14px; }
+            .card-inner { padding: 14px 14px 14px 16px; }
+            .appt-meta-grid { grid-template-columns: 1fr 1fr; }
+            .appointment-actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .calendar-preview { padding: 16px; }
+            .calendar-dates   { gap: 3px; grid-auto-rows: 38px; }
+            .calendar-date    { font-size: 12px; border-radius: 6px; }
+            .year-calendar { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 380px) {
+            .card-inner { padding: 12px 12px 12px 14px; }
+            .card-head { flex-direction: column; }
+            .patient-avatar-new { width: 40px; height: 40px; font-size: 14px; }
+            .patient-name { font-size: 14px; }
+            .btn { font-size: 12px; padding: 10px 12px; }
+            .stat-number { font-size: 20px; }
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- ═══ HEADER ═══ -->
+    <header class="main-header" id="mainHeader">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar"
+                       autocomplete="off" placeholder="Search patients, appointments…">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <div class="nav-icons">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-icon" id="clinicMessagesIcon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <span class="notification-badge">{{ total_unread }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-icon active">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'clinic_settings' %}" class="nav-icon" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false"
+                        style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if clinic.profile_picture %}
+                        <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                        <div class="user-avatar" id="avatarImg"
+                             style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;">
+                            {{ clinic.clinic_name|first|upper }}
+                        </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ clinic.clinic_name }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="main-layout">
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        {% if clinic.profile_picture %}
+                            <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar"
+                                 style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:24px;">
+                                {{ clinic.clinic_name|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ clinic.clinic_name }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-item">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-item">
+                    <i class="fas fa-search"></i> Find Patients
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-item active">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-item">
+                    <i class="fas fa-comments"></i> Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'clinic_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i> My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            {% if messages %}
+            <div class="flash-messages" aria-live="polite">
+                {% for message in messages %}
+                <div class="flash-message {{ message.tags|default:'info' }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Appointment Management
+                </h1>
+                <p class="page-subtitle">Manage and track all patient appointments</p>
+
+                <div class="quick-actions">
+                    <a href="?status=" class="action-btn {% if not status_filter %}active{% endif %}">
+                        <i class="fas fa-calendar"></i> All Appointments
+                    </a>
+                    <a href="?status=pending" class="action-btn {% if status_filter == 'pending' %}active{% endif %}">
+                        <i class="fas fa-clock"></i> Pending
+                    </a>
+                    <a href="?status=accepted_record_accepted_accommodation" class="action-btn {% if status_filter == 'accepted_record_accepted_accommodation' %}active{% endif %}">
+                        <i class="fas fa-check-circle"></i> Accepted - Record & Accommodation Accepted
+                    </a>
+                    <a href="?status=accepted_record_accommodation_change_requested" class="action-btn {% if status_filter == 'accepted_record_accommodation_change_requested' %}active{% endif %}">
+                        <i class="fas fa-exchange-alt"></i> Accepted - Accommodation Change Requested
+                    </a>
+                    <a href="?status=rejected_medical_record" class="action-btn {% if status_filter == 'rejected_medical_record' %}active{% endif %}">
+                        <i class="fas fa-times-circle"></i> Rejected - Medical Record Declined
+                    </a>
+                    <a href="?status=cancelled" class="action-btn {% if status_filter == 'cancelled' %}active{% endif %}">
+                        <i class="fas fa-ban"></i> Cancelled
+                    </a>
+                    <a href="?status=waiting_for_payment" class="action-btn {% if status_filter == 'waiting_for_payment' %}active{% endif %}">
+                        <i class="fas fa-credit-card"></i> Waiting for Payment
+                    </a>
+                    <a href="?status=paid" class="action-btn {% if status_filter == 'paid' %}active{% endif %}">
+                        <i class="fas fa-check-square"></i> Paid
+                    </a>
+                    <a href="?status=upcoming" class="action-btn {% if status_filter == 'upcoming' %}active{% endif %}">
+                        <i class="fas fa-calendar-day"></i> Upcoming
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="appointment-stats">
+                <div class="stat-card">
+                    <div class="stat-number stat-total">{{ total_appointments }}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-pending">{{ pending_appointments }}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-accepted">{{ accepted_appointments }}</div>
+                    <div class="stat-label">Accepted</div>
+                </div>
+            </div>
+
+            <!-- Appointments + Calendar -->
+            <div class="appointments-and-calendar">
+
+                <!-- Appointments list -->
+                <div>
+                    <div class="appointments-list">
+                        {% for appointment in appointments %}
+                            <div class="appointment-card"
+                                data-date="{{ appointment.appointment_date|date:'Y-m-d' }}"
+                                data-start-date="{{ appointment.treatment_start_date|date:'Y-m-d' }}"
+                                data-end-date="{{ appointment.treatment_end_date|date:'Y-m-d' }}">
+
+                            <!-- Status stripe -->
+                            <div class="status-stripe stripe-{{ appointment.status }}"></div>
+
+                            <div class="card-inner">
+
+                                <!-- Header -->
+                                <div class="card-head">
+                                    <div class="patient-row">
+                                        <div class="patient-avatar-new">
+                                            {% if appointment.patient and appointment.patient.profile_picture %}
+                                                <img src="{{ appointment.patient.profile_picture.url }}"
+                                                     alt="{{ appointment.patient.full_name }}">
+                                            {% else %}
+                                                {{ appointment.patient.full_name|default:appointment.patient.user.username|first|upper }}
+                                            {% endif %}
+                                        </div>
+                                        <div style="min-width:0;">
+                                            <div class="patient-name">{{ appointment.patient.full_name }}</div>
+                                            <div class="requested-date">
+                                                <i class="far fa-clock"></i>
+                                                Requested {{ appointment.created_at|date:"M d, Y" }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <span class="status-badge badge-{{ appointment.status }}">
+                                        <span class="badge-dot"></span>
+                                        {{ appointment.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <!-- Meta grid -->
+                                <div class="appt-meta-grid">
+
+                                    <!-- Medical review -->
+                                    <div class="meta-cell
+                                        {% if appointment.medical_review_status == 'accepted' %}cell-success
+                                        {% elif appointment.medical_review_status == 'pending' %}cell-warning
+                                        {% elif appointment.medical_review_status == 'rejected' %}
+                                        {% endif %}">
+                                        <div class="meta-key"><i class="fas fa-clipboard-check"></i> Medical Review</div>
+                                        <div class="meta-val">{{ appointment.get_medical_review_status_display }}</div>
+                                    </div>
+
+                                    <!-- Accommodation -->
+                                    <div class="meta-cell
+                                        {% if appointment.medical_review_status == 'accepted' and not appointment.treatment_start_date and appointment.accommodation_type != 'no_accommodation' and appointment.needs_accommodation %}cell-waiting{% endif %}">
+                                        <div class="meta-key"><i class="fas fa-hotel"></i> Accommodation</div>
+                                        <div class="meta-val">
+                                            {% if appointment.accommodation_type == 'no_accommodation' or not appointment.needs_accommodation %}
+                                                No accommodation needed
+                                            {% elif appointment.medical_review_status == 'accepted' and not appointment.treatment_start_date %}
+                                                Waiting for patient booking details
+                                            {% elif appointment.accommodation_type %}
+                                                {{ appointment.get_accommodation_type_display }}
+                                                <span class="sub">
+                                                    {{ appointment.companions_count|default:'0' }} companion(s)
+                                                    {% if appointment.accommodation_review_status == 'accepted_with' %}· Accepted with accommodation{% endif %}
+                                                    {% if appointment.accommodation_review_status == 'accepted_without' %}· Accepted without accommodation{% endif %}
+                                                    {% if appointment.treatment_start_date and appointment.treatment_end_date %}
+                                                        · {{ appointment.treatment_start_date }} – {{ appointment.treatment_end_date }}
+                                                    {% endif %}
+                                                </span>
+                                            {% elif appointment.needs_accommodation %}
+                                                Requested (legacy)
+                                            {% else %}
+                                                No accommodation needed
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Medical record -->
+                                    <div class="meta-cell">
+                                        <div class="meta-key"><i class="fas fa-file-medical"></i> Medical Record</div>
+                                        <div class="meta-val">
+                                            {% if appointment.medical_record %}
+                                                {% with fn=appointment.medical_record.first_name ln=appointment.medical_record.last_name %}
+                                                    {% if fn or ln %}{{ fn|default:'' }} {{ ln|default:'' }}
+                                                    {% elif appointment.patient %}{{ appointment.patient.full_name }}
+                                                    {% else %}No record{% endif %}
+                                                {% endwith %}
+                                            {% elif appointment.patient %}
+                                                {{ appointment.patient.full_name }}
+                                            {% else %}
+                                                No record
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Facility response / proposed dates -->
+                                    {% if appointment.needs_accommodation or appointment.status == 'clinic_date_change_proposed' %}
+                                    <div class="meta-cell">
+                                        <div class="meta-key"><i class="fas fa-reply"></i> Facility Response</div>
+                                        <div class="meta-val">
+                                            {{ appointment.get_facility_response_display }}
+                                            {% if appointment.proposed_start_date and appointment.proposed_end_date %}
+                                                <span class="sub">Proposed: {{ appointment.proposed_start_date }} – {{ appointment.proposed_end_date }}</span>
+                                            {% endif %}
+                                            {% if appointment.clinic_proposal_note %}
+                                                <span class="sub">Note: {{ appointment.clinic_proposal_note }}</span>
+                                            {% endif %}
+                                            {% if appointment.patient_response_note %}
+                                                <span class="sub">Patient reply: {{ appointment.patient_response_note }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Appointment date if confirmed -->
+                                    {% if appointment.appointment_date and appointment.appointment_time %}
+                                    <div class="meta-cell cell-highlight">
+                                        <div class="meta-key"><i class="far fa-calendar"></i> Appointment</div>
+                                        <div class="meta-val">
+                                            {{ appointment.appointment_date }}
+                                            <span class="sub"><i class="far fa-clock"></i> {{ appointment.appointment_time|time:"H:i" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+                                <!-- /appt-meta-grid -->
+
+                                <!-- Patient notes -->
+                                {% if appointment.notes %}
+                                <div class="note-block note-patient">
+                                    <div class="note-label"><i class="fas fa-sticky-note"></i> Patient notes</div>
+                                    {{ appointment.notes }}
+                                </div>
+                                {% endif %}
+
+                                {% if appointment.clinic_proposal_note and appointment.status == 'clinic_date_change_proposed' %}
+                                <div class="note-block note-clinic">
+                                    <div class="note-label"><i class="fas fa-comment-dots"></i> Your proposal note</div>
+                                    {{ appointment.clinic_proposal_note }}
+                                </div>
+                                {% endif %}
+
+                                {% if appointment.patient_response_note %}
+                                <div class="note-block note-reply">
+                                    <div class="note-label"><i class="fas fa-reply"></i> Patient reply</div>
+                                    {{ appointment.patient_response_note }}
+                                </div>
+                                {% endif %}
+
+                                <!-- ── ACTION SECTIONS ── -->
+
+                                <!-- 1. Pending medical review: Accept or Reject -->
+                                {% if appointment.medical_review_status == 'pending' %}
+                                <div class="action-section section-warn">
+                                    <div class="action-section-title">
+                                        <span class="action-badge action-badge-warn">!</span>
+                                        Medical record review required
+                                    </div>
+                                    <div class="form-row-2" style="margin-bottom:0; align-items:flex-end;">
+                                        <form method="post" action="{% url 'accept_medical_record' appointment.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-full">
+                                                <i class="fas fa-check"></i> Accept Medical Record
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'reject_medical_record' appointment.id %}">
+                                            {% csrf_token %}
+                                            <div class="form-group" style="margin-bottom:8px;">
+                                                <label class="form-label">Refusal reason <span style="color:#ef4444;">*</span></label>
+                                                <select name="medical_rejection_reason" required class="form-control">
+                                                    <option value="">Select reason...</option>
+                                                    <option value="not_a_match">Not aligned with clinic specialization</option>
+                                                    <option value="capacity_unavailable">No clinical capacity in requested timeline</option>
+                                                    <option value="missing_information">Insufficient medical information</option>
+                                                    <option value="medical_complexity">Case complexity beyond current capability</option>
+                                                    <option value="safety_concerns">Patient safety concerns</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-danger btn-full"
+                                                    onclick="return confirm('Reject this medical request?')">
+                                                <i class="fas fa-times"></i> Reject Medical Record
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Accepted, waiting for patient booking details -->
+                                {% elif appointment.medical_review_status == 'accepted' and not appointment.treatment_start_date %}
+                                <div class="action-section" style="background:#faf5ff;border-color:#e9d5ff;">
+                                    <div class="action-section-title" style="color:#6b21a8;">
+                                        <span class="action-badge" style="background:#ede9fe;color:#6b21a8;">…</span>
+                                        Waiting for patient to submit booking details
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-full" disabled>
+                                        <i class="fas fa-hourglass-half"></i> Awaiting patient response
+                                    </button>
+                                </div>
+
+                                <!-- 3. Waiting for patient response to accommodation proposal -->
+                                {% elif appointment.status == 'accepted_record_accommodation_change_requested' %}
+                                <div class="action-section" style="background:#fff7ed;border-color:#fdba74;">
+                                    <div class="action-section-title" style="color:#9a3412;">
+                                        <span class="action-badge" style="background:#ffedd5;color:#9a3412;">…</span>
+                                        Proposal sent — waiting for patient response
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-full" disabled>
+                                        <i class="fas fa-hourglass-half"></i> Awaiting patient reply
+                                    </button>
+                                </div>
+
+                                <!-- 4. Ready to accept/propose dates -->
+                                {% elif appointment.status == 'pending' %}
+                                <div class="action-section section-propose">
+                                    <div class="action-section-title">
+                                        <span class="action-badge" style="background:#ede9fe;color:#6b21a8;">★</span>
+                                        Booking decision required
+                                    </div>
+
+                                    <!-- Accept requested dates -->
+                                    <form method="post" action="{% url 'facility_accept_requested_dates' appointment.id %}" style="margin-bottom:10px;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-full">
+                                            <i class="fas fa-check-circle"></i> Accept Requested Dates
+                                        </button>
+                                    </form>
+
+                                    <!-- Propose alternative dates -->
+                                    <form method="post" action="{% url 'facility_propose_dates' appointment.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-row-2">
+                                            <div class="form-group">
+                                                <label class="form-label">Proposed start date</label>
+                                                <input type="date" name="proposed_start_date" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Proposed end date</label>
+                                                <input type="date" name="proposed_end_date" class="form-control">
+                                            </div>
+                                        </div>
+                                        {% if appointment.accommodation_type != 'no_accommodation' %}
+                                        <div class="form-row-2">
+                                            <div class="form-group">
+                                                <label class="form-label">Accommodation type</label>
+                                                <select name="proposed_accommodation_type" class="form-control accommodation-type-select">
+                                                    <option value="">Keep current</option>
+                                                    <option value="single_room">Single room</option>
+                                                    <option value="double_room">Double room</option>
+                                                    <option value="double_suite">Double suite</option>
+                                                    <option value="quad_suite">Quad suite</option>
+                                                    <option value="no_accommodation">No accommodation</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group companions-count-group" id="clinic-companions-group">
+                                                <label class="form-label">Companions count</label>
+                                                <input type="number" name="proposed_companions_count" min="0" placeholder="0" class="form-control">
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-row-1">
+                                            <div class="form-group">
+                                                <label class="form-label">Reason for change <span style="color:#ef4444;">*</span></label>
+                                                <textarea name="clinic_proposal_note" rows="2" required
+                                                          class="form-control"
+                                                          placeholder="Explain what changed and why…"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-row-2" style="margin-bottom:0;">
+                                            <button type="submit" class="btn btn-secondary btn-full">
+                                                <i class="fas fa-exchange-alt"></i> Propose Changes
+                                            </button>
+                                            <form method="post" action="{% url 'facility_reject_booking' appointment.id %}" style="display:contents;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-full"
+                                                        onclick="return confirm('Reject this booking?')">
+                                                    <i class="fas fa-times-circle"></i> Reject Booking
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- 5. Accepted: clinic sets payment amount -->
+                                {% elif appointment.status == 'accepted_record_accepted_accommodation' %}
+                                <div class="action-section" style="background:#fffbeb;border-color:#fcd34d;">
+                                    <div class="action-section-title" style="color:#92400e;">
+                                        <span class="action-badge action-badge-warn">$</span>
+                                        Set amount patient needs to pay
+                                    </div>
+                                    <form method="post" action="{% url 'set_payment_amount' appointment.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-row-2" style="margin-bottom:10px;">
+                                            <div class="form-group">
+                                                <label class="form-label">Payment amount</label>
+                                                <input type="number" name="payment_amount" min="0.01" step="0.01" required class="form-control" placeholder="e.g. 250.00">
+                                            </div>
+                                            <div class="form-group" style="display:flex;align-items:flex-end;">
+                                                <button type="submit" class="btn btn-success btn-full">
+                                                    <i class="fas fa-credit-card"></i> Request Payment
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                {% endif %}
+
+                                <!-- ── Bottom action bar ── -->
+                                <hr class="card-divider">
+                                <div class="appointment-actions">
+
+                                    <a href="{% url 'see_medical_record_view' appointment.medical_record.id %}" class="btn btn-secondary">
+                                        <i class="fas fa-file-medical-alt"></i> Medical Record
+                                    </a>
+
+                                    {% if appointment.patient and appointment.patient.user %}
+                                        <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ appointment.patient.id }}"
+                                           class="btn btn-primary">
+                                            <i class="fas fa-comments"></i> Message Patient
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-secondary" disabled>
+                                            <i class="fas fa-comments"></i> Message
+                                        </button>
+                                    {% endif %}
+
+                                    {% if appointment.status == 'paid' %}
+                                    <form method="post" action="{% url 'mark_appointment_upcoming' appointment.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success"
+                                                onclick="return confirm('Mark this paid appointment as upcoming?')">
+                                            <i class="fas fa-calendar-check"></i> Mark Upcoming
+                                        </button>
+                                    </form>
+                                    {% endif %}
+
+                                    {% if appointment.status == 'upcoming' %}
+                                    <a href="{% url 'clinic_google_calendar_start' appointment.id %}" class="btn btn-secondary">
+                                        <span class="google-calendar-badge" aria-hidden="true"></span> Add to Google Calendar
+                                    </a>
+                                    {% endif %}
+
+                                </div>
+                                <!-- /appointment-actions -->
+
+                            </div>
+                            <!-- /card-inner -->
+                        </div>
+                        <!-- /appointment-card -->
+
+                        {% empty %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-calendar-times"></i>
+                            </div>
+                            <h3>No Appointments Found</h3>
+                            <p>
+                                {% if status_filter %}No {{ status_filter }} appointments.
+                                {% else %}No appointment requests yet.{% endif %}
+                            </p>
+                            <a href="{% url 'search_patients' %}" class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Find Patients
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Mini Calendar -->
+                <div>
+                    <div class="calendar-preview">
+                        <div class="calendar-header">
+                            <h3 class="calendar-title">This Month</h3>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <button id="yearCalendarBtn" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-calendar-alt"></i> Year
+                                </button>
+                                <button id="clearCalendarFilter" class="btn btn-sm btn-secondary" style="display:none;">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="calendar-days">
+                            <div class="calendar-day">Su</div>
+                            <div class="calendar-day">Mo</div>
+                            <div class="calendar-day">Tu</div>
+                            <div class="calendar-day">We</div>
+                            <div class="calendar-day">Th</div>
+                            <div class="calendar-day">Fr</div>
+                            <div class="calendar-day">Sa</div>
+                        </div>
+                        <div class="calendar-dates" id="miniCalendar"></div>
+                        <div id="yearCalendarContainer" style="display:none;margin-top:12px;"></div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /appointments-and-calendar -->
+        </div>
+        <!-- /main-content -->
+    </main>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /* fade in */
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => { document.body.style.opacity = '1'; }, 80);
+
+        /* avatar dropdown */
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const open = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = open ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !open);
+            });
+            document.addEventListener('click', () => { avatarDropdown.style.display = 'none'; });
+            avatarDropdown.addEventListener('click', e => e.stopPropagation());
+        }
+
+        /* live search */
+        const dashSearchBar     = document.getElementById('dashboard-search-bar');
+        const dashSearchResults = document.getElementById('dashboard-search-results');
+        let dashSearchTimeout;
+
+        if (dashSearchBar) {
+            dashSearchBar.addEventListener('input', function () {
+                clearTimeout(dashSearchTimeout);
+                const query = this.value.trim();
+                if (!query) { dashSearchResults.style.display = 'none'; dashSearchResults.innerHTML = ''; return; }
+
+                dashSearchResults.innerHTML = `<div style="padding:18px;text-align:center;color:#6b7280;">
+                    <img src="{% static 'logo1.png' %}" class="loading-logo" alt=""> Searching…</div>`;
+                dashSearchResults.style.display = 'block';
+
+                dashSearchTimeout = setTimeout(() => {
+                    fetch("{% url 'search_all' %}?q=" + encodeURIComponent(query), {
+                        credentials: 'same-origin',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+                    .then(html => {
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = html;
+                        let out = '';
+                        tmp.querySelectorAll('.results-section').forEach(sec => {
+                            const title = sec.querySelector('h3');
+                            const list  = sec.querySelector('ul');
+                            if (title && list) {
+                                list.classList.add('results-list');
+                                out += `<div class="results-section-title">
+                                    <i class="${title.textContent.includes('Patient') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                    ${title.textContent}</div>${list.outerHTML}`;
+                            }
+                        });
+                        if (!out) out = `<div class="no-results"><i class="fas fa-search" style="font-size:22px;display:block;margin-bottom:8px;opacity:.3;"></i>No results for "${query}"</div>`;
+                        dashSearchResults.innerHTML = out;
+                        dashSearchResults.style.display = 'block';
+
+                        /* rewrite links for clinic context */
+                        try {
+                            const chatBase = "{% url 'start_chat_with_patient_clinic' %}?patient_id=";
+                            dashSearchResults.querySelectorAll('a').forEach(a => {
+                                const m = (a.getAttribute('href') || '').match(/[?&]user_id=(\d+)/);
+                                if (m) a.setAttribute('href', chatBase + m[1]);
+                            });
+                        } catch (e) {}
+                    })
+                    .catch(() => {
+                        dashSearchResults.innerHTML = `<div class="no-results" style="color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Search failed.</div>`;
+                    });
+                }, 300);
+            });
+        }
+
+        /* close search results on outside click / Escape */
+        const searchWrap = document.querySelector('.search-container');
+        if (searchWrap && dashSearchResults) {
+            dashSearchResults.addEventListener('click', e => e.stopPropagation());
+            document.addEventListener('click', e => { if (!searchWrap.contains(e.target)) dashSearchResults.style.display = 'none'; });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') dashSearchResults.style.display = 'none'; });
+        }
+
+        /* form loading state */
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function () {
+                const btn = this.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.innerHTML = `<img src="{% static 'logo1.png' %}" class="loading-logo" alt=""> Processing…`;
+                    btn.disabled = true;
+                    setTimeout(() => { btn.disabled = false; }, 8000);
+                }
+            });
+        });
+
+        /* calendar */
+        initializeMiniCalendar();
+
+        /* wire calendar buttons */
+        document.getElementById('clearCalendarFilter')?.addEventListener('click', clearCalendarFilter);
+        document.getElementById('yearCalendarBtn')?.addEventListener('click', toggleYearView);
+    });
+
+    /* ── Calendar helpers ── */
+    function initializeMiniCalendar() {
+        const calendarContainer = document.getElementById('miniCalendar');
+        if (!calendarContainer) return;
+
+        const appointmentDates = new Set();
+        const appointmentRanges = [];
+        document.querySelectorAll('.appointment-card[data-date]').forEach(c => {
+            const d = c.getAttribute('data-date');
+            if (d) appointmentDates.add(d);
+
+            const startDate = c.getAttribute('data-start-date') || d;
+            const endDate = c.getAttribute('data-end-date') || startDate;
+            if (startDate) {
+                appointmentRanges.push({ start: startDate, end: endDate || startDate });
+                expandDateRange(startDate, endDate || startDate).forEach(dateValue => appointmentDates.add(dateValue));
+            }
+        });
+        window._appointmentDates = appointmentDates;
+        window._appointmentRanges = appointmentRanges;
+
+        const today    = new Date();
+        const year     = today.getFullYear();
+        const month    = today.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const days     = new Date(year, month + 1, 0).getDate();
+        const todayISO = today.toISOString().slice(0, 10);
+
+        calendarContainer.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            calendarContainer.appendChild(Object.assign(document.createElement('div'), { className: 'calendar-date' }));
+        }
+
+        for (let d = 1; d <= days; d++) {
+            const iso  = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const cell = document.createElement('div');
+            cell.className   = 'calendar-date';
+            cell.textContent = d;
+            cell.dataset.iso = iso;
+            if (iso === todayISO)          cell.classList.add('today');
+            if (appointmentDates.has(iso)) {
+                cell.classList.add('has-appointment');
+                const rangeClass = getAppointmentRangeClass(iso, appointmentRanges);
+                if (rangeClass) cell.classList.add(rangeClass);
+            }
+            cell.addEventListener('click', () => {
+                calendarContainer.querySelectorAll('.calendar-date').forEach(c => c.classList.remove('selected-date'));
+                cell.classList.add('selected-date');
+                filterByDate(iso);
+            });
+            calendarContainer.appendChild(cell);
+        }
+    }
+
+    function filterByDate(iso) {
+        const cards = document.querySelectorAll('.appointment-card[data-date]');
+        let found = 0;
+        cards.forEach(c => {
+            const startDate = c.getAttribute('data-start-date') || c.getAttribute('data-date');
+            const endDate = c.getAttribute('data-end-date') || startDate;
+            const show = dateIsWithinRange(iso, startDate, endDate);
+            c.style.display = show ? '' : 'none';
+            if (show) found++;
+        });
+        const clearBtn = document.getElementById('clearCalendarFilter');
+        if (clearBtn) clearBtn.style.display = 'inline-flex';
+        showNotification(`Showing ${found} appointment(s) for ${iso}`, 'info');
+    }
+
+    function clearCalendarFilter() {
+        document.querySelectorAll('.appointment-card[data-date]').forEach(c => c.style.display = '');
+        const clearBtn = document.getElementById('clearCalendarFilter');
+        if (clearBtn) clearBtn.style.display = 'none';
+        document.getElementById('miniCalendar')?.querySelectorAll('.calendar-date').forEach(c => c.classList.remove('selected-date'));
+    }
+
+    function dateIsWithinRange(targetIso, startIso, endIso) {
+        if (!targetIso || !startIso) return false;
+        const start = startIso || targetIso;
+        const end = endIso || start;
+        return targetIso >= start && targetIso <= end;
+    }
+
+    function expandDateRange(startIso, endIso) {
+        if (!startIso) return [];
+        const startParts = startIso.split('-').map(Number);
+        const endParts = (endIso || startIso).split('-').map(Number);
+        if (startParts.length !== 3 || endParts.length !== 3 || startParts.some(Number.isNaN) || endParts.some(Number.isNaN)) {
+            return [startIso];
+        }
+
+        const start = new Date(Date.UTC(startParts[0], startParts[1] - 1, startParts[2]));
+        const end = new Date(Date.UTC(endParts[0], endParts[1] - 1, endParts[2]));
+        if (end < start) {
+            return [startIso];
+        }
+
+        const dates = [];
+        const cursor = new Date(start);
+        while (cursor <= end) {
+            const iso = `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, '0')}-${String(cursor.getUTCDate()).padStart(2, '0')}`;
+            dates.push(iso);
+            cursor.setUTCDate(cursor.getUTCDate() + 1);
+        }
+        return dates;
+    }
+
+    function getAppointmentRangeClass(targetIso, ranges) {
+        if (!targetIso || !Array.isArray(ranges) || !ranges.length) return '';
+
+        let isStart = false;
+        let isEnd = false;
+        let isMiddle = false;
+
+        ranges.forEach(range => {
+            const start = range?.start;
+            const end = range?.end || start;
+            if (!start) return;
+
+            if (targetIso === start) isStart = true;
+            if (targetIso === end) isEnd = true;
+            if (targetIso > start && targetIso < end) isMiddle = true;
+        });
+
+        if (isStart && isEnd) return 'range-start range-end';
+        if (isStart) return 'range-start';
+        if (isEnd) return 'range-end';
+        if (isMiddle) return 'range-middle';
+        return '';
+    }
+
+    function toggleYearView() {
+        const container = document.getElementById('yearCalendarContainer');
+        const mini      = document.getElementById('miniCalendar');
+        if (!container || !mini) return;
+
+        if (container.style.display !== 'none') {
+            container.style.display = 'none';
+            mini.style.display = '';
+            return;
+        }
+
+        const appointmentDates = window._appointmentDates || new Set();
+        const appointmentRanges = window._appointmentRanges || [];
+        const now  = new Date();
+        const year = now.getFullYear();
+        container.innerHTML = '';
+        const grid = document.createElement('div');
+        grid.className = 'year-calendar';
+
+        for (let m = 0; m < 12; m++) {
+            const first     = new Date(year, m, 1);
+            const monthName = first.toLocaleString(undefined, { month: 'short' });
+            const daysInM   = new Date(year, m + 1, 0).getDate();
+            const firstDay  = first.getDay();
+
+            const box = document.createElement('div');
+            box.className = 'month-grid';
+
+            const title = document.createElement('div');
+            title.className   = 'month-title';
+            title.textContent = `${monthName} ${year}`;
+            box.appendChild(title);
+
+            const hdr = document.createElement('div');
+            hdr.className = 'month-days';
+            'SMTWTFS'.split('').forEach(h => {
+                const el = document.createElement('div');
+                el.className = 'month-day';
+                el.textContent = h;
+                hdr.appendChild(el);
+            });
+            box.appendChild(hdr);
+
+            const dGrid = document.createElement('div');
+            dGrid.className = 'month-days';
+            for (let i = 0; i < firstDay; i++) {
+                dGrid.appendChild(Object.assign(document.createElement('div'), { className: 'month-day' }));
+            }
+            for (let d = 1; d <= daysInM; d++) {
+                const iso = `${year}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const el  = document.createElement('div');
+                el.className   = 'month-date';
+                el.textContent = d;
+                if (appointmentDates.has(iso)) {
+                    el.classList.add('has-appointment');
+                    const rangeClass = getAppointmentRangeClass(iso, appointmentRanges);
+                    if (rangeClass) el.classList.add(...rangeClass.split(' '));
+                }
+                el.addEventListener('click', () => {
+                    clearCalendarFilter();
+                    filterByDate(iso);
+                    container.style.display = 'none';
+                    mini.style.display      = '';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                dGrid.appendChild(el);
+            }
+            box.appendChild(dGrid);
+            grid.appendChild(box);
+        }
+
+        container.appendChild(grid);
+        mini.style.display      = 'none';
+        container.style.display = '';
+    }
+
+    function showNotification(message, type) {
+        const n = document.createElement('div');
+        n.style.cssText = `position:fixed;bottom:20px;right:20px;background:${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};color:white;padding:12px 20px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:9999;font-weight:500;font-size:14px;display:flex;align-items:center;gap:8px;animation:slideIn 0.25s ease;`;
+        const style = document.createElement('style');
+        style.textContent = '@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}';
+        document.head.appendChild(style);
+        n.innerHTML = `<i class="fas fa-info-circle"></i>${message}`;
+        document.body.appendChild(n);
+        setTimeout(() => { n.style.opacity = '0'; n.style.transition = 'opacity 0.25s'; setTimeout(() => { n.remove(); style.remove(); }, 260); }, 2800);
+    }
+
+    /* ── Header hide on scroll ── */
+    (function () {
+        const header = document.getElementById('mainHeader');
+        if (!header) return;
+        let last = window.pageYOffset, raf = null;
+        function tick() {
+            const cur = window.pageYOffset;
+            const dy  = cur - last;
+            if (Math.abs(dy) >= 8) {
+                if (dy > 0 && cur > 80) header.classList.add('hidden');
+                else                    header.classList.remove('hidden');
+                last = Math.max(0, cur);
+            }
+            raf = null;
+        }
+        window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
+        window.addEventListener('resize', () => header.classList.remove('hidden'));
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') header.classList.remove('hidden');
+        });
+    })();
+
+    /* ── Messages badge polling ── */
+    (function () {
+        function poll() {
+            fetch('/chat/unread-count/clinic/')
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (!data) return;
+                    const icon  = document.getElementById('clinicMessagesIcon');
+                    const count = parseInt(data.unread || 0, 10);
+                    let badge   = icon?.querySelector('.notification-badge');
+                    if (count > 0) {
+                        if (!badge) { badge = document.createElement('span'); badge.className = 'notification-badge'; icon.appendChild(badge); }
+                        badge.textContent = count;
+                    } else {
+                        badge?.remove();
+                    }
+                })
+                .catch(() => {});
+        }
+        poll();
+        setInterval(poll, 30000);
+    })();
+
+    /* ── Accommodation type toggle: hide companions count when "no_accommodation" ── */
+    (function () {
+        function updateCompanionsVisibility(select) {
+            const value = select.value;
+            const form = select.closest('form');
+            if (!form) return;
+            const companionsGroup = form.querySelector('.companions-count-group');
+            if (!companionsGroup) return;
+
+            if (value === 'no_accommodation') {
+                companionsGroup.style.display = 'none';
+            } else if (value === '' || value) {
+                companionsGroup.style.display = '';
+            }
+        }
+
+        document.querySelectorAll('.accommodation-type-select').forEach(select => {
+            updateCompanionsVisibility(select);
+            select.addEventListener('change', function () {
+                updateCompanionsVisibility(this);
+            });
+        });
+    })();
+
+    // Keep confirmation notices lightweight by auto-hiding non-critical messages.
+    document.querySelectorAll('.flash-message.success, .flash-message.info').forEach(msg => {
+        window.setTimeout(() => {
+            msg.classList.add('is-hiding');
+            window.setTimeout(() => msg.remove(), 380);
+        }, 4500);
+    });
+    </script>
+</body>
+</html>

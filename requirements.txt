@@ -1,0 +1,25 @@
+# Django Core
+Django>=4.2.0,<5.0          # NOTE: 4.2 reached EOL 2026-04-07 — plan upgrade to 5.2 LTS
+django-extensions>=3.2.0    # dev tool; consider moving to a dev-only requirements file
+django-allauth>=65.16,<66
+python-dotenv>=1.0.1,<2
+
+# Security
+argon2-cffi>=23.1,<26
+cryptography>=46,<47
+PyJWT>=2.10.1,<3
+
+# Web Server (for production)
+gunicorn>=23,<26
+whitenoise>=6.6,<7          # serve static files under gunicorn
+
+# Production infra
+dj-database-url>=2.1,<3
+psycopg[binary]>=3.1,<4
+django-storages[s3]>=1.14,<2
+boto3>=1.34
+sentry-sdk[django]>=2
+
+# Imaging / HTTP
+pillow>=12.2,<13
+requests>=2.32.4,<3

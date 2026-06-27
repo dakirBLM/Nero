@@ -1,0 +1,2212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ clinic.clinic_name }} • NERO Medical Platform</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== BASE STYLES (Matching Dashboard) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER (Identical to Dashboard) ===== */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Search Results */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Navigation Icons */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* ===== CLINIC CONTENT STYLES ===== */
+        .clinic-main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Clinic Cover */
+        .clinic-cover-section {
+            position: relative;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: -60px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .clinic-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+        }
+
+        /* Clinic Profile Header */
+        .clinic-profile-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .clinic-avatar-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            background: white;
+        }
+
+        .clinic-info h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .clinic-tagline {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .clinic-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .meta-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            transition: all 0.2s ease;
+        }
+
+        .meta-tag:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        /* Connection Status */
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 16px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        /* ===== TAB NAVIGATION ===== */
+        .tab-nav-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            margin-bottom: 24px;
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tab-nav-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        /* ===== TAB CONTENT CARDS ===== */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            margin-bottom: 16px;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+        }
+
+        /* ===== ABOUT TAB ===== */
+        .about-content {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.7;
+            white-space: pre-line;
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: block;
+            background: linear-gradient(135deg, #3b82f6, #1c76e4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .info-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .info-card:hover {
+            background: white;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .info-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #fcfaff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .info-content h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .info-content p {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+
+        /* ===== SERVICES TAB ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .service-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .service-card:hover {
+            background: white;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #a7d7fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .service-icon.has-photo {
+            width: 140px;
+            height: 110px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .service-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .service-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .service-content p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .service-price {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ===== GALLERY TAB ===== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 12px;
+            color: white;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        /* ===== DETAILS TAB ===== */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .detail-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #1f2937;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .facilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .facility-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .facility-item:hover {
+            background: #f9fafb;
+            transform: translateX(4px);
+        }
+
+        .facility-icon {
+            color: #10b981;
+            font-size: 20px;
+        }
+
+        /* ===== BOOK TAB ===== */
+        .booking-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .booking-card {
+            text-align: center;
+            padding: 32px 24px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .booking-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .booking-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #3b82f6, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .booking-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .booking-card p {
+            color: #6b7280;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+            transform: translateY(-2px);
+        }
+
+        /* ===== REVIEWS SECTION ===== */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .review-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            align-content: center;
+        }
+
+        .review-card:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+        }
+
+        .review-rating {
+            color: #f59e42;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .review-date {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .review-content {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            background: black;
+            border-radius: 16px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 10;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 70vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+
+        .modal-nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ===== EMPTY STATES ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .clinic-profile-header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .clinic-avatar-img {
+                margin: 0 auto;
+            }
+
+            /* Match clinic_appointments: keep search from being too wide */
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Keep logo + search on first line; place nav icons + user menu on the next line */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 1 1 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+            }
+
+            /* Keep nav icons + avatar on the same row */
+            .nav-icons {
+                flex: 0 0 auto;
+            }
+
+            .user-menu {
+                margin-left: auto;
+                border-left: 0;
+                padding-left: 0;
+            }
+
+            .clinic-main-content {
+                padding: 16px;
+            }
+
+            .clinic-cover-section {
+                height: 200px;
+                margin-bottom: -40px;
+            }
+
+            .clinic-profile-header {
+                padding: 20px;
+            }
+
+            .clinic-avatar-img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .clinic-info h1 {
+                font-size: 24px;
+            }
+
+            .tab-btn {
+                min-width: 100px;
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            /* Prevent horizontal scroll on mobile */
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid,
+            .gallery-grid,
+            .booking-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Very small screens: keep logo+search first line, icons+menu on one line below */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+
+            .service-icon.has-photo {
+                width: 110px;
+                height: 90px;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+                margin-left: auto;
+                border-left: 0;
+                padding-left: 0;
+            }
+
+            .clinic-meta {
+                justify-content: center;
+            }
+
+            .meta-tag {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Match clinic_appointments: tighter edge padding on phones */
+            .clinic-main-content {
+                padding: 12px;
+            }
+
+            /* Reduce hero + header footprint on very small screens */
+            .clinic-cover-section {
+                height: 180px;
+                margin-bottom: -32px;
+            }
+
+            .clinic-profile-header {
+                padding: 16px;
+            }
+
+            .clinic-avatar-img {
+                width: 72px;
+                height: 72px;
+            }
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .text-gradient {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-logo {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            animation: logoSpin 1s linear infinite;
+        }
+
+        @keyframes logoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Debug Styles */
+        .debug-info {
+            background: #fffbe6;
+            color: #b45309;
+            border: 1px solid #fde68a;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        /* Acceptance toggle styles */
+        .more-acceptance {
+            display: none;
+        }
+
+        .more-acceptance.show {
+            display: flex;
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header (Identical to Dashboard) -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar (live-search style same as dashboard) -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="clinic-search-bar" name="q" class="search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics..." value="{{ request.GET.q|default_if_none:'' }}">
+                <div class="search-results" id="clinic-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon active">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ patient.user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ patient.user.username }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Clinic Content -->
+    <main class="clinic-main-content">
+        <!-- Clinic Cover -->
+        <section class="clinic-cover-section">
+            {% if clinic.cover_photo %}
+                <img src="{{ clinic.cover_photo.url }}" alt="{{ clinic.clinic_name }} cover" class="clinic-cover">
+            {% endif %}
+            <div class="cover-overlay"></div>
+        </section>
+
+        <!-- Clinic Profile Header -->
+        <div class="clinic-profile-header">
+            <div class="clinic-avatar">
+                {% if clinic.profile_picture %}
+                <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar-img">
+                {% else %}
+                <div class="clinic-avatar-img" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
+                    {{ clinic.clinic_name|first|upper }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="clinic-info">
+                <h1 class="clinic-name">{{ clinic.clinic_name }}</h1>
+                {% if clinic.tagline %}
+                <p class="clinic-tagline">{{ clinic.tagline }}</p>
+                {% endif %}
+                <div class="clinic-meta">
+
+                    {% if clinic.clinic_type %}
+                    <span class="meta-tag">
+                        <i class="fas fa-stethoscope"></i>
+                        {{ clinic.clinic_type }}
+                    </span>
+                    {% endif %}
+
+                    <span class="meta-tag">
+                        <i class="fas fa-star"></i>
+                        {{ display_rating|floatformat:1 }} ({{ reviews_count }} reviews)
+                    </span>
+                    <span class="meta-tag">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ clinic.years_in_operation }}+ years
+                    </span>
+                    {% if is_connected %}
+                        {% if connection_status == 'active' %}
+                        <span class="connection-status">
+                            <i class="fas fa-check-circle"></i>
+                            Connected
+                        </span>
+                        {% elif connection_status == 'pending' %}
+                        <span class="connection-status status-pending">
+                            <i class="fas fa-clock"></i>
+                            Request Pending
+                        </span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinic posts moved into the 'Posts' tab below -->
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav-bar">
+            <button class="tab-btn active" onclick="switchTab('about')">
+                <i class="fas fa-info-circle"></i>
+                About
+            </button>
+            <button class="tab-btn" onclick="switchTab('services')">
+                <i class="fas fa-concierge-bell"></i>
+                Services
+            </button>
+            <button class="tab-btn" onclick="switchTab('gallery')">
+                <i class="fas fa-images"></i>
+                Gallery
+            </button>
+            <button class="tab-btn" onclick="switchTab('posts')">
+                <i class="fas fa-newspaper"></i>
+                Posts
+            </button>
+            <button class="tab-btn" onclick="switchTab('details')">
+                <i class="fas fa-file-alt"></i>
+                Details
+            </button>
+            {% if False %}
+            <button class="tab-btn" onclick="switchTab('book')">
+                <i class="fas fa-calendar-check"></i>
+                Book Now
+            </button>
+            {% endif %}
+        </nav>
+
+        <!-- Tab Content Container -->
+        <div class="tab-content-container">
+            <!-- About Tab -->
+            <div id="about-tab" class="tab-content active">
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> About Our Clinic</h2>
+                    <div class="about-content">
+                        {{ clinic.description|linebreaks }}
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ clinic.years_in_operation }}+</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+
+                        <div class="stat-item">
+                            <span class="stat-number">1,200+</span>
+                            <span class="stat-label">Patients Helped</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">Success Rate</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if clinic.google_maps_url %}
+                <!-- Google Maps Location Card -->
+                <div class="content-card" style="margin-top: 32px;">
+                    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Location</h2>
+                    <div style="width: 100%; height: 450px; border-radius: 12px; overflow: hidden; margin-top: 20px;">
+                        <iframe
+                            src="{{ clinic.google_maps_url }}"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="info-grid">
+                    {% if not clinic.google_maps_url %}
+                    <div class="info-card">
+                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="info-content">
+                            <h3>Location</h3>
+                            <p>{{ clinic.full_address }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="info-card">
+                        <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="info-content">
+                            <h3>Contact</h3>
+                            <p>{{ clinic.phone_number }}</p>
+                            <p>{{ clinic.contact_email }}</p>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon"><i class="fas fa-clock"></i></div>
+                        <div class="info-content">
+                            <h3>Hours of Operation</h3>
+                            <p>{{ clinic.hours_of_operation|linebreaks }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-star"></i> Reviews</h2>
+
+                    <!-- Review Form -->
+                    {% if patient %}
+                        {% if review_error %}
+                        <div style="color: #ef4444; margin-bottom: 16px; padding: 12px; background: #fef2f2; border-radius: 8px;">
+                            <i class="fas fa-exclamation-circle"></i> {{ review_error }}
+                        </div>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'reviews:submit_review' clinic.id %}" style="margin-bottom: 32px;">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_review_description" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Your Review</label>
+                                <textarea name="review_description" id="id_review_description" class="form-control" required placeholder="Share your experience with this clinic..." rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_review_rating" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Rating</label>
+                                <select name="review_rating" id="id_review_rating" class="form-control" required>
+                                    <option value="">Select rating</option>
+                                    <option value="5">★★★★★ (5) Excellent</option>
+                                    <option value="4">★★★★☆ (4) Very Good</option>
+                                    <option value="3">★★★☆☆ (3) Good</option>
+                                    <option value="2">★★☆☆☆ (2) Fair</option>
+                                    <option value="1">★☆☆☆☆ (1) Poor</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Review
+                            </button>
+                        </form>
+                    {% else %}
+                        {% if not hide_patient_info %}
+                        <div style="margin-bottom: 24px; padding: 16px; background: #f3f4f6; border-radius: 8px; color: #6b7280;">
+                            <i class="fas fa-info-circle"></i> You must be logged in as a patient to leave a review.
+                        </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Existing Reviews -->
+                    {% if reviews %}
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                {% if review.patient.profile_picture %}
+                                <img src="{{ review.patient.profile_picture.url }}" alt="{{ review.patient.full_name }}" class="review-avatar">
+                                {% else %}
+                                <div class="review-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                    {{ review.patient.full_name|first|upper }}
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ review.patient.full_name }}</strong>
+                                    <div class="review-rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}★{% else %}<span style="color:#d1d5db;">★</span>{% endif %}
+                                        {% endfor %}
+                                        <span style="color:#9ca3af; margin-left: 8px;">{{ review.rating }}.0</span>
+                                    </div>
+                                    <div class="review-date">
+                                        <i class="far fa-clock"></i> {{ review.created_at|date:"M d, Y" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="review-content">
+                                {{ review.description|linebreaksbr }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-star"></i></div>
+                        <h3>No Reviews Yet</h3>
+                        <p>Be the first to review this clinic!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Services Tab -->
+            <div id="services-tab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> Our Services & Treatments</h2>
+                    <div class="services-grid">
+                        {% for service in services %}
+                        <div class="service-card">
+                            <div class="service-icon{% if service.photo %} has-photo{% endif %}">
+                                {% if service.photo %}
+                                    <img class="service-photo" src="{{ service.photo.url }}" alt="{{ service.service_name }}" loading="lazy">
+                                {% else %}
+                                    <i class="fas fa-hospital"></i>
+                                {% endif %}
+                            </div>
+                            <div class="service-content">
+                                <h4>{{ service.service_name }}</h4>
+                                <p>{{ service.description|default:"Comprehensive treatment and care" }}</p>
+                                {% if service.price_range %}
+                                <span class="service-price">{{ service.price_range }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="fas fa-hospital"></i></div>
+                            <h3>No Services Listed</h3>
+                            <p>Services information coming soon.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div id="gallery-tab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-images"></i> Clinic Gallery</h2>
+                    {% if gallery_images %}
+                    <div class="gallery-grid">
+                        {% for image in gallery_images %}
+                        <div class="gallery-item" onclick="openGallery({{ forloop.counter0 }})">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Clinic photo' }}" loading="lazy">
+                            {% if image.caption %}
+                            <div class="gallery-overlay">{{ image.caption|truncatechars:30 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-images"></i></div>
+                        <h3>No Photos Yet</h3>
+                        <p>Gallery coming soon.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Posts Tab -->
+            <div id="posts-tab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-newspaper"></i> Clinic Posts</h2>
+                    {% if clinic_posts %}
+                    <div class="reviews-list">
+                        {% for post in clinic_posts %}
+                        <div class="review-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <div style="font-weight:700; color:#1f2937;">{{ post.author.username }}</div>
+                                <div style="color:#9ca3af; font-size:13px;">{{ post.created_at|date:"M d, Y" }}</div>
+                            </div>
+                            <div style="color:#374151; margin-bottom:8px;">{{ post.description|linebreaks }}</div>
+                            {% if post.image %}
+                            <div style="margin-top:8px;">
+                                <img src="{{ post.image.url }}" alt="post image" style="width:100%; border-radius:8px; object-fit:cover;">
+                            </div>
+                            {% endif %}
+                            {% if post.video %}
+                            <div style="margin-top:8px;">
+                                <video controls style="width:100%; border-radius:8px;">
+                                    <source src="{{ post.video.url }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-newspaper"></i></div>
+                        <h3>No Posts Yet</h3>
+                        <p>This clinic hasn't posted anything yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Details Tab -->
+            <div id="details-tab" class="tab-content">
+                <div class="details-grid">
+                    <div class="content-card">
+                        <h3 class="section-title"><i class="fas fa-file-medical-alt"></i> Clinic Information</h3>
+                        <div class="detail-list">
+                            <div class="detail-item">
+                                <span class="detail-label">Specialization:</span>
+                                <span class="detail-value">{{ clinic.specialization }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Languages:</span>
+                                <span class="detail-value">{{ clinic.languages_spoken }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Established:</span>
+                                <span class="detail-value">{{ clinic.established_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h3 class="section-title"><i class="fas fa-clipboard-check"></i> Medical Conditions Accepted</h3>
+                        <div class="facilities-grid">
+                            {% for field_name, field_label in acceptance_fields %}
+                                {% if forloop.counter <= 5 %}
+                                <div class="facility-item">
+                                    <span class="facility-icon"><i class="fas fa-check-circle"></i></span>
+                                    <span>{{ field_label }}</span>
+                                </div>
+                                {% else %}
+                                <div class="facility-item more-acceptance">
+                                    <span class="facility-icon"><i class="fas fa-check-circle"></i></span>
+                                    <span>{{ field_label }}</span>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if acceptance_fields|length > 5 %}
+                            <div style="grid-column: 1/-1; text-align: center; margin-top: 8px;">
+                                <button id="toggleAcceptanceBtn" class="btn btn-secondary">
+                                    <i class="fas fa-plus"></i> Show more
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h3 class="section-title"><i class="fas fa-link"></i> Social Media</h3>
+                        <div class="detail-list">
+                            {% if clinic.facebook_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">Facebook:</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.facebook_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-facebook"></i> Visit Page
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if clinic.instagram_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">Instagram:</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.instagram_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-instagram"></i> Visit Page
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if clinic.linkedin_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">LinkedIn:</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.linkedin_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-linkedin"></i> Visit Page
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if clinic.website %}
+                            <div class="detail-item">
+                                <span class="detail-label">Website:</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.website }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fas fa-globe"></i> Visit Website
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if False %}
+            <!-- Book Tab -->
+            <div id="book-tab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> Book an Appointment</h2>
+
+                    <div class="booking-options">
+                        <div class="booking-card">
+                            <div class="booking-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <h3>Send Request</h3>
+                            <p>Use the multi-step request flow to send your case to clinics</p>
+                            <a href="{% url 'recommendations:questionnaire' %}" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Start Request Flow
+                            </a>
+                        </div>
+
+                        <div class="booking-card">
+                            <div class="booking-icon"><i class="fas fa-comments"></i></div>
+                            <h3>Chat with Clinic</h3>
+                            <p>Send a message to discuss your needs</p>
+                            <a href="{% url 'start_chat_with_clinic' %}?clinic_id={{ clinic.id }}" class="btn btn-secondary">
+                                <i class="fas fa-message"></i> Start Chat
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 24px; border-radius: 12px; border-left: 4px solid #3b82f6; margin-top: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e40af; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-info-circle"></i>
+                            Booking Information
+                        </h3>
+                        <ul style="color: #4b5563; padding-left: 20px;">
+                            <li style="margin-bottom: 8px;">Appointments are confirmed within 24 hours</li>
+                            <li style="margin-bottom: 8px;">Bring your medical records and ID</li>
+                            <li style="margin-bottom: 8px;">Free consultation for first-time patients</li>
+                            <li>Cancellation policy: 24 hours notice required</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Gallery Modal -->
+    <div id="galleryModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalCaption">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeGallery()" aria-label="Close gallery modal">×</button>
+            <div class="modal-nav">
+                <button class="modal-nav-btn" onclick="previousImage()" aria-label="Previous image">❮</button>
+                <button class="modal-nav-btn" onclick="nextImage()" aria-label="Next image">❯</button>
+            </div>
+            <img id="modalImage" class="modal-image" src="" alt="" aria-describedby="modalCaption">
+            <div id="modalCaption" class="modal-caption"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Set active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase())) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Scroll to top of tab content
+            window.scrollTo({
+                top: document.querySelector('.tab-nav-bar').offsetTop - 20,
+                behavior: 'smooth'
+            });
+        }
+
+        // Initialize page with About tab active
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial tab
+            switchTab('about');
+        });
+
+        // Gallery functionality
+        const galleryImages = [
+            {% for image in gallery_images %}
+            { url: '{{ image.image.url }}', caption: '{{ image.caption|default:"Clinic Photo" }}' },
+            {% endfor %}
+        ];
+
+        let currentImageIndex = 0;
+
+        function openGallery(index) {
+            if (galleryImages.length === 0) return;
+
+            currentImageIndex = index;
+            showImage(currentImageIndex);
+            document.getElementById('galleryModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGallery() {
+            document.getElementById('galleryModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function showImage(index) {
+            const image = galleryImages[index];
+            document.getElementById('modalImage').src = image.url;
+            document.getElementById('modalCaption').textContent = image.caption;
+        }
+
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+            showImage(currentImageIndex);
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+            showImage(currentImageIndex);
+        }
+
+        // Keyboard navigation for gallery
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('galleryModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeGallery();
+                } else if (e.key === 'ArrowLeft') {
+                    previousImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            }
+        });
+
+        // Live search (same behavior as dashboard)
+        (function() {
+            const clinicSearchBar = document.getElementById('clinic-search-bar');
+            const clinicSearchResults = document.getElementById('clinic-search-results');
+            if (!clinicSearchBar || !clinicSearchResults) return;
+
+            let clinicSearchTimeout;
+            clinicSearchBar.addEventListener('input', function() {
+                clearTimeout(clinicSearchTimeout);
+                const query = this.value.trim();
+                if (!query) {
+                    clinicSearchResults.style.display = 'none';
+                    clinicSearchResults.innerHTML = '';
+                    return;
+                }
+
+                clinicSearchTimeout = setTimeout(() => {
+                    clinicSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                    clinicSearchResults.style.display = 'block';
+
+                    {% if omit_booking %}
+                    fetch("{% url 'search_all' %}?q=" + encodeURIComponent(query), {
+                        credentials: 'same-origin',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    {% else %}
+                    fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
+                        credentials: 'same-origin',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    {% endif %}
+                    .then(res => {
+                        if (!res.ok) throw new Error('Search failed');
+                        return res.text();
+                    })
+                    .then(html => {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = html;
+                        let results = '';
+                        const sections = temp.querySelectorAll('.results-section');
+                        if (sections && sections.length) {
+                            sections.forEach(section => {
+                                const title = section.querySelector('h3');
+                                const list = section.querySelector('ul');
+                                if (title && list) {
+                                    list.classList.add('results-list');
+                                    results += `
+                                        <div class="results-section-title">
+                                            <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                            ${title.textContent}
+                                        </div>
+                                        ${list.outerHTML}
+                                    `;
+                                }
+                            });
+                        }
+                        if (!results) {
+                            results = `
+                                <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                    <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                    <p>No results found for "${query}"</p>
+                                </div>
+                            `;
+                        }
+                        clinicSearchResults.innerHTML = results;
+                        clinicSearchResults.style.display = 'block';
+                    })
+                    .catch(err => {
+                        clinicSearchResults.innerHTML = `
+                            <div style="padding: 20px; text-align: center; color: #ef4444;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>Search failed. Please try again.</p>
+                            </div>
+                        `;
+                        clinicSearchResults.style.display = 'block';
+                    });
+                }, 300);
+            });
+
+            // Hide search results when clicking outside or pressing Escape
+            clinicSearchResults.addEventListener('click', e => e.stopPropagation());
+            document.addEventListener('click', function(e) {
+                const searchContainer = document.querySelector('.search-container');
+                if (!searchContainer || searchContainer.contains(e.target)) return;
+                clinicSearchResults.style.display = 'none';
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') clinicSearchResults.style.display = 'none';
+            });
+        })();
+
+        // Close modal when clicking outside
+        document.getElementById('galleryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGallery();
+            }
+        });
+
+        // Avatar dropdown functionality
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !isOpen);
+            });
+
+            document.addEventListener('click', function() {
+                avatarDropdown.style.display = 'none';
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            });
+
+            avatarDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Acceptance fields toggle (show more / show less)
+        (function() {
+            const btn = document.getElementById('toggleAcceptanceBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function() {
+                const hiddenItems = document.querySelectorAll('.more-acceptance');
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                hiddenItems.forEach(el => {
+                    if (expanded) {
+                        el.style.display = 'none';
+                    } else {
+                        el.style.display = 'flex';
+                    }
+                });
+                btn.setAttribute('aria-expanded', (!expanded).toString());
+                btn.innerHTML = (!expanded) ?
+                    '<i class="fas fa-minus"></i> Show less' :
+                    '<i class="fas fa-plus"></i> Show more';
+            });
+        })();
+    </script>
+</body>
+</html>

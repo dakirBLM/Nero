@@ -1,0 +1,1072 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Patient Sign Up - NERO</title>
+    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ================= GOOGLE BUTTON ================= */
+        .divider-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+        }
+
+        .divider-text {
+            color: #718096;
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .google-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            color: #2c5282;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .google-button:hover {
+            border-color: #4285f4;
+            background: #f8f9ff;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .google-button:active {
+            transform: translateY(0);
+        }
+
+        .google-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: linear-gradient(180deg, #6CA8C9 0%, #6CA8C9 30%, white 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            padding: calc(20px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ================= NAV BAR ================= */
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Logo - Made White */
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Navigation link */
+        .nav-link {
+            border: 3px solid white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ================= SIGNUP CONTAINER ================= */
+        .signup-container {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 500px;
+            margin: 30px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #6CA8C9;
+            text-decoration: none;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #2c5282;
+            gap: 15px;
+        }
+
+        /* Signup Header */
+        .signup-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .signup-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c5282;
+        }
+
+        .signup-subtitle {
+            color: #4a5568;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        /* ================= FORM STYLES ================= */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c5282;
+        }
+
+        .form-label .required {
+            color: #e53e3e;
+            margin-left: 3px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6CA8C9;
+            box-shadow: 0 0 0 3px rgba(108, 168, 201, 0.2);
+        }
+
+        .form-control.error {
+            border-color: #e53e3e;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 52px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            background: rgba(108, 168, 201, 0.12);
+            color: #2c5282;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236CA8C9' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        /* Password helper text */
+        .password-help {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        /* ================= BUTTONS ================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #6CA8C9;
+            color: white;
+            box-shadow: 0 8px 25px rgba(108, 168, 201, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a97b8;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(108, 168, 201, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ================= ERROR MESSAGES ================= */
+        .error-list {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .error-list strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .error-list ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .error-list li {
+            margin-bottom: 5px;
+        }
+
+        .field-error {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ================= LINKS SECTION ================= */
+        .links-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .links-text {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .link {
+            color: #6CA8C9;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .link:hover {
+            color: #2c5282;
+            background: rgba(108, 168, 201, 0.1);
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: #2c5282;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            width: 100%;
+        }
+
+        .footer p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+        }
+
+        /* ================= ANIMATIONS ================= */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* ================= PROGRESS INDICATOR ================= */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .progress-bar:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #718096;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #6CA8C9;
+            border-color: #6CA8C9;
+            color: white;
+        }
+
+        .progress-step.completed {
+            background: #38a169;
+            border-color: #38a169;
+            color: white;
+        }
+
+        /* ================= RESPONSIVE DESIGN ================= */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .signup-container {
+                padding: 36px 20px;
+                margin: 18px;
+                max-width: 420px;
+            }
+
+            /* Mobile: prevent cramped 2-column form layout */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+
+            .signup-title {
+                font-size: 32px;
+            }
+
+            .links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 16px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 12px 16px;
+                align-items: center;
+            }
+
+            .nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                align-self: center;
+                width: auto;
+            }
+
+            .signup-container {
+                padding: 24px 16px;
+            }
+
+            .signup-title {
+                font-size: 28px;
+            }
+
+            .signup-subtitle {
+                font-size: 16px;
+            }
+
+            .form-control {
+                padding: 14px 16px;
+                font-size: 16px; /* keep 16px to avoid iOS zoom */
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+
+            .link {
+                font-size: 15px;
+            }
+        }
+
+        /* Ensure links and logo don't overflow on very small devices */
+        @media (max-width: 360px) {
+            .logo-container { width: 84px; height: 84px; }
+            .signup-container { margin: 12px; padding: 20px 12px; }
+            .nav-link { padding: 8px 12px; font-size: 14px; }
+        }
+
+        /* ================= PASSWORD STRENGTH ================= */
+        .password-strength {
+            margin-top: 5px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background: #e53e3e;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength-bar.weak { width: 25%; background: #e53e3e; }
+        .password-strength-bar.fair { width: 50%; background: #d69e2e; }
+        .password-strength-bar.good { width: 75%; background: #38a169; }
+        .password-strength-bar.strong { width: 100%; background: #2f855a; }
+    </style>
+    <!-- Music toggle styles (match site-wide) -->
+    <style>
+    .music-toggle{
+        position:fixed;
+        bottom:30px;
+        right:30px;
+        width:60px;
+        height:60px;
+        border-radius:50%;
+        background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+        border:3px solid white;
+        box-shadow:0 8px 25px rgba(0,0,0,0.3);
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:1000;
+        transition:all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation:float 3s ease-in-out infinite;
+    }
+    .music-toggle:hover{ transform:scale(1.15) translateY(-5px); box-shadow:0 12px 35px rgba(0,0,0,0.4); }
+    .music-toggle:active{ transform:scale(0.95); }
+    .music-toggle.playing{ background:linear-gradient(135deg, #6CA8C9, #5B9AB8); animation:pulse 1.5s ease-in-out infinite, float 3s ease-in-out infinite; }
+    .music-icon{ font-size:24px; color:#6CA8C9; transition:all 0.3s ease; }
+    .music-toggle.playing .music-icon{ color:white; animation:musicBounce 0.6s ease-in-out infinite; }
+    @keyframes musicBounce{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.2);} }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="{% static 'logo1.png' %}" class="logo" alt="NERO Logo">
+        </div>
+        <a href="{% url 'choice_page' %}" class="nav-link">
+            Back to Choices
+        </a>
+    </nav>
+
+    <!-- Signup Container -->
+    <div class="signup-container fade-in">
+        <a href="{% url 'choice_page' %}" class="back-link">
+            ← Back to Choices
+        </a>
+
+        <div class="signup-header">
+            <h1 class="signup-title">Patient Registration</h1>
+            <p class="signup-subtitle">Create your personal medical profile</p>
+        </div>
+
+        <!-- Google Login Option -->
+        {% if google_patient_start_url %}
+        <a href="{{ google_patient_start_url }}" class="google-button">
+            <span class="google-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+            </span>
+            Continue with Google
+        </a>
+
+        <div class="divider-section">
+            <div class="divider-line"></div>
+            <span class="divider-text">or sign up manually</span>
+            <div class="divider-line"></div>
+        </div>
+        {% endif %}
+
+        <!-- Error Messages -->
+        {% if form.errors %}
+        <div class="error-list">
+            <strong>Please correct the following errors:</strong>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Signup Form -->
+        <form method="post" enctype="multipart/form-data" id="signupForm">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="id_profile_picture" class="form-label">
+                        Profile Picture (optional)
+                    </label>
+                    <input type="file" id="id_profile_picture" name="profile_picture" class="form-control" accept="image/*">
+                    {% if form.profile_picture.errors %}
+                        <div class="field-error">⚠ {{ form.profile_picture.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_username" class="form-label">
+                        Username <span class="required">*</span>
+                    </label>
+                    <input type="text" id="id_username" name="username"
+                           class="form-control {% if form.username.errors %}error{% endif %}"
+                           placeholder="Enter username"
+                           value="{{ form.username.value|default:'' }}"
+                           required>
+                    {% if form.username.errors %}
+                        <div class="field-error">⚠ {{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_full_name" class="form-label">
+                        Full Name <span class="required">*</span>
+                    </label>
+                    <input type="text" id="id_full_name" name="full_name"
+                           class="form-control {% if form.full_name.errors %}error{% endif %}"
+                           placeholder="Enter full name"
+                           value="{{ form.full_name.value|default:'' }}"
+                           required>
+                    {% if form.full_name.errors %}
+                        <div class="field-error">⚠ {{ form.full_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="id_email" class="form-label">
+                        Email Address <span class="required">*</span>
+                    </label>
+                    <input type="email" id="id_email" name="email"
+                           class="form-control {% if form.email.errors %}error{% endif %}"
+                           placeholder="Enter email address"
+                           value="{{ form.email.value|default:'' }}"
+                           required>
+                    {% if form.email.errors %}
+                        <div class="field-error">⚠ {{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_date_of_birth" class="form-label">
+                        Date of Birth <span class="required">*</span>
+                    </label>
+                    <input type="date" id="id_date_of_birth" name="date_of_birth"
+                           class="form-control {% if form.date_of_birth.errors %}error{% endif %}"
+                           value="{{ form.date_of_birth.value|default:'' }}"
+                           required>
+                    {% if form.date_of_birth.errors %}
+                        <div class="field-error">⚠ {{ form.date_of_birth.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_gender" class="form-label">
+                        Gender <span class="required">*</span>
+                    </label>
+                    <select id="id_gender" name="gender" class="form-control {% if form.gender.errors %}error{% endif %}" required>
+                        <option value="">Select gender</option>
+                        <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>Male</option>
+                        <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>Female</option>
+                        <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>Other</option>
+                    </select>
+                    {% if form.gender.errors %}
+                        <div class="field-error">⚠ {{ form.gender.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_phone" class="form-label">
+                        Phone Number <span class="required">*</span>
+                    </label>
+                    <input type="tel" id="id_phone" name="phone"
+                           class="form-control {% if form.phone.errors %}error{% endif %}"
+                           placeholder="Enter phone number"
+                           value="{{ form.phone.value|default:'' }}"
+                           required>
+                    {% if form.phone.errors %}
+                        <div class="field-error">⚠ {{ form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password1" class="form-label">
+                        Password <span class="required">*</span>
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="id_password1" name="password1"
+                               class="form-control {% if form.password1.errors %}error{% endif %}"
+                               placeholder="Create password"
+                               required>
+                        <button type="button" class="password-toggle" id="passwordToggle1" aria-label="Show password" aria-pressed="false">
+                            <svg id="eyeOpenIcon1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg id="eyeClosedIcon1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a21.77 21.77 0 0 1 5.06-7.94"></path>
+                                <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.77 21.77 0 0 1-3.17 4.72"></path>
+                                <path d="M1 1l22 22"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                    </div>
+                    <div class="password-help">
+                        Use at least 8 characters with a mix of letters, numbers, and symbols
+                    </div>
+                    {% if form.password1.errors %}
+                        <div class="field-error">⚠ {{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password2" class="form-label">
+                        Confirm Password <span class="required">*</span>
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="id_password2" name="password2"
+                               class="form-control {% if form.password2.errors %}error{% endif %}"
+                               placeholder="Confirm password"
+                               required>
+                        <button type="button" class="password-toggle" id="passwordToggle2" aria-label="Show password" aria-pressed="false">
+                            <svg id="eyeOpenIcon2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg id="eyeClosedIcon2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a21.77 21.77 0 0 1 5.06-7.94"></path>
+                                <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.77 21.77 0 0 1-3.17 4.72"></path>
+                                <path d="M1 1l22 22"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="password-help" id="passwordMatchMessage"></div>
+                    {% if form.password2.errors %}
+                        <div class="field-error">⚠ {{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                Create Patient Account
+            </button>
+        </form>
+
+        <!-- Links Section -->
+        <div class="links-section">
+            <p class="links-text">Already have an account?</p>
+            <div class="links">
+                <a href="{% url 'login' %}" class="link">Login here</a>
+                <a href="{% url 'clinic_signup' %}" class="link">Clinic sign up here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 NERO Medical Platform. All rights reserved.</p>
+        <p>Need help? <a href="mailto:support@nero-medical.com">Contact our support team</a></p>
+    </footer>
+
+    <!-- Music controls: only create if there isn't already a persistent player (prevents duplicates/restarts) -->
+    <!-- music controls removed from this page -->
+
+    <script>
+        // Form input focus effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('.form-label').style.color = '#6CA8C9';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('.form-label').style.color = '#2c5282';
+            });
+        });
+
+        // Password strength checker
+        const passwordInput = document.getElementById('id_password1');
+        const strengthBar = document.getElementById('passwordStrengthBar');
+
+        function setupPasswordToggle(inputId, toggleId, openIconId, closedIconId) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            const openIcon = document.getElementById(openIconId);
+            const closedIcon = document.getElementById(closedIconId);
+            if (!input || !toggle || !openIcon || !closedIcon) return;
+
+            toggle.addEventListener('click', function() {
+                const isHidden = input.type === 'password';
+                input.type = isHidden ? 'text' : 'password';
+                openIcon.style.display = isHidden ? 'none' : 'block';
+                closedIcon.style.display = isHidden ? 'block' : 'none';
+                toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                toggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+            });
+        }
+
+        setupPasswordToggle('id_password1', 'passwordToggle1', 'eyeOpenIcon1', 'eyeClosedIcon1');
+        setupPasswordToggle('id_password2', 'passwordToggle2', 'eyeOpenIcon2', 'eyeClosedIcon2');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+
+            // Length check
+            if (password.length >= 8) strength++;
+
+            // Contains lowercase
+            if (/[a-z]/.test(password)) strength++;
+
+            // Contains uppercase
+            if (/[A-Z]/.test(password)) strength++;
+
+            // Contains numbers
+            if (/[0-9]/.test(password)) strength++;
+
+            // Contains special characters
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            // Update strength bar
+            strengthBar.className = 'password-strength-bar';
+            if (strength <= 2) {
+                strengthBar.classList.add('weak');
+            } else if (strength === 3) {
+                strengthBar.classList.add('fair');
+            } else if (strength === 4) {
+                strengthBar.classList.add('good');
+            } else if (strength >= 5) {
+                strengthBar.classList.add('strong');
+            }
+        });
+
+        // Password match checker
+        const password2Input = document.getElementById('id_password2');
+        const matchMessage = document.getElementById('passwordMatchMessage');
+
+        password2Input.addEventListener('input', function() {
+            const password1 = passwordInput.value;
+            const password2 = this.value;
+
+            if (password2 === '') {
+                matchMessage.textContent = '';
+                matchMessage.style.color = '#718096';
+            } else if (password1 === password2) {
+                matchMessage.textContent = '✓ Passwords match';
+                matchMessage.style.color = '#38a169';
+            } else {
+                matchMessage.textContent = '✗ Passwords do not match';
+                matchMessage.style.color = '#e53e3e';
+            }
+        });
+
+        // Form validation
+        const form = document.getElementById('signupForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            // Check required fields
+            document.querySelectorAll('input[required]').forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    if (!input.nextElementSibling?.classList.contains('field-error')) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'field-error';
+                        errorDiv.textContent = '⚠ This field is required';
+                        input.parentNode.insertBefore(errorDiv, input.nextSibling);
+                    }
+                }
+            });
+
+            // Check password match
+            const password1 = passwordInput.value;
+            const password2 = password2Input.value;
+            if (password1 !== password2) {
+                isValid = false;
+                password2Input.classList.add('error');
+                if (!password2Input.nextElementSibling?.classList.contains('field-error')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'field-error';
+                    errorDiv.textContent = '⚠ Passwords do not match';
+                    password2Input.parentNode.insertBefore(errorDiv, password2Input.nextSibling);
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Add loading state
+            submitBtn.innerHTML = 'Creating Account...';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('disabled');
+        });
+
+        // Real-time error clearing
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('error');
+                    const errorDiv = this.nextElementSibling;
+                    if (errorDiv && errorDiv.classList.contains('field-error')) {
+                        errorDiv.remove();
+                    }
+                }
+            });
+        });
+
+        // Date of birth validation (must be at least 13 years old)
+        const dobInput = document.getElementById('id_date_of_birth');
+        dobInput.addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age < 13) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'field-error';
+                errorDiv.textContent = '⚠ You must be at least 13 years old';
+                this.parentNode.insertBefore(errorDiv, this.nextSibling);
+            }
+        });
+
+        // Email validation
+        const emailInput = document.getElementById('id_email');
+        emailInput.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (email && !emailRegex.test(email)) {
+                if (!this.nextElementSibling?.classList.contains('field-error')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'field-error';
+                    errorDiv.textContent = '⚠ Please enter a valid email address';
+                    this.parentNode.insertBefore(errorDiv, this.nextSibling);
+                }
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            // Auto-focus first field
+            document.getElementById('id_username').focus();
+
+            // Initialize animations
+            document.querySelector('.fade-in').style.opacity = '1';
+
+            console.log('NERO Patient Signup Page loaded successfully');
+        });
+
+        // Logo click to go back to landing page
+        document.querySelector('.logo').addEventListener('click', function() {
+            window.location.href = "{% url 'landing_page' %}";
+        });
+
+        // Back link hover effect
+        document.querySelector('.back-link').addEventListener('mouseenter', function() {
+            this.style.gap = '15px';
+        });
+
+        document.querySelector('.back-link').addEventListener('mouseleave', function() {
+            this.style.gap = '10px';
+        });
+
+
+    </script>
+</body>
+</html>

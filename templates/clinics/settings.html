@@ -1,0 +1,2133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Settings • {{ clinic.clinic_name }} • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* EXACT SAME STYLES AS CLINIC DASHBOARD */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            /* prevent horizontal overflow on small screens */
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header - EXACT SAME */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .main-header {
+            transition: transform 0.28s ease, opacity 240ms ease, box-shadow 320ms ease;
+            will-change: transform, opacity;
+        }
+
+        /* Backwards-compatible hidden/visible classes; prefer `.hidden` for new JS */
+        .main-header--hidden,
+        .main-header.hidden {
+            transform: translateY(-120%) translateZ(0);
+            opacity: 0;
+            box-shadow: none;
+        }
+
+        .main-header--visible,
+        .main-header:not(.hidden) {
+            transform: translateY(0) translateZ(0);
+            opacity: 1;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo - EXACT SAME */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar - EXACT SAME */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; opacity: 1; }
+
+        /* Navigation Icons - EXACT SAME */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu - EXACT SAME */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown - EXACT SAME */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout - EXACT SAME */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* Left Sidebar - EXACT SAME */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%),
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(39, 201, 255, 0.3);
+            box-shadow: 0 0 12px rgba(208, 255, 39, 0.218), 0 0 6px rgba(229, 255, 159, 0.361);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.96); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - EXACT SAME STYLING */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Page Header - Same styling as create-post */
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* Settings Container */
+        .settings-container {
+            background: white;
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        /* Settings Tabs */
+        .settings-tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 24px;
+        }
+
+        .settings-tab {
+            padding: 16px 24px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .settings-tab:hover {
+            color: #3b82f6;
+        }
+
+        .settings-tab.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .settings-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Settings Content */
+        .settings-content {
+            padding: 32px;
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .section-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+
+        /* Specific styling for textareas that are not using form-input class */
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background: white;
+            transition: all 0.2s ease;
+            min-height: 80px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Ensure Django form widgets get proper styling */
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        input[type="number"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            border: 2px dashed #e5e7eb;
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+        }
+
+        .file-upload:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-icon {
+            font-size: 32px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .file-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .file-subtext {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* Checkbox Groups */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #f1f5f9;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid #d1d5db;
+            accent-color: #3b82f6;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Clinic Type Selection */
+        .clinic-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .clinic-type-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .clinic-type-option:hover {
+            background: #f1f5f9;
+            border-color: #93c5fd;
+        }
+
+        .clinic-type-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid #d1d5db;
+            accent-color: #3b82f6;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .clinic-type-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            flex: 1;
+        }
+
+        .clinic-type-tick {
+            font-size: 12px;
+            color: #10b981;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        .clinic-type-option input[type="checkbox"]:checked {
+            border-color: #3b82f6;
+            background: #3b82f6;
+        }
+
+        .clinic-type-option input[type="checkbox"]:checked + .clinic-type-label {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .clinic-type-option input[type="checkbox"]:checked ~ .clinic-type-tick {
+            opacity: 1;
+        }
+
+        .clinic-type-option {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding-top: 32px;
+            margin-top: 32px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .form-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .form-btn.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .form-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-btn.secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-btn.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .form-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Error Messages */
+        .error-message {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .error-message i {
+            font-size: 14px;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .success-message i {
+            font-size: 20px;
+        }
+
+        /* Loading spinner - EXACT SAME */
+        .loading-logo {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            animation: logoSpin 1s linear infinite;
+        }
+
+        @keyframes logoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations - EXACT SAME */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design - EXACT SAME */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left {
+                position: static;
+            }
+
+            .search-container {
+                max-width: 300px;
+            }
+
+            .form-grid,
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .search-container {
+                order: 3;
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin: 12px 0 0 0;
+            }
+
+            .main-layout {
+                padding: 16px;
+            }
+
+            .settings-tabs {
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .settings-tab {
+                padding: 12px 20px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .settings-content {
+                padding: 24px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                width: 64px;
+                height: 40px;
+                flex: 0 0 64px;
+            }
+            .header-container {
+                align-items: center;
+                gap: 8px;
+            }
+            .search-container {
+                order: 0;
+                flex: 1 1 auto;
+                max-width: calc(100% - 96px);
+                margin: 0 8px;
+                min-width: 0;
+            }
+            .search-bar {
+                height: 36px;
+                padding: 8px 12px 8px 38px;
+                font-size: 13px;
+            }
+            .nav-icons {
+                gap: 10px;
+                display: flex;
+            }
+            .user-menu { padding-left: 8px; }
+            .page-title { font-size: 24px; }
+        }
+
+        /* Hide avatar on very small screens to save space */
+        @media (max-width: 420px) {
+            /* Keep avatar visible but slightly smaller on very small screens */
+            .user-avatar { display: inline-flex; width: 36px; height: 36px; }
+            .user-menu { padding-left: 4px; }
+            /* make room for avatar + small padding */
+            .search-container { max-width: calc(100% - 96px); }
+        }
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        /* Dropdown result styles (match clinic dashboard) */
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header - EXACT SAME AS CLINIC DASHBOARD -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo - EXACT SAME -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar - EXACT SAME -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search patients, clinics, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons - EXACT SAME STYLING -->
+            <div class="nav-icons">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'clinic_settings' %}" class="nav-icon active">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu - EXACT SAME -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if clinic.profile_picture %}
+                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ clinic.clinic_name|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ clinic.clinic_name }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <!-- Left Sidebar - EXACT SAME STRUCTURE -->
+        <aside class="sidebar-left">
+            <!-- Profile Card - EXACT SAME STYLING -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        {% if clinic.profile_picture %}
+                            <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                {{ clinic.clinic_name|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ clinic.clinic_name }}</h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Navigation - EXACT SAME STYLING, SETTINGS ACTIVE -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'search_patient_clinic' %}" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    Find Patients
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'clinic_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-cog" style="color:#3b82f6;"></i>
+                        Clinic Settings
+                    </h1>
+                    <p class="page-subtitle">Manage your clinic profile, capabilities, and preferences</p>
+                </div>
+            </div>
+
+            <!-- Settings Container -->
+            <div class="settings-container">
+
+
+                <!-- Settings Form -->
+                <form method="post" enctype="multipart/form-data" class="settings-content">
+                    {% csrf_token %}
+
+                    <!-- Profile Tab -->
+                    <div id="profile-tab" class="tab-content active">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Clinic Information</h3>
+                                    <p class="section-description">Basic information about your clinic</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label required" for="id_clinic_name">Clinic Name</label>
+                                    {{ form.clinic_name }}
+                                    {% if form.clinic_name.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.clinic_name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_tagline">Tagline</label>
+                                    {{ form.tagline }}
+                                    <div class="form-help">
+                                        <i class="fas fa-info-circle"></i> A short description that appears in search results
+                                    </div>
+                                    {% if form.tagline.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.tagline.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="id_description">Description</label>
+                                    {{ form.description }}
+                                    <div class="form-help">
+                                        <i class="fas fa-info-circle"></i> Detailed description of your clinic's services and expertise
+                                    </div>
+                                    {% if form.description.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.description.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Contact Information</h3>
+                                    <p class="section-description">Where patients can find and contact you</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="id_address">Address</label>
+                                    {{ form.address }}
+                                    {% if form.address.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.address.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_city">City</label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.city.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_state">State</label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.state.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_country">Country</label>
+                                    {{ form.country }}
+                                    {% if form.country.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.country.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_zip_code">ZIP Code</label>
+                                    {{ form.zip_code }}
+                                    {% if form.zip_code.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.zip_code.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label required" for="id_phone_number">Phone Number</label>
+                                    {{ form.phone_number }}
+                                    {% if form.phone_number.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.phone_number.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label required" for="id_contact_email">Contact Email</label>
+                                    {{ form.contact_email }}
+                                    {% if form.contact_email.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.contact_email.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_website">Website</label>
+                                    {{ form.website }}
+                                    {% if form.website.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.website.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_google_maps_url">Google Maps Embed URL</label>
+                                    {{ form.google_maps_url }}
+                                    {% if form.google_maps_url.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.google_maps_url.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-help" style="display: block; margin-top: 8px;">
+                                        <strong style="color: #ef4444;">⚠ Important:</strong> Use EMBED URL only (starts with https://www.google.com/maps/embed?pb=...)<br>
+                                        <strong style="color: #3b82f6;">How to get it:</strong><br>
+                                        1. Open <a href="https://www.google.com/maps" target="_blank" style="color: #3b82f6;">Google Maps</a><br>
+                                        2. Search for your clinic address<br>
+                                        3. Click "Share" button<br>
+                                        4. Click "Embed a map" tab<br>
+                                        5. Click "COPY HTML"<br>
+                                        6. Paste here and keep ONLY the URL between src="..." (remove &lt;iframe and &gt;)<br>
+                                        <strong style="color: #ef4444;">✗ Don't use:</strong> maps.app.goo.gl or short links - they won't work!
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Tab -->
+                    <div id="professional-tab" class="tab-content">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Professional Details</h3>
+                                    <p class="section-description">Your clinic's qualifications and expertise</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label class="form-label required">Type of Clinic (Select one or more)</label>
+                                    <div class="clinic-type-grid">
+                                        {% for option in form.clinic_type %}
+                                            <label class="clinic-type-option">
+                                                {{ option.tag }}
+                                                <span class="clinic-type-label">{{ option.choice_label }}</span>
+                                                <span class="clinic-type-tick"><i class="fas fa-check"></i></span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.clinic_type.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.clinic_type.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_established_date">Established Date</label>
+                                    {{ form.established_date }}
+                                    {% if form.established_date.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.established_date.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_languages_spoken">Languages Spoken</label>
+                                    {{ form.languages_spoken }}
+                                    <div class="form-help">
+                                        <i class="fas fa-info-circle"></i> Comma-separated list (e.g., English, Spanish, French)
+                                    </div>
+                                    {% if form.languages_spoken.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.languages_spoken.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label" for="id_hours_of_operation">Hours of Operation</label>
+                                    {{ form.hours_of_operation }}
+                                    <div class="form-help">
+                                        <i class="fas fa-info-circle"></i> Example: Mon-Fri: 9AM-6PM, Sat: 10AM-2PM
+                                    </div>
+                                    {% if form.hours_of_operation.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.hours_of_operation.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Capabilities Tab -->
+                    <div id="capabilities-tab" class="tab-content">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Patient Capabilities</h3>
+                                    <p class="section-description">Select the patient conditions your clinic accepts. Incompatible medical records will not be able to book sessions.</p>
+                                </div>
+                            </div>
+
+                            <div class="checkbox-grid">
+                                {% for field in form %}
+                                    {% if field.name|slice:"0:8" == "accepts_" %}
+                                        <div class="checkbox-item">
+                                            {{ field }}
+                                            <label class="checkbox-label" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Tab -->
+                    <div id="media-tab" class="tab-content">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Media & Images</h3>
+                                    <p class="section-description">Upload images to showcase your clinic</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Profile Picture</label>
+                                    <div class="file-upload">
+                                        {{ form.profile_picture }}
+                                        <div class="file-icon">
+                                            <i class="fas fa-user-circle"></i>
+                                        </div>
+                                        <div class="file-text">Click to upload profile picture</div>
+                                        <div class="file-subtext">JPG, PNG, or GIF • Max 5MB</div>
+                                    </div>
+                                    {% if form.profile_picture.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.profile_picture.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Cover Photo</label>
+                                    <div class="file-upload">
+                                        {{ form.cover_photo }}
+                                        <div class="file-icon">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                        <div class="file-text">Click to upload cover photo</div>
+                                        <div class="file-subtext">JPG or PNG • Max 10MB</div>
+                                    </div>
+                                    {% if form.cover_photo.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.cover_photo.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Tab -->
+                    <div id="social-tab" class="tab-content">
+                        <div class="settings-section">
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="fas fa-share-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Social Media Links</h3>
+                                    <p class="section-description">Connect your clinic's social media profiles</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="id_facebook_url">Facebook URL</label>
+                                    {{ form.facebook_url }}
+                                    {% if form.facebook_url.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.facebook_url.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_instagram_url">Instagram URL</label>
+                                    {{ form.instagram_url }}
+                                    {% if form.instagram_url.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.instagram_url.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="id_linkedin_url">LinkedIn URL</label>
+                                    {{ form.linkedin_url }}
+                                    {% if form.linkedin_url.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.linkedin_url.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="form-btn secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                        <button type="submit" class="form-btn primary" id="saveButton">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+
+            // Initialize animations
+            document.body.style.opacity = '0';
+            document.body.style.opacity = '1';
+
+            // Avatar dropdown - EXACT SAME
+            const avatarBtn = document.getElementById('avatarBtn');
+            const avatarDropdown = document.getElementById('avatarDropdown');
+
+            if (avatarBtn) {
+                avatarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = avatarDropdown.style.display === 'block';
+                    avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                    avatarBtn.setAttribute('aria-expanded', !isOpen);
+                });
+
+                document.addEventListener('click', function() {
+                    avatarDropdown.style.display = 'none';
+                    avatarBtn.setAttribute('aria-expanded', 'false');
+                });
+
+                avatarDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // Global search functionality - EXACT SAME
+            const dashSearchBar = document.getElementById('dashboard-search-bar');
+            const dashSearchResults = document.getElementById('dashboard-search-results');
+            let dashSearchTimeout;
+
+            if (dashSearchBar) {
+                dashSearchBar.addEventListener('input', function() {
+                    clearTimeout(dashSearchTimeout);
+                    const query = this.value.trim();
+
+                    if (!query) {
+                        dashSearchResults.style.display = 'none';
+                        dashSearchResults.innerHTML = '';
+                        return;
+                    }
+
+                    dashSearchTimeout = setTimeout(() => {
+                        dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                        dashSearchResults.style.display = 'block';
+
+                        fetch("{% url 'search_all' %}?q=" + encodeURIComponent(query), {
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Search failed');
+                            return res.text();
+                        })
+                        .then(html => {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+
+                            let results = '';
+                            const sections = temp.querySelectorAll('.results-section');
+
+                            if (sections && sections.length) {
+                                sections.forEach(section => {
+                                    const title = section.querySelector('h3');
+                                    const list = section.querySelector('ul');
+
+                                    if (title && list) {
+                                        list.classList.add('results-list');
+                                        results += `
+                                            <div class="results-section-title">
+                                                <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                                ${title.textContent}
+                                            </div>
+                                            ${list.outerHTML}
+                                        `;
+                                    }
+                                });
+                            }
+
+                            if (!results) {
+                                results = `
+                                    <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                        <p>No results found for "${query}"</p>
+                                    </div>
+                                `;
+                            }
+
+                            dashSearchResults.innerHTML = results;
+                            // Rewrite links so clinic users open clinic-chat for patients
+                            // and visit clinic detail pages for clinics.
+                            (function rewriteSearchLinks() {
+                                try {
+                                    const clinicChatBase = "{% url 'start_chat_with_patient_clinic' %}?patient_id=";
+                                    const clinicDetailTemplate = "{% url 'clinic_datils_clinic' 0 %}";
+                                    const clinicDetailPrefix = clinicDetailTemplate.replace(/0\/?$/, '');
+
+                                    const anchors = dashSearchResults.querySelectorAll('a');
+                                    anchors.forEach(a => {
+                                        const href = a.getAttribute('href') || '';
+
+                                        // Skip if already correct clinic detail link
+                                        if (href.includes('/detail-clinic/')) return;
+
+                                        // Patient links: user_id param or /user/ path
+                                        const userMatch = href.match(/[?&]user_id=(\d+)/) || href.match(/\/user\/(\d+)\/?$/);
+                                        if (userMatch) {
+                                            a.setAttribute('href', clinicChatBase + userMatch[1]);
+                                            return;
+                                        }
+
+                                        // Clinic links: /detail/, /clinic/, or /clinics/ paths
+                                        const clinicMatch = href.match(/\/detail\/(\d+)\/?$/) ||
+                                                           href.match(/\/clinic\/(\d+)\/?$/) ||
+                                                           href.match(/\/clinics\/(\d+)\/?$/);
+                                        if (clinicMatch) {
+                                            a.setAttribute('href', clinicDetailPrefix + clinicMatch[1] + '/');
+                                            return;
+                                        }
+                                    });
+                                } catch (e) {
+                                    console.error('Link rewrite failed', e);
+                                }
+                            })();
+
+                            dashSearchResults.style.display = 'block';
+                        })
+                        .catch(err => {
+                            dashSearchResults.innerHTML = `
+                                <div style="padding: 20px; text-align: center; color: #ef4444;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <p>Search failed. Please try again.</p>
+                                </div>
+                            `;
+                            dashSearchResults.style.display = 'block';
+                        });
+                    }, 300);
+                });
+
+                // Hide search results when clicking outside or pressing Escape
+                dashSearchResults.addEventListener('click', e => e.stopPropagation());
+                document.addEventListener('click', function(e) {
+                    const searchContainer = e.target.closest('.search-container');
+                    if (!searchContainer) {
+                        dashSearchResults.style.display = 'none';
+                    }
+                });
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        dashSearchResults.style.display = 'none';
+                    }
+                });
+            }
+
+            // Tab switching
+            const tabs = document.querySelectorAll('.settings-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Initialize first tab as active
+            switchTab('profile');
+
+            // File upload preview
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const fileUpload = this.closest('.file-upload');
+                        if (fileUpload) {
+                            const fileText = fileUpload.querySelector('.file-text');
+                            if (fileText) {
+                                fileText.textContent = file.name;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Form validation
+            const form = document.querySelector('form');
+            const saveButton = document.getElementById('saveButton');
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Disable button and show loading
+                    saveButton.disabled = true;
+                    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                    // You could add more validation here
+                    return true;
+                });
+            }
+
+            // Add error styling to form fields with errors
+            document.querySelectorAll('.error-message').forEach(error => {
+                const inputId = error.previousElementSibling?.id;
+                if (inputId) {
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        input.classList.add('error');
+                    }
+                }
+            });
+        });
+
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            const tabContent = document.getElementById(tabName + '-tab');
+            if (tabContent) {
+                tabContent.classList.add('active');
+
+                // Add animation to new content
+                tabContent.style.animation = 'none';
+                setTimeout(() => {
+                    tabContent.style.animation = 'fadeIn 0.3s ease-out';
+                }, 10);
+            }
+
+            // Activate selected tab
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                if (tab.textContent.includes(tabName.charAt(0).toUpperCase() + tabName.slice(1))) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Reset form function
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all changes? This cannot be undone.')) {
+                document.querySelector('form').reset();
+
+                // Reset file upload labels
+                document.querySelectorAll('.file-upload .file-text').forEach(text => {
+                    if (text.textContent.includes('Click to upload')) {
+                        // Keep original text
+                    } else {
+                        const parent = text.closest('.file-upload');
+                        if (parent) {
+                            const originalText = parent.querySelector('.file-text').getAttribute('data-original') || 'Click to upload';
+                            text.textContent = originalText;
+                        }
+                    }
+                });
+
+                showNotification('Form has been reset', 'info');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+
+            document.body.appendChild(notification);
+
+            // Add slideOut animation if not exists
+            if (!document.querySelector('#slideOutStyle')) {
+                const style = document.createElement('style');
+                style.id = 'slideOutStyle';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Auto-save draft function (optional)
+        let autoSaveTimeout;
+        function autoSaveDraft() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                // In a real app, this would save to localStorage or send to server
+                console.log('Auto-saving draft...');
+            }, 3000);
+        }
+
+        // Attach auto-save to form inputs
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('input', autoSaveDraft);
+            input.addEventListener('change', autoSaveDraft);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                document.querySelector('form').dispatchEvent(new Event('submit'));
+            }
+
+            // Escape to reset
+            if (e.key === 'Escape') {
+                resetForm();
+            }
+        });
+
+        // Initialize file upload original text
+        document.querySelectorAll('.file-upload .file-text').forEach(text => {
+            text.setAttribute('data-original', text.textContent);
+        });
+
+        // Google Maps URL validation
+        const googleMapsInput = document.getElementById('id_google_maps_url');
+        if (googleMapsInput) {
+            const warningDiv = document.createElement('div');
+            warningDiv.style.cssText = `
+                display: none;
+                margin-top: 8px;
+                padding: 12px;
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 6px;
+                color: #991b1b;
+                font-size: 13px;
+            `;
+            warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Invalid URL!</strong> This looks like a share link. Please use the EMBED URL from "Embed a map" tab instead.';
+            googleMapsInput.parentNode.insertBefore(warningDiv, googleMapsInput.nextSibling);
+
+            googleMapsInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                if (url && !url.includes('/maps/embed')) {
+                    // Invalid - looks like a share link
+                    warningDiv.style.display = 'block';
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    warningDiv.style.display = 'none';
+                    this.style.borderColor = '';
+                }
+            });
+        }
+
+        // Improved header hide/show: same approach used in search_patients.html
+        (function(){
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+
+            header.classList.add('main-header--visible');
+
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let lastTime = performance.now();
+            let raf = null;
+
+            function handle() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const now = performance.now();
+                const dy = current - lastScroll;
+                const dt = Math.max(1, now - lastTime);
+
+                if (Math.abs(dy) < 8) {
+                    // small deadzone
+                } else if (dy > 0 && current > 120) {
+                    header.classList.add('main-header--hidden');
+                    header.classList.remove('main-header--visible');
+                } else {
+                    header.classList.remove('main-header--hidden');
+                    header.classList.add('main-header--visible');
+                }
+
+                lastScroll = current <= 0 ? 0 : current;
+                lastTime = now;
+                raf = null;
+            }
+
+            window.addEventListener('scroll', function(){ if (raf == null) raf = window.requestAnimationFrame(handle); }, {passive:true});
+
+            window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+        })();
+    </script>
+</body>
+</html>

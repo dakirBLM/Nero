@@ -1,0 +1,2034 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NERO • Medical Social Platform</title>
+    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .main-header--hidden {
+            transform: translateY(-110%);
+            transition: transform 240ms cubic-bezier(.2,.9,.2,1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 100px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+        }
+
+        /* stronger selector to prevent overrides when changing radius */
+        .header-container .search-bar { border-radius: 100px !important; }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; opacity: 1; }
+
+        /* Navigation Icons - Modernized */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
+        }
+
+        /* Left Sidebar */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%),
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(82,39,255,0.18);
+            box-shadow: 0 0 12px rgba(82,39,255,0.12), 0 0 6px rgba(255,159,252,0.06);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.96); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - Modernized Icons */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Feed */
+        .main-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 320ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease, box-shadow 320ms ease;
+            will-change: transform, opacity;
+        .create-post {
+
+        .main-header--hidden {
+            transform: translateY(-110%) translateZ(0);
+            opacity: 0;
+            box-shadow: none;
+        }
+
+        /* When header is visible, make sure it's crisp */
+        .main-header--visible {
+            transform: translateY(0) translateZ(0);
+            opacity: 1;
+        }
+        }
+
+        .post-input {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .post-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .media-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .media-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .media-btn:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .media-btn i {
+            font-size: 14px;
+        }
+
+        /* filename preview inside media button */
+        .file-name {
+            margin-left: 8px;
+            font-size: 13px;
+            color: #334155;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .post-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Posts Section */
+        .update-card {
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .update-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .update-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+        }
+
+        .update-info h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .update-info .time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .update-content p {
+            margin: 0 0 8px 0;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .post-description.clamped {
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .learn-more-btn {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .learn-more-btn:hover {
+            text-decoration: underline;
+        }
+
+        .update-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        /* Right Sidebar */
+        .sidebar-right {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        /* Clinic Suggestions */
+        .clinic-suggestions {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .suggestions-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .suggestions-title i {
+            color: #3b82f6;
+        }
+
+        .clinic-card {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #f9fafb;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+        }
+
+        .clinic-card:hover {
+            background: white;
+            border-color: #e5e7eb;
+            transform: translateX(4px);
+        }
+
+        .clinic-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #f1f5f9;
+        }
+
+        .clinic-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .clinic-info p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        /* Community Card */
+        .community-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .community-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .community-title i {
+            color: #10b981;
+        }
+
+        .community-members {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .member-item:hover {
+            background: #f9fafb;
+            transform: translateX(4px);
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #10b981, #059669) border-box;
+        }
+
+        .member-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .member-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Search Results (improved) */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left, .sidebar-right {
+                position: static;
+            }
+
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .search-container {
+                order: 3;
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin: 12px 0 0 0;
+            }
+
+            .main-layout {
+                padding: 16px;
+            }
+
+            .media-options {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                width: 64px;
+                height: 40px;
+                flex: 0 0 64px;
+            }
+            /* Place search next to logo on small screens with a compact width */
+            .header-container {
+                align-items: center;
+                gap: 8px;
+            }
+            .search-container {
+                order: 0;
+                flex: 1 1 auto;
+                max-width: calc(100% - 96px);
+                margin: 0 8px 0 8px;
+            }
+            .search-bar {
+                height: 36px;
+                padding: 8px 12px 8px 38px;
+                font-size: 13px;
+            }
+            .nav-icons {
+                gap: 10px;
+            }
+            .user-menu {
+                padding-left: 8px;
+            }
+            .post-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .media-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo spinner for loading states */
+        .loading-logo {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            animation: logoSpin 1s linear infinite;
+        }
+
+        @keyframes logoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .create-post,
+        .update-card,
+        .clinic-suggestions,
+        .community-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Inline ShinyText fallback for side nav */
+        .shiny-text {
+            display: inline-block;
+            background-image: linear-gradient(120deg, #3e80e2 35%, #ffffff 50%, #56aee1 65%, #588ddd 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            background-position: 150% center;
+            animation: shinyMove 3s linear infinite;
+            will-change: background-position;
+        }
+
+        @keyframes shinyMove {
+            0% { background-position: 150% center; }
+            100% { background-position: -50% center; }
+        }
+
+        /* Respect reduced motion and small screens */
+        @media (prefers-reduced-motion: reduce), (max-width: 480px) {
+            .shiny-text { animation: none !important; background-position: 50% center !important; }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Utility Classes */
+        .text-gradient {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        }
+                    .nero-fab {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    font-family: 'Inter', sans-serif;
+        pointer-events: none;
+  }
+
+    .nero-fab-btn,
+    .nero-fab-ring,
+    .nero-chat-window {
+        pointer-events: auto;
+    }
+
+  .nero-chat-window {
+        position: absolute;
+        left: 0;
+        bottom: 78px;
+    width: 340px;
+    max-height: 480px;
+    background: #fff;
+    border-radius: 20px;
+    border: 1.5px solid #e0e7ff;
+    box-shadow: 0 8px 32px rgba(59,130,246,0.13), 0 2px 8px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.28s cubic-bezier(.4,0,.2,1), transform 0.28s cubic-bezier(.4,0,.2,1);
+  }
+  .nero-chat-window.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+
+  .nero-chat-header {
+    padding: 14px 18px 12px;
+        background: linear-gradient(110deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .nero-chat-header .header-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .nero-chat-header .header-lines svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .header-orb {
+        width: 48px;
+        height: 48px;
+    border-radius: 50%;
+        object-fit: cover;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+        border: 2px solid rgba(255,255,255,0.65);
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.22), 0 0 10px rgba(59,130,246,0.18);
+  }
+
+    .nero-fab-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 0;
+        display: block;
+        animation: orbPulse 2s ease-in-out infinite;
+    }
+
+  .header-text { position: relative; z-index: 2; }
+  .header-text strong { display: block; color: #fff; font-size: 15px; font-weight: 600; }
+  .header-text span   { font-size: 11px; color: rgba(255,255,255,0.55); }
+
+  .nero-chat-msgs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8fafc;
+    min-height: 180px;
+    max-height: 280px;
+  }
+
+  .msg {
+    max-width: 82%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    animation: msgPop 0.22s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes msgPop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg.ai {
+    background: linear-gradient(135deg, #e0f2fe, #dcfce7);
+    color: #0f172a;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    border: 1px solid rgba(5,100,242,0.1);
+  }
+  .msg.user {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  .msg.thinking {
+    background: linear-gradient(135deg, #e0f2fe, #dcfce7);
+    color: #64748b;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    border: 1px solid rgba(5,100,242,0.1);
+    font-style: italic;
+  }
+
+  .nero-chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .nero-chat-input {
+    flex: 1;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 9px 14px;
+    font-size: 13px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    background: #f9fafb;
+    transition: border-color 0.18s;
+    color: #0f172a;
+  }
+  .nero-chat-input:focus {
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  }
+  .nero-send-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .nero-send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(59,130,246,0.35); }
+
+  /* FAB */
+  .nero-fab-btn {
+        width: 74px; height: 74px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    background: transparent;
+    padding: 0;
+    outline: none;
+  }
+  .nero-fab-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+        background: conic-gradient(from 0deg, #60a5fa, #3b82f6, #1d4ed8, #3b82f6, #60a5fa);
+    animation: fabRingSpin 2.8s linear infinite;
+    z-index: 0;
+  }
+  @keyframes fabRingSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .nero-fab-inner {
+    position: relative;
+    z-index: 1;
+        width: 74px; height: 74px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(5,100,242,0.25);
+    overflow: hidden;
+    transition: transform 0.22s cubic-bezier(.4,0,.2,1);
+  }
+  .nero-fab-btn:hover .nero-fab-inner { transform: scale(1.06); }
+  .nero-fab-inner svg.orb-svg {
+    width: 32px; height: 32px;
+    animation: orbPulse 2s ease-in-out infinite;
+  }
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.12); opacity: 0.85; }
+  }
+
+  /* Sparks */
+  .nero-fab-sparks { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2; animation: sparkRotate 5s linear infinite; }
+  @keyframes sparkRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spark { position: absolute; width: 5px; height: 5px; border-radius: 50%; animation: sparkBlink 1.4s ease-in-out infinite; }
+  @keyframes sparkBlink { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1); } }
+    .spark-1 { top: -2px;  left: 50%;  background: #93c5fd; animation-delay: 0s; }
+    .spark-2 { top: 50%;   right: -2px; background: #60a5fa; animation-delay: 0.35s; }
+    .spark-3 { bottom: -2px; left: 50%; background: #3b82f6; animation-delay: 0.7s; }
+    .spark-4 { top: 50%;   left: -2px; background: #1d4ed8; animation-delay: 1.05s; }
+
+  /* Power lines in header */
+  .pline { stroke-width: 1.2; fill: none; stroke-dasharray: 200; stroke-dashoffset: 200; animation: drawLine 2.4s ease-in-out infinite; opacity: 0.35; }
+    .pline-1 { stroke: #93c5fd; animation-delay: 0s; }
+    .pline-2 { stroke: #60a5fa; animation-delay: 0.6s; }
+    .pline-3 { stroke: #3b82f6; animation-delay: 1.2s; }
+  @keyframes drawLine {
+    0%   { stroke-dashoffset: 200; opacity: 0; }
+    30%  { opacity: 0.4; }
+    70%  { stroke-dashoffset: 0;   opacity: 0.35; }
+    100% { stroke-dashoffset: -200; opacity: 0; }
+  }
+
+  .close-btn {
+    margin-left: auto;
+    background: rgba(255,255,255,0.12);
+    border: none; color: #fff;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 2; flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .close-btn:hover { background: rgba(255,255,255,0.22); }
+
+  @media (max-width: 480px) {
+    .nero-chat-window { width: calc(100vw - 40px); }
+    .nero-fab { bottom: 18px; left: 16px; }
+  }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics by name...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="nav-icons">
+                <a href="#" class="nav-icon active">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ patient.user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ patient.user.username }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                    {% if patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            {{ patient.user.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ patient.user.username }}</h3>
+                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                    </div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                    <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
+                    {{ patient.bio|default:"Welcome to NERO! Connect with clinics and other patients for better healthcare." }}
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'search_clinics' %}" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    Find Clinics
+                </a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item">
+                    <i class="fas fa-file-medical-alt"></i>
+                    Medical Records
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'recommendations:questionnaire' %}" class="nav-item " >
+                    <i   class="fas fa-brain shiny-text"></i>
+                    <span id="shiny-recommendation" class ="shiny-text" >Smart Recommendations</span>
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Community
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'patient_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Feed -->
+        <section class="main-feed">
+            <!-- Create Post -->
+            <div class="create-post">
+                <form method="post" enctype="multipart/form-data" style="margin-bottom:0;">
+                    {% csrf_token %}
+                    {% if post_error %}
+                        <div style="color:#ef4444; margin-bottom:8px; padding: 8px 12px; background: #fef2f2; border-radius: 8px;">
+                            <i class="fas fa-exclamation-circle"></i> {{ post_error }}
+                        </div>
+                    {% endif %}
+                    <textarea class="post-input" name="post_content" placeholder="What's on your mind? Share your health journey...">{% if request.POST.post_content %}{{ request.POST.post_content }}{% endif %}</textarea>
+                    <div class="post-actions">
+                        <div class="media-options">
+                            <label class="media-btn" style="cursor:pointer;">
+                                <i class="fas fa-image"></i>
+                                Photo
+                                <input type="file" name="post_image" accept="image/*" style="display:none;">
+                            </label>
+                            <label class="media-btn" style="cursor:pointer;">
+                                <i class="fas fa-video"></i>
+                                Video
+                                <input type="file" name="post_video" accept="video/*" style="display:none;">
+                            </label>
+                        </div>
+                        <button class="post-btn" type="submit">
+                            <i class="fas fa-paper-plane"></i> Post
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- All Posts Section -->
+            {% if posts.exists %}
+                <div id="posts-list">
+                {% for post in posts %}
+                <div class="update-card">
+                    <div class="update-header">
+                        {% if post.author and post.author.patient %}
+                            <a href="{% url 'start_chat_with_user' %}?user_id={{ post.author.id }}" style="display:flex; align-items:center; gap:16px; text-decoration:none; color:inherit;">
+                                {% if post.author.patient.profile_picture %}
+                                    <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                                {% else %}
+                                    <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                        {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="update-info">
+                                    <h4>
+                                        {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}
+                                    </h4>
+                                    <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                                </div>
+                            </a>
+                        {% elif post.clinic %}
+                            <a href="{% url 'clinic_detail' post.clinic.id %}" style="display:flex; align-items:center; gap:16px; text-decoration:none; color:inherit;">
+                                {% if post.clinic.profile_picture %}
+                                    <img src="{{ post.clinic.profile_picture.url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
+                                {% else %}
+                                    <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                        {{ post.clinic.clinic_name|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="update-info">
+                                    <h4>{{ post.clinic.clinic_name }}</h4>
+                                    <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                                </div>
+                            </a>
+                        {% else %}
+                            {% if post.author and post.author.patient and post.author.patient.profile_picture %}
+                                <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                            {% else %}
+                                <div class="update-avatar" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-weight: bold; font-size: 20px;">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                            {% endif %}
+                            <div class="update-info">
+                                <h4>NERO User</h4>
+                                <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="update-content">
+                        <p class="post-description">{{ post.description|linebreaksbr }}</p>
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="Post Image" class="update-image">
+                        {% endif %}
+                        {% if post.video %}
+                            <video controls class="update-image">
+                                <source src="{{ post.video.url }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+                {% if posts|length > 3 %}
+                    <div style="text-align:center; margin: 12px 0;">
+                        <button id="show-more-posts" class="post-btn" style="padding:8px 18px; border-radius:12px;">Show more</button>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="update-card" style="text-align: center; color: #6b7280; padding: 40px 20px;">
+                    <i class="fas fa-newspaper" style="font-size: 48px; margin-bottom: 16px; color: #d1d5db;"></i>
+                    <p>No posts to show yet. Be the first to share your health journey!</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Right Sidebar -->
+        <aside class="sidebar-right">
+            <!-- Clinic Suggestions -->
+            <div class="clinic-suggestions">
+                <h3 class="suggestions-title">
+                    <i class="fas fa-hospital"></i>
+                    Clinics You May Like
+                </h3>
+                {% if suggested_clinics %}
+                    {% for clinic in suggested_clinics %}
+                    <a href="{% url 'clinic_detail' clinic.id %}" class="clinic-card">
+                        {% if clinic.profile_picture %}
+                            <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar">
+                        {% else %}
+                            <div class="clinic-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                        {% endif %}
+                        <div class="clinic-info">
+                            <h4>{{ clinic.clinic_name }}</h4>
+
+                        </div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: #6b7280; padding: 20px; text-align: center;">
+                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <p>No clinic suggestions available yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Medical Community -->
+            <div class="community-card">
+                <h3 class="community-title">
+                    <i class="fas fa-heartbeat"></i>
+                    Active Community
+                </h3>
+                <div class="community-members">
+                    {% if active_patients %}
+                        {% for member in active_patients %}
+                        <a href="{% url 'start_chat_with_user' %}?user_id={{ member.user.id }}" class="member-item">
+                            <div style="position: relative;">
+                                {% if member.profile_picture %}
+                                    <img src="{{ member.profile_picture.url }}" class="member-avatar" alt="{{ member.full_name }}">
+                                {% else %}
+                                    <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                        {{ member.full_name|slice:":2"|upper }}
+                                    </div>
+                                {% endif %}
+                                {% if member.is_online %}
+                                    <div class="online-dot"></div>
+                                {% endif %}
+                            </div>
+                            <div class="member-info">
+                                <h4>{{ member.full_name }}</h4>
+                                {% if member.is_online %}
+                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> Online now</p>
+                                {% else %}
+                                    <p><i class="fas fa-circle" style="color: #9ca3af; font-size: 8px;"></i> Offline</p>
+                                {% endif %}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% elif last_chatted_patients %}
+                        {% for member in last_chatted_patients %}
+                        <a href="{% url 'start_chat_with_user' %}?user_id={{ member.user.id }}" class="member-item">
+                            <div style="position: relative;">
+                                {% if member.profile_picture %}
+                                    <img src="{{ member.profile_picture.url }}" class="member-avatar" alt="{{ member.full_name }}">
+                                {% else %}
+                                    <div class="member-avatar" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                        {{ member.full_name|slice:":2"|upper }}
+                                    </div>
+                                {% endif %}
+                                {% if member.is_online %}
+                                    <div class="online-dot"></div>
+                                {% endif %}
+                            </div>
+                            <div class="member-info">
+                                <h4>{{ member.full_name }}</h4>
+                                {% if member.is_online %}
+                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> Online now</p>
+                                {% else %}
+                                    <p><i class="far fa-comment-dots"></i> Recently chatted</p>
+                                {% endif %}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="color: #6b7280; padding: 20px; text-align: center;">
+                            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
+                            <p>No active members online.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <div class="nero-fab" id="neroFab">
+  <!-- Chat window -->
+  <div class="nero-chat-window" id="neroChatWindow">
+    <div class="nero-chat-header">
+      <div class="header-lines">
+        <svg viewBox="0 0 340 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="pline pline-1" d="M-10,20 Q60,8 120,32 T280,18 T380,28"/>
+          <path class="pline pline-2" d="M-10,40 Q80,52 160,30 T340,44 T420,36"/>
+          <path class="pline pline-3" d="M-10,58 Q100,44 200,60 T360,52 T430,62"/>
+        </svg>
+      </div>
+    <img class="header-orb" src="{% static 'Disney Pixar Hoppers (2026) _ King George.jpeg' %}" alt="King George Avatar">
+      <div class="header-text">
+        <strong>King George</strong>
+        <span>Your medical assistant</span>
+      </div>
+      <button class="close-btn" id="neroCloseBtn" title="Close">✕</button>
+    </div>
+
+    <div class="nero-chat-msgs" id="neroChatMsgs">
+      <div class="msg ai">Hi! I'm King George 👋 I can help you find clinics, answer health questions, or guide you through the platform. How can I help?</div>
+    </div>
+
+    <div class="nero-chat-input-row">
+      <input class="nero-chat-input" id="neroChatInput" type="text" placeholder="Ask King George anything..." autocomplete="off">
+      <button class="nero-send-btn" id="neroSendBtn" title="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- FAB button -->
+  <div style="position: relative; display: inline-block;">
+    <div class="nero-fab-ring"></div>
+    <button class="nero-fab-btn" id="neroFabBtn" title="Chat with King George">
+      <div class="nero-fab-sparks">
+        <div class="spark spark-1"></div>
+        <div class="spark spark-2"></div>
+        <div class="spark spark-3"></div>
+        <div class="spark spark-4"></div>
+      </div>
+      <div class="nero-fab-inner">
+                <img class="nero-fab-avatar" src="{% static 'Disney Pixar Hoppers (2026) _ King George.jpeg' %}" alt="King George Avatar">
+      </div>
+    </button>
+  </div>
+</div>
+
+
+    <script>
+        // Avatar dropdown
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !isOpen);
+            });
+
+            document.addEventListener('click', function() {
+                avatarDropdown.style.display = 'none';
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            });
+
+            avatarDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Search functionality
+        const dashSearchBar = document.getElementById('dashboard-search-bar');
+        const dashSearchResults = document.getElementById('dashboard-search-results');
+        let dashSearchTimeout;
+
+        dashSearchBar.addEventListener('input', function() {
+            clearTimeout(dashSearchTimeout);
+            const query = this.value.trim();
+
+            if (!query) {
+                dashSearchResults.style.display = 'none';
+                dashSearchResults.innerHTML = '';
+                return;
+            }
+
+            dashSearchTimeout = setTimeout(() => {
+                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                dashSearchResults.style.display = 'block';
+
+                fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Search failed');
+                    return res.text();
+                })
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+
+                    let results = '';
+                    const resultsContainer = temp.querySelector('.search-results-container');
+
+                    if (resultsContainer) {
+                        results = resultsContainer.innerHTML;
+                    }
+
+                    if (!results) {
+                        results = `
+                            <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                <p>No results found for "${query}"</p>
+                            </div>
+                        `;
+                    }
+
+                    dashSearchResults.innerHTML = results;
+                    dashSearchResults.style.display = 'block';
+                })
+                .catch(err => {
+                    dashSearchResults.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #ef4444;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Search failed. Please try again.</p>
+                        </div>
+                    `;
+                    dashSearchResults.style.display = 'block';
+                });
+            }, 300);
+        });
+
+        // Auto-expand textarea
+        const postInput = document.querySelector('.post-input');
+        if (postInput) {
+            postInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Hide search results when clicking outside the search container or pressing Escape
+        (function() {
+            const searchContainer = document.querySelector('.search-container');
+            if (!searchContainer || !dashSearchResults) return;
+
+            // Prevent clicks inside results from closing immediately
+            dashSearchResults.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchContainer.contains(e.target)) {
+                    dashSearchResults.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') dashSearchResults.style.display = 'none';
+            });
+        })();
+
+        // Media upload preview (preserve the file input so files are submitted)
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function(e) {
+                const fileName = this.files[0]?.name || '';
+                const label = this.closest('.media-btn');
+                if (!label) return;
+
+                // find or create filename span inside the label
+                let nameSpan = label.querySelector('.file-name');
+                if (!nameSpan) {
+                    nameSpan = document.createElement('span');
+                    nameSpan.className = 'file-name';
+                    label.appendChild(nameSpan);
+                }
+                nameSpan.textContent = fileName;
+            });
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // Add hover effects to interactive elements
+            document.querySelectorAll('.clickable, .nav-item, .media-btn, .post-btn, .clinic-card, .member-item').forEach(el => {
+                el.style.transition = 'all 0.2s ease';
+            });
+        });
+
+        // Form submission loading state
+        document.querySelector('form').addEventListener('submit', function() {
+            const postBtn = this.querySelector('.post-btn');
+            if (postBtn) {
+                postBtn.innerHTML = "<img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Posting...";
+                postBtn.classList.add('loading');
+            }
+        });
+        // Presence ping removed: not needed anymore
+    </script>
+
+    <script>
+        // Improved header hide/show animation: smoother and less jittery.
+        (function(){
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+
+            // Ensure visible state initially
+            header.classList.add('main-header--visible');
+
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let lastTime = performance.now();
+            let raf = null;
+
+            function handle() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const now = performance.now();
+                const dy = current - lastScroll;
+                const dt = Math.max(1, now - lastTime);
+                const velocity = Math.abs(dy) / dt; // px per ms
+
+                // Small deadzone to avoid flicker
+                if (Math.abs(dy) < 8) {
+                    // keep current state
+                } else if (dy > 0 && current > 120) {
+                    // scrolling down: hide
+                    header.classList.add('main-header--hidden');
+                    header.classList.remove('main-header--visible');
+                } else {
+                    // scrolling up: show
+                    header.classList.remove('main-header--hidden');
+                    header.classList.add('main-header--visible');
+                }
+
+                lastScroll = current <= 0 ? 0 : current;
+                lastTime = now;
+                raf = null;
+            }
+
+            window.addEventListener('scroll', function(){
+                if (raf == null) raf = window.requestAnimationFrame(handle);
+            }, {passive: true});
+
+            // Reveal header on resize or when tab becomes visible
+            window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+        })();
+    </script>
+
+    <script>
+        // Post description clamp with Learn more / Show less for long content
+        (function() {
+            function initPostDescriptionToggles() {
+                const MAX_CHARS = 280;
+                const descriptions = document.querySelectorAll('.update-content .post-description');
+                descriptions.forEach((desc) => {
+                    if (desc.dataset.learnMoreReady === '1') return;
+                    const textLength = (desc.textContent || '').trim().length;
+                    if (textLength <= MAX_CHARS) {
+                        desc.dataset.learnMoreReady = '1';
+                        return;
+                    }
+
+                    desc.classList.add('clamped');
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'learn-more-btn';
+                    btn.textContent = 'Learn more';
+
+                    btn.addEventListener('click', function() {
+                        const expanded = desc.classList.toggle('clamped') === false;
+                        btn.textContent = expanded ? 'Show less' : 'Learn more';
+                    });
+
+                    desc.insertAdjacentElement('afterend', btn);
+                    desc.dataset.learnMoreReady = '1';
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initPostDescriptionToggles);
+            } else {
+                initPostDescriptionToggles();
+            }
+        })();
+    </script>
+
+    <script>
+        // Mobile: progressively reveal 3 more posts on each "Show more" click
+        (function(){
+            const postsList = document.getElementById('posts-list');
+            const showMoreBtn = document.getElementById('show-more-posts');
+            if (!postsList || !showMoreBtn) return;
+
+            const isMobile = () => window.innerWidth <= 768;
+            let visibleCount = 3;
+
+            function updateVisibility() {
+                const posts = Array.from(postsList.querySelectorAll('.update-card'));
+                posts.forEach((p, idx) => {
+                    if (isMobile()) {
+                        p.style.display = idx < visibleCount ? '' : 'none';
+                    } else {
+                        p.style.display = '';
+                    }
+                });
+
+                // hide button if all visible
+                const total = posts.length;
+                if (visibleCount >= total || !isMobile()) {
+                    showMoreBtn.style.display = 'none';
+                } else {
+                    showMoreBtn.style.display = '';
+                }
+            }
+
+            showMoreBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                visibleCount += 3;
+                updateVisibility();
+                // smooth scroll to newly revealed first of the newly shown batch
+                const posts = Array.from(postsList.querySelectorAll('.update-card'));
+                const idx = Math.min(visibleCount - 3, posts.length - 1);
+                if (posts[idx]) posts[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            // update on resize and initial load
+            window.addEventListener('resize', updateVisibility);
+            document.addEventListener('DOMContentLoaded', updateVisibility);
+            // also run now in case script loaded after DOMContentLoaded
+            updateVisibility();
+        })();
+    </script>
+
+<script>
+(function(){
+  const fabBtn    = document.getElementById('neroFabBtn');
+  const closeBtn  = document.getElementById('neroCloseBtn');
+  const chatWindow = document.getElementById('neroChatWindow');
+  const sendBtn   = document.getElementById('neroSendBtn');
+  const inputEl   = document.getElementById('neroChatInput');
+  const msgsEl    = document.getElementById('neroChatMsgs');
+
+  function toggleChat(open) {
+    chatWindow.classList.toggle('open', open);
+    if (open) setTimeout(() => inputEl.focus(), 280);
+  }
+
+  fabBtn.addEventListener('click',  () => toggleChat(!chatWindow.classList.contains('open')));
+  closeBtn.addEventListener('click', () => toggleChat(false));
+
+  function addMsg(text, type) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + type;
+    d.textContent = text;
+    msgsEl.appendChild(d);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return d;
+  }
+
+  async function sendMessage() {
+    const q = inputEl.value.trim();
+    if (!q) return;
+    inputEl.value = '';
+    addMsg(q, 'user');
+    const thinking = addMsg('NERO is thinking…', 'thinking');
+    sendBtn.disabled = true;
+
+    try {
+      const res = await fetch('/api/nero-ai/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || ''
+        },
+        body: JSON.stringify({ message: q })
+      });
+      const data = await res.json();
+      thinking.remove();
+      addMsg(data.reply || 'Sorry, I could not get a response.', 'ai');
+    } catch(e) {
+      thinking.remove();
+      addMsg('Sorry, something went wrong. Please try again.', 'ai');
+    }
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+})();
+</script>
+
+</body>
+</html>

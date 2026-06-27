@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ clinic.clinic_name }} - RehabConnect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fafafa;
+            color: #171717;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #171717;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #737373;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #171717;
+            background: #f5f5f5;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, #262626 0%, #171717 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-cover {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .hero-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .clinic-header {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .clinic-avatar {
+            flex-shrink: 0;
+        }
+
+        .avatar-img, .avatar-placeholder {
+            width: 112px;
+            height: 112px;
+            border-radius: 1rem;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .clinic-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .clinic-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .clinic-tagline {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .clinic-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 200px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #171717;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #262626;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-outline {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            border: 1px solid #e5e5e5;
+            color: #171717;
+        }
+
+        .btn-outline-dark:hover {
+            background: #f5f5f5;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Quick Info Cards */
+        .quick-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .info-card:hover {
+            border-color: #d4d4d4;
+            transform: translateY(-2px);
+        }
+
+        .info-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .info-content h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-content p,
+        .info-content pre {
+            font-size: 0.875rem;
+            color: #737373;
+            margin: 0.25rem 0;
+        }
+
+        .info-content pre {
+            font-family: inherit;
+            white-space: pre-wrap;
+        }
+
+        /* Two Column Layout */
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .content-layout {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Content Section */
+        .content-section {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #171717;
+        }
+
+        .clinic-description {
+            color: #404040;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            white-space: pre-line;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: #fafafa;
+            border-left: 4px solid #171717;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #171717;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #737373;
+            margin-top: 0.25rem;
+        }
+
+        /* Services */
+        .services-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .service-card {
+            background: #fafafa;
+            border-left: 4px solid #059669;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .service-card:hover {
+            transform: translateX(4px);
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .service-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-content p {
+            font-size: 0.875rem;
+            color: #737373;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-price {
+            display: inline-block;
+            background: #059669;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Facilities */
+        .facilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .facility-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .facility-icon {
+            color: #059669;
+            font-size: 1.25rem;
+        }
+
+        /* Medical Record */
+        .medical-record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .medical-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .medical-label {
+            font-size: 0.875rem;
+            color: #737373;
+            font-weight: 500;
+        }
+
+        .medical-value {
+            font-weight: 500;
+            color: #171717;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-section {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-section h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 96px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            display: flex;
+            align-items: flex-end;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            opacity: 1;
+        }
+
+        /* Info List */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item strong {
+            font-size: 0.875rem;
+            color: #737373;
+        }
+
+        .info-item span {
+            font-size: 0.875rem;
+            text-align: right;
+            color: #171717;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .social-link:hover {
+            transform: translateX(4px);
+        }
+
+        .social-link.facebook { background: #1877f2; }
+        .social-link.instagram { background: linear-gradient(135deg, #833ab4, #fd1d1d); }
+        .social-link.linkedin { background: #0a66c2; }
+
+        /* Gallery Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 1024px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -3rem;
+            right: 0;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-image-container {
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .modal-image-wrapper {
+            position: relative;
+        }
+
+        .modal-image {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .modal-controls {
+            background: #171717;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .modal-nav-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background 0.2s;
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-counter {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            background: #171717;
+            color: white;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #737373;
+        }
+
+        /* File Links */
+        .file-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #059669;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .file-link:hover {
+            color: #047857;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .clinic-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .clinic-meta {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .medical-record-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="{% url 'search_clinics' %}" class="logo">RehabConnect</a>
+            <div class="nav-links">
+                <a href="{% url 'search_clinics' %}" class="nav-link">
+                    <span>🔍</span>
+                    <span>Search Clinics</span>
+                </a>
+                <a href="{% url 'patient_dashboard' %}" class="nav-link">
+                    <span>📊</span>
+                    <span>My Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        {% if clinic.cover_photo %}
+        <div class="hero-cover">
+            <img src="{{ clinic.cover_photo.url }}" alt="{{ clinic.clinic_name }} cover">
+        </div>
+        {% endif %}
+        <div class="hero-content">
+            <div class="clinic-header">
+                <div class="clinic-avatar">
+                    {% if clinic.profile_picture %}
+                    <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="avatar-img">
+                    {% else %}
+                    <div class="avatar-placeholder">🏥</div>
+                    {% endif %}
+                </div>
+                <div class="clinic-info">
+                    <h1 class="clinic-name">{{ clinic.clinic_name }}</h1>
+                    {% if clinic.tagline %}
+                    <p class="clinic-tagline">{{ clinic.tagline }}</p>
+                    {% endif %}
+                    <div class="clinic-meta">
+                        <span class="badge">{{ clinic.specialization }}</span>
+                        <span class="badge">⭐ 4.8 (124 reviews)</span>
+                        <span class="badge">{{ clinic.years_in_operation }}+ years experience</span>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    {% if is_connected %}
+                        {% if connection_status == 'active' %}
+                        <button class="btn btn-success" disabled>
+                            <span>✅</span>
+                            <span>Connected</span>
+                        </button>
+                        {% elif connection_status == 'pending' %}
+                        <button class="btn btn-warning" disabled>
+                            <span>⏳</span>
+                            <span>Request Pending</span>
+                        </button>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'request_clinic_assignment' clinic.id %}" class="btn btn-primary">
+                        <span>🔗</span>
+                        <span>Connect with Clinic</span>
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-outline" onclick="window.print()">
+                        <span>🖨️</span>
+                        <span>Save Info</span>
+                    </button>
+                    {% if request.user.is_authenticated and request.user.user_type == 'clinic' and request.user == clinic.user %}
+                    <a href="{% url 'start_chat_with_user' %}?user_id={{ patient.user.id }}" class="btn btn-outline-dark">
+                        <span>💬</span>
+                        <span>Chat with Patient</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Quick Info Cards -->
+        <div class="quick-info-grid">
+            <div class="info-card">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                    <h3>Location</h3>
+                    <p>{{ clinic.full_address }}</p>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">📞</div>
+                <div class="info-content">
+                    <h3>Contact</h3>
+                    <p>{{ clinic.phone_number }}</p>
+                    <p>{{ clinic.contact_email }}</p>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">🕐</div>
+                <div class="info-content">
+                    <h3>Hours</h3>
+                    <pre>{{ clinic.hours_of_operation }}</pre>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon">👥</div>
+                <div class="info-content">
+                    <h3>Therapists</h3>
+                    <p>{{ clinic.number_of_therapists }} qualified professionals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="content-layout">
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Medical Record Section -->
+                {% if medical_record %}
+                <section class="content-section">
+                    <h2>Medical Record</h2>
+                    <div class="medical-record-grid">
+                        <div class="medical-info-item">
+                            <span class="medical-label">Name</span>
+                            <span class="medical-value">{{ medical_record.first_name }} {{ medical_record.last_name }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Gender</span>
+                            <span class="medical-value">{{ medical_record.get_gender_display }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Date of Birth</span>
+                            <span class="medical-value">{{ medical_record.date_of_birth }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Address</span>
+                            <span class="medical-value">{{ medical_record.address }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Country</span>
+                            <span class="medical-value">{{ medical_record.country }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Height</span>
+                            <span class="medical-value">{{ medical_record.height }} cm</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Weight</span>
+                            <span class="medical-value">{{ medical_record.weight }} kg</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Main Diagnosis</span>
+                            <span class="medical-value">{{ medical_record.main_diagnosis }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Injury Date</span>
+                            <span class="medical-value">{{ medical_record.injury_date }}</span>
+                        </div>
+                        <div class="medical-info-item">
+                            <span class="medical-label">Movement Ability</span>
+                            <span class="medical-value">{{ medical_record.get_movement_ability_display }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if medical_record.current_medications %}
+                    <div style="margin-top: 1rem;">
+                        <span class="medical-label">Current Medications</span>
+                        <p style="color: #171717; margin-top: 0.25rem;">{{ medical_record.current_medications }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if medical_record.allergies %}
+                    <div style="margin-top: 1rem;">
+                        <span class="medical-label">Allergies</span>
+                        <p style="color: #171717; margin-top: 0.25rem;">{{ medical_record.allergies }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if medical_record.previous_surgeries %}
+                    <div style="margin-top: 1rem;">
+                        <span class="medical-label">Previous Surgeries</span>
+                        <p style="color: #171717; margin-top: 0.25rem;">{{ medical_record.previous_surgeries }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if medical_record.medical_reports %}
+                    <div style="margin-top: 1rem;">
+                        <span class="medical-label">Medical Report File</span>
+                        <a href="{{ medical_record.medical_reports.url }}" target="_blank" class="file-link">
+                            <span>📄</span>
+                            <span>Download</span>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if medical_record.patient_movement_video %}
+                    <div style="margin-top: 1rem;">
+                        <span class="medical-label">Movement Video</span>
+                        <a href="{{ medical_record.patient_movement_video.url }}" target="_blank" class="file-link">
+                            <span>🎥</span>
+                            <span>View</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </section>
+                {% else %}
+                <section class="content-section">
+                    <h2>Medical Record</h2>
+                    <div class="empty-state">
+                        <p>No medical record available for this patient.</p>
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- About Section -->
+                <section class="content-section">
+                    <h2>About Our Clinic</h2>
+                    <div class="clinic-description">{{ clinic.description|linebreaks }}</div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ clinic.years_in_operation }}+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ clinic.number_of_therapists }}+</div>
+                            <div class="stat-label">Qualified Therapists</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Patients Helped</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Services Section -->
+                <section class="content-section">
+                    <h2>Our Services</h2>
+                    <div class="services-grid">
+                        {% for service in services %}
+                        <div class="service-card">
+                            <div class="service-icon">🎯</div>
+                            <div class="service-content">
+                                <h4>{{ service.service_name }}</h4>
+                                <p>{{ service.description }}</p>
+                                {% if service.price_range %}
+                                <span class="service-price">{{ service.price_range }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-state">
+                            <p>No services listed yet.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- Facilities Section -->
+                <section class="content-section">
+                    <h2>Facilities & Equipment</h2>
+                    <div class="facilities-grid">
+                        {% if clinic.facilities %}
+                            {% for facility in clinic.facilities.split %}
+                            <div class="facility-item">
+                                <span class="facility-icon">✓</span>
+                                <span>{{ facility }}</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="empty-state">
+                            <p>Facilities information coming soon.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Gallery Section -->
+                <section class="sidebar-section">
+                    <h3>Clinic Gallery</h3>
+                    {% if gallery_images %}
+                    <div class="gallery-grid" id="galleryGrid">
+                        {% for image in gallery_images %}
+                        <div class="gallery-item" onclick="openGallery({{ forloop.counter0 }})">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Clinic photo' }}">
+                            <div class="gallery-caption">{{ image.caption|default:'Clinic photo' }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if gallery_images.count > 4 %}
+                    <button class="btn btn-outline-dark" style="width: 100%;" onclick="openGallery(0)">
+                        View All Photos ({{ gallery_images.count }})
+                    </button>
+                    {% endif %}
+                    {% else %}
+                    <div class="empty-state">
+                        <p>No gallery images yet.</p>
+                    </div>
+                    {% endif %}
+                </section>
+
+                <!-- Additional Info -->
+                <section class="sidebar-section">
+                    <h3>Additional Information</h3>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <strong>Languages Spoken:</strong>
+                            <span>{{ clinic.languages_spoken }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Established:</strong>
+                            <span>{{ clinic.established_date }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Social Links -->
+                {% if clinic.facebook_url or clinic.instagram_url or clinic.linkedin_url %}
+                <section class="sidebar-section">
+                    <h3>Connect With Us</h3>
+                    <div class="social-links">
+                        {% if clinic.facebook_url %}
+                        <a href="{{ clinic.facebook_url }}" target="_blank" class="social-link facebook">
+                            <span>📘</span>
+                            <span>Facebook</span>
+                        </a>
+                        {% endif %}
+                        {% if clinic.instagram_url %}
+                        <a href="{{ clinic.instagram_url }}" target="_blank" class="social-link instagram">
+                            <span>📷</span>
+                            <span>Instagram</span>
+                        </a>
+                        {% endif %}
+                        {% if clinic.linkedin_url %}
+                        <a href="{{ clinic.linkedin_url }}" target="_blank" class="social-link linkedin">
+                            <span>💼</span>
+                            <span>LinkedIn</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 RehabConnect. All rights reserved.</p>
+        <p>Need help? <a href="mailto:support@rehabconnect.com">Contact our support team</a></p>
+    </footer>
+
+    <!-- Gallery Modal -->
+    <div id="galleryModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeGallery()">×</button>
+            <div class="modal-image-container">
+                <div class="modal-image-wrapper">
+                    <img id="modalImage" class="modal-image" src="" alt="">
+                    <div id="modalCaption" class="modal-image-caption"></div>
+                </div>
+                <div class="modal-controls">
+                    <button class="modal-nav-btn" onclick="previousImage()">❮</button>
+                    <span id="modalCounter" class="modal-counter">1 / {{ gallery_images.count }}</span>
+                    <button class="modal-nav-btn" onclick="nextImage()">❯</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery images data
+        const galleryImages = [
+            {% for image in gallery_images %}
+            { url: '{{ image.image.url }}', caption: '{{ image.caption|default:"Clinic photo" }}' },
+            {% endfor %}
+        ];
+
+        let currentImageIndex = 0;
+
+        // Open gallery modal
+        function openGallery(index) {
+            currentImageIndex = index;
+            showImage(currentImageIndex);
+            document.getElementById('galleryModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close gallery modal
+        function closeGallery() {
+            document.getElementById('galleryModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Show specific image
+        function showImage(index) {
+            const image = galleryImages[index];
+            document.getElementById('modalImage').src = image.url;
+            document.getElementById('modalCaption').textContent = image.caption;
+            document.getElementById('modalCounter').textContent = `${index + 1} / ${galleryImages.length}`;
+        }
+
+        // Navigate to previous image
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+            showImage(currentImageIndex);
+        }
+
+        // Navigate to next image
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+            showImage(currentImageIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('galleryModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    closeGallery();
+                } else if (e.key === 'ArrowLeft') {
+                    previousImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('galleryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGallery();
+            }
+        });
+    </script>
+</body>
+</html>

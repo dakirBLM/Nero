@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="search-results-container" style="max-width: 720px; margin: 0 auto; padding: 24px; display:grid; gap:18px;">
+    {% if patient_results %}
+    <section class="results-section">
+        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">Patients</h3>
+        <ul class="results-list" style="list-style:none; margin:0; padding:0; display:grid; gap:10px;">
+            {% for patient in patient_results %}
+                <li>
+                    <a href="{% url 'start_chat_with_user' %}?user_id={{ patient.user.id }}" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; background:#fff; text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        {% if patient.profile_picture %}
+                            <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                        {% else %}
+                            <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
+                                {{ patient.full_name|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div style="min-width:0;">
+                            <div style="font-size:15px; font-weight:600; color:#1f2937; line-height:1.2;">{{ patient.full_name }}</div>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if clinic_results %}
+    <section class="results-section">
+        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">Clinics</h3>
+        <ul class="results-list" style="list-style:none; margin:0; padding:0; display:grid; gap:10px;">
+            {% for clinic in clinic_results %}
+                <li>
+                    <a href="{% url 'clinic_detail' clinic.id %}" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; background:#fff; text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        {% if clinic.profile_picture %}
+                            <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;flex-shrink:0;">
+                        {% else %}
+                            <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#10b981,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
+                                {{ clinic.clinic_name|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div style="min-width:0;">
+                            <div style="font-size:15px; font-weight:600; color:#1f2937; line-height:1.2;">{{ clinic.clinic_name }}</div>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if not patient_results and not clinic_results %}
+        <div style="padding: 20px; text-align: center; color: #64748b;">
+            No results found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

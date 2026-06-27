@@ -1,0 +1,51 @@
+# ── Secrets & data — NEVER commit ─────────────────────────────
+.env
+.env.*
+!.env.example
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+media/
+# contains real IP addresses
+blocked_ips.txt
+
+# ── Python / virtualenv ───────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+
+# ── Django ────────────────────────────────────────────────────
+# collectstatic output
+staticfiles/
+local_settings.py
+*.log
+
+# ── Build / test artifacts ────────────────────────────────────
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+.tox/
+
+# ── Local tooling config ──────────────────────────────────────
+.claude/settings.local.json
+
+# ── OS / IDE / junk ───────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Large unversioned assets (keep out of repo) ───────────────
+pic.png

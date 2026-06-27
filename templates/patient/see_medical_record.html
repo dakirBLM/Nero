@@ -1,0 +1,1297 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Record - {{ medical_record.main_diagnosis }} - NERO</title>
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: none;
+        }
+
+        /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Navigation Icons */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-icon:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .nav-icon.active {
+            color: #3b82f6;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ef4444;
+            color: white;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        /* User Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            transition: border-color 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            border-color: #3b82f6;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* Left Sidebar - Profile & Navigation */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .nav-item.active {
+            background: #f0f9ff;
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #d1d5db;
+        }
+
+        /* Record Detail Container */
+        .record-detail-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Record Header */
+        .record-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 32px;
+            position: relative;
+        }
+
+        .record-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .record-title-section h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .record-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .record-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .record-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Record Content */
+        .record-content {
+            padding: 32px;
+        }
+
+        /* Patient Overview Section */
+        .patient-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .overview-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .overview-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .overview-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .overview-value.gender {
+            text-transform: capitalize;
+        }
+
+        /* Info Sections Grid */
+        .info-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .info-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title svg {
+            width: 18px;
+            height: 18px;
+            color: #3b82f6;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #4b5563;
+            min-width: 140px;
+        }
+
+        .info-value {
+            color: #1f2937;
+            text-align: right;
+            flex: 1;
+        }
+
+        /* Text Content Sections */
+        .text-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .text-content {
+            color: #4b5563;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .text-content.empty {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* Files Section */
+        .files-section {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .file-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #e0f2fe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0ea5e9;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .file-download-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-download-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Metadata Footer */
+        .metadata-footer {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
+            margin-top: 24px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metadata-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metadata-value {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-left {
+                position: static;
+            }
+            
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .search-container {
+                order: 3;
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin: 12px 0 0 0;
+            }
+            
+            .main-container {
+                padding: 16px;
+            }
+            
+            .record-header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .record-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .patient-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .info-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-icons {
+                gap: 12px;
+            }
+            
+            .user-menu {
+                padding-left: 8px;
+            }
+            
+            .patient-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-action-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .record-header, .record-content {
+                padding: 24px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .record-detail-container,
+        .breadcrumb {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.urgent {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-badge.review {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.stable {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-button:hover {
+            color: #3b82f6;
+        }
+
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <img src="{% static 'logo1.png' %}" class="logo" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    <div class="notification-badge">3</div>
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                {% if patient.profile_picture %}
+                <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar">
+                {% else %}
+                <div class="user-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                    {{ patient.full_name|first|upper }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% else %}
+                    <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                        {{ patient.full_name|first|upper }}
+                    </div>
+                    {% endif %}
+                    <div class="profile-info">
+                        <h3>{{ patient.full_name }}</h3>
+                        <p>Patient • Location: Hidden</p>
+                    </div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; line-height: 1.4;">
+                    {{ patient.bio|default:"Welcome to NERO! Manage your medical records securely." }}
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'patient_dashboard' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                    Medical Records
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Appointments
+                </a>
+                <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                    </svg>
+                    Smart Recommendations
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 00-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                    Community
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                    </svg>
+                    Messages
+                    <div style="margin-left: auto; background: #3b82f6; color: white; font-size: 12px; padding: 2px 8px; border-radius: 10px;">3</div>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="{% url 'patient_medical_records' %}">Medical Records</a>
+                <span class="breadcrumb-separator">/</span>
+                <span>Record Details</span>
+            </div>
+
+            <!-- Record Detail Container -->
+            <div class="record-detail-container">
+                <!-- Record Header -->
+                <div class="record-header">
+                    <div class="record-header-content">
+                        <div class="record-title-section">
+                            <h1>{{ medical_record.main_diagnosis }}</h1>
+                            <p class="record-subtitle">
+                                {{ medical_record.first_name }} {{ medical_record.last_name }}
+                                {% if medical_record.is_urgent %}
+                                <span class="status-badge urgent" style="margin-left: 12px;">Urgent</span>
+                                {% endif %}
+                            </p>
+                            <div class="record-tags">
+                                <span class="record-tag">{{ medical_record.get_gender_display }}</span>
+                                <span class="record-tag">{{ medical_record.get_movement_ability_display }}</span>
+                                <span class="record-tag">{{ medical_record.country }}</span>
+                            </div>
+                        </div>
+                        <div class="record-actions">
+                            <a href="{% url 'medical_record_update' medical_record.id %}" class="header-action-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Edit
+                            </a>
+                            <a href="{% url 'patient_medical_records' %}" class="header-action-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                </svg>
+                                Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Record Content -->
+                <div class="record-content">
+                    <!-- Patient Overview -->
+                    <div class="patient-overview">
+                        <div class="overview-card">
+                            <div class="overview-label">Date of Birth</div>
+                            <div class="overview-value">{{ medical_record.date_of_birth|date:"F j, Y" }}</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-label">Age</div>
+                            <div class="overview-value">{{ medical_record.get_age }} years</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-label">Height & Weight</div>
+                            <div class="overview-value">{{ medical_record.height }}cm • {{ medical_record.weight }}kg</div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="overview-label">Injury Date</div>
+                            <div class="overview-value">{{ medical_record.injury_date|date:"F j, Y" }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Information Grid -->
+                    <div class="info-sections">
+                        <!-- Personal Info Section -->
+                        <div class="info-section">
+                            <h3 class="section-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Personal Information
+                            </h3>
+                            <div class="info-grid">
+                                <div class="info-row">
+                                    <span class="info-label">Full Name</span>
+                                    <span class="info-value">{{ medical_record.first_name }} {{ medical_record.last_name }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Gender</span>
+                                    <span class="info-value">{{ medical_record.get_gender_display }}</span>
+                                </div>
+                                <!-- Address removed to avoid sharing contact/location details -->
+                                <div class="info-row">
+                                    <span class="info-label">Country</span>
+                                    <span class="info-value">{{ medical_record.country }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medical Info Section -->
+                        <div class="info-section">
+                            <h3 class="section-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                                Medical Information
+                            </h3>
+                            <div class="info-grid">
+                                <div class="info-row">
+                                    <span class="info-label">Main Diagnosis</span>
+                                    <span class="info-value">{{ medical_record.main_diagnosis }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Movement Ability</span>
+                                    <span class="info-value">{{ medical_record.get_movement_ability_display }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">BMI</span>
+                                    <span class="info-value">{{ medical_record.calculate_bmi|floatformat:1 }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Injury Duration</span>
+                                    <span class="info-value">{{ medical_record.get_injury_duration }} days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Medications -->
+                    <div class="text-section">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                            Current Medications
+                        </h3>
+                        <div class="text-content {% if not medical_record.current_medications %}empty{% endif %}">
+                            {{ medical_record.current_medications|default:"No medications recorded"|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Allergies -->
+                    <div class="text-section">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
+                            Allergies
+                        </h3>
+                        <div class="text-content {% if not medical_record.allergies %}empty{% endif %}">
+                            {{ medical_record.allergies|default:"No allergies recorded"|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Previous Surgeries -->
+                    <div class="text-section">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+                            </svg>
+                            Previous Surgeries
+                        </h3>
+                        <div class="text-content {% if not medical_record.previous_surgeries %}empty{% endif %}">
+                            {{ medical_record.previous_surgeries|default:"No previous surgeries recorded"|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Detailed Diagnosis -->
+                    {% if medical_record.detailed_diagnosis %}
+                    <div class="text-section">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            Detailed Diagnosis
+                        </h3>
+                        <div class="text-content">
+                            {{ medical_record.detailed_diagnosis|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Files Section -->
+                    <div class="files-section">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                                <polyline points="13 2 13 9 20 9"/>
+                            </svg>
+                            Attached Files
+                        </h3>
+                        <div class="file-list">
+                            {% if medical_record.medical_reports %}
+                            <div class="file-item">
+                                <div class="file-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                        <polyline points="10 9 9 9 8 9"/>
+                                    </svg>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name">Medical Report</div>
+                                    <div class="file-meta">PDF Document</div>
+                                </div>
+                                <a href="{% url 'secure_medical_report_download' medical_record.id %}" download class="file-download-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                        <polyline points="7 10 12 15 17 10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            {% if medical_record.patient_movement_video %}
+                            <div class="file-item">
+                                <div class="file-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name">Movement Video</div>
+                                    <div class="file-meta">Video File</div>
+                                </div>
+                                <a href="{% url 'secure_movement_video_view' medical_record.id %}" target="_blank" class="file-download-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"/>
+                                    </svg>
+                                    Play
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            {% if not medical_record.medical_reports and not medical_record.patient_movement_video %}
+                            <div class="text-content empty" style="text-align: center; padding: 32px;">
+                                No files attached to this record
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Metadata Footer -->
+                    <div class="metadata-footer">
+                        <div class="metadata-grid">
+                            <div class="metadata-item">
+                                <span class="metadata-label">Record Created</span>
+                                <span class="metadata-value">{{ medical_record.created_at|date:"F j, Y g:i A" }}</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">Last Updated</span>
+                                <span class="metadata-value">{{ medical_record.updated_at|date:"F j, Y g:i A" }}</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">Record ID</span>
+                                <span class="metadata-value">#{{ medical_record.id }}</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="metadata-label">Status</span>
+                                <span class="metadata-value">
+                                    <span class="status-badge {% if medical_record.is_urgent %}urgent{% else %}stable{% endif %}">
+                                        {% if medical_record.is_urgent %}Urgent{% else %}Stable{% endif %}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Search functionality
+        const searchBar = document.querySelector('.search-bar');
+        searchBar.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query) {
+                    alert(`Searching for: ${query}`);
+                    // In real app, this would redirect to search results
+                }
+            }
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // Calculate age if not provided by backend
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birth = new Date(birthDate);
+                let age = today.getFullYear() - birth.getFullYear();
+                const monthDiff = today.getMonth() - birth.getMonth();
+                
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                
+                return age;
+            }
+            
+            // Update age if not already displayed
+            const dobElement = document.querySelector('.overview-value:nth-child(2)');
+            if (dobElement && dobElement.textContent.includes('years')) {
+                const birthDate = "{{ medical_record.date_of_birth|date:'Y-m-d' }}";
+                if (birthDate) {
+                    const age = calculateAge(birthDate);
+                    dobElement.textContent = `${age} years`;
+                }
+            }
+            
+            // Calculate BMI if not provided
+            function calculateBMI(height, weight) {
+                if (height && weight) {
+                    const heightInMeters = height / 100;
+                    return weight / (heightInMeters * heightInMeters);
+                }
+                return null;
+            }
+            
+            const bmiElement = document.querySelector('.info-value:nth-child(3)');
+            if (bmiElement && bmiElement.textContent.includes('BMI')) {
+                const height = {{ medical_record.height|default:0 }};
+                const weight = {{ medical_record.weight|default:0 }};
+                if (height && weight) {
+                    const bmi = calculateBMI(height, weight);
+                    if (bmi) {
+                        bmiElement.textContent = bmi.toFixed(1);
+                    }
+                }
+            }
+        });
+
+        // Print functionality
+        function printRecord() {
+            window.print();
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + P to print
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                printRecord();
+            }
+            
+            // Escape to go back
+            if (e.key === 'Escape') {
+                window.location.href = "{% url 'patient_medical_records' %}";
+            }
+        });
+
+        // Copy record ID to clipboard
+        function copyRecordId() {
+            const recordId = "{{ medical_record.id }}";
+            navigator.clipboard.writeText(`Record ID: #${recordId}`).then(() => {
+                alert('Record ID copied to clipboard');
+            });
+        }
+
+        // File preview functionality
+        document.querySelectorAll('.file-download-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const fileName = this.closest('.file-item').querySelector('.file-name').textContent;
+                console.log(`Downloading: ${fileName}`);
+            });
+        });
+
+        // Responsive behavior for overview cards
+        function updateOverviewLayout() {
+            const overviewCards = document.querySelectorAll('.overview-card');
+            const containerWidth = document.querySelector('.patient-overview').offsetWidth;
+            
+            if (containerWidth < 600) {
+                overviewCards.forEach(card => {
+                    card.style.minHeight = 'auto';
+                });
+            } else {
+                overviewCards.forEach(card => {
+                    card.style.minHeight = '120px';
+                });
+            }
+        }
+
+        // Call on load and resize
+        window.addEventListener('load', updateOverviewLayout);
+        window.addEventListener('resize', updateOverviewLayout);
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Add confirmation for delete action if exists
+        const deleteBtn = document.querySelector('a[href*="delete"]');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to delete this medical record? This action cannot be undone.')) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+    </script>
+</body>
+</html>

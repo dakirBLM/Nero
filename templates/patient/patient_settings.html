@@ -1,0 +1,1184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NERO • Account Settings</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== BASE STYLES (Matching Dashboard) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER (Identical to Dashboard) ===== */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+ /* Search Bar */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 52px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; opacity: 1;  }
+
+        /* Search Results (copied from dashboard for visual parity) */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+        /* Navigation Icons */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* ===== SETTINGS PAGE STYLES ===== */
+        .settings-container {
+            max-width: 760px;
+            margin: 24px auto;
+            padding: 0 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .settings-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .settings-title i {
+            color: #3b82f6;
+            font-size: 18px;
+        }
+
+        .section-heading {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 24px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-heading:first-child {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-control, 
+        input[type="text"], 
+        input[type="email"], 
+        input[type="date"], 
+        input[type="tel"],
+        input[type="password"],
+        textarea, 
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .form-control:focus,
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        input[type="tel"]:focus,
+        input[type="password"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary {
+            margin-top: 8px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+            color: #2563eb;
+        }
+
+        /* Error and help text styling */
+        .errorlist {
+            list-style: none;
+            margin: 8px 0 0 0;
+            padding: 0;
+            color: #ef4444;
+            font-size: 13px;
+        }
+
+        .errorlist li {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+        }
+
+        .errorlist li:before {
+            content: "⚠️";
+            font-size: 12px;
+        }
+
+        .helptext {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Form field wrapper */
+        .field-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .field-wrapper label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .field-wrapper input,
+        .field-wrapper textarea,
+        .field-wrapper select {
+            display: block;
+            width: 100%;
+        }
+
+        /* Profile picture specific styling */
+        input[type="file"] {
+            padding: 8px;
+            border: 1px dashed #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        /* Date input styling */
+        input[type="date"] {
+            padding: 11px 16px;
+        }
+
+        /* Select dropdown styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* Messages styling */
+        .messages {
+            margin-bottom: 24px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: #e0f2fe;
+            color: #1e40af;
+            border: 1px solid #bae6fd;
+        }
+
+        /* Current profile picture display */
+        .current-profile-pic {
+            margin-bottom: 16px;
+        }
+
+        .current-profile-pic img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+        }
+
+        /* Two-column layout for medical conditions */
+        .conditions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .condition-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .condition-checkbox:hover {
+            background: #f3f4f6;
+        }
+
+        .condition-checkbox input[type="checkbox"] {
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 16px;
+            }
+            
+            .settings-card {
+                padding: 20px;
+            }
+            
+            .settings-title {
+                font-size: 18px;
+                margin-bottom: 24px;
+            }
+            
+            .section-heading {
+                font-size: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .conditions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Header: match dashboard mobile behavior */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                flex: 1 1 auto;
+                max-width: 100%;
+                margin: 0 8px;
+                min-width: 160px;
+            }
+
+            .search-bar {
+                height: 42px;
+                padding: 10px 14px 10px 46px;
+            }
+
+            .search-icon {
+                left: 16px;
+                font-size: 14px;
+            }
+
+            /* Keep nav icons + avatar on the same row */
+            .nav-icons {
+                flex: 0 0 auto;
+            }
+
+            .user-menu {
+                margin-left: auto;
+                border-left: 0;
+                padding-left: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-container {
+                padding: 12px;
+            }
+
+            .settings-card {
+                padding: 16px;
+            }
+
+            .field-wrapper {
+                margin-bottom: 16px;
+            }
+
+            .form-control,
+            input[type="text"],
+            input[type="email"],
+            input[type="date"],
+            textarea,
+            select {
+                padding: 10px 14px;
+                font-size: 15px;
+            }
+
+            /* Header: keep logo + search on first line; icons + user menu on single line below */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 64px;
+                height: 40px;
+                flex: 0 0 64px;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 96px);
+                margin: 0 8px 0 0;
+            }
+
+            /* Search bar: fit small screens + avoid iOS zoom */
+            .search-bar {
+                height: 40px;
+                padding: 10px 14px 10px 46px;
+                font-size: 16px;
+            }
+
+            .search-icon {
+                left: 16px;
+                font-size: 14px;
+            }
+
+            .search-results {
+                max-height: 280px;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+                margin-left: auto;
+                border-left: 0;
+                padding-left: 0;
+            }
+        }
+
+        /* Animation from dashboard */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header (Identical to Dashboard) -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics..." style="border-radius: 100px !important;">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons -->
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon active">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ patient.user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ patient.user.username }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Content -->
+    <main class="settings-container">
+        <div class="settings-card">
+            <div class="settings-title"><i class="fas fa-cog"></i> Account Settings</div>
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if not google_connected %}
+            <div class="alert alert-info" style="margin-bottom: 16px;">
+                <i class="fab fa-google"></i>
+                Google is not connected to this account yet.
+                <a href="{% url 'patient_connect_google' %}" style="margin-left: 8px; font-weight: 600; color: #1d4ed8; text-decoration: none;">Connect Google now</a>
+            </div>
+            {% endif %}
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if user_form %}
+                <div class="section-heading"><i class="fas fa-user-circle"></i> Account Information</div>
+                
+                {% for field in user_form %}
+                <div class="field-wrapper">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="section-heading"><i class="fas fa-id-card"></i> Profile Information</div>
+                
+                <!-- Current Profile Picture -->
+                <div class="current-profile-pic">
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Profile Picture (click to change)</p>
+                    {% if patient.profile_picture %}
+                    <img src="{{ patient.profile_picture.url }}" alt="Current profile picture" id="profilePicPreview" style="cursor:pointer; width:100px; height:100px; border-radius:50%; object-fit:cover;" onclick="document.getElementById('profileFileInput').click();">
+                    {% else %}
+                    <div id="profilePicPreview" style="width:100px; height:100px; border-radius:50%; background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:28px; cursor:pointer;" onclick="document.getElementById('profileFileInput').click();">{{ user.username|first|upper }}</div>
+                    {% endif %}
+
+                    <!-- Hidden file input used to update profile picture when clicking the image -->
+                    <input type="file" name="profile_picture" id="profileFileInput" accept="image/*" style="display:none;">
+                </div>
+                
+                {% for field in form %}
+                <div class="field-wrapper">
+                    {% if field.name != 'medical_conditions' and field.name != 'profile_picture' %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <!-- Medical Conditions Checkboxes -->
+                {% if 'medical_conditions' in form.fields %}
+                <div class="field-wrapper">
+                    <label>Medical Conditions (Optional)</label>
+                    <div class="conditions-grid">
+                        {% for condition in form.medical_conditions %}
+                        <div class="condition-checkbox">
+                            {{ condition.tag }}
+                            <label for="{{ condition.id_for_label }}" style="margin: 0; cursor: pointer;">{{ condition.choice_label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.medical_conditions.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.medical_conditions.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if form.medical_conditions.help_text %}
+                    <span class="helptext">{{ form.medical_conditions.help_text }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+            
+            <a class="back-link" href="{% url 'patient_dashboard' %}">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Avatar dropdown functionality
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+        
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !isOpen);
+            });
+            
+            document.addEventListener('click', function() {
+                avatarDropdown.style.display = 'none';
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            });
+            
+            avatarDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Form enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profile picture: clicking preview opens file picker and shows immediate preview
+            const profileFileInput = document.getElementById('profileFileInput');
+            const profilePreview = document.getElementById('profilePicPreview');
+
+            if (profileFileInput) {
+                profileFileInput.addEventListener('change', function(e) {
+                    const file = this.files[0];
+                    if (!file) return;
+                    if (profilePreview && profilePreview.tagName === 'IMG') {
+                        const reader = new FileReader();
+                        reader.onload = function(ev) { profilePreview.src = ev.target.result; };
+                        reader.readAsDataURL(file);
+                    } else if (profilePreview) {
+                        // replace fallback div with an img element showing preview
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            const img = document.createElement('img');
+                            img.id = 'profilePicPreview';
+                            img.src = ev.target.result;
+                            img.style.width = '100px';
+                            img.style.height = '100px';
+                            img.style.borderRadius = '50%';
+                            img.style.objectFit = 'cover';
+                            img.style.cursor = 'pointer';
+                            img.onclick = function() { document.getElementById('profileFileInput').click(); };
+                            profilePreview.replaceWith(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Auto-expand textarea
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+                // Trigger initial resize
+                setTimeout(() => {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = (textarea.scrollHeight) + 'px';
+                }, 100);
+            });
+        });
+    </script>
+    <script>
+        // Dashboard-style live search (original, matches dashboard)
+        const dashSearchBar = document.getElementById('dashboard-search-bar');
+        const dashSearchResults = document.getElementById('dashboard-search-results');
+        let dashSearchTimeout;
+
+        dashSearchBar.addEventListener('input', function() {
+            clearTimeout(dashSearchTimeout);
+            const query = this.value.trim();
+
+            if (!query) {
+                dashSearchResults.style.display = 'none';
+                dashSearchResults.innerHTML = '';
+                return;
+            }
+
+            dashSearchTimeout = setTimeout(() => {
+                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                dashSearchResults.style.display = 'block';
+
+                fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Search failed');
+                    return res.text();
+                })
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+
+                    let results = '';
+                    const sections = temp.querySelectorAll('.results-section');
+
+                    if (sections && sections.length) {
+                        sections.forEach(section => {
+                            const title = section.querySelector('h3');
+                            const list = section.querySelector('ul');
+
+                            if (title && list) {
+                                list.classList.add('results-list');
+                                results += `
+                                    <div class="results-section-title">
+                                        <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                        ${title.textContent}
+                                    </div>
+                                    ${list.outerHTML}
+                                `;
+                            }
+                        });
+                    }
+
+                    if (!results) {
+                        results = `
+                            <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                <p>No results found for "${query}"</p>
+                            </div>
+                        `;
+                    }
+
+                    dashSearchResults.innerHTML = results;
+                    dashSearchResults.style.display = 'block';
+                })
+                .catch(() => {
+                    dashSearchResults.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #ef4444;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Search failed. Please try again.</p>
+                        </div>
+                    `;
+                    dashSearchResults.style.display = 'block';
+                });
+            }, 300);
+        });
+
+        // Prevent clicks inside results from closing immediately
+        dashSearchResults.addEventListener('click', function(e) { e.stopPropagation(); });
+        document.addEventListener('click', function(e) {
+            const container = document.querySelector('.search-container');
+            if (!container || container.contains(e.target)) return;
+            dashSearchResults.style.display = 'none';
+        });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') dashSearchResults.style.display = 'none'; });
+    </script>
+</body>
+</html>

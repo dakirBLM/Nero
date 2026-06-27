@@ -1,0 +1,1564 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages • NERO</title>
+    <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base Styles - MATCHING NERO */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header - UPDATED TO MATCH DASHBOARD */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 320ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease, box-shadow 320ms ease;
+            will-change: transform, opacity;
+        }
+
+        .main-header--hidden {
+            transform: translateY(-110%) translateZ(0);
+            opacity: 0;
+            box-shadow: none;
+        }
+
+        .main-header--visible {
+            transform: translateY(0) translateZ(0);
+            opacity: 1;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo - MATCHING DASHBOARD */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar - UPDATED TO MATCH DASHBOARD */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Navigation Icons - MODERNIZED TO MATCH DASHBOARD */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu - MATCHING DASHBOARD */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown - MATCHING DASHBOARD */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* Left Sidebar */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - MODERNIZED ICONS */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* Quick Actions - MODERNIZED */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            color: #3b82f6;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Chat Rooms Container */
+        .chat-rooms-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Chat Room Card - MODERNIZED */
+        .chat-room-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            border: 1px solid #f1f5f9;
+        }
+
+        .chat-room-card:hover {
+            background: white;
+            border-color: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .chat-room-card.unread {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), #f9fafb);
+            border-left: 4px solid #3b82f6;
+        }
+
+        /* Chat Avatar - MODERNIZED */
+        .chat-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+        }
+
+        /* Search dropdown results - match dashboard styling */
+        .results-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(90deg, #ffffff, #fbfbfb);
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .results-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.12s ease;
+            color: inherit;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .results-list li:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+        }
+
+        .result-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #f3f4f6, #eef2ff);
+            border: 1px solid #f1f5f9;
+        }
+
+        .result-meta {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #111827;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .result-sub {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Avatar wrapper + call-lights (matching dashboard) */
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.14), transparent 25%), radial-gradient(circle at 70% 70%, rgba(16,185,129,0.08), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.6s ease-in-out infinite;
+        }
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(82,39,255,0.12);
+            box-shadow: 0 0 10px rgba(82,39,255,0.08), 0 0 6px rgba(16,185,129,0.04);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 7s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.98); opacity: 0.75; }
+            50% { transform: scale(1.04); opacity: 1; }
+            100% { transform: scale(0.98); opacity: 0.75; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chat-avatar { position: relative; z-index: 4; border-radius: 12px; }
+
+        .avatar-placeholder {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Chat Info */
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .chat-type {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-type.patient {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+        }
+
+        .chat-type.clinic {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #3730a3;
+        }
+
+        /* Unread Badge - MODERNIZED */
+        .unread-badge {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* No Chats - MODERNIZED */
+        .no-chats {
+            text-align: center;
+            padding: 60px 40px;
+            background: #f9fafb;
+            border-radius: 16px;
+            border: 2px dashed #e5e7eb;
+        }
+
+        .no-chats-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: #0ea5e9;
+            font-size: 36px;
+        }
+
+        .no-chats h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .no-chats p {
+            color: #6b7280;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Buttons - MATCHING DASHBOARD */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Status Indicator - MODERNIZED */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #9ca3af;
+        }
+
+        .status-dot.online {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #9ca3af;
+        }
+
+        /* Search in Chat */
+        .chat-search {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .chat-search:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .chat-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Time ago */
+        .time-ago {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* Mark All as Read Button */
+        .mark-read-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mark-read-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-left {
+                position: static;
+            }
+            
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .search-container {
+                order: 3;
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin: 12px 0 0 0;
+            }
+            
+            .main-layout {
+                padding: 16px;
+            }
+            
+            .main-content {
+                padding: 24px;
+            }
+            
+            .chat-room-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .chat-avatar,
+            .avatar-placeholder {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .quick-actions {
+                flex-wrap: wrap;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-icons {
+                gap: 8px;
+            }
+            
+            .user-menu {
+                padding-left: 8px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .chat-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            
+            .action-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* Make logo smaller and place compact search bar beside it on very small screens */
+        @media (max-width: 480px) {
+            .logo-container {
+                width: 64px;
+                height: 40px;
+                flex: 0 0 64px;
+            }
+            .header-container {
+                align-items: center;
+                gap: 8px;
+            }
+            .search-container {
+                order: 0;
+                flex: 1 1 auto;
+                max-width: calc(100% - 96px);
+                margin: 0 8px;
+            }
+            .search-bar {
+                height: 36px;
+                padding: 8px 12px 8px 38px;
+                font-size: 13px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-room-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Search Results Dropdown */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-bar" id="header-search-bar" autocomplete="off" placeholder="Search messages or users...">
+                <div class="search-results" id="header-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons - MODERN FONT AWESOME -->
+            <div class="nav-icons">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon active">
+                    <i class="fas fa-comment-alt"></i>
+                    <div class="notification-badge">{% if total_unread %}{{ total_unread }}{% endif %}</div>
+                </a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if patient and patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% elif patient %}
+                        <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                            {{ patient.full_name|first|upper }}
+                        </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ patient.user.username }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <!-- Left Sidebar - UPDATED ICONS -->
+        <aside class="sidebar-left">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                    {% if patient and patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% elif patient %}
+                        <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            {{ patient.full_name|first|upper }}
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ patient.user.username }}</h3>
+                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                    </div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                    <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
+                    {{ patient.bio|default:"Stay connected with your healthcare providers." }}
+                </div>
+            </div>
+
+             <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'search_clinics' %}" class="nav-item">
+                    <i class="fas fa-search"></i>
+                    Find Clinics
+                </a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item">
+                    <i class="fas fa-file-medical-alt"></i>
+                    Medical Records
+                </a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    Smart Recommendations
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Community
+                </a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-item active">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                      {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                    
+                </a>
+                <a href="{% url 'patient_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-comments"></i>
+                        Messages
+                    </h1>
+                    <p class="page-subtitle">
+                        {% if total_unread %}
+                            You have {{ total_unread }} unread message{{ total_unread|pluralize }}
+                        {% else %}
+                            All your conversations in one place
+                        {% endif %}
+                    </p>
+                </div>
+                
+              
+            </div>
+
+            <!-- Chat Search -->
+            <div style="position: relative;">
+                <i class="fas fa-search chat-search-icon"></i>
+                <input type="text" class="chat-search" placeholder="Search conversations..." id="chatSearch">
+            </div>
+
+            <!-- Chat Rooms List -->
+            <div class="chat-rooms-container">
+                {% for item in rooms %}
+                    {% with room=item.room other=item.other unread=item.unread_count %}
+                    <a href="{% url 'chat_room_view_patient' room.id %}" class="chat-room-card {% if unread %}unread{% endif %}">
+                       
+                        
+                        {% if other.clinic and other.clinic.profile_picture %}
+                            <img src="{{ other.clinic.profile_picture.url }}" alt="{{ other.clinic.clinic_name }}" class="chat-avatar">
+                        {% elif other.patient and other.patient.profile_picture %}
+                            <img src="{{ other.patient.profile_picture.url }}" alt="{{ other.patient.full_name }}" class="chat-avatar">
+                        {% else %}
+                            <div class="avatar-placeholder" style="background: linear-gradient(135deg, 
+                                {% if other.clinic %}#8b5cf6, #ec4899{% elif other.patient %}#10b981, #3b82f6{% else %}#6b7280, #9ca3af{% endif %})">
+                                {% if other.clinic %}
+                                    {{ other.clinic.clinic_name|first|upper }}
+                                {% elif other.patient %}
+                                    {{ other.patient.full_name|first|upper }}
+                                {% else %}
+                                    {{ other.username|first|upper }}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+
+                        <!-- Chat Info -->
+                        <div class="chat-info">
+                            <div class="chat-title">
+                                {% if other.clinic %}
+                                    <span class="chat-type clinic"><i class="fas fa-hospital"></i> Clinic</span>
+                                    {{ other.clinic.clinic_name }}
+                                {% elif other.patient %}
+                                    <span class="chat-type patient"><i class="fas fa-user-injured"></i> Patient</span>
+                                    {% if request.user.user_type == 'clinic' %}
+                                        {{ other.username }}
+                                    {% else %}
+                                        {{ other.patient.full_name }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ other.username }}
+                                {% endif %}
+                            </div>
+                            <div class="chat-meta">
+                                {% if other.clinic %}
+                                    <span class="status-indicator">
+                                        <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
+                                        {% if other.is_online %}Online now{% else %}Offline{% endif %}
+                                    </span>
+                                    {% if other.clinic.city %}
+                                        <span><i class="fas fa-map-marker-alt"></i> {{ other.clinic.city }}</span>
+                                    {% endif %}
+                                {% elif other.patient %}
+                                    <span class="status-indicator">
+                                        <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
+                                        {% if other.is_online %}Online now{% else %}Offline{% endif %}
+                                    </span>
+                                    {% if other.patient.city %}
+                                        <span><i class="fas fa-map-marker-alt"></i> {{ other.patient.city }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Unread Badge -->
+                        {% if unread %}
+                            <div class="unread-badge">{{ unread }}</div>
+                        {% endif %}
+
+                        <!-- Last Activity Time -->
+                        {% if room.last_message_at %}
+                            <span class="time-ago">{{ room.last_message_at|timesince }} ago</span>
+                        {% endif %}
+                    </a>
+                    {% endwith %}
+                {% empty %}
+                    <div class="no-chats">
+                        <div class="no-chats-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>No conversations yet</h3>
+                        <p>
+                            {% if request.user.user_type == 'patient' %}
+                                Start chatting with clinics by connecting with them from their profile pages.
+                            {% else %}
+                                Connect with patients to start conversations about their treatment.
+                            {% endif %}
+                        </p>
+                        {% if request.user.user_type == 'patient' %}
+                            <a href="{% url 'search_clinics' %}" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                Find Clinics to Chat With
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Avatar dropdown - MATCHING DASHBOARD
+        const avatarBtn = document.getElementById('avatarBtn');
+        const avatarDropdown = document.getElementById('avatarDropdown');
+        
+        if (avatarBtn) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = avatarDropdown.style.display === 'block';
+                avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                avatarBtn.setAttribute('aria-expanded', !isOpen);
+            });
+            
+            document.addEventListener('click', function() {
+                avatarDropdown.style.display = 'none';
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            });
+            
+            avatarDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Header search functionality
+        const headerSearchBar = document.getElementById('header-search-bar');
+        const headerSearchResults = document.getElementById('header-search-results');
+        let headerSearchTimeout;
+        
+        headerSearchBar.addEventListener('input', function() {
+            clearTimeout(headerSearchTimeout);
+            const query = this.value.trim();
+            
+            if (!query) {
+                headerSearchResults.style.display = 'none';
+                headerSearchResults.innerHTML = '';
+                // Presence ping removed: not needed anymore
+                return;
+            }
+            
+            headerSearchTimeout = setTimeout(() => {
+                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                headerSearchResults.style.display = 'block';
+                
+                fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Search failed');
+                    return res.text();
+                })
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    
+                    let results = '';
+                    const sections = temp.querySelectorAll('.results-section');
+                    
+                    if (sections && sections.length) {
+                        sections.forEach(section => {
+                            const title = section.querySelector('h3');
+                            const list = section.querySelector('ul');
+                            
+                            if (title && list) {
+                                list.classList.add('results-list');
+                                results += `
+                                    <div class="results-section-title">
+                                        <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                        ${title.textContent}
+                                    </div>
+                                    ${list.outerHTML}
+                                `;
+                            }
+                        });
+                    }
+                    
+                    if (!results) {
+                        results = `
+                            <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                <p>No results found for "${query}"</p>
+                            </div>
+                        `;
+                    }
+                    
+                    headerSearchResults.innerHTML = results;
+                    headerSearchResults.style.display = 'block';
+                })
+                .catch(err => {
+                    headerSearchResults.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #ef4444;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>Search failed. Please try again.</p>
+                        </div>
+                    `;
+                    headerSearchResults.style.display = 'block';
+                });
+            }, 300);
+        });
+
+        // Hide search results when clicking outside
+        if (headerSearchBar && headerSearchResults) {
+            headerSearchResults.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!headerSearchBar.contains(e.target) && !headerSearchResults.contains(e.target)) {
+                    headerSearchResults.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') headerSearchResults.style.display = 'none';
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // Chat search functionality
+            const chatSearch = document.getElementById('chatSearch');
+            if (chatSearch) {
+                chatSearch.addEventListener('input', function() {
+                    const query = this.value.toLowerCase();
+                    const chatCards = document.querySelectorAll('.chat-room-card');
+                    
+                    chatCards.forEach(card => {
+                        const title = card.querySelector('.chat-title').textContent.toLowerCase();
+                        const meta = card.querySelector('.chat-meta')?.textContent.toLowerCase() || '';
+                        
+                        if (title.includes(query) || meta.includes(query)) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+            // Add hover effects to chat cards
+            const chatCards = document.querySelectorAll('.chat-room-card');
+            chatCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
+                });
+            });
+            
+            // Auto-refresh chats every 30 seconds
+            setInterval(() => {
+                // In a real app, this would fetch new messages
+                console.log('Checking for new messages...');
+            }, 30000);
+        });
+        
+        // Mark all as read
+        function markAllAsRead() {
+            if (confirm('Mark all messages as read?')) {
+                // In a real app, this would call an API
+                showNotification('All messages marked as read', 'success');
+                // Reload the page after 1 second
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                    style.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N to start new chat
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                if (window.confirm('Start a new chat?')) {
+                    window.location.href = "{% url 'search_clinics' %}";
+                }
+            }
+            
+            // Escape to go back
+            if (e.key === 'Escape') {
+                window.location.href = "{% url 'patient_dashboard' %}";
+            }
+            
+            // Ctrl/Cmd + F to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                const searchInput = document.querySelector('.chat-search');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Improved header hide/show animation: smoother and less jittery.
+        (function(){
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+
+            // Ensure visible state initially
+            header.classList.add('main-header--visible');
+
+            let lastScroll = window.pageYOffset || document.documentElement.scrollTop;
+            let lastTime = performance.now();
+            let raf = null;
+
+            function handle() {
+                const current = window.pageYOffset || document.documentElement.scrollTop;
+                const now = performance.now();
+                const dy = current - lastScroll;
+                const dt = Math.max(1, now - lastTime);
+
+                // Small deadzone to avoid flicker
+                if (Math.abs(dy) < 8) {
+                    // keep current state
+                } else if (dy > 0 && current > 120) {
+                    // scrolling down: hide
+                    header.classList.add('main-header--hidden');
+                    header.classList.remove('main-header--visible');
+                } else {
+                    // scrolling up: show
+                    header.classList.remove('main-header--hidden');
+                    header.classList.add('main-header--visible');
+                }
+
+                lastScroll = current <= 0 ? 0 : current;
+                lastTime = now;
+                raf = null;
+            }
+
+            window.addEventListener('scroll', function(){
+                if (raf == null) raf = window.requestAnimationFrame(handle);
+            }, {passive: true});
+
+            // Reveal header on resize or when tab becomes visible
+            window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+        })();
+    </script>
+</body>
+</html>

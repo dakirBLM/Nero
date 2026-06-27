@@ -1,0 +1,16 @@
+{% extends 'chat/chat_room_list.html' %}
+{% block content %}
+    <h2>Chats with Clinics</h2>
+    <div class="chat-list">
+        {% for item in rooms %}
+            <div class="chat-list-item">
+                <a href="{% url 'chat_room_view_patient' item.room.id %}">
+                    {{ item.other.clinic.clinic_name }}
+                    {% if item.unread_count %}<span class="badge">{{ item.unread_count }}</span>{% endif %}
+                </a>
+            </div>
+        {% empty %}
+            <div>No clinic conversations yet.</div>
+        {% endfor %}
+    </div>
+{% endblock %}

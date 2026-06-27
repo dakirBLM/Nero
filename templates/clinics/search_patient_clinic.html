@@ -1,0 +1,1679 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Patients • {{ clinic.clinic_name }} • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* EXACT SAME STYLES AS CLINIC DASHBOARD */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.5;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Modern Header - EXACT SAME */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.28s ease;
+            will-change: transform;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Logo - EXACT SAME */
+        .logo-container {
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            background-image: linear-gradient(90deg, #00ffbf, #0564f2, #2ed4e3);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask-image: url("{% static 'logo1.png' %}");
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-image: url("{% static 'logo1.png' %}");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            display: block;
+        }
+
+        .logo-fallback {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @supports not (mask-image: url("{% static 'logo1.png' %}")) {
+            .logo-gradient { display: none; }
+            .logo-fallback { display: block; }
+        }
+
+        /* Search Bar - EXACT SAME */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            background: #f9fafb;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            height: 44px;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .search-bar::placeholder { color: #9ca3af; opacity: 1; }
+
+        /* Search Results (dropdown) - same styling as dashboard */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.10);
+            z-index: 2000;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .results-section-title {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #334155;
+            background: linear-gradient(90deg, rgba(249,250,251,0.6), transparent);
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .results-list {
+            list-style: none;
+            margin: 0;
+            padding: 6px 0;
+        }
+
+        .results-list li {
+            padding: 0 12px;
+            border-radius: 8px;
+            margin: 6px 8px;
+        }
+
+        .results-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.14s ease, transform 0.12s ease;
+            border-radius: 8px;
+        }
+
+        .results-list li a:hover {
+            background: #f8fafc;
+            transform: translateX(3px);
+        }
+
+        .result-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid rgba(15,23,42,0.04);
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .result-type-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #0f172a;
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.08);
+        }
+
+        .no-results {
+            padding: 28px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Navigation Icons - EXACT SAME */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: #f8fafc;
+        }
+
+        .nav-icon:hover {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            font-weight: 600;
+        }
+
+        /* User Menu - EXACT SAME */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Avatar Dropdown - EXACT SAME */
+        .avatar-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+            border-radius: 12px;
+            min-width: 200px;
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+
+        .dropdown-header strong {
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .dropdown-list li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .dropdown-list li a:hover {
+            background: #f9fafb;
+            color: #3b82f6;
+            padding-left: 20px;
+        }
+
+        .dropdown-list li a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Layout - EXACT SAME */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* Left Sidebar - EXACT SAME */
+        .sidebar-left {
+            position: sticky;
+            top: 88px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(82,39,255,0.18), transparent 25%), 
+                        radial-gradient(circle at 70% 70%, rgba(255,159,252,0.14), transparent 25%);
+            filter: blur(8px);
+            z-index: 2;
+            pointer-events: none;
+            animation: avatarPulse 2.4s ease-in-out infinite;
+        }
+
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(39, 201, 255, 0.3);
+            box-shadow: 0 0 12px rgba(208, 255, 39, 0.218), 0 0 6px rgba(229, 255, 159, 0.361);
+            z-index: 1;
+            pointer-events: none;
+            transform: rotate(0deg);
+            animation: avatarSpin 6s linear infinite;
+        }
+
+        @keyframes avatarPulse {
+            0% { transform: scale(0.96); opacity: 0.7; }
+            50% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(0.96); opacity: 0.7; }
+        }
+
+        @keyframes avatarSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 4;
+        }
+
+        .profile-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Sidebar Navigation - EXACT SAME STYLING */
+        .sidebar-nav {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), transparent);
+            color: #3b82f6;
+            padding-left: 24px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Page Header - Same styling as create-post */
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* Search Container */
+        .search-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            background: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            padding: 8px 0;
+            outline: none;
+            color: #1f2937;
+        }
+
+        .search-box input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-tips {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .search-tip {
+            background: #f3f4f6;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .filters-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1f2937;
+            background: white;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Results Container */
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            align-items: start;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #4b5563;
+            background: white;
+            outline: none;
+        }
+
+        /* Patient Cards - Same styling as patient-card */
+        .patient-card {
+            background: linear-gradient(180deg, #ffffff, #fbfdff);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            border: 1px solid rgba(15,23,42,0.04);
+            box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+            align-items: center;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        }
+
+        .patient-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid rgba(59,130,246,0.08);
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+            font-size: 20px;
+        }
+
+        .patient-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .patient-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .patient-info { /* ensure proper truncation and spacing */
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .patient-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 13px;
+            align-items: center;
+        }
+
+        .patient-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .patient-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .patient-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-primary {
+            background: #f0f9ff;
+            color: #3b82f6;
+        }
+
+        .tag-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .tag-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .patient-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        /* Ensure actions don't push layout on small screens */
+        @media (max-width: 640px) {
+            .results-container { grid-template-columns: 1fr; }
+            .patient-card { align-items: flex-start; }
+            .patient-actions { width: 100%; flex-direction: row; justify-content: flex-start; gap: 8px; }
+        }
+
+        .patient-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .patient-btn.primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .patient-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .patient-btn.secondary {
+            background: transparent;
+            color: #374151;
+            border: 1px solid rgba(15,23,42,0.06);
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 40px rgba(2,6,23,0.08);
+        }
+
+        .results-header {
+            grid-column: 1/-1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: linear-gradient(90deg, rgba(59,130,246,0.05), transparent);
+            border-radius: 10px;
+        }
+
+        .results-count {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .patient-btn.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Empty State - EXACT SAME */
+        .empty-state {
+            background: white;
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+            color: #9ca3af;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            color: #6b7280;
+            margin-bottom: 24px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Stats Grid - EXACT SAME */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Loading spinner - EXACT SAME */
+        .loading-logo {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 8px;
+            display: inline-block;
+            animation: logoSpin 1s linear infinite;
+        }
+
+        @keyframes logoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations - EXACT SAME */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design - EXACT SAME */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-left {
+                position: static;
+            }
+            
+            .search-container {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Keep logo + search on first row; place nav icons + user menu on the next row */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+            
+            .main-layout {
+                padding: 16px;
+            }
+            
+            .patient-card {
+                flex-direction: column;
+            }
+            
+            .patient-actions {
+                width: 100%;
+                flex-direction: row;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Very small screens: keep logo+search first line, icons+menu on one line below */
+            .header-container {
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                align-items: center;
+            }
+
+            .logo-container {
+                order: 1;
+                width: 88px;
+                height: 44px;
+                flex: 0 0 auto;
+            }
+
+            .search-container {
+                order: 2;
+                flex: 1 1 auto;
+                min-width: 120px;
+                max-width: calc(100% - 120px);
+                margin: 0 8px 0 0;
+            }
+
+            .nav-icons {
+                order: 3;
+                flex: 1 1 auto;
+                display: flex;
+                justify-content: flex-start;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .user-menu {
+                order: 3;
+                flex: 0 0 auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 8px;
+            }
+
+            .patient-card {
+                padding: 16px;
+            }
+
+            .patient-meta {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .patient-actions {
+                flex-direction: column;
+            }
+
+            .main-layout { padding: 12px; }
+
+            .main-header.hidden { transform: translateY(-120%); }
+        }
+        {% include 'includes/search_bar_styles.html' %}
+    </style>
+</head>
+<body>
+    <!-- Main Header - EXACT SAME AS CLINIC DASHBOARD -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo - EXACT SAME -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar - EXACT SAME -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search patients, clinics, or topics...">
+                <div class="search-results" id="dashboard-search-results"></div>
+            </div>
+
+            <!-- Navigation Icons - EXACT SAME STYLING -->
+            <div class="nav-icons">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-icon">
+                    <i class="fas fa-comment-alt"></i>
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="notification-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-icon active">
+                    <i class="fas fa-search"></i>
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </a>
+                <a href="{% url 'clinic_settings' %}" class="nav-icon" title="Clinic Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </div>
+
+            <!-- User Menu - EXACT SAME -->
+            <div class="user-menu">
+                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
+                    {% if clinic.profile_picture %}
+                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% else %}
+                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        {{ clinic.clinic_name|first|upper }}
+                    </div>
+                    {% endif %}
+                </button>
+
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dropdown-header">
+                        <strong>{{ clinic.clinic_name }}</strong>
+                    </div>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a href="{% url 'logout' %}" style="color:#ef4444;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <!-- Left Sidebar - EXACT SAME STRUCTURE -->
+        <aside class="sidebar-left">
+            <!-- Profile Card - EXACT SAME STYLING -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        {% if clinic.profile_picture %}
+                            <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                {{ clinic.clinic_name|first|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h3>{{ clinic.clinic_name }}</h3>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Sidebar Navigation - EXACT SAME STYLING, SEARCH PATIENTS ACTIVE -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'clinic_dashboard' %}" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'search_patients' %}" class="nav-item active">
+                    <i class="fas fa-search"></i>
+                    Find Patients
+                </a>
+                <a href="{% url 'clinic_appointments' %}" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Appointments
+                </a>
+                <a href="{% url 'chat_room_list_clinic' %}" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                    {% if total_unread and total_unread > 0 %}
+                        <div class="nav-badge">{{ total_unread }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'clinic_my_posts' %}" class="nav-item">
+                    <i class="fas fa-newspaper"></i>
+                    My Posts
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-search" style="color:#3b82f6;"></i>
+                        Find Patients
+                    </h1>
+                    <p class="page-subtitle">Search and connect with patients who need your care</p>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search" style="color:#9ca3af;"></i>
+                    <input type="text" id="clinic-search-bar" placeholder="Search patients by username or full name...">
+                    <button id="searchButton" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;border:none;padding:10px 20px;border-radius:8px;font-weight:500;cursor:pointer;transition:all 0.2s ease;">
+                        Search
+                    </button>
+                </div>
+  
+            </div>
+
+            <!-- Results Container -->
+            <div id="clinic-search-results" class="results-container">
+                <!-- Initial state - show some patients or empty state -->
+                {% if initial_patients %}
+                    <div class="results-header">
+                        <div class="results-count">{{ initial_patients.count }} patients found</div>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="recent">Most Recent</option>
+                            <option value="name">Name A-Z</option>
+                            <option value="urgent">Urgent First</option>
+                            <option value="location">Location</option>
+                        </select>
+                    </div>
+                    
+                    {% for patient in initial_patients|slice:":5" %}
+                    <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}" class="patient-card">
+                        <div class="patient-avatar">
+                            {% if patient.profile_picture %}
+                                <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}">
+                            {% else %}
+                                <div style="width:100%; height:100%; background:linear-gradient(135deg,#3b82f6,#8b5cf6); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border-radius:10px;">
+                                    {{ patient.full_name|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="patient-info">
+                            <h3 class="patient-name">{{ patient.full_name }}</h3>
+                            <div class="patient-meta">
+                                <span class="patient-detail">
+                                    <i class="fas fa-phone"></i> {{ patient.phone_number|default:"Phone not set" }}
+                                </span>
+                                <span class="patient-detail">
+                                    <i class="fas fa-calendar"></i> Age: {{ patient.age|default:"N/A" }}
+                                </span>
+                            </div>
+                            
+                            {% if patient.medical_records.first %}
+                            <div class="patient-tags">
+                                <span class="patient-tag tag-primary">
+                                    <i class="fas fa-stethoscope"></i> {{ patient.medical_records.first.main_diagnosis|default:"Under assessment" }}
+                                </span>
+                                <span class="patient-tag tag-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> {{ patient.medical_records.first.condition_status|default:"Stable" }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="patient-actions" aria-hidden="true">
+                            <div class="patient-btn primary" style="pointer-events:none;opacity:0.95;"><i class="fas fa-comment"></i> Chat</div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="empty-title">Find Patients</h3>
+                    <p class="empty-text">Start by searching for patients by username or full name.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // EXACT SAME JAVASCRIPT AS CLINIC DASHBOARD
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize animations
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // Avatar dropdown - EXACT SAME
+            const avatarBtn = document.getElementById('avatarBtn');
+            const avatarDropdown = document.getElementById('avatarDropdown');
+            
+            if (avatarBtn) {
+                avatarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = avatarDropdown.style.display === 'block';
+                    avatarDropdown.style.display = isOpen ? 'none' : 'block';
+                    avatarBtn.setAttribute('aria-expanded', !isOpen);
+                });
+                
+                document.addEventListener('click', function() {
+                    avatarDropdown.style.display = 'none';
+                    avatarBtn.setAttribute('aria-expanded', 'false');
+                });
+                
+                avatarDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // Global search functionality - EXACT SAME
+            const dashSearchBar = document.getElementById('dashboard-search-bar');
+            const dashSearchResults = document.getElementById('dashboard-search-results');
+            let dashSearchTimeout;
+            
+            if (dashSearchBar) {
+                dashSearchBar.addEventListener('input', function() {
+                    clearTimeout(dashSearchTimeout);
+                    const query = this.value.trim();
+                    
+                    if (!query) {
+                        dashSearchResults.style.display = 'none';
+                        dashSearchResults.innerHTML = '';
+                        return;
+                    }
+                    
+                    dashSearchTimeout = setTimeout(() => {
+                        dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                        dashSearchResults.style.display = 'block';
+                        
+                        fetch("{% url 'search_all' %}?q=" + encodeURIComponent(query), { 
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Search failed');
+                            return res.text();
+                        })
+                        .then(html => {
+                            const temp = document.createElement('div');
+                            temp.innerHTML = html;
+                            
+                            let results = '';
+                            const sections = temp.querySelectorAll('.results-section');
+                            
+                            if (sections && sections.length) {
+                                sections.forEach(section => {
+                                    const title = section.querySelector('h3');
+                                    const list = section.querySelector('ul');
+                                    
+                                    if (title && list) {
+                                        list.classList.add('results-list');
+                                        results += `
+                                            <div class="results-section-title">
+                                                <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                                ${title.textContent}
+                                            </div>
+                                            ${list.outerHTML}
+                                        `;
+                                    }
+                                });
+                            }
+                            
+                            if (!results) {
+                                results = `
+                                    <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+                                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
+                                        <p>No results found for "${query}"</p>
+                                    </div>
+                                `;
+                            }
+                            
+                            dashSearchResults.innerHTML = results;
+                            // Rewrite links so clinic users open clinic-chat for patients
+                            // and visit clinic detail pages for clinics.
+                            (function rewriteSearchLinks() {
+                                try {
+                                    const clinicChatBase = "{% url 'start_chat_with_patient_clinic' %}?patient_id=";
+                                    const clinicDetailTemplate = "{% url 'clinic_datils_clinic' 0 %}";
+                                    const clinicDetailPrefix = clinicDetailTemplate.replace(/0\/?$/, '');
+
+                                    const anchors = dashSearchResults.querySelectorAll('a');
+                                    anchors.forEach(a => {
+                                        const href = a.getAttribute('href') || '';
+
+                                        const userMatch = href.match(/[?&]user_id=(\d+)/);
+                                        if (userMatch) {
+                                            a.setAttribute('href', clinicChatBase + userMatch[1]);
+                                            return;
+                                        }
+
+                                        const clinicMatch = href.match(/detail\/(\d+)\/?$/);
+                                        if (clinicMatch) {
+                                            a.setAttribute('href', clinicDetailPrefix + clinicMatch[1] + '/');
+                                            return;
+                                        }
+                                    });
+                                } catch (e) {
+                                    console.error('Link rewrite failed', e);
+                                }
+                            })();
+
+                            dashSearchResults.style.display = 'block';
+                        })
+                        .catch(err => {
+                            dashSearchResults.innerHTML = `
+                                <div style="padding: 20px; text-align: center; color: #ef4444;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <p>Search failed. Please try again.</p>
+                                </div>
+                            `;
+                            dashSearchResults.style.display = 'block';
+                        });
+                    }, 300);
+                });
+            }
+
+            // Patient search functionality
+            const clinicSearchBar = document.getElementById('clinic-search-bar');
+            const searchButton = document.getElementById('searchButton');
+            const clinicSearchResults = document.getElementById('clinic-search-results');
+            let clinicSearchTimeout;
+
+            function performPatientSearch() {
+                const query = clinicSearchBar.value.trim();
+
+                if (!query) {
+                    // Show initial state
+                    clinicSearchResults.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="empty-title">Find Patients</h3>
+                            <p class="empty-text">Start by searching for patients using their name, phone number, diagnosis, or location.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                clinicSearchResults.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <h3 class="empty-title">Searching Patients...</h3>
+                        <p class="empty-text">Looking for patients matching your criteria</p>
+                    </div>
+                `;
+                
+                // Build query string (name-only search)
+                let searchUrl = "{% url 'search_patients_for_clinic' %}?q=" + encodeURIComponent(query);
+                
+                fetch(searchUrl, {
+                    credentials: 'same-origin',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Search failed');
+                    return response.text();
+                })
+                .then(html => {
+                    clinicSearchResults.innerHTML = html;
+                    // If the server returned patient cards without a header, prepend a results header showing the count
+                    setTimeout(() => {
+                        const patientCards = clinicSearchResults.querySelectorAll('.patient-card');
+                        const existingHeader = clinicSearchResults.querySelector('.results-header');
+                        if (patientCards.length && !existingHeader) {
+                            const header = document.createElement('div');
+                            header.className = 'results-header';
+                            header.innerHTML = `<div class="results-count">${patientCards.length} patients found</div><div></div>`;
+                            clinicSearchResults.prepend(header);
+                        }
+                    }, 50);
+                    
+                    // Add animations to new results
+                    setTimeout(() => {
+                        const patientCards = clinicSearchResults.querySelectorAll('.patient-card');
+                        patientCards.forEach((card, index) => {
+                            card.style.animationDelay = `${index * 0.05}s`;
+                            card.style.animation = 'fadeIn 0.3s ease-out';
+                        });
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    clinicSearchResults.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon" style="color:#ef4444;">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <h3 class="empty-title">Search Failed</h3>
+                            <p class="empty-text">Unable to search for patients. Please try again.</p>
+                        </div>
+                    `;
+                });
+            }
+
+            // Search on button click
+            searchButton.addEventListener('click', performPatientSearch);
+
+            // Search on Enter key
+            clinicSearchBar.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performPatientSearch();
+                }
+            });
+
+            // Filters removed — no filter-change handlers needed
+
+            // Auto-search with debounce
+            clinicSearchBar.addEventListener('input', function() {
+                clearTimeout(clinicSearchTimeout);
+                clinicSearchTimeout = setTimeout(performPatientSearch, 500);
+            });
+
+            // Sort functionality
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    // In a real app, this would re-sort the results
+                    // For now, just refresh the search
+                    if (clinicSearchBar.value.trim()) {
+                        performPatientSearch();
+                    }
+                });
+            }
+
+            // Add hover effects
+            document.querySelectorAll('.clickable, .nav-item, .patient-btn, .search-tip').forEach(el => {
+                el.style.transition = 'all 0.2s ease';
+            });
+        });
+
+        // Function to show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-weight: 500;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add slideOut animation if not exists
+        if (!document.querySelector('#slideOutStyle')) {
+            const style = document.createElement('style');
+            style.id = 'slideOutStyle';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Function to assign patient to clinic
+        function assignPatient(patientId) {
+            fetch(`/patients/assign/${patientId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ clinic_id: {{ clinic.id }} })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Patient assigned successfully!', 'success');
+                    // Update the button
+                    const assignBtn = document.querySelector(`[data-patient-id="${patientId}"]`);
+                    if (assignBtn) {
+                        assignBtn.innerHTML = '<i class="fas fa-check"></i> Assigned';
+                        assignBtn.disabled = true;
+                        assignBtn.style.background = '#d1fae5';
+                        assignBtn.style.color = '#065f46';
+                    }
+                } else {
+                    showNotification(data.message || 'Failed to assign patient', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Network error. Please try again.', 'error');
+            });
+        }
+    </script>
+    <script>
+        // Mobile header: hide on scroll down, show on scroll up
+        (function(){
+            const MQ = '(max-width: 768px)';
+            if (!window.matchMedia) return;
+            let enabled = false;
+            const header = document.querySelector('.main-header');
+            if (!header) return;
+            let lastY = window.pageYOffset || document.documentElement.scrollTop;
+            function onScroll(){
+                const y = window.pageYOffset || document.documentElement.scrollTop;
+                const delta = y - lastY;
+                if (Math.abs(delta) < 10) return;
+                if (y > lastY && y > 60) {
+                    header.classList.add('hidden');
+                } else if (y < lastY) {
+                    header.classList.remove('hidden');
+                }
+                lastY = y;
+            }
+            function toggleListener(){
+                const now = window.matchMedia(MQ).matches;
+                if (now && !enabled) {
+                    window.addEventListener('scroll', onScroll, {passive:true});
+                    enabled = true;
+                } else if (!now && enabled) {
+                    window.removeEventListener('scroll', onScroll);
+                    header.classList.remove('hidden');
+                    enabled = false;
+                }
+            }
+            toggleListener();
+            window.addEventListener('resize', toggleListener);
+        })();
+    </script>
+</body>
+</html>

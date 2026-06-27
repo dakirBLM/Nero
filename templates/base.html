@@ -1,0 +1,744 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NERO • Medical Social Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize/modern-normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Modern Search Bar Styles */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 8px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            color: #9ca3af;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-clear:hover {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Search Filters */
+        .search-filters {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: #f0f9ff;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Search Results */
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            margin-top: 8px;
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+
+        .search-results.active {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-item:hover {
+            background: #f9fafb;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+        }
+
+        .result-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .result-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .result-type {
+            margin-left: auto;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .result-type.patient {
+            background: #f0f9ff;
+            color: #3b82f6;
+        }
+
+        .result-type.clinic {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .no-results {
+            padding: 32px 16px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .no-results i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #d1d5db;
+        }
+
+        {% include 'includes/search_bar_styles.html' %}
+
+        /* Search History */
+        .search-history {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-history h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .clear-history {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .clear-history:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .history-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: #f9fafb;
+        }
+
+        .history-query {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* Advanced Search */
+        .advanced-search {
+            margin-top: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .advanced-search h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .advanced-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .search-wrapper {
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            .search-input {
+                width: 100%;
+                margin-bottom: 12px;
+                padding: 12px;
+            }
+
+            .search-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .search-filters {
+                gap: 8px;
+            }
+
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .advanced-filters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            .search-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .search-results {
+                position: fixed;
+                top: 120px;
+                left: 12px;
+                right: 12px;
+                max-height: calc(100vh - 140px);
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #111827;
+                color: #f9fafb;
+            }
+
+            .search-wrapper {
+                background: #1f2937;
+                border-color: #374151;
+            }
+
+            .search-input {
+                color: #f9fafb;
+                background: transparent;
+            }
+
+            .search-results,
+            .advanced-search {
+                background: #1f2937;
+                border-color: #374151;
+            }
+
+            .result-item:hover,
+            .history-item:hover {
+                background: #374151;
+            }
+
+            .filter-btn {
+                background: #374151;
+                border-color: #4b5563;
+                color: #d1d5db;
+            }
+
+            .filter-btn.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+            }
+        }
+    </style>
+    <!-- Persistent music styles -->
+    <style>
+    .music-toggle{
+        position:fixed;
+        bottom:30px;
+        right:30px;
+        width:60px;
+        height:60px;
+        border-radius:50%;
+        background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+        border:3px solid white;
+        box-shadow:0 8px 25px rgba(0,0,0,0.3);
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:1000;
+        transition:all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation:float 3s ease-in-out infinite;
+    }
+
+    .music-toggle:hover{ transform:scale(1.15) translateY(-5px); box-shadow:0 12px 35px rgba(0,0,0,0.4); }
+    .music-toggle:active{ transform:scale(0.95); }
+    .music-toggle.playing{ background:linear-gradient(135deg, #6CA8C9, #5B9AB8); animation:pulse 1.5s ease-in-out infinite, float 3s ease-in-out infinite; }
+    .music-icon{ font-size:24px; color:#6CA8C9; transition:all 0.3s ease; }
+    .music-toggle.playing .music-icon{ color:white; animation:musicBounce 0.6s ease-in-out infinite; }
+    @keyframes musicBounce{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.2);} }
+    </style>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    <!-- Persistent Music Toggle + Audio (shared across site) -->
+    <button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false">
+        <span class="music-icon">🔇</span>
+    </button>
+
+    <audio id="bgMusic" loop preload="auto" style="display:none">
+        <source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+    (function(){
+        const STORAGE_KEY_PLAYING = 'nero_music_playing';
+        const STORAGE_KEY_TIME = 'nero_music_time';
+
+        const musicToggle = document.getElementById('musicToggle');
+        const bgMusic = document.getElementById('bgMusic');
+        if (!musicToggle || !bgMusic) return;
+
+        let saveInterval = null;
+
+        function updateButton(paused){
+            const icon = musicToggle.querySelector('.music-icon');
+            musicToggle.classList.toggle('playing', !paused);
+            musicToggle.setAttribute('aria-pressed', String(!paused));
+            if (icon) icon.textContent = paused ? '🔇' : '🔊';
+        }
+            // Save immediately before navigation (clicks/forms) to avoid race conditions
+            function saveNow(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); localStorage.setItem(STORAGE_KEY_PLAYING, bgMusic && !bgMusic.paused ? 'true' : 'false'); } catch(e){} }
+            document.addEventListener('click', function(e){ try { const a = e.target.closest && e.target.closest('a'); if (!a) return; const href = a.getAttribute('href') || ''; if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return; const isExternal = href.indexOf('://') !== -1 && !href.startsWith(location.origin); if (isExternal) return; saveNow(); } catch(e){} }, true);
+            document.addEventListener('submit', function(){ try { saveNow(); } catch(e){} }, true);
+
+        function startSaving(){
+            if (saveInterval) clearInterval(saveInterval);
+            saveInterval = setInterval(() => {
+                try {
+                    const t = String(bgMusic.currentTime);
+                    const ts = String(Date.now());
+                    localStorage.setItem(STORAGE_KEY_TIME, t);
+                    localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts);
+                    // backup key to reduce race conditions during navigation
+                    localStorage.setItem(STORAGE_KEY_TIME + '_bak', t);
+                    localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts);
+                } catch(e){}
+            }, 250);
+        }
+
+        function stopSaving(){
+            if (saveInterval) { clearInterval(saveInterval); saveInterval = null; }
+            try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); } catch(e){}
+        }
+
+        function markPlaying(isPlaying){ try { localStorage.setItem(STORAGE_KEY_PLAYING, isPlaying ? 'true' : 'false'); } catch(e){} }
+
+        // Initialize button to saved preference
+        try {
+            const wasSavedPlayingInit = localStorage.getItem(STORAGE_KEY_PLAYING) === 'true';
+            if (wasSavedPlayingInit) updateButton(false); else updateButton(bgMusic.paused);
+        } catch(e){ updateButton(bgMusic.paused); }
+
+        musicToggle.addEventListener('click', function(e){
+            e.preventDefault();
+            if (bgMusic.paused) {
+                const p = bgMusic.play();
+                if (p && typeof p.then === 'function') {
+                    p.then(() => { updateButton(false); markPlaying(true); startSaving(); }).catch(err => { console.warn('Audio playback failed:', err); });
+                } else { updateButton(false); markPlaying(true); startSaving(); }
+            } else {
+                bgMusic.pause(); updateButton(true); markPlaying(false); stopSaving();
+            }
+        });
+
+        // Resume behavior: seek after metadata availability
+        (function tryResume(){
+            const wasPlaying = localStorage.getItem(STORAGE_KEY_PLAYING) === 'true';
+            const savedTime = parseFloat(localStorage.getItem(STORAGE_KEY_TIME) || '0');
+            if (!wasPlaying) { updateButton(bgMusic.paused); return; }
+
+            function doSeekAndPlay(){
+                try { if (!isNaN(savedTime) && savedTime >= 0) bgMusic.currentTime = Math.max(0, savedTime); } catch(e){}
+                const p = bgMusic.play();
+                if (p && typeof p.then === 'function') {
+                    p.then(() => { updateButton(false); markPlaying(true); startSaving(); }).catch(err => { console.warn('Resume audio failed:', err); });
+                } else { updateButton(false); markPlaying(true); startSaving(); }
+            }
+
+            if (bgMusic.readyState >= 1 && !isNaN(bgMusic.duration) && bgMusic.duration > 0) doSeekAndPlay();
+            else {
+                const onLoaded = function(){ bgMusic.removeEventListener('loadedmetadata', onLoaded); const onCan = function(){ bgMusic.removeEventListener('canplay', onCan); doSeekAndPlay(); }; bgMusic.addEventListener('canplay', onCan, { once: true }); };
+                bgMusic.addEventListener('loadedmetadata', onLoaded, { once: true });
+            }
+        })();
+
+        document.addEventListener('visibilitychange', function(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); } catch(e){} });
+        window.addEventListener('beforeunload', function(){ try { const t = String(bgMusic.currentTime); const ts = String(Date.now()); localStorage.setItem(STORAGE_KEY_TIME, t); localStorage.setItem(STORAGE_KEY_TIME + '_ts', ts); localStorage.setItem(STORAGE_KEY_TIME + '_bak', t); localStorage.setItem(STORAGE_KEY_TIME + '_bak_ts', ts); } catch(e){} });
+    })();
+    </script>
+
+    <script>
+        // Search functionality
+        function initializeSearch(searchInputId, resultsContainerId) {
+            const searchInput = document.getElementById(searchInputId);
+            const resultsContainer = document.getElementById(resultsContainerId);
+            let searchTimeout;
+
+            if (searchInput && resultsContainer) {
+                // Show results on focus
+                searchInput.addEventListener('focus', function() {
+                    if (this.value.trim()) {
+                        resultsContainer.classList.add('active');
+                    }
+                });
+
+                // Search as user types
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+
+                    if (!query) {
+                        resultsContainer.classList.remove('active');
+                        return;
+                    }
+
+                    searchTimeout = setTimeout(() => {
+                        // Show loading state
+                        resultsContainer.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Searching...</p>
+                            </div>
+                        `;
+                        resultsContainer.classList.add('active');
+
+                        // Perform search (replace with actual API call)
+                        performSearch(query, resultsContainer);
+                    }, 300);
+                });
+
+                // Hide results when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                        resultsContainer.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        function performSearch(query, container) {
+            // This is a mock function - replace with actual search API call
+            setTimeout(() => {
+                if (query.length < 2) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>Type at least 2 characters to search</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mock results - replace with actual data from your backend
+                const mockResults = [
+                    {
+                        id: 1,
+                        name: "Dr. Sarah Johnson",
+                        type: "clinic",
+                        specialty: "Cardiology",
+                        avatar: "👩‍⚕️"
+                    },
+                    {
+                        id: 2,
+                        name: "John Doe",
+                        type: "patient",
+                        condition: "Diabetes Type 2",
+                        avatar: "👨"
+                    },
+                    {
+                        id: 3,
+                        name: "City Medical Center",
+                        type: "clinic",
+                        specialty: "Multi-specialty",
+                        avatar: "🏥"
+                    }
+                ];
+
+                if (mockResults.length > 0) {
+                    let resultsHTML = '';
+                    mockResults.forEach(result => {
+                        resultsHTML += `
+                            <div class="result-item" onclick="selectResult('${result.name}')">
+                                <div class="result-avatar" style="display: flex; align-items: center; justify-content: center; background: ${result.type === 'clinic' ? '#f0fdf4' : '#f0f9ff'}; font-size: 18px;">
+                                    ${result.avatar}
+                                </div>
+                                <div class="result-info">
+                                    <h4>${result.name}</h4>
+                                    <p>${result.type === 'clinic' ? result.specialty : result.condition}</p>
+                                </div>
+                                <span class="result-type ${result.type}">
+                                    ${result.type === 'clinic' ? 'Clinic' : 'Patient'}
+                                </span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = resultsHTML;
+                } else {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <p>No results found for "${query}"</p>
+                            <p style="font-size: 12px; margin-top: 4px;">Try different keywords</p>
+                        </div>
+                    `;
+                }
+            }, 500);
+        }
+
+        function selectResult(resultName) {
+            // Handle result selection
+            console.log('Selected:', resultName);
+            // You can redirect to the result page or fill the search input
+        }
+
+        // Clear search input
+        function clearSearch(inputId, resultsId) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            if (input) input.value = '';
+            if (results) results.classList.remove('active');
+            if (input) input.focus();
+        }
+
+        // Initialize search on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSearch('searchInput', 'searchResults');
+        });
+    </script>
+</body>
+</html>
