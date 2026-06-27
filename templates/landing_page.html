@@ -11,172 +11,117 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
-  --ink:#0c2a3a;
-  --muted:#5b7a89;
-  --brand:#6CA8C9;
-  --brand-600:#4a8fb3;
-  --brand-700:#356f8f;
-  --brand-900:#0f3a52;
-  --mint:#5fd6c4;
-  --accent:#ff7a59;
-  --accent-600:#f2643f;
-  --bg:#f3fafd;
-  --card:#ffffff;
-  --ring:rgba(108,168,201,.35);
-  --shadow:0 18px 50px rgba(15,58,82,.14);
-  --radius:22px;
+  --brand:#6CA8C9;--brand-700:#356f8f;--brand-900:#0f3a52;--mint:#5fd6c4;
+  --accent:#ff7a59;--accent-600:#f2643f;
+  --glass:rgba(255,255,255,.10);--glass-strong:rgba(255,255,255,.16);
+  --line:rgba(255,255,255,.22);--soft:rgba(255,255,255,.82);
+  --shadow:0 18px 50px rgba(8,30,46,.30);--radius:22px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-  overflow-x:hidden;
-  line-height:1.6;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:#fff;
+  background:linear-gradient(160deg,#0f3a52 0%,#2f6f93 46%,#6CA8C9 100%);
+  background-attachment:fixed;min-height:100vh;overflow-x:hidden;line-height:1.6;
 }
 a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--brand-700);background:rgba(108,168,201,.14);
-  padding:7px 14px;border-radius:999px;border:1px solid var(--ring);
-}
-.grad-text{
-  background:linear-gradient(100deg,#0f3a52,#356f8f 40%,#6CA8C9 70%,#5fd6c4);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.btn{
-  display:inline-flex;align-items:center;gap:10px;
-  font-weight:700;font-size:16px;border-radius:14px;padding:15px 26px;
-  cursor:pointer;border:none;transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
-}
-.btn i{transition:transform .25s ease}
-.btn:hover i{transform:translateX(4px)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--glass-strong);padding:7px 14px;border-radius:999px;border:1px solid var(--line)}
+.grad-text{background:linear-gradient(110deg,#fff,#bdeee6 60%,#5fd6c4);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* fixed background blobs */
+.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.4;pointer-events:none;z-index:0;animation:float 11s ease-in-out infinite}
+.blob.b1{width:380px;height:380px;background:#5fd6c4;top:-90px;right:-60px}
+.blob.b2{width:340px;height:340px;background:#ff7a59;bottom:-160px;left:-80px;opacity:.3;animation-delay:2s}
+.blob.b3{width:260px;height:260px;background:#9fd3ea;top:45%;left:46%;opacity:.25;animation-delay:4s}
+
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:16px;border-radius:14px;padding:15px 26px;cursor:pointer;border:none;transition:transform .2s,box-shadow .2s,background .2s}
+.btn i{transition:transform .25s}.btn:hover i{transform:translateX(4px)}
 .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 12px 26px rgba(255,122,89,.4)}
 .btn-primary:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(255,122,89,.5)}
-.btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.45);backdrop-filter:blur(6px)}
-.btn-ghost:hover{background:rgba(255,255,255,.24);transform:translateY(-3px)}
-.btn-brand{background:linear-gradient(135deg,var(--brand-600),var(--brand-900));color:#fff;box-shadow:0 12px 26px rgba(15,58,82,.3)}
-.btn-brand:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(15,58,82,.4)}
+.btn-ghost{background:var(--glass-strong);color:#fff;border:1.5px solid rgba(255,255,255,.5);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.26);transform:translateY(-3px)}
 
-/* ===== NAV ===== */
-.nav{
-  position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:14px 24px;max-width:1180px;margin:0 auto;
-}
-.nav-shell{position:sticky;top:0;z-index:50;background:rgba(243,250,253,.8);backdrop-filter:blur(14px);border-bottom:1px solid rgba(108,168,201,.18)}
-.brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:22px;letter-spacing:.02em;color:var(--brand-900)}
-.brand img{width:42px;height:42px;object-fit:contain;border-radius:12px}
-.nav-links{display:flex;align-items:center;gap:8px}
-.nav-links a.link{padding:10px 14px;border-radius:10px;font-weight:600;color:var(--brand-900);font-size:15px;transition:background .2s}
-.nav-links a.link:hover{background:rgba(108,168,201,.16)}
-.nav-cta{background:linear-gradient(135deg,var(--brand-600),var(--brand-900));color:#fff;padding:11px 20px;border-radius:12px;font-weight:700;box-shadow:0 10px 22px rgba(15,58,82,.25);transition:transform .2s}
+/* ===== GLASSY FLOATING NAV ===== */
+.nav-shell{position:sticky;top:0;z-index:50;padding:16px 24px}
+.nav{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px);
+  border-radius:999px;padding:10px 14px 10px 22px;box-shadow:0 12px 34px rgba(8,30,46,.28)}
+.brand{display:inline-flex;align-items:center;background:#fff;border-radius:15px;padding:8px 16px;box-shadow:0 8px 22px rgba(8,30,46,.3);transition:transform .3s}
+.brand:hover{transform:scale(1.04) rotate(-1deg)}
+.brand img{height:38px;width:auto;display:block}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a.link{padding:10px 16px;border-radius:999px;font-weight:600;color:#fff;font-size:15px;transition:background .2s}
+.nav-links a.link:hover{background:var(--glass-strong)}
+.nav-cta{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;box-shadow:0 10px 22px rgba(255,122,89,.4);transition:transform .2s}
 .nav-cta:hover{transform:translateY(-2px)}
 
 /* ===== HERO ===== */
-.hero{
-  position:relative;overflow:hidden;color:#fff;
-  background:linear-gradient(150deg,#0f3a52 0%,#2f6f93 48%,#6CA8C9 100%);
-  padding:64px 0 90px;
-}
-.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;pointer-events:none;animation:float 9s ease-in-out infinite}
-.blob.b1{width:340px;height:340px;background:#5fd6c4;top:-80px;right:-40px}
-.blob.b2{width:300px;height:300px;background:#ff7a59;bottom:-120px;left:-60px;animation-delay:1.5s;opacity:.35}
-.blob.b3{width:220px;height:220px;background:#9fd3ea;top:40%;left:50%;animation-delay:3s;opacity:.3}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;position:relative;z-index:2}
+.hero{position:relative;z-index:2;padding:54px 0 84px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
 .hero h1{font-size:clamp(34px,5vw,58px);line-height:1.05;font-weight:900;letter-spacing:-.02em;margin:18px 0}
 .hero h1 .pop{background:linear-gradient(120deg,#fff,#bdeee6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p.lead{font-size:clamp(16px,1.6vw,20px);color:rgba(255,255,255,.92);max-width:560px}
+.hero p.lead{font-size:clamp(16px,1.6vw,20px);color:var(--soft);max-width:560px}
 .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
 .trust{display:flex;gap:30px;margin-top:36px;flex-wrap:wrap}
 .trust .n{font-size:30px;font-weight:900}
-.trust .l{font-size:13px;color:rgba(255,255,255,.8);font-weight:600}
-
-/* hero visual */
+.trust .l{font-size:13px;color:var(--soft);font-weight:600}
 .hero-visual{position:relative}
-.hero-card{
-  position:relative;border-radius:26px;overflow:hidden;
-  box-shadow:0 30px 70px rgba(0,0,0,.35);transform:rotate(-2deg);
-  border:6px solid rgba(255,255,255,.5);background:#fff;
-}
+.hero-card{position:relative;border-radius:26px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.4);transform:rotate(-2deg);border:6px solid rgba(255,255,255,.5);background:#fff}
 .hero-card img{width:100%;height:420px;object-fit:cover}
-.float-badge{
-  position:absolute;display:flex;align-items:center;gap:10px;
-  background:#fff;color:var(--ink);font-weight:700;font-size:14px;
-  padding:12px 16px;border-radius:16px;box-shadow:var(--shadow);
-  animation:float 6s ease-in-out infinite;
-}
-.float-badge i{color:var(--brand-600)}
-.fb1{top:18px;left:-22px}
-.fb2{bottom:60px;right:-26px;animation-delay:1.2s}
-.fb3{bottom:-18px;left:30px;animation-delay:2.2s}
+.float-badge{position:absolute;display:flex;align-items:center;gap:10px;background:#fff;color:#0c2a3a;font-weight:700;font-size:14px;padding:12px 16px;border-radius:16px;box-shadow:var(--shadow);animation:float 6s ease-in-out infinite}
+.float-badge i{color:var(--brand-700)}
+.fb1{top:18px;left:-22px}.fb2{bottom:60px;right:-26px;animation-delay:1.2s}.fb3{bottom:-18px;left:30px;animation-delay:2.2s}
 
-/* ===== SECTIONS ===== */
-.section{padding:88px 0}
-.section-head{text-align:center;max-width:680px;margin:0 auto 54px}
+/* ===== SECTIONS (glassy on gradient) ===== */
+.section{position:relative;z-index:2;padding:80px 0}
+.section-head{text-align:center;max-width:680px;margin:0 auto 52px}
 .section-head h2{font-size:clamp(28px,3.4vw,42px);font-weight:900;letter-spacing:-.02em;margin:14px 0 10px}
-.section-head p{color:var(--muted);font-size:18px}
+.section-head p{color:var(--soft);font-size:18px}
+.glass-card{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:var(--radius);box-shadow:0 14px 40px rgba(8,30,46,.22);transition:transform .25s,box-shadow .25s,background .25s}
+.glass-card:hover{transform:translateY(-6px);background:var(--glass-strong);box-shadow:var(--shadow)}
 
-/* steps */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.step{background:var(--card);border:1px solid rgba(108,168,201,.18);border-radius:var(--radius);padding:30px;box-shadow:0 10px 30px rgba(15,58,82,.06);position:relative;transition:transform .25s,box-shadow .25s}
-.step:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
-.step .num{position:absolute;top:-16px;left:26px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--brand-600),var(--brand-900))}
+.step{padding:32px 28px;position:relative}
+.step .num{position:absolute;top:-16px;left:26px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-600));box-shadow:0 8px 18px rgba(255,122,89,.4)}
 .step .ico{font-size:30px;margin:8px 0 14px}
 .step h3{font-size:20px;font-weight:800;margin-bottom:8px}
-.step p{color:var(--muted);font-size:15px}
+.step p{color:var(--soft);font-size:15px}
 
-/* audiences */
-.aud-section{background:linear-gradient(180deg,#eaf6fb,#f3fafd)}
 .audiences{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-.aud{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 14px 40px rgba(15,58,82,.1);border:1px solid rgba(108,168,201,.16);transition:transform .25s}
-.aud:hover{transform:translateY(-6px)}
-.aud .head{display:flex;align-items:center;gap:14px;padding:26px 28px 6px}
-.aud .head .pill{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:24px;color:#fff}
+.aud{overflow:hidden}
+.aud .head{display:flex;align-items:center;gap:14px;padding:28px 28px 6px}
+.aud .head .pill{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:24px;color:#fff;box-shadow:var(--shadow)}
 .aud.patient .pill{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
 .aud.clinic .pill{background:linear-gradient(135deg,#5fd6c4,#2f9e8c)}
 .aud .head h3{font-size:24px;font-weight:900}
-.aud .head .sub{color:var(--muted);font-size:14px;font-weight:600}
+.aud .head .sub{color:var(--soft);font-size:14px;font-weight:600}
 .aud ul{list-style:none;padding:14px 28px 8px;margin:0}
-.aud li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;color:#234;font-size:16px;font-weight:500}
+.aud li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;font-size:16px;font-weight:500;color:#fff}
 .aud li i{color:var(--mint);margin-top:4px;font-size:15px}
-.aud.patient li i{color:var(--brand-600)}
 .aud .foot{padding:14px 28px 30px}
-.aud .foot a{font-weight:800;color:var(--brand-700)}
-.aud .foot a:hover{color:var(--accent-600)}
+.aud .foot a{font-weight:800;color:#bdeee6}
+.aud .foot a:hover{color:var(--accent)}
 
-/* feature grid */
 .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.feature{background:var(--card);border:1px solid rgba(108,168,201,.16);border-radius:18px;padding:26px;transition:transform .25s,box-shadow .25s}
-.feature:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.feature{padding:28px}
 .feature .fi{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;margin-bottom:14px;background:linear-gradient(135deg,var(--brand),var(--brand-700))}
 .feature h4{font-size:18px;font-weight:800;margin-bottom:6px}
-.feature p{color:var(--muted);font-size:15px}
+.feature p{color:var(--soft);font-size:15px}
 
-/* CTA band */
-.cta-band{position:relative;overflow:hidden;margin:0 24px 80px;border-radius:32px;background:linear-gradient(135deg,#0f3a52,#356f8f 55%,#6CA8C9);color:#fff;text-align:center;padding:70px 24px;max-width:1180px;margin-left:auto;margin-right:auto}
+.cta-band{position:relative;z-index:2;max-width:1120px;margin:10px auto 80px;border-radius:32px;background:var(--glass-strong);border:1px solid var(--line);backdrop-filter:blur(16px);text-align:center;padding:66px 24px;box-shadow:var(--shadow)}
 .cta-band h2{font-size:clamp(28px,3.6vw,44px);font-weight:900;letter-spacing:-.02em;margin-bottom:12px}
-.cta-band p{color:rgba(255,255,255,.9);font-size:18px;margin-bottom:28px}
+.cta-band p{color:var(--soft);font-size:18px;margin-bottom:28px}
 
-/* footer */
-.footer{background:var(--brand-900);color:rgba(255,255,255,.85);padding:46px 24px}
-.footer .inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
-.footer .brand{color:#fff}
+.footer{position:relative;z-index:2;background:rgba(8,30,46,.45);border-top:1px solid var(--line);backdrop-filter:blur(10px);padding:40px 24px}
+.footer .inner{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;color:var(--soft);font-size:14px}
 .footer a{color:#bdeee6;font-weight:600}
 
-/* reveal on scroll */
 .reveal{opacity:0;transform:translateY(34px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
 
-/* music toggle */
-.music-toggle{position:fixed;bottom:26px;right:26px;width:58px;height:58px;border-radius:50%;
-  background:#fff;border:3px solid #fff;box-shadow:0 10px 28px rgba(15,58,82,.35);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;z-index:1000;
-  transition:all .4s cubic-bezier(.68,-.55,.265,1.55);animation:float 3s ease-in-out infinite}
+.music-toggle{position:fixed;bottom:26px;right:26px;width:58px;height:58px;border-radius:50%;background:#fff;border:3px solid #fff;box-shadow:0 10px 28px rgba(8,30,46,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;transition:all .4s cubic-bezier(.68,-.55,.265,1.55);animation:float 3s ease-in-out infinite}
 .music-toggle:hover{transform:scale(1.12) translateY(-4px)}
 .music-toggle.playing{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
 .music-icon{font-size:22px;color:#6CA8C9}
@@ -184,27 +129,20 @@ img{max-width:100%;display:block}
 @keyframes musicBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 
-/* responsive */
 @media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;gap:40px}
-  .hero-visual{order:-1}
-  .hero-card img{height:300px}
-  .steps,.features{grid-template-columns:1fr}
-  .audiences{grid-template-columns:1fr}
-  .nav-links a.link{display:none}
+  .hero-grid{grid-template-columns:1fr;gap:40px}.hero-visual{order:-1}.hero-card img{height:300px}
+  .steps,.features,.audiences{grid-template-columns:1fr}
+  .nav-links a.link{display:none}.brand img{height:32px}
 }
-@media(max-width:560px){
-  .wrap{padding:0 18px}
-  .trust{gap:20px}
-  .float-badge{display:none}
-}
+@media(max-width:560px){.wrap{padding:0 18px}.trust{gap:20px}.float-badge{display:none}}
 </style>
 </head>
 <body>
+<span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
 
 <div class="nav-shell">
   <nav class="nav">
-    <a href="{% url 'landing_page' %}" class="brand"><img src="{% static 'logo1.png' %}" alt="NERO logo"> NERO</a>
+    <a href="{% url 'landing_page' %}" class="brand"><img src="{% static 'logo1.png' %}" alt="NERO"></a>
     <div class="nav-links">
       <a href="#how" class="link">How it works</a>
       <a href="#audiences" class="link">For patients &amp; clinics</a>
@@ -216,10 +154,9 @@ img{max-width:100%;display:block}
 
 <!-- HERO -->
 <header class="hero">
-  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow" style="background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)">✨ Rehabilitation care, made personal</span>
+      <span class="eyebrow">✨ Rehabilitation care, made personal</span>
       <h1>Find the <span class="pop">right clinic</span><br>for your recovery.</h1>
       <p class="lead">Nero connects patients with specialized rehabilitation clinics. Search by your condition and location, share your medical records securely, chat with clinics directly, and book the care that truly fits you — all in one place.</p>
       <div class="hero-actions">
@@ -250,15 +187,15 @@ img{max-width:100%;display:block}
       <p>No more endless searching or cold calls. Nero does the matching, you make the choice.</p>
     </div>
     <div class="steps">
-      <div class="step reveal"><div class="num">1</div><div class="ico">📝</div><h3>Tell us your case</h3><p>Create a private medical profile in minutes — diagnosis, mobility, and reports. Your files are encrypted from the moment you upload them.</p></div>
-      <div class="step reveal"><div class="num">2</div><div class="ico">🔎</div><h3>Get matched</h3><p>We surface clinics that specialize in your condition, in the cities and countries you can travel to — with services, photos and real reviews.</p></div>
-      <div class="step reveal"><div class="num">3</div><div class="ico">💬</div><h3>Connect &amp; recover</h3><p>Message clinics directly, compare proposals, book your appointment, and follow your journey from first chat to full recovery.</p></div>
+      <div class="step glass-card reveal"><div class="num">1</div><div class="ico">📝</div><h3>Tell us your case</h3><p>Create a private medical profile in minutes — diagnosis, mobility, and reports. Your files are encrypted from the moment you upload them.</p></div>
+      <div class="step glass-card reveal"><div class="num">2</div><div class="ico">🔎</div><h3>Get matched</h3><p>We surface clinics that specialize in your condition, in the cities and countries you can travel to — with services, photos and real reviews.</p></div>
+      <div class="step glass-card reveal"><div class="num">3</div><div class="ico">💬</div><h3>Connect &amp; recover</h3><p>Message clinics directly, compare proposals, book your appointment, and follow your journey from first chat to full recovery.</p></div>
     </div>
   </div>
 </section>
 
 <!-- AUDIENCES -->
-<section class="section aud-section" id="audiences">
+<section class="section" id="audiences">
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow">Built for both sides</span>
@@ -266,7 +203,7 @@ img{max-width:100%;display:block}
       <p>Whether you're seeking care or providing it, Nero gives you the tools to connect with confidence.</p>
     </div>
     <div class="audiences">
-      <div class="aud patient reveal">
+      <div class="aud patient glass-card reveal">
         <div class="head"><div class="pill">👤</div><div><h3>For patients</h3><div class="sub">Find and book the care you need</div></div></div>
         <ul>
           <li><i class="fa-solid fa-check"></i> Search clinics by specialty, city or country</li>
@@ -277,7 +214,7 @@ img{max-width:100%;display:block}
         </ul>
         <div class="foot"><a href="{% url 'choice_page' %}">Start as a patient <i class="fa-solid fa-arrow-right"></i></a></div>
       </div>
-      <div class="aud clinic reveal">
+      <div class="aud clinic glass-card reveal">
         <div class="head"><div class="pill">🏥</div><div><h3>For clinics</h3><div class="sub">Reach the right patients, grow your practice</div></div></div>
         <ul>
           <li><i class="fa-solid fa-check"></i> Build a rich profile with services, photos &amp; videos</li>
@@ -301,12 +238,12 @@ img{max-width:100%;display:block}
       <p>Thoughtful, secure, and genuinely helpful — the way healthcare connection should be.</p>
     </div>
     <div class="features">
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-bullseye"></i></div><h4>Smart matching</h4><p>Get matched to clinics that actually specialize in your case — not a generic directory.</p></div>
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-lock"></i></div><h4>Private &amp; encrypted</h4><p>Medical reports and videos are encrypted and only shared with clinics you choose.</p></div>
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-comments"></i></div><h4>Direct messaging</h4><p>Talk to clinics one-on-one, ask questions, and get clarity before you travel.</p></div>
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-star"></i></div><h4>Verified reviews</h4><p>Real feedback from real patients helps you choose with confidence.</p></div>
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-calendar-check"></i></div><h4>Appointments</h4><p>Request, negotiate dates, and confirm bookings without the phone tag.</p></div>
-      <div class="feature reveal"><div class="fi"><i class="fa-solid fa-photo-film"></i></div><h4>Clinic social feed</h4><p>See clinics in action through posts, photos and videos before you decide.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-bullseye"></i></div><h4>Smart matching</h4><p>Get matched to clinics that actually specialize in your case — not a generic directory.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-lock"></i></div><h4>Private &amp; encrypted</h4><p>Medical reports and videos are encrypted and only shared with clinics you choose.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-comments"></i></div><h4>Direct messaging</h4><p>Talk to clinics one-on-one, ask questions, and get clarity before you travel.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-star"></i></div><h4>Verified reviews</h4><p>Real feedback from real patients helps you choose with confidence.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-calendar-check"></i></div><h4>Appointments</h4><p>Request, negotiate dates, and confirm bookings without the phone tag.</p></div>
+      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-photo-film"></i></div><h4>Clinic social feed</h4><p>See clinics in action through posts, photos and videos before you decide.</p></div>
     </div>
   </div>
 </section>
@@ -321,52 +258,35 @@ img{max-width:100%;display:block}
 <!-- FOOTER -->
 <footer class="footer">
   <div class="inner">
-    <a href="{% url 'landing_page' %}" class="brand" style="font-size:20px"><img src="{% static 'logo1.png' %}" alt="NERO" style="width:34px;height:34px"> NERO</a>
-    <div style="font-size:14px">&copy; 2026 NERO Medical Platform. All rights reserved.</div>
-    <div style="font-size:14px">Need help? <a href="mailto:support@nero-medical.com">Contact support</a></div>
+    <a href="{% url 'landing_page' %}" class="brand" style="padding:6px 12px"><img src="{% static 'logo1.png' %}" alt="NERO" style="height:26px;width:auto"></a>
+    <div>&copy; 2026 NERO Medical Platform. All rights reserved.</div>
+    <div>Need help? <a href="mailto:support@nero-medical.com">Contact support</a></div>
   </div>
 </footer>
 
 <!-- Background music (persists across the site) -->
-<button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false">
-  <span class="music-icon">🔇</span>
-</button>
-<audio id="bgMusic" loop preload="auto" style="display:none">
-  <source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg">
-</audio>
-
+<button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false"><span class="music-icon">🔇</span></button>
+<audio id="bgMusic" loop preload="auto" style="display:none"><source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg"></audio>
 <script>
-// Reveal on scroll
 (function(){
   const els=document.querySelectorAll('.reveal');
   if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}
-  const io=new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.12});
+  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}),{threshold:.12});
   els.forEach(e=>io.observe(e));
 })();
-
-// Persistent background music (shared keys with the rest of the site)
 (function(){
   const KEY_PLAYING='nero_music_playing', KEY_TIME='nero_music_time';
   const toggle=document.getElementById('musicToggle'), audio=document.getElementById('bgMusic');
   if(!toggle||!audio) return;
   let saver=null;
-  function setIcon(paused){const i=toggle.querySelector('.music-icon');toggle.classList.toggle('playing',!paused);toggle.setAttribute('aria-pressed',String(!paused));if(i)i.textContent=paused?'🔇':'🔊';}
+  function setIcon(p){const i=toggle.querySelector('.music-icon');toggle.classList.toggle('playing',!p);toggle.setAttribute('aria-pressed',String(!p));if(i)i.textContent=p?'🔇':'🔊';}
   function save(){try{localStorage.setItem(KEY_TIME,String(audio.currentTime));localStorage.setItem(KEY_PLAYING,audio.paused?'false':'true');}catch(e){}}
   function startSaving(){if(saver)clearInterval(saver);saver=setInterval(save,400);}
   function stopSaving(){if(saver){clearInterval(saver);saver=null;}save();}
   document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a');if(a){const h=a.getAttribute('href')||'';if(h&&!h.startsWith('#')&&!h.startsWith('mailto:')&&!h.startsWith('tel:'))save();}},true);
   try{setIcon(localStorage.getItem(KEY_PLAYING)!=='true'?audio.paused:false);}catch(e){setIcon(audio.paused);}
-  toggle.addEventListener('click',()=>{
-    if(audio.paused){const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);try{localStorage.setItem(KEY_PLAYING,'true');}catch(e){}startSaving();}).catch(()=>{});}
-    else{audio.pause();setIcon(true);try{localStorage.setItem(KEY_PLAYING,'false');}catch(e){}stopSaving();}
-  });
-  // Resume if it was playing on a previous page
-  (function(){
-    let wasPlaying=false,t=0;try{wasPlaying=localStorage.getItem(KEY_PLAYING)==='true';t=parseFloat(localStorage.getItem(KEY_TIME)||'0');}catch(e){}
-    if(!wasPlaying){setIcon(audio.paused);return;}
-    function go(){try{if(!isNaN(t)&&t>0)audio.currentTime=t;}catch(e){}const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);startSaving();}).catch(()=>{});}
-    if(audio.readyState>=1)go();else audio.addEventListener('canplay',go,{once:true});
-  })();
+  toggle.addEventListener('click',()=>{if(audio.paused){const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);try{localStorage.setItem(KEY_PLAYING,'true');}catch(e){}startSaving();}).catch(()=>{});}else{audio.pause();setIcon(true);try{localStorage.setItem(KEY_PLAYING,'false');}catch(e){}stopSaving();}});
+  (function(){let w=false,t=0;try{w=localStorage.getItem(KEY_PLAYING)==='true';t=parseFloat(localStorage.getItem(KEY_TIME)||'0');}catch(e){}if(!w){setIcon(audio.paused);return;}function go(){try{if(!isNaN(t)&&t>0)audio.currentTime=t;}catch(e){}const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);startSaving();}).catch(()=>{});}if(audio.readyState>=1)go();else audio.addEventListener('canplay',go,{once:true});})();
   window.addEventListener('beforeunload',save);
 })();
 </script>
