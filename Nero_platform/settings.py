@@ -59,6 +59,16 @@ _extra_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
 if _extra_csrf:
     CSRF_TRUSTED_ORIGINS += [o.strip() for o in _extra_csrf.split(',') if o.strip()]
 
+# Render injects the real external hostname automatically — trust it so the app
+# works without knowing the assigned *.onrender.com subdomain in advance.
+_render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
+if _render_host:
+    if _render_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_render_host)
+    _render_origin = f'https://{_render_host}'
+    if _render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_render_origin)
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
