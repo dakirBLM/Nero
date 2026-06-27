@@ -194,7 +194,7 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": (
-            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            "core.storage.ForgivingManifestStaticFilesStorage"
             if not DEBUG else
             "django.contrib.staticfiles.storage.StaticFilesStorage"
         ),
