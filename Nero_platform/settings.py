@@ -132,14 +132,20 @@ TEMPLATES = [
 ]
 
 # Database — DATABASE_URL (Postgres) in production; local SQLite fallback.
+# Treat an UNSET *or EMPTY* DATABASE_URL as "use local SQLite": dj_database_url's
+# default= only kicks in when the var is unset, not when it's a blank string.
 import dj_database_url
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,  # reuse connections; lower if you hit a pooler's cap
-    )
-}
+_db_url = os.environ.get('DATABASE_URL', '').strip()
+if _db_url:
+    DATABASES = {'default': dj_database_url.parse(_db_url, conn_max_age=600)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # SQLite stopgap: a busy timeout so concurrent gunicorn workers don't instantly
 # hit "database is locked". (No effect on Postgres — migrate before real traffic.)
