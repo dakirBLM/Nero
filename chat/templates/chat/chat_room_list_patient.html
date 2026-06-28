@@ -4,9 +4,10 @@
     <div class="chat-list">
         {% for item in rooms %}
             <div class="chat-list-item">
-                <a href="{% url 'chat_room_view_patient' item.room.id %}">
-                    {{ item.other.clinic.clinic_name }}
-                    {% if item.unread_count %}<span class="badge">{{ item.unread_count }}</span>{% endif %}
+                <a href="{% url 'chat_room_view_patient' item.room.id %}" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;padding:10px 6px;">
+                    <img src="{{ item.other.clinic.avatar_url }}" alt="" style="width:46px;height:46px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e2e8f0;">
+                    <span style="font-weight:600;">{{ item.other.clinic.clinic_name }}</span>
+                    {% if item.unread_count %}<span class="badge" style="margin-left:auto;">{{ item.unread_count }}</span>{% endif %}
                 </a>
             </div>
         {% empty %}

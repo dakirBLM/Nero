@@ -1151,16 +1151,16 @@
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
                     {% if request.user.user_type == 'patient' %}
-                        {% if patient.profile_picture %}
-                            <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                        {% if patient.has_custom_avatar %}
+                            <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                         {% else %}
                             <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                                 {{ patient.full_name|first|upper }}
                             </div>
                         {% endif %}
                     {% elif request.user.user_type == 'clinic' %}
-                        {% if clinic.profile_picture %}
-                            <img src="{{ clinic.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                        {% if clinic.has_custom_avatar %}
+                            <img src="{{ clinic.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                         {% else %}
                             <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                                 {{ clinic.clinic_name|first|upper }}
@@ -1200,8 +1200,8 @@
                 <div class="profile-header">
                         {% if request.user.user_type == 'patient' %}
                             <div class="avatar-wrap">
-                                {% if patient.profile_picture %}
-                                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                                {% if patient.has_custom_avatar %}
+                                    <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
                                 {% else %}
                                     <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ patient.full_name|first|upper }}
@@ -1214,8 +1214,8 @@
                             </div>
                         {% elif request.user.user_type == 'clinic' %}
                             <div class="avatar-wrap">
-                                {% if clinic.profile_picture %}
-                                    <img src="{{ clinic.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                                {% if clinic.has_custom_avatar %}
+                                    <img src="{{ clinic.avatar_url }}" alt="Profile" class="profile-avatar">
                                 {% else %}
                                     <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ clinic.clinic_name|first|upper }}
@@ -1282,10 +1282,10 @@
                     <a href="{% url 'chat_room_list_patient' %}" class="back-icon" title="Back to chats"><i class="fas fa-arrow-left"></i></a>
                     {% if chat_room.user1 == request.user %}
                         {% with other=chat_room.user2 %}
-                            {% if other.clinic and other.clinic.profile_picture %}
-                                <img src="{{ other.clinic.profile_picture.url }}" alt="{{ other.clinic.clinic_name }}" class="chat-user-avatar">
-                            {% elif other.patient and other.patient.profile_picture %}
-                                <img src="{{ other.patient.profile_picture.url }}" alt="{{ other.patient.full_name }}" class="chat-user-avatar">
+                            {% if other.clinic and other.clinic.has_custom_avatar %}
+                                <img src="{{ other.clinic.avatar_url }}" alt="{{ other.clinic.clinic_name }}" class="chat-user-avatar">
+                            {% elif other.patient and other.patient.has_custom_avatar %}
+                                <img src="{{ other.patient.avatar_url }}" alt="{{ other.patient.full_name }}" class="chat-user-avatar">
                             {% else %}
                                 <div class="avatar-placeholder" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);">
                                     {{ other.username|first|upper }}
@@ -1325,10 +1325,10 @@
                         {% endwith %}
                     {% else %}
                         {% with other=chat_room.user1 %}
-                            {% if other.clinic and other.clinic.profile_picture %}
-                                <img src="{{ other.clinic.profile_picture.url }}" alt="{{ other.clinic.clinic_name }}" class="chat-user-avatar">
-                            {% elif other.patient and other.patient.profile_picture %}
-                                <img src="{{ other.patient.profile_picture.url }}" alt="{{ other.patient.full_name }}" class="chat-user-avatar">
+                            {% if other.clinic and other.clinic.has_custom_avatar %}
+                                <img src="{{ other.clinic.avatar_url }}" alt="{{ other.clinic.clinic_name }}" class="chat-user-avatar">
+                            {% elif other.patient and other.patient.has_custom_avatar %}
+                                <img src="{{ other.patient.avatar_url }}" alt="{{ other.patient.full_name }}" class="chat-user-avatar">
                             {% else %}
                                 <div class="avatar-placeholder" style="background: linear-gradient(135deg, #10b981, #3b82f6);">
                                     {{ other.username|first|upper }}
