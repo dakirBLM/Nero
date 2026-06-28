@@ -39,5 +39,5 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 # PORT is provided by the host platform (Render/Fly/etc.); defaults to 8000.
 CMD python manage.py migrate --noinput && \
     gunicorn Nero_platform.wsgi:application \
-    --bind 0.0.0.0:${PORT:-8000} --workers 2 --timeout 120 \
+    --bind 0.0.0.0:${PORT:-8000} --workers ${WEB_CONCURRENCY:-1} --threads 4 --timeout 120 \
     --access-logfile - --error-logfile -

@@ -8,7 +8,7 @@ services:
     plan: free
     region: frankfurt          # change to the region nearest your users
     buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
-    startCommand: "python manage.py migrate --noinput && gunicorn Nero_platform.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    startCommand: "python manage.py migrate --noinput && gunicorn Nero_platform.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-1} --threads 4 --timeout 120 --access-logfile - --error-logfile -"
     healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
