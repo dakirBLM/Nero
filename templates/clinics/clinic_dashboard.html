@@ -1428,8 +1428,8 @@
             <!-- User Menu - EXACT SAME -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if clinic.profile_picture %}
-                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% if clinic.has_custom_avatar %}
+                    <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ clinic.clinic_name|first|upper }}
@@ -1463,8 +1463,8 @@
                 <div class="profile-header">
                     <a class="profile-avatar-link" href="{% url 'clinic_datils_clinic' clinic.id %}" aria-label="Open clinic details">
                         <div class="avatar-wrap">
-                            {% if clinic.profile_picture %}
-                                <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                            {% if clinic.has_custom_avatar %}
+                                <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="profile-avatar">
                             {% else %}
                                 <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                     {{ clinic.clinic_name|first|upper }}
@@ -1600,8 +1600,8 @@
                             <div class="update-header">
                                 {% if post.author and post.author.patient %}
                                     <a class="author-link" href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ post.author.patient.id }}">
-                                        {% if post.author.patient.profile_picture %}
-                                            <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                                        {% if post.author.patient.has_custom_avatar %}
+                                            <img src="{{ post.author.patient.avatar_url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
                                         {% else %}
                                             <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                                 {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username|first|upper }}
@@ -1610,8 +1610,8 @@
                                     </a>
                                 {% else %}
                                     <a class="author-link" href="{% url 'clinic_datils_clinic' post.clinic.id %}">
-                                        {% if post.clinic.profile_picture %}
-                                            <img src="{{ post.clinic.profile_picture.url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
+                                        {% if post.clinic.has_custom_avatar %}
+                                            <img src="{{ post.clinic.avatar_url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
                                         {% else %}
                                             <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                                 {{ post.clinic.clinic_name|first|upper }}
@@ -1785,8 +1785,8 @@
                         {% for assignment in assigned_patients_unique %}
                         <div class="clinic-patient-card">
                             <div class="update-header">
-                                {% if assignment.patient.profile_picture %}
-                                <img src="{{ assignment.patient.profile_picture.url }}" alt="{{ assignment.patient.full_name }}" class="update-avatar">
+                                {% if assignment.patient.has_custom_avatar %}
+                                <img src="{{ assignment.patient.avatar_url }}" alt="{{ assignment.patient.full_name }}" class="update-avatar">
                                 {% else %}
                                 <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                     {{ assignment.patient.full_name|first|upper }}
@@ -1840,8 +1840,8 @@
                     {% if active_patients %}
                     {% for patient in active_patients|slice:":5" %}
                     <div class="patient-card clickable" data-chat-url="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}">
-                        {% if patient.profile_picture %}
-                            <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}" class="patient-avatar">
+                        {% if patient.has_custom_avatar %}
+                            <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}" class="patient-avatar">
                         {% else %}
                             <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                 <i class="fas fa-user"></i>
@@ -1876,8 +1876,8 @@
                         {% for patient in community_patients|slice:":3" %}
                         <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}" class="member-item">
                             <div style="position: relative;">
-                                {% if patient.profile_picture %}
-                                    <img src="{{ patient.profile_picture.url }}" class="member-avatar" alt="{{ patient.full_name }}">
+                                {% if patient.has_custom_avatar %}
+                                    <img src="{{ patient.avatar_url }}" class="member-avatar" alt="{{ patient.full_name }}">
                                 {% else %}
                                     <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                                         {{ patient.full_name|slice:":2"|upper }}
@@ -1895,8 +1895,8 @@
                         {% for clinic in active_clinics|slice:":5" %}
                         <a href="{% url 'clinic_detail' clinic.id %}" class="member-item">
                             <div style="position: relative;">
-                                {% if clinic.profile_picture %}
-                                    <img src="{{ clinic.profile_picture.url }}" class="member-avatar" alt="{{ clinic.clinic_name }}">
+                                {% if clinic.has_custom_avatar %}
+                                    <img src="{{ clinic.avatar_url }}" class="member-avatar" alt="{{ clinic.clinic_name }}">
                                 {% else %}
                                     <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                                         {{ clinic.clinic_name|slice:":2"|upper }}

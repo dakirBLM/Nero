@@ -8,8 +8,8 @@
             {% for patient in patient_results %}
                 <li>
                     <a href="{% url 'start_chat_with_user' %}?user_id={{ patient.user.id }}" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; background:#fff; text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                        {% if patient.profile_picture %}
-                            <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                        {% if patient.has_custom_avatar %}
+                            <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;">
                         {% else %}
                             <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
                                 {{ patient.full_name|first|upper }}
@@ -32,8 +32,8 @@
             {% for clinic in clinic_results %}
                 <li>
                     <a href="{% url 'clinic_detail' clinic.id %}" style="display:flex; align-items:center; gap:12px; padding:14px 16px; border:1px solid #e5e7eb; border-radius:14px; background:#fff; text-decoration:none; color:inherit; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                        {% if clinic.profile_picture %}
-                            <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;flex-shrink:0;">
+                        {% if clinic.has_custom_avatar %}
+                            <img src="{{ clinic.avatar_url }}" alt="{{ clinic.clinic_name }}" style="width:42px;height:42px;border-radius:12px;object-fit:cover;flex-shrink:0;">
                         {% else %}
                             <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#10b981,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
                                 {{ clinic.clinic_name|first|upper }}

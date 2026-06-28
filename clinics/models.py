@@ -3,6 +3,7 @@ from django.db import models
 from accounts.models import User
 from patients.models import MedicalRecord, Patient
 from core.validators import validate_video_extension, validate_video_size
+from core.avatars import DEFAULT_AVATAR
 
 
 class Post(models.Model):
@@ -95,6 +96,20 @@ class Clinic(models.Model):
     
     def __str__(self):
         return self.clinic_name
+
+    @property
+    def avatar_url(self):
+        """Uploaded profile picture if present, otherwise the default avatar."""
+        try:
+            if self.profile_picture and self.profile_picture.name:
+                return self.profile_picture.url
+        except Exception:
+            pass
+        return DEFAULT_AVATAR
+
+    @property
+    def has_custom_avatar(self):
+        return bool(getattr(self.profile_picture, 'name', ''))
 
     def is_active(self, minutes=5):
         from django.utils import timezone

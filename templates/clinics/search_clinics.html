@@ -862,8 +862,8 @@
                 
                 <div class="user-menu">
                     <div class="user-info">
-                        {% if patient.profile_picture %}
-                        <img src="{{ patient.profile_picture.url }}" alt="User" class="user-avatar">
+                        {% if patient.has_custom_avatar %}
+                        <img src="{{ patient.avatar_url }}" alt="User" class="user-avatar">
                         {% else %}
                         <div class="user-avatar" style="background: #212529; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">
                             {{ patient.full_name|first|upper }}

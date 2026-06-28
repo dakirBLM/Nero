@@ -127,6 +127,13 @@ def _sync_google_data_to_user_and_patient(user, extra_data):
             patient.full_name = full_name
             patient_changed = True
 
+        # Always store the Google CDN avatar URL — it renders directly via
+        # Patient.avatar_url without needing local media serving or object storage.
+        if picture_url and patient.social_avatar_url != picture_url:
+            patient.social_avatar_url = picture_url
+            patient_changed = True
+
+        # Also try to download a local copy (used when object storage is configured).
         if picture_url and not patient.profile_picture:
             _download_and_attach_avatar(patient, picture_url)
             if patient.profile_picture:
@@ -265,12 +272,8 @@ def sync_google_profile_on_login(sender, request, user, **kwargs):
     if getattr(user, "user_type", None) != "patient":
         return
 
-    patient = Patient.objects.filter(user=user).first()
-    if patient and bool(getattr(patient.profile_picture, "name", "")):
-        if request is not None:
-            request.session.pop('google_selected_role', None)
-        return
-
+    # Always sync so the Google avatar URL is captured/refreshed (self-heals
+    # accounts created before social_avatar_url existed).
     sync_google_patient_avatar_for_user(user)
     if request is not None:
         request.session.pop('google_selected_role', None)

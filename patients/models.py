@@ -4,6 +4,7 @@ from django.core.validators import FileExtensionValidator
 from django.conf import settings
 from accounts.models import User
 from .storage import EncryptedFileSystemStorage
+from core.avatars import DEFAULT_AVATAR
 
 
 def get_file_storage():
@@ -43,6 +44,7 @@ class Patient(models.Model):
             validate_file_size_3mb,
         ],
     )
+    social_avatar_url = models.URLField(max_length=500, blank=True, default='', help_text="Avatar URL from a social login (e.g. Google).")
     last_seen = models.DateTimeField(null=True, blank=True)
     @property
     def age(self):
@@ -51,8 +53,24 @@ class Patient(models.Model):
         return today.year - self.date_of_birth.year - (
             (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
         )
-    
-    
+
+    @property
+    def avatar_url(self):
+        """Best available avatar: social (Google CDN) → uploaded file → default SVG."""
+        if self.social_avatar_url:
+            return self.social_avatar_url
+        try:
+            if self.profile_picture and self.profile_picture.name:
+                return self.profile_picture.url
+        except Exception:
+            pass
+        return DEFAULT_AVATAR
+
+    @property
+    def has_custom_avatar(self):
+        """True when there's a real avatar (uploaded file or social/Google URL)."""
+        return bool(self.social_avatar_url) or bool(getattr(self.profile_picture, 'name', ''))
+
     def __str__(self):
         return self.full_name
 

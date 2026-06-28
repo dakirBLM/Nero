@@ -1080,8 +1080,8 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ patient.user.username|first|upper }}
@@ -1113,8 +1113,8 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="avatar-wrap">
-                        {% if patient.profile_picture %}
-                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                        {% if patient.has_custom_avatar %}
+                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
                         {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}

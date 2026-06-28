@@ -1170,8 +1170,8 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ patient.full_name|first|upper }}
@@ -1203,8 +1203,8 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="avatar-wrap">
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
                     {% else %}
                     <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                         {{ patient.full_name|first|upper }}
@@ -1342,8 +1342,8 @@
                         {% for clinic in clinics %}
                         <div class="clinic-card">
                             <div class="clinic-header" style="display: flex; align-items: center; gap: 16px;">
-                                {% if clinic.profile_picture %}
-                                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
+                                {% if clinic.has_custom_avatar %}
+                                    <img src="{{ clinic.avatar_url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
                                 {% else %}
                                     <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border: 2px solid #3b82f6;">
                                         {{ clinic.clinic_name|first|upper }}
@@ -1460,8 +1460,8 @@
                         {% for clinic in clinics %}
                         <div class="clinic-card">
                             <div class="clinic-header" style="display: flex; align-items: center; gap: 16px;">
-                                {% if clinic.profile_picture %}
-                                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
+                                {% if clinic.has_custom_avatar %}
+                                    <img src="{{ clinic.avatar_url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
                                 {% else %}
                                     <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border: 2px solid #3b82f6;">
                                         {{ clinic.clinic_name|first|upper }}

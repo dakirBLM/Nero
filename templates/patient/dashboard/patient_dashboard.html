@@ -1324,8 +1324,8 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ patient.user.username|first|upper }}
@@ -1357,8 +1357,8 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="avatar-wrap">
-                    {% if patient.profile_picture %}
-                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% if patient.has_custom_avatar %}
+                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -1452,8 +1452,8 @@
                     <div class="update-header">
                         {% if post.author and post.author.patient %}
                             <a href="{% url 'start_chat_with_user' %}?user_id={{ post.author.id }}" style="display:flex; align-items:center; gap:16px; text-decoration:none; color:inherit;">
-                                {% if post.author.patient.profile_picture %}
-                                    <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                                {% if post.author.patient.has_custom_avatar %}
+                                    <img src="{{ post.author.patient.avatar_url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
                                 {% else %}
                                     <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                         {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username|first|upper }}
@@ -1468,8 +1468,8 @@
                             </a>
                         {% elif post.clinic %}
                             <a href="{% url 'clinic_detail' post.clinic.id %}" style="display:flex; align-items:center; gap:16px; text-decoration:none; color:inherit;">
-                                {% if post.clinic.profile_picture %}
-                                    <img src="{{ post.clinic.profile_picture.url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
+                                {% if post.clinic.has_custom_avatar %}
+                                    <img src="{{ post.clinic.avatar_url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
                                 {% else %}
                                     <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                         {{ post.clinic.clinic_name|first|upper }}
@@ -1481,8 +1481,8 @@
                                 </div>
                             </a>
                         {% else %}
-                            {% if post.author and post.author.patient and post.author.patient.profile_picture %}
-                                <img src="{{ post.author.patient.profile_picture.url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
+                            {% if post.author and post.author.patient and post.author.patient.has_custom_avatar %}
+                                <img src="{{ post.author.patient.avatar_url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
                             {% else %}
                                 <div class="update-avatar" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-weight: bold; font-size: 20px;">
                                     <i class="fas fa-user-md"></i>
@@ -1533,8 +1533,8 @@
                 {% if suggested_clinics %}
                     {% for clinic in suggested_clinics %}
                     <a href="{% url 'clinic_detail' clinic.id %}" class="clinic-card">
-                        {% if clinic.profile_picture %}
-                            <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar">
+                        {% if clinic.has_custom_avatar %}
+                            <img src="{{ clinic.avatar_url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar">
                         {% else %}
                             <div class="clinic-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                 <i class="fas fa-hospital"></i>
@@ -1565,8 +1565,8 @@
                         {% for member in active_patients %}
                         <a href="{% url 'start_chat_with_user' %}?user_id={{ member.user.id }}" class="member-item">
                             <div style="position: relative;">
-                                {% if member.profile_picture %}
-                                    <img src="{{ member.profile_picture.url }}" class="member-avatar" alt="{{ member.full_name }}">
+                                {% if member.has_custom_avatar %}
+                                    <img src="{{ member.avatar_url }}" class="member-avatar" alt="{{ member.full_name }}">
                                 {% else %}
                                     <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                                         {{ member.full_name|slice:":2"|upper }}
@@ -1590,8 +1590,8 @@
                         {% for member in last_chatted_patients %}
                         <a href="{% url 'start_chat_with_user' %}?user_id={{ member.user.id }}" class="member-item">
                             <div style="position: relative;">
-                                {% if member.profile_picture %}
-                                    <img src="{{ member.profile_picture.url }}" class="member-avatar" alt="{{ member.full_name }}">
+                                {% if member.has_custom_avatar %}
+                                    <img src="{{ member.avatar_url }}" class="member-avatar" alt="{{ member.full_name }}">
                                 {% else %}
                                     <div class="member-avatar" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                                         {{ member.full_name|slice:":2"|upper }}

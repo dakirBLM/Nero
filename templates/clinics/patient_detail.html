@@ -765,8 +765,8 @@
         <div class="hero-content">
             <div class="clinic-header">
                 <div class="clinic-avatar">
-                    {% if clinic.profile_picture %}
-                    <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="avatar-img">
+                    {% if clinic.has_custom_avatar %}
+                    <img src="{{ clinic.avatar_url }}" alt="{{ clinic.clinic_name }}" class="avatar-img">
                     {% else %}
                     <div class="avatar-placeholder">🏥</div>
                     {% endif %}

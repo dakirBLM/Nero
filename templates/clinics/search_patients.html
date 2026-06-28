@@ -933,10 +933,10 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient and patient.profile_picture %}
-                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
-                    {% elif request.user.is_authenticated and request.user.patient and request.user.patient.profile_picture %}
-                        <img src="{{ request.user.patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% if patient and patient.has_custom_avatar %}
+                        <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
+                        <img src="{{ request.user.patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                     {% elif request.user.is_authenticated %}
                         <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                             {{ request.user.username|first|upper }}
@@ -970,10 +970,10 @@
                 <div class="profile-card">
                 <div class="profile-header">
                     <div class="avatar-wrap">
-                    {% if patient and patient.profile_picture %}
-                        <img src="{{ patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
-                    {% elif request.user.is_authenticated and request.user.patient and request.user.patient.profile_picture %}
-                        <img src="{{ request.user.patient.profile_picture.url }}" alt="Profile" class="profile-avatar">
+                    {% if patient and patient.has_custom_avatar %}
+                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                    {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
+                        <img src="{{ request.user.patient.avatar_url }}" alt="Profile" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {% if patient and patient.user.username %}{{ patient.user.username|first|upper }}{% elif request.user.is_authenticated %}{{ request.user.username|first|upper }}{% else %}N{% endif %}
@@ -1064,8 +1064,8 @@
                         {% for patient in patients %}
                         <div class="patient-card">
                             <div class="patient-header">
-                                {% if patient.profile_picture %}
-                                    <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}" class="patient-avatar">
+                                {% if patient.has_custom_avatar %}
+                                    <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}" class="patient-avatar">
                                 {% else %}
                                     <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ patient.full_name|first|upper }}
@@ -1139,8 +1139,8 @@
                         {% for a in assigned_patients %}
                         <div class="patient-card">
                             <div class="patient-header">
-                                {% if a.patient.profile_picture %}
-                                    <img src="{{ a.patient.profile_picture.url }}" alt="{{ a.patient.full_name }}" class="patient-avatar">
+                                {% if a.patient.has_custom_avatar %}
+                                    <img src="{{ a.patient.avatar_url }}" alt="{{ a.patient.full_name }}" class="patient-avatar">
                                 {% else %}
                                     <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ a.patient.full_name|first|upper }}

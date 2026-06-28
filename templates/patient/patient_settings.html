@@ -865,8 +865,8 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ patient.user.username|first|upper }}
@@ -943,8 +943,8 @@
                 <!-- Current Profile Picture -->
                 <div class="current-profile-pic">
                     <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Profile Picture (click to change)</p>
-                    {% if patient.profile_picture %}
-                    <img src="{{ patient.profile_picture.url }}" alt="Current profile picture" id="profilePicPreview" style="cursor:pointer; width:100px; height:100px; border-radius:50%; object-fit:cover;" onclick="document.getElementById('profileFileInput').click();">
+                    {% if patient.has_custom_avatar %}
+                    <img src="{{ patient.avatar_url }}" alt="Current profile picture" id="profilePicPreview" style="cursor:pointer; width:100px; height:100px; border-radius:50%; object-fit:cover;" onclick="document.getElementById('profileFileInput').click();">
                     {% else %}
                     <div id="profilePicPreview" style="width:100px; height:100px; border-radius:50%; background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:28px; cursor:pointer;" onclick="document.getElementById('profileFileInput').click();">{{ user.username|first|upper }}</div>
                     {% endif %}

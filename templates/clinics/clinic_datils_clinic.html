@@ -1376,8 +1376,8 @@
             <!-- User Menu - CLINIC VERSION -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if current_clinic.profile_picture %}
-                    <img src="{{ current_clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% if current_clinic.has_custom_avatar %}
+                    <img src="{{ current_clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ current_clinic.clinic_name|first|upper }}
@@ -1424,8 +1424,8 @@
         <!-- Clinic Profile Header -->
         <div class="clinic-profile-header">
             <div class="clinic-avatar">
-                {% if clinic.profile_picture %}
-                <img src="{{ clinic.profile_picture.url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar-img">
+                {% if clinic.has_custom_avatar %}
+                <img src="{{ clinic.avatar_url }}" alt="{{ clinic.clinic_name }}" class="clinic-avatar-img">
                 {% else %}
                 <div class="clinic-avatar-img" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
                     {{ clinic.clinic_name|first|upper }}
@@ -1581,8 +1581,8 @@
                         {% for review in reviews|slice:":5" %}
                         <div class="review-card">
                             <div class="review-header">
-                                {% if review.patient.profile_picture %}
-                                <img src="{{ review.patient.profile_picture.url }}" alt="{{ review.patient.full_name }}" class="review-avatar">
+                                {% if review.patient.has_custom_avatar %}
+                                <img src="{{ review.patient.avatar_url }}" alt="{{ review.patient.full_name }}" class="review-avatar">
                                 {% else %}
                                 <div class="review-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
                                     {{ review.patient.full_name|first|upper }}

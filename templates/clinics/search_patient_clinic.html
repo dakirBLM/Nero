@@ -1131,8 +1131,8 @@
             <!-- User Menu - EXACT SAME -->
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if clinic.profile_picture %}
-                    <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
+                    {% if clinic.has_custom_avatar %}
+                    <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ clinic.clinic_name|first|upper }}
@@ -1164,8 +1164,8 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="avatar-wrap">
-                        {% if clinic.profile_picture %}
-                            <img src="{{ clinic.profile_picture.url }}" alt="Clinic Profile" class="profile-avatar">
+                        {% if clinic.has_custom_avatar %}
+                            <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="profile-avatar">
                         {% else %}
                             <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                 {{ clinic.clinic_name|first|upper }}
@@ -1249,8 +1249,8 @@
                     {% for patient in initial_patients|slice:":5" %}
                     <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ patient.id }}" class="patient-card">
                         <div class="patient-avatar">
-                            {% if patient.profile_picture %}
-                                <img src="{{ patient.profile_picture.url }}" alt="{{ patient.full_name }}">
+                            {% if patient.has_custom_avatar %}
+                                <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}">
                             {% else %}
                                 <div style="width:100%; height:100%; background:linear-gradient(135deg,#3b82f6,#8b5cf6); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border-radius:10px;">
                                     {{ patient.full_name|first|upper }}
