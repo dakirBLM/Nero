@@ -340,25 +340,39 @@ LOGGING = {
 }
 
 # ── Object storage (optional) ─────────────────────────────────
-# When USE_S3_MEDIA=1, store uploads (incl. PHI) on a PRIVATE S3-compatible
-# bucket (Cloudflare R2 / S3) with short-lived signed URLs instead of local disk.
+# When USE_S3_MEDIA=1, store uploads on an S3-compatible bucket (Supabase / R2 / S3)
+# instead of local disk. Uploads always go through the S3 endpoint.
+#
+# How URLs are served (for <img> rendering) depends on S3_CUSTOM_DOMAIN:
+#   • SET   → public bucket: URLs are the plain public object URL (no signing, no
+#             expiry, browser-friendly). For Supabase set it to:
+#             <ref>.supabase.co/storage/v1/object/public/<bucket>
+#   • UNSET → private bucket: short-lived signed URLs.
 if os.environ.get('USE_S3_MEDIA') == '1':
+    _s3_opts = {
+        'bucket_name': os.environ['S3_BUCKET'],
+        'endpoint_url': os.environ.get('S3_ENDPOINT_URL') or None,
+        'access_key': os.environ['S3_ACCESS_KEY_ID'],
+        'secret_key': os.environ['S3_SECRET_ACCESS_KEY'],
+        'region_name': os.environ.get('S3_REGION', 'auto'),
+        'signature_version': 's3v4',
+        # Supabase requires 'path'; Cloudflare R2 / AWS S3 use 'virtual'.
+        'addressing_style': os.environ.get('S3_ADDRESSING_STYLE', 'virtual'),
+        'file_overwrite': False,
+    }
+    _s3_custom_domain = os.environ.get('S3_CUSTOM_DOMAIN', '').strip().rstrip('/')
+    if _s3_custom_domain:
+        # Public bucket → serve via the public object URL (browser-friendly).
+        _s3_opts['custom_domain'] = _s3_custom_domain
+        _s3_opts['querystring_auth'] = False
+    else:
+        # Private bucket → short-lived signed URLs.
+        _s3_opts['querystring_auth'] = True
+        _s3_opts['querystring_expire'] = 900
+        _s3_opts['default_acl'] = None
     STORAGES['default'] = {
         'BACKEND': 'storages.backends.s3.S3Storage',
-        'OPTIONS': {
-            'bucket_name': os.environ['S3_BUCKET'],
-            'endpoint_url': os.environ.get('S3_ENDPOINT_URL') or None,
-            'access_key': os.environ['S3_ACCESS_KEY_ID'],
-            'secret_key': os.environ['S3_SECRET_ACCESS_KEY'],
-            'region_name': os.environ.get('S3_REGION', 'auto'),
-            'signature_version': 's3v4',
-            # Supabase requires 'path'; Cloudflare R2 / AWS S3 use 'virtual'.
-            'addressing_style': os.environ.get('S3_ADDRESSING_STYLE', 'virtual'),
-            'querystring_auth': True,    # generate signed URLs
-            'querystring_expire': 900,   # 15 minutes
-            'file_overwrite': False,
-            'default_acl': None,         # keep objects private (no public-read)
-        },
+        'OPTIONS': _s3_opts,
     }
 
 # ── Error tracking (optional) ─────────────────────────────────

@@ -40,6 +40,8 @@ services:
         sync: false              # Supabase project region, e.g. eu-central-1
       - key: S3_ADDRESSING_STYLE
         value: "path"            # Supabase requires path-style (R2/S3 use virtual)
+      - key: S3_CUSTOM_DOMAIN
+        sync: false              # public bucket: <ref>.supabase.co/storage/v1/object/public/<bucket>
       - key: SENTRY_DSN
         sync: false             # optional error tracking
       # Google login (optional): set both to enable "Continue with Google"
