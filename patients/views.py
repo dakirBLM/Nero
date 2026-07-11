@@ -22,7 +22,10 @@ from cryptography.fernet import InvalidToken
 
 logger = logging.getLogger(__name__)
 
-NERO_AI_WEBHOOK_URL = "https://hook.eu1.make.com/4prugwm6vhekhwmk94pu2h4g4sh3k3df"
+NERO_AI_WEBHOOK_URL = os.environ.get(
+    'NERO_AI_WEBHOOK_URL',
+    'https://hook.we.make.com/ymrxo8uemoy8dlmdvrm4wa4ttd69771k',
+)
 
 
 GOOGLE_OAUTH_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -204,7 +207,13 @@ def nero_ai_chat_api(request):
         req = Request(
             NERO_AI_WEBHOOK_URL,
             data=json.dumps(webhook_payload).encode('utf-8'),
-            headers={'Content-Type': 'application/json'},
+            headers={
+                'Content-Type': 'application/json',
+                # Make.com / Cloudflare block the default "Python-urllib" UA (403);
+                # send a normal UA + Accept so the webhook is reachable.
+                'User-Agent': 'Nero/1.0 (+https://nero-69la.onrender.com)',
+                'Accept': 'application/json, text/plain, */*',
+            },
             method='POST',
         )
         with urlopen(req, timeout=25) as resp:
