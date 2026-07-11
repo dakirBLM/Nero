@@ -159,10 +159,11 @@ def _build_patient_google_calendar_event_payload(appointment):
     }
 
 
-@login_required
 @require_POST
 @csrf_protect
 def nero_ai_chat_api(request):
+    """King George chat webhook. Open to anonymous visitors (e.g. the public
+    landing page) as well as logged-in patients (the dashboard widget)."""
     try:
         payload = json.loads(request.body.decode('utf-8') or '{}')
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -172,9 +173,18 @@ def nero_ai_chat_api(request):
     if not message:
         return JsonResponse({'reply': 'Please type a message first.'}, status=400)
 
-    patient_name = getattr(request.user, 'username', 'patient')
-    if hasattr(request.user, 'patient') and getattr(request.user.patient, 'full_name', ''):
-        patient_name = request.user.patient.full_name
+    if request.user.is_authenticated:
+        patient_name = getattr(request.user, 'username', 'patient')
+        if hasattr(request.user, 'patient') and getattr(request.user.patient, 'full_name', ''):
+            patient_name = request.user.patient.full_name
+        patient_id = request.user.id
+        patient_username = request.user.username
+        source = 'nero_patient_dashboard'
+    else:
+        patient_name = 'Guest visitor'
+        patient_id = None
+        patient_username = ''
+        source = 'nero_landing_page'
 
     clinics_context = list(
         Clinic.objects.values('clinic_name', 'description').order_by('clinic_name')
@@ -182,11 +192,11 @@ def nero_ai_chat_api(request):
 
     webhook_payload = {
         'message': message,
-        'patient_id': request.user.id,
-        'patient_username': request.user.username,
+        'patient_id': patient_id,
+        'patient_username': patient_username,
         'patient_name': patient_name,
         'clinics': clinics_context,
-        'source': 'nero_patient_dashboard',
+        'source': source,
         'sent_at': timezone.now().isoformat(),
     }
 

@@ -44,11 +44,24 @@ img{display:block;max-width:100%}
 .nav-cta{background:#fff;color:var(--ink)!important;font-weight:700;padding:10px 18px!important;border-radius:999px;transition:transform .2s,box-shadow .2s}
 .nav-links a.nav-cta:hover{background:#fff;transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.28)}
 
-/* ===== HERO (full-bleed, edge-to-edge, no frame) ===== */
+/* ===== HERO (near-edge, sharp corners, no rounded frame) ===== */
 .hero{padding:0 0 90px}
-.hero-img{width:100%;height:88vh;min-height:520px;max-height:880px}
+.hero-img-wrap{padding:0 14px}
+.hero-img{position:relative;width:100%;height:80vh;min-height:460px;max-height:780px;border-radius:0;overflow:hidden}
 .hero-img img{width:100%;height:100%;object-fit:cover;display:block}
 .hero-copy{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:end;margin-top:46px}
+
+/* scroll cue — a dot travels UP from the bottom of the capsule, looping */
+.scroll-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;pointer-events:none}
+.scroll-cue .label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.scroll-cue .track{width:26px;height:42px;border:2px solid rgba(255,255,255,.8);border-radius:999px;position:relative;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.scroll-cue .dot{position:absolute;left:50%;bottom:6px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#fff;animation:scrollDot 1.9s cubic-bezier(.45,0,.4,1) infinite}
+@keyframes scrollDot{
+  0%{bottom:6px;opacity:0;transform:scale(.7)}
+  12%{opacity:1;transform:scale(1)}
+  70%{opacity:1}
+  100%{bottom:calc(100% - 10px);opacity:0;transform:scale(.7)}
+}
 .hero h1{font-size:clamp(38px,6vw,74px);line-height:1.02;font-weight:800;letter-spacing:-.03em}
 .hero h1 .serif{font-size:1.06em;line-height:.9}
 .hero .side p{color:var(--muted);font-size:18px;margin-bottom:22px}
@@ -75,11 +88,27 @@ img{display:block;max-width:100%}
 .panel.clinic .panel-inner{grid-template-columns:1fr 1fr}
 .panel.clinic .text{order:2}.panel.clinic .visual{order:1}
 
-/* King George — no frame, blends on white */
-.kg-visual{display:flex;justify-content:center}
-.kg-visual img{width:100%;max-width:440px;height:auto;box-shadow:none;border-radius:0;filter:drop-shadow(0 24px 30px rgba(20,18,15,.16))}
-.kg-chat{margin-top:6px;display:inline-flex;align-items:center;gap:12px;background:#f4f1ea;border:1px solid var(--line);border-radius:18px;padding:12px 16px;color:var(--muted);font-size:14px;max-width:420px}
-.kg-chat i{color:var(--teal-deep)}
+/* King George — mascot (no frame) + live chat card */
+.kg-visual{display:flex;flex-direction:column;align-items:center;gap:22px}
+.kg-mascot{width:100%;max-width:230px;height:auto;box-shadow:none;border-radius:0;filter:drop-shadow(0 20px 26px rgba(20,18,15,.16))}
+
+.kg-card{width:100%;max-width:400px;background:#fff;border-radius:22px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(20,18,15,.16);overflow:hidden;display:flex;flex-direction:column}
+.kg-card-header{display:flex;align-items:center;gap:12px;padding:16px 18px;background:var(--dark)}
+.kg-card-header img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:var(--paper);border:2px solid rgba(255,255,255,.5);flex-shrink:0}
+.kg-card-header strong{display:block;color:#fff;font-size:14px;font-weight:700}
+.kg-card-header span{display:block;color:rgba(255,255,255,.6);font-size:11.5px;margin-top:1px}
+.kg-msgs{flex:1;min-height:190px;max-height:260px;overflow-y:auto;padding:16px 16px 8px;background:#faf8f3;display:flex;flex-direction:column;gap:10px}
+.kg-msg{max-width:84%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;animation:kgPop .2s ease}
+@keyframes kgPop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.kg-msg.ai{background:#e8f2f7;color:var(--ink);border-bottom-left-radius:4px;align-self:flex-start}
+.kg-msg.user{background:var(--dark);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.kg-msg.thinking{background:#e8f2f7;color:var(--muted);border-bottom-left-radius:4px;align-self:flex-start;font-style:italic}
+.kg-input-row{display:flex;align-items:center;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}
+.kg-input{flex:1;border:1px solid var(--line);border-radius:999px;padding:10px 15px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;background:#faf8f3;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+.kg-input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(108,168,201,.18)}
+.kg-send{width:36px;height:36px;border-radius:50%;border:none;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--teal-deep));transition:transform .15s,box-shadow .15s}
+.kg-send:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(53,111,143,.35)}
+.kg-send:disabled{opacity:.6;cursor:default;transform:none}
 
 /* ===== FOOTER ===== */
 .footer{position:relative;background:var(--dark);color:rgba(255,255,255,.7);padding:56px 24px 40px;overflow:hidden}
@@ -108,6 +137,7 @@ img{display:block;max-width:100%}
 </style>
 </head>
 <body>
+<form style="display:none" aria-hidden="true">{% csrf_token %}</form>
 
 <!-- NAV -->
 <div class="nav-shell">
@@ -125,7 +155,12 @@ img{display:block;max-width:100%}
 
 <!-- HERO -->
 <header class="hero">
-  <div class="hero-img"><img src="{% static 'hero-rehab.jpg' %}" alt="Rehabilitation care — a therapist, a clinic and physiotherapy"></div>
+  <div class="hero-img-wrap">
+    <div class="hero-img">
+      <img src="{% static 'hero-rehab.jpg' %}" alt="Rehabilitation care — a therapist, a clinic and physiotherapy">
+      <div class="scroll-cue"><span class="label">Scroll</span><span class="track"><span class="dot"></span></span></div>
+    </div>
+  </div>
   <div class="wrap">
     <div class="hero-copy">
       <h1>Care that's easy, flexible,<br>and <span class="serif">a joyful journey.</span></h1>
@@ -183,10 +218,26 @@ img{display:block;max-width:100%}
         <span class="eyebrow">Meet your guide</span>
         <h2>Not sure where to start?<br>Just ask <span class="serif">King George.</span></h2>
         <p class="lead">King George is our friendly AI assistant. Tell him what you need and he'll guide you to the right place — whether you're a patient looking for care or a clinic getting set up.</p>
-        <a href="{% url 'choice_page' %}" class="btn btn-teal">Chat with King George <i class="fa-solid fa-arrow-right"></i></a>
-        <div class="kg-chat"><i class="fa-solid fa-wand-magic-sparkles"></i> "Hi! I'm King George. What brings you to Nero today?"</div>
+        <button type="button" class="btn btn-teal" id="kgFocusBtn">Chat with King George <i class="fa-solid fa-arrow-right"></i></button>
       </div>
-      <div class="visual kg-visual"><img src="{% static 'king-george.png' %}" alt="King George, the Nero AI assistant"></div>
+      <div class="visual kg-visual">
+        <img class="kg-mascot" src="{% static 'king-george.png' %}" alt="King George, the Nero AI assistant">
+        <div class="kg-card" id="kgCard">
+          <div class="kg-card-header">
+            <img src="{% static 'king-george.png' %}" alt="">
+            <div><strong>King George</strong><span>Your Nero AI assistant</span></div>
+          </div>
+          <div class="kg-msgs" id="kgMsgs">
+            <div class="kg-msg ai">Hi! I'm King George 👋 Tell me what you need and I'll point you the right way — patient or clinic.</div>
+          </div>
+          <div class="kg-input-row">
+            <input class="kg-input" id="kgInput" type="text" placeholder="Ask King George anything..." autocomplete="off">
+            <button class="kg-send" id="kgSend" title="Send">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -219,6 +270,64 @@ img{display:block;max-width:100%}
   toggle.addEventListener('click',()=>{if(audio.paused){const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);try{localStorage.setItem(KEY_PLAYING,'true');}catch(e){}startSaving();}).catch(()=>{});}else{audio.pause();setIcon(true);try{localStorage.setItem(KEY_PLAYING,'false');}catch(e){}stopSaving();}});
   (function(){let w=false,t=0;try{w=localStorage.getItem(KEY_PLAYING)==='true';t=parseFloat(localStorage.getItem(KEY_TIME)||'0');}catch(e){}if(!w){setIcon(audio.paused);return;}function go(){try{if(!isNaN(t)&&t>0)audio.currentTime=t;}catch(e){}const p=audio.play();if(p&&p.then)p.then(()=>{setIcon(false);startSaving();}).catch(()=>{});}if(audio.readyState>=1)go();else audio.addEventListener('canplay',go,{once:true});})();
   window.addEventListener('beforeunload',save);
+})();
+</script>
+
+<!-- King George chat (same backend/webhook as the patient dashboard widget) -->
+<script>
+(function(){
+  const msgsEl = document.getElementById('kgMsgs');
+  const inputEl = document.getElementById('kgInput');
+  const sendBtn = document.getElementById('kgSend');
+  const focusBtn = document.getElementById('kgFocusBtn');
+  const card = document.getElementById('kgCard');
+  if(!msgsEl || !inputEl || !sendBtn) return;
+
+  function addMsg(text, type){
+    const d = document.createElement('div');
+    d.className = 'kg-msg ' + type;
+    d.textContent = text;
+    msgsEl.appendChild(d);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return d;
+  }
+
+  async function sendMessage(){
+    const q = inputEl.value.trim();
+    if(!q) return;
+    inputEl.value = '';
+    addMsg(q, 'user');
+    const thinking = addMsg('King George is thinking…', 'thinking');
+    sendBtn.disabled = true;
+    try{
+      const res = await fetch('/api/nero-ai/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || ''
+        },
+        body: JSON.stringify({ message: q })
+      });
+      const data = await res.json();
+      thinking.remove();
+      addMsg(data.reply || 'Sorry, I could not get a response.', 'ai');
+    }catch(e){
+      thinking.remove();
+      addMsg('Sorry, something went wrong. Please try again.', 'ai');
+    }
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
+  if(focusBtn){
+    focusBtn.addEventListener('click', () => {
+      if(card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => inputEl.focus(), 300);
+    });
+  }
 })();
 </script>
 </body>
