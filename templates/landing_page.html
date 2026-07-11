@@ -4,263 +4,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NERO — Find the right clinic for your recovery</title>
-<meta name="description" content="Nero connects patients with specialized rehabilitation clinics. Search by your condition, share records securely, chat directly, and book the care that fits you.">
+<title>NERO — the easy, flexible, fun way to care</title>
+<meta name="description" content="Nero connects patients with the right rehabilitation clinics — find care, share records, chat, and book, all in one friendly place.">
 <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
-  --brand:#6CA8C9;--brand-700:#356f8f;--brand-900:#0f3a52;--mint:#5fd6c4;
-  --accent:#ff7a59;--accent-600:#f2643f;
-  --glass:rgba(255,255,255,.10);--glass-strong:rgba(255,255,255,.16);
-  --line:rgba(255,255,255,.22);--soft:rgba(255,255,255,.82);
-  --shadow:0 18px 50px rgba(8,30,46,.30);--radius:22px;
+  --paper:#f5f2ec; --ink:#17150f; --muted:#6f685c; --line:rgba(20,18,15,.10);
+  --teal:#6CA8C9; --teal-deep:#356f8f; --dark:#141210;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:#fff;
-  background:linear-gradient(160deg,#0f3a52 0%,#2f6f93 46%,#6CA8C9 100%);
-  background-attachment:fixed;min-height:100vh;overflow-x:hidden;line-height:1.6;
-}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
-img{max-width:100%;display:block}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--glass-strong);padding:7px 14px;border-radius:999px;border:1px solid var(--line)}
-.grad-text{background:linear-gradient(110deg,#fff,#bdeee6 60%,#5fd6c4);-webkit-background-clip:text;background-clip:text;color:transparent}
+img{display:block;max-width:100%}
+.serif{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:.01em}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+.eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-deep)}
 
-/* fixed background blobs */
-.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.4;pointer-events:none;z-index:0;animation:float 11s ease-in-out infinite}
-.blob.b1{width:380px;height:380px;background:#5fd6c4;top:-90px;right:-60px}
-.blob.b2{width:340px;height:340px;background:#ff7a59;bottom:-160px;left:-80px;opacity:.3;animation-delay:2s}
-.blob.b3{width:260px;height:260px;background:#9fd3ea;top:45%;left:46%;opacity:.25;animation-delay:4s}
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;border-radius:999px;padding:13px 24px;cursor:pointer;border:1px solid transparent;transition:transform .2s,background .2s,box-shadow .2s}
+.btn i{transition:transform .25s}.btn:hover i{transform:translateX(3px)}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,18,15,.25)}
+.btn-light{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn-light:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,18,15,.10)}
+.btn-teal{background:linear-gradient(135deg,var(--teal),var(--teal-deep));color:#fff}
+.btn-teal:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(53,111,143,.35)}
 
-.btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:16px;border-radius:14px;padding:15px 26px;cursor:pointer;border:none;transition:transform .2s,box-shadow .2s,background .2s}
-.btn i{transition:transform .25s}.btn:hover i{transform:translateX(4px)}
-.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;box-shadow:0 12px 26px rgba(255,122,89,.4)}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(255,122,89,.5)}
-.btn-ghost{background:var(--glass-strong);color:#fff;border:1.5px solid rgba(255,255,255,.5);backdrop-filter:blur(8px)}
-.btn-ghost:hover{background:rgba(255,255,255,.26);transform:translateY(-3px)}
-
-/* ===== GLASSY FLOATING NAV ===== */
-.nav-shell{position:sticky;top:0;z-index:50;padding:16px 24px}
-.nav{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;
-  background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px);
-  border-radius:999px;padding:10px 14px 10px 22px;box-shadow:0 12px 34px rgba(8,30,46,.28)}
-.brand{display:inline-flex;align-items:center;background:#fff;border-radius:15px;padding:8px 16px;box-shadow:0 8px 22px rgba(8,30,46,.3);transition:transform .3s}
-.brand:hover{transform:scale(1.04) rotate(-1deg)}
-.brand img{height:38px;width:auto;display:block}
+/* ===== NAV (dark pill, white logo) ===== */
+.nav-shell{position:sticky;top:0;z-index:60;padding:18px 24px;pointer-events:none}
+.nav{max-width:940px;margin:0 auto;background:var(--dark);border-radius:999px;padding:9px 9px 9px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(20,18,15,.22);pointer-events:auto}
+.nav .logo{height:26px;width:auto;filter:brightness(0) invert(1)} /* white logo */
 .nav-links{display:flex;align-items:center;gap:6px}
-.nav-links a.link{padding:10px 16px;border-radius:999px;font-weight:600;color:#fff;font-size:15px;transition:background .2s}
-.nav-links a.link:hover{background:var(--glass-strong)}
-.nav-cta{background:linear-gradient(135deg,var(--accent),var(--accent-600));color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;box-shadow:0 10px 22px rgba(255,122,89,.4);transition:transform .2s}
-.nav-cta:hover{transform:translateY(-2px)}
+.nav-links a{color:rgba(255,255,255,.82);font-size:14px;font-weight:500;padding:9px 13px;border-radius:999px;transition:color .2s,background .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-cta{background:#fff;color:var(--ink)!important;font-weight:700;padding:10px 18px!important;border-radius:999px}
+.nav-cta:hover{background:#fff;transform:translateY(-1px)}
 
 /* ===== HERO ===== */
-.hero{position:relative;z-index:2;padding:54px 0 84px}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
-.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.05;font-weight:900;letter-spacing:-.02em;margin:18px 0}
-.hero h1 .pop{background:linear-gradient(120deg,#fff,#bdeee6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p.lead{font-size:clamp(16px,1.6vw,20px);color:var(--soft);max-width:560px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
-.trust{display:flex;gap:30px;margin-top:36px;flex-wrap:wrap}
-.trust .n{font-size:30px;font-weight:900}
-.trust .l{font-size:13px;color:var(--soft);font-weight:600}
-.hero-visual{position:relative}
-.hero-card{position:relative;border-radius:26px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.4);transform:rotate(-2deg);border:6px solid rgba(255,255,255,.5);background:#fff}
-.hero-card img{width:100%;height:420px;object-fit:cover}
-.float-badge{position:absolute;display:flex;align-items:center;gap:10px;background:#fff;color:#0c2a3a;font-weight:700;font-size:14px;padding:12px 16px;border-radius:16px;box-shadow:var(--shadow);animation:float 6s ease-in-out infinite}
-.float-badge i{color:var(--brand-700)}
-.fb1{top:18px;left:-22px}.fb2{bottom:60px;right:-26px;animation-delay:1.2s}.fb3{bottom:-18px;left:30px;animation-delay:2.2s}
+.hero{padding:26px 0 90px}
+.hero-img{border-radius:26px;overflow:hidden;box-shadow:0 30px 70px rgba(20,18,15,.18);aspect-ratio:16/8.4}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-copy{display:grid;grid-template-columns:1.35fr 1fr;gap:48px;align-items:end;margin-top:46px}
+.hero h1{font-size:clamp(38px,6vw,74px);line-height:1.02;font-weight:800;letter-spacing:-.03em}
+.hero h1 .serif{font-size:1.06em;line-height:.9}
+.hero .side p{color:var(--muted);font-size:18px;margin-bottom:22px}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px}
+.trust{display:flex;gap:26px;margin-top:34px;align-items:center;flex-wrap:wrap;color:var(--muted)}
+.trust .n{font-weight:800;color:var(--ink);font-size:22px}
+.trust .dot{width:5px;height:5px;border-radius:50%;background:var(--line)}
+.trust small{font-size:13px;font-weight:600;letter-spacing:.02em}
 
-/* ===== SECTIONS (glassy on gradient) ===== */
-.section{position:relative;z-index:2;padding:80px 0}
-.section-head{text-align:center;max-width:680px;margin:0 auto 52px}
-.section-head h2{font-size:clamp(28px,3.4vw,42px);font-weight:900;letter-spacing:-.02em;margin:14px 0 10px}
-.section-head p{color:var(--soft);font-size:18px}
-.glass-card{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);border-radius:var(--radius);box-shadow:0 14px 40px rgba(8,30,46,.22);transition:transform .25s,box-shadow .25s,background .25s}
-.glass-card:hover{transform:translateY(-6px);background:var(--glass-strong);box-shadow:var(--shadow)}
+/* ===== STACKED PANELS (slide up over each other on scroll) ===== */
+.stack{position:relative}
+.panel{position:sticky;top:0;min-height:100vh;display:grid;place-items:center;
+  padding:96px 24px;border-radius:40px 40px 0 0;box-shadow:0 -26px 60px rgba(20,18,15,.16)}
+.panel-inner{max-width:1120px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.panel h2{font-size:clamp(30px,4.4vw,52px);line-height:1.03;font-weight:800;letter-spacing:-.02em;margin:14px 0 18px}
+.panel p.lead{font-size:clamp(16px,1.5vw,19px);color:var(--muted);margin-bottom:28px;max-width:520px}
+.panel .media{border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(20,18,15,.16);aspect-ratio:4/3.4}
+.panel .media img{width:100%;height:100%;object-fit:cover}
 
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.step{padding:32px 28px;position:relative}
-.step .num{position:absolute;top:-16px;left:26px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-600));box-shadow:0 8px 18px rgba(255,122,89,.4)}
-.step .ico{font-size:30px;margin:8px 0 14px}
-.step h3{font-size:20px;font-weight:800;margin-bottom:8px}
-.step p{color:var(--soft);font-size:15px}
+.panel.patient{background:#ffffff}
+.panel.clinic{background:#e8f2f7}
+.panel.kg{background:#ffffff}
 
-.audiences{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-.aud{overflow:hidden}
-.aud .head{display:flex;align-items:center;gap:14px;padding:28px 28px 6px}
-.aud .head .pill{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:24px;color:#fff;box-shadow:var(--shadow)}
-.aud.patient .pill{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
-.aud.clinic .pill{background:linear-gradient(135deg,#5fd6c4,#2f9e8c)}
-.aud .head h3{font-size:24px;font-weight:900}
-.aud .head .sub{color:var(--soft);font-size:14px;font-weight:600}
-.aud ul{list-style:none;padding:14px 28px 8px;margin:0}
-.aud li{display:flex;align-items:flex-start;gap:12px;padding:10px 0;font-size:16px;font-weight:500;color:#fff}
-.aud li i{color:var(--mint);margin-top:4px;font-size:15px}
-.aud .foot{padding:14px 28px 30px}
-.aud .foot a{font-weight:800;color:#bdeee6}
-.aud .foot a:hover{color:var(--accent)}
+.panel.clinic .panel-inner{grid-template-columns:1fr 1fr}
+.panel.clinic .text{order:2}.panel.clinic .visual{order:1}
 
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.feature{padding:28px}
-.feature .fi{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff;margin-bottom:14px;background:linear-gradient(135deg,var(--brand),var(--brand-700))}
-.feature h4{font-size:18px;font-weight:800;margin-bottom:6px}
-.feature p{color:var(--soft);font-size:15px}
+/* King George — no frame, blends on white */
+.kg-visual{display:flex;justify-content:center}
+.kg-visual img{width:100%;max-width:440px;height:auto;box-shadow:none;border-radius:0;filter:drop-shadow(0 24px 30px rgba(20,18,15,.16))}
+.kg-chat{margin-top:6px;display:inline-flex;align-items:center;gap:12px;background:#f4f1ea;border:1px solid var(--line);border-radius:18px;padding:12px 16px;color:var(--muted);font-size:14px;max-width:420px}
+.kg-chat i{color:var(--teal-deep)}
 
-.cta-band{position:relative;z-index:2;max-width:1120px;margin:10px auto 80px;border-radius:32px;background:var(--glass-strong);border:1px solid var(--line);backdrop-filter:blur(16px);text-align:center;padding:66px 24px;box-shadow:var(--shadow)}
-.cta-band h2{font-size:clamp(28px,3.6vw,44px);font-weight:900;letter-spacing:-.02em;margin-bottom:12px}
-.cta-band p{color:var(--soft);font-size:18px;margin-bottom:28px}
+/* ===== FOOTER ===== */
+.footer{position:relative;background:var(--dark);color:rgba(255,255,255,.7);padding:56px 24px 40px;overflow:hidden}
+.footer .glow{position:absolute;left:0;right:0;bottom:-40%;height:80%;filter:blur(70px);opacity:.5;
+  background:radial-gradient(closest-side,rgba(108,168,201,.9),transparent 70%) 15% 50%/40% 100% no-repeat,
+             radial-gradient(closest-side,rgba(255,170,120,.8),transparent 70%) 50% 60%/40% 100% no-repeat,
+             radial-gradient(closest-side,rgba(150,120,230,.8),transparent 70%) 85% 50%/40% 100% no-repeat}
+.footer .inner{position:relative;z-index:2;max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
+.footer .logo{height:30px;filter:brightness(0) invert(1)}
+.footer a{color:#cfe6f0;font-weight:600}
 
-.footer{position:relative;z-index:2;background:rgba(8,30,46,.45);border-top:1px solid var(--line);backdrop-filter:blur(10px);padding:40px 24px}
-.footer .inner{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center;color:var(--soft);font-size:14px}
-.footer a{color:#bdeee6;font-weight:600}
+/* music toggle */
+.music-toggle{position:fixed;bottom:24px;right:24px;width:54px;height:54px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 10px 26px rgba(20,18,15,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;transition:transform .3s}
+.music-toggle:hover{transform:scale(1.08) translateY(-3px)}
+.music-toggle.playing{background:var(--dark)}
+.music-icon{font-size:20px}
+.music-toggle.playing .music-icon{filter:grayscale(1) brightness(3)}
 
-.reveal{opacity:0;transform:translateY(34px);transition:opacity .7s ease,transform .7s ease}
-.reveal.in{opacity:1;transform:none}
-
-.music-toggle{position:fixed;bottom:26px;right:26px;width:58px;height:58px;border-radius:50%;background:#fff;border:3px solid #fff;box-shadow:0 10px 28px rgba(8,30,46,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;transition:all .4s cubic-bezier(.68,-.55,.265,1.55);animation:float 3s ease-in-out infinite}
-.music-toggle:hover{transform:scale(1.12) translateY(-4px)}
-.music-toggle.playing{background:linear-gradient(135deg,#6CA8C9,#356f8f)}
-.music-icon{font-size:22px;color:#6CA8C9}
-.music-toggle.playing .music-icon{color:#fff;animation:musicBounce .6s ease-in-out infinite}
-@keyframes musicBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-
-@media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;gap:40px}.hero-visual{order:-1}.hero-card img{height:300px}
-  .steps,.features,.audiences{grid-template-columns:1fr}
-  .nav-links a.link{display:none}.brand img{height:32px}
+@media(max-width:860px){
+  .hero-copy{grid-template-columns:1fr;gap:26px;align-items:start}
+  .panel-inner{grid-template-columns:1fr;gap:34px}
+  .panel.clinic .text{order:1}.panel.clinic .visual{order:2}
+  .nav-links a:not(.nav-cta){display:none}
+  .panel{min-height:auto;padding:70px 22px}
 }
-@media(max-width:560px){.wrap{padding:0 18px}.trust{gap:20px}.float-badge{display:none}}
 </style>
 </head>
 <body>
-<span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
 
+<!-- NAV -->
 <div class="nav-shell">
   <nav class="nav">
-    <a href="{% url 'landing_page' %}" class="brand"><img src="{% static 'logo1.png' %}" alt="NERO"></a>
+    <a href="{% url 'landing_page' %}"><img src="{% static 'logo1.png' %}" class="logo" alt="NERO"></a>
     <div class="nav-links">
-      <a href="#how" class="link">How it works</a>
-      <a href="#audiences" class="link">For patients &amp; clinics</a>
-      <a href="#features" class="link">Features</a>
-      <a href="{% url 'choice_page' %}" class="nav-cta">Log in / Sign up</a>
+      <a href="#patient">For patients</a>
+      <a href="#clinic">For clinics</a>
+      <a href="#kg">King George</a>
+      <a href="{% url 'login' %}">Log in</a>
+      <a href="{% url 'choice_page' %}" class="nav-cta">Get started</a>
     </div>
   </nav>
 </div>
 
 <!-- HERO -->
 <header class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">✨ Rehabilitation care, made personal</span>
-      <h1>Find the <span class="pop">right clinic</span><br>for your recovery.</h1>
-      <p class="lead">Nero connects patients with specialized rehabilitation clinics. Search by your condition and location, share your medical records securely, chat with clinics directly, and book the care that truly fits you — all in one place.</p>
-      <div class="hero-actions">
-        <a href="{% url 'choice_page' %}" class="btn btn-primary">I'm a patient <i class="fa-solid fa-arrow-right"></i></a>
-        <a href="{% url 'choice_page' %}" class="btn btn-ghost">I'm a clinic</a>
-      </div>
-      <div class="trust">
-        <div><div class="n">500+</div><div class="l">Partner clinics</div></div>
-        <div><div class="n">10K+</div><div class="l">Patients helped</div></div>
-        <div><div class="n">24/7</div><div class="l">Support</div></div>
+  <div class="wrap">
+    <div class="hero-img"><img src="{% static 'hero-rehab.jpg' %}" alt="Rehabilitation care — a therapist, a clinic and physiotherapy"></div>
+    <div class="hero-copy">
+      <h1>Care that's easy, flexible,<br>and <span class="serif">a joyful journey.</span></h1>
+      <div class="side">
+        <p>Nero connects patients with the right rehabilitation clinics — find care, share your records, chat, and book, all in one friendly place.</p>
+        <div class="actions">
+          <a href="{% url 'choice_page' %}" class="btn btn-dark">Get started <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'login' %}" class="btn btn-light">Log in</a>
+        </div>
       </div>
     </div>
-    <div class="hero-visual">
-      <div class="hero-card"><img src="{% static 'photo.jpeg' %}" alt="Patient connecting with a rehabilitation clinic"></div>
-      <div class="float-badge fb1"><i class="fa-solid fa-shield-halved"></i> Encrypted records</div>
-      <div class="float-badge fb2"><i class="fa-solid fa-comments"></i> Chat with clinics</div>
-      <div class="float-badge fb3"><i class="fa-solid fa-star"></i> Verified reviews</div>
+    <div class="trust">
+      <span><span class="n">500+</span> <small>partner clinics</small></span>
+      <span class="dot"></span>
+      <span><span class="n">10K+</span> <small>patients helped</small></span>
+      <span class="dot"></span>
+      <span><span class="n">24/7</span> <small>support</small></span>
     </div>
   </div>
 </header>
 
-<!-- HOW IT WORKS -->
-<section class="section" id="how">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">How it works</span>
-      <h2>Recovery, in <span class="grad-text">three simple steps</span></h2>
-      <p>No more endless searching or cold calls. Nero does the matching, you make the choice.</p>
-    </div>
-    <div class="steps">
-      <div class="step glass-card reveal"><div class="num">1</div><div class="ico">📝</div><h3>Tell us your case</h3><p>Create a private medical profile in minutes — diagnosis, mobility, and reports. Your files are encrypted from the moment you upload them.</p></div>
-      <div class="step glass-card reveal"><div class="num">2</div><div class="ico">🔎</div><h3>Get matched</h3><p>We surface clinics that specialize in your condition, in the cities and countries you can travel to — with services, photos and real reviews.</p></div>
-      <div class="step glass-card reveal"><div class="num">3</div><div class="ico">💬</div><h3>Connect &amp; recover</h3><p>Message clinics directly, compare proposals, book your appointment, and follow your journey from first chat to full recovery.</p></div>
-    </div>
-  </div>
-</section>
+<!-- STACKED SECTIONS -->
+<div class="stack">
 
-<!-- AUDIENCES -->
-<section class="section" id="audiences">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Built for both sides</span>
-      <h2>One platform, <span class="grad-text">two journeys</span></h2>
-      <p>Whether you're seeking care or providing it, Nero gives you the tools to connect with confidence.</p>
-    </div>
-    <div class="audiences">
-      <div class="aud patient glass-card reveal">
-        <div class="head"><div class="pill">👤</div><div><h3>For patients</h3><div class="sub">Find and book the care you need</div></div></div>
-        <ul>
-          <li><i class="fa-solid fa-check"></i> Search clinics by specialty, city or country</li>
-          <li><i class="fa-solid fa-check"></i> Upload medical records &amp; movement videos securely</li>
-          <li><i class="fa-solid fa-check"></i> Chat directly with clinics before you commit</li>
-          <li><i class="fa-solid fa-check"></i> Request &amp; manage appointments in one place</li>
-          <li><i class="fa-solid fa-check"></i> Read and leave honest reviews</li>
-        </ul>
-        <div class="foot"><a href="{% url 'choice_page' %}">Start as a patient <i class="fa-solid fa-arrow-right"></i></a></div>
+  <!-- PATIENT -->
+  <section class="panel patient" id="patient">
+    <div class="panel-inner">
+      <div class="text">
+        <span class="eyebrow">For patients</span>
+        <h2>Are you a <span class="serif">patient?</span></h2>
+        <p class="lead">Tell us about your case and let Nero find the best clinic for you. Our recommendation system matches you to the right fit, sends your request to the clinic we think suits you best — and you stay in contact through the whole process. All in one place.</p>
+        <a href="{% url 'choice_page' %}" class="btn btn-teal">Find my clinic <i class="fa-solid fa-arrow-right"></i></a>
       </div>
-      <div class="aud clinic glass-card reveal">
-        <div class="head"><div class="pill">🏥</div><div><h3>For clinics</h3><div class="sub">Reach the right patients, grow your practice</div></div></div>
-        <ul>
-          <li><i class="fa-solid fa-check"></i> Build a rich profile with services, photos &amp; videos</li>
-          <li><i class="fa-solid fa-check"></i> Post updates and reach patients who need you</li>
-          <li><i class="fa-solid fa-check"></i> Review incoming patient records safely</li>
-          <li><i class="fa-solid fa-check"></i> Chat with prospective patients in real time</li>
-          <li><i class="fa-solid fa-check"></i> Manage appointments from request to recovery</li>
-        </ul>
-        <div class="foot"><a href="{% url 'choice_page' %}">Join as a clinic <i class="fa-solid fa-arrow-right"></i></a></div>
+      <div class="visual"><div class="media"><img src="{% static 'patient.jpeg' %}" alt="A patient receiving care"></div></div>
+    </div>
+  </section>
+
+  <!-- CLINIC -->
+  <section class="panel clinic" id="clinic">
+    <div class="panel-inner">
+      <div class="text">
+        <span class="eyebrow">For clinics</span>
+        <h2>Are you a <span class="serif">clinic?</span></h2>
+        <p class="lead">Register with Nero and build your page — showcase your treatments, photos and videos. Then let patients discover you, read your reviews, and book appointments. We bring the right patients to you.</p>
+        <a href="{% url 'choice_page' %}" class="btn btn-dark">Join as a clinic <i class="fa-solid fa-arrow-right"></i></a>
       </div>
+      <div class="visual"><div class="media"><img src="{% static 'clinic.jpeg' %}" alt="A modern rehabilitation clinic"></div></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Why Nero</span>
-      <h2>Everything you need, <span class="grad-text">nothing you don't</span></h2>
-      <p>Thoughtful, secure, and genuinely helpful — the way healthcare connection should be.</p>
+  <!-- KING GEORGE -->
+  <section class="panel kg" id="kg">
+    <div class="panel-inner">
+      <div class="text">
+        <span class="eyebrow">Meet your guide</span>
+        <h2>Not sure where to start?<br>Just ask <span class="serif">King George.</span></h2>
+        <p class="lead">King George is our friendly AI assistant. Tell him what you need and he'll guide you to the right place — whether you're a patient looking for care or a clinic getting set up.</p>
+        <a href="{% url 'choice_page' %}" class="btn btn-teal">Chat with King George <i class="fa-solid fa-arrow-right"></i></a>
+        <div class="kg-chat"><i class="fa-solid fa-wand-magic-sparkles"></i> "Hi! I'm King George. What brings you to Nero today?"</div>
+      </div>
+      <div class="visual kg-visual"><img src="{% static 'king-george.jpeg' %}" alt="King George, the Nero AI assistant"></div>
     </div>
-    <div class="features">
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-bullseye"></i></div><h4>Smart matching</h4><p>Get matched to clinics that actually specialize in your case — not a generic directory.</p></div>
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-lock"></i></div><h4>Private &amp; encrypted</h4><p>Medical reports and videos are encrypted and only shared with clinics you choose.</p></div>
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-comments"></i></div><h4>Direct messaging</h4><p>Talk to clinics one-on-one, ask questions, and get clarity before you travel.</p></div>
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-star"></i></div><h4>Verified reviews</h4><p>Real feedback from real patients helps you choose with confidence.</p></div>
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-calendar-check"></i></div><h4>Appointments</h4><p>Request, negotiate dates, and confirm bookings without the phone tag.</p></div>
-      <div class="feature glass-card reveal"><div class="fi"><i class="fa-solid fa-photo-film"></i></div><h4>Clinic social feed</h4><p>See clinics in action through posts, photos and videos before you decide.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-band reveal">
-  <h2>Ready to start your recovery journey?</h2>
-  <p>Join Nero today — it's free to get started.</p>
-  <a href="{% url 'choice_page' %}" class="btn btn-primary" style="font-size:18px;padding:17px 34px">Get started <i class="fa-solid fa-arrow-right"></i></a>
-</section>
+  </section>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
+  <div class="glow"></div>
   <div class="inner">
-    <a href="{% url 'landing_page' %}" class="brand" style="padding:6px 12px"><img src="{% static 'logo1.png' %}" alt="NERO" style="height:26px;width:auto"></a>
-    <div>&copy; 2026 NERO Medical Platform. All rights reserved.</div>
-    <div>Need help? <a href="mailto:support@nero-medical.com">Contact support</a></div>
+    <img src="{% static 'logo1.png' %}" class="logo" alt="NERO">
+    <div style="font-size:14px">&copy; 2026 NERO — the easy, flexible, fun way to care.</div>
+    <div style="font-size:14px">Need help? <a href="mailto:support@nero-medical.com">Contact support</a></div>
   </div>
 </footer>
 
@@ -268,12 +205,6 @@ img{max-width:100%;display:block}
 <button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false"><span class="music-icon">🔇</span></button>
 <audio id="bgMusic" loop preload="auto" style="display:none"><source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg"></audio>
 <script>
-(function(){
-  const els=document.querySelectorAll('.reveal');
-  if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('in'));return;}
-  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}),{threshold:.12});
-  els.forEach(e=>io.observe(e));
-})();
 (function(){
   const KEY_PLAYING='nero_music_playing', KEY_TIME='nero_music_time';
   const toggle=document.getElementById('musicToggle'), audio=document.getElementById('bgMusic');

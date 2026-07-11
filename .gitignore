@@ -49,3 +49,9 @@ Thumbs.db
 
 # ── Large unversioned assets (keep out of repo) ───────────────
 pic.png
+
+# Data dumps (contain user data / PHI — never commit)
+nero_data.json
+*_data.json
+dump.json
+*.dump
