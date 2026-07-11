@@ -1122,14 +1122,7 @@
 </head>
 <body>
     <!-- Navigation Header -->
-    <nav class="navbar">
-        <div class="logo-container">
-            <img src="{% static 'logo1.png' %}" class="logo" alt="NERO Logo">
-        </div>
-        <a href="{% url 'choice_page' %}" class="nav-link">
-            Back to Choices
-        </a>
-    </nav>
+    {% include 'includes/site_nav.html' %}
 
     <!-- Signup Container -->
     <div class="signup-container fade-in">
@@ -1547,10 +1540,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 NERO Medical Platform. All rights reserved.</p>
-        <p>Need help? <a href="mailto:support@nero-medical.com">Contact our support team</a></p>
-    </footer>
+    {% include 'includes/site_footer.html' %}
 
     <script>
         // Form input focus effects

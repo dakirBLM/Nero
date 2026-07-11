@@ -78,14 +78,8 @@ img{max-width:100%;display:block}
 </style>
 </head>
 <body>
+{% include 'includes/site_nav.html' %}
 <div class="shell">
-  <div class="nav-shell">
-    <nav class="nav">
-      <a href="{% url 'landing_page' %}" class="brand"><img src="{% static 'logo1.png' %}" alt="NERO"></a>
-      <a href="{% url 'landing_page' %}" class="back"><i class="fa-solid fa-arrow-left"></i> Back to home</a>
-    </nav>
-  </div>
-
   <div class="head">
     <span class="eyebrow">Welcome to Nero</span>
     <h1>How would you like to <span class="serif">continue?</span></h1>
@@ -134,8 +128,9 @@ img{max-width:100%;display:block}
     </div>
   </div>
 
-  <div class="foot">Need help choosing? <a href="mailto:support@nero-medical.com">Contact our support team</a></div>
 </div>
+
+{% include 'includes/site_footer.html' %}
 
 <!-- Background music (persists across the site) -->
 <button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false"><span class="music-icon">🔇</span></button>
