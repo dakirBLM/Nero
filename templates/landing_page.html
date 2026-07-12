@@ -16,7 +16,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{text-decoration:none;color:inherit}
 img{display:block;max-width:100%}
 .serif{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:.01em}
@@ -35,7 +35,7 @@ img{display:block;max-width:100%}
 
 /* ===== NAV (dark pill, white logo) ===== */
 .nav-shell{position:sticky;top:0;z-index:60;padding:18px 24px;pointer-events:none}
-.nav{max-width:940px;margin:0 auto;background:var(--dark);border-radius:999px;padding:9px 9px 9px 22px;
+.nav{position:relative;max-width:940px;margin:0 auto;background:var(--dark);border-radius:999px;padding:9px 9px 9px 22px;
   display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(20,18,15,.22);pointer-events:auto}
 .nav .logo{height:26px;width:auto;filter:brightness(0) invert(1)} /* white logo */
 .nav-links{display:flex;align-items:center;gap:6px}
@@ -43,6 +43,8 @@ img{display:block;max-width:100%}
 .nav-links a:not(.nav-cta):hover{color:#fff;background:rgba(255,255,255,.08)}
 .nav-cta{background:#fff;color:var(--ink)!important;font-weight:700;padding:10px 18px!important;border-radius:999px;transition:transform .2s,box-shadow .2s}
 .nav-links a.nav-cta:hover{background:#fff;transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.28)}
+.nav-burger{display:none;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;padding:0;transition:background .2s}
+.nav-burger:hover{background:rgba(255,255,255,.2)}
 
 /* ===== HERO (near-edge, sharp corners, no rounded frame) ===== */
 .hero{padding:0 0 90px}
@@ -126,8 +128,29 @@ img{display:block;max-width:100%}
   .hero-copy{grid-template-columns:1fr;gap:26px;align-items:start}
   .panel-inner{grid-template-columns:1fr;gap:34px}
   .panel.clinic .text{order:1}.panel.clinic .visual{order:2}
-  .nav-links a:not(.nav-cta){display:none}
   .panel{min-height:auto;padding:70px 22px}
+  /* mobile menu: burger reveals a dropdown of the sections */
+  .nav-burger{display:flex}
+  .nav-links{position:absolute;top:calc(100% + 10px);left:0;right:0;flex-direction:column;align-items:stretch;gap:4px;
+    background:var(--dark);border-radius:20px;padding:10px;box-shadow:0 22px 44px rgba(20,18,15,.32);
+    opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .22s,transform .22s}
+  .nav-links.open{opacity:1;transform:translateY(0);pointer-events:auto}
+  .nav-links a{display:block;padding:12px 16px;font-size:15px;border-radius:12px}
+  .nav-links a.nav-cta{text-align:center;margin-top:4px;padding:13px 16px!important}
+}
+@media(max-width:640px){
+  /* show the FULL hero photo on phones instead of a cropped slice */
+  .hero-img{height:auto;min-height:0;max-height:none}
+  .hero-img img{height:auto;object-fit:contain;object-position:center}
+  .hero-img-wrap{padding:0 10px}
+  .hero{padding-bottom:60px}
+  .wrap{padding:0 18px}
+  .scroll-cue,.wind-cue{bottom:14px}
+  /* let the headline wrap naturally instead of forcing a wide line */
+  .hero h1{font-size:clamp(30px,8.5vw,46px)}
+  .hero h1 br{display:none}
+  .hero .side p{font-size:16px}
+  .hero-copy{margin-top:30px}
 }
 </style>
 </head>
@@ -138,7 +161,10 @@ img{display:block;max-width:100%}
 <div class="nav-shell">
   <nav class="nav">
     <a href="{% url 'landing_page' %}"><img src="{% static 'logo1.png' %}" class="logo" alt="NERO"></a>
-    <div class="nav-links">
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="#patient">For patients</a>
       <a href="#clinic">For clinics</a>
       <a href="#kg">King George</a>
@@ -147,6 +173,15 @@ img{display:block;max-width:100%}
     </div>
   </nav>
 </div>
+<script>
+(function(){
+  var b=document.getElementById('navBurger'), m=document.getElementById('navLinks');
+  if(!b||!m) return;
+  b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o);});
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open');b.setAttribute('aria-expanded','false');});});
+  document.addEventListener('click',function(e){if(!m.contains(e.target)&&!b.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+})();
+</script>
 
 <!-- HERO -->
 <header class="hero">

@@ -2,25 +2,38 @@
 <style>
 /* ===== Shared site navigation + footer (matches the landing page) ===== */
 .site-nav-shell{position:sticky;top:0;z-index:60;padding:18px 24px;pointer-events:none;width:100%}
-.site-nav{max-width:940px;margin:0 auto;background:#141210;border-radius:999px;padding:9px 9px 9px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(20,18,15,.22);pointer-events:auto}
+.site-nav{position:relative;max-width:940px;margin:0 auto;background:#141210;border-radius:999px;padding:9px 9px 9px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(20,18,15,.22);pointer-events:auto}
 .site-nav .nlogo{height:26px;width:auto;filter:brightness(0) invert(1)}
 .site-nav-links{display:flex;align-items:center;gap:6px}
 .site-nav-links a{color:rgba(255,255,255,.82);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;padding:9px 13px;border-radius:999px;text-decoration:none;transition:color .2s,background .2s}
 .site-nav-links a:not(.nav-cta):hover{color:#fff;background:rgba(255,255,255,.08)}
 .site-nav-links .nav-cta{background:#fff;color:#141210 !important;font-weight:700;padding:10px 18px !important;border-radius:999px;transition:transform .2s,box-shadow .2s}
 .site-nav-links a.nav-cta:hover{background:#fff;transform:translateY(-1px);box-shadow:0 8px 18px rgba(0,0,0,.28)}
+.site-nav-burger{display:none;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;padding:0;transition:background .2s}
+.site-nav-burger:hover{background:rgba(255,255,255,.2)}
 
 .site-footer{position:relative;background:#141210;color:rgba(255,255,255,.7);padding:56px 24px 40px;overflow:hidden;margin-top:60px;width:100%;font-family:'Inter',sans-serif}
 .site-footer .glow{position:absolute;left:0;right:0;bottom:-40%;height:80%;filter:blur(70px);opacity:.5;background:radial-gradient(closest-side,rgba(108,168,201,.9),transparent 70%) 15% 50%/40% 100% no-repeat,radial-gradient(closest-side,rgba(255,170,120,.8),transparent 70%) 50% 60%/40% 100% no-repeat,radial-gradient(closest-side,rgba(150,120,230,.8),transparent 70%) 85% 50%/40% 100% no-repeat}
 .site-footer .inner{position:relative;z-index:2;max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
 .site-footer .flogo{height:30px;width:auto;filter:brightness(0) invert(1)}
 .site-footer a{color:#cfe6f0;font-weight:600}
-@media(max-width:860px){.site-nav-links a:not(.nav-cta){display:none}}
+@media(max-width:860px){
+  .site-nav-burger{display:flex}
+  .site-nav-links{position:absolute;top:calc(100% + 10px);left:0;right:0;flex-direction:column;align-items:stretch;gap:4px;
+    background:#141210;border-radius:20px;padding:10px;box-shadow:0 22px 44px rgba(20,18,15,.32);
+    opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .22s,transform .22s}
+  .site-nav-links.open{opacity:1;transform:translateY(0);pointer-events:auto}
+  .site-nav-links a{display:block;padding:12px 16px;font-size:15px;border-radius:12px}
+  .site-nav-links a.nav-cta{text-align:center;margin-top:4px;padding:13px 16px !important}
+}
 </style>
 <div class="site-nav-shell">
   <nav class="site-nav">
     <a href="{% url 'landing_page' %}"><img src="{% static 'logo1.png' %}" class="nlogo" alt="NERO"></a>
-    <div class="site-nav-links">
+    <button class="site-nav-burger" id="siteNavBurger" type="button" aria-label="Menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="site-nav-links" id="siteNavLinks">
       <a href="{% url 'landing_page' %}#patient">For patients</a>
       <a href="{% url 'landing_page' %}#clinic">For clinics</a>
       <a href="{% url 'landing_page' %}#kg">King George</a>
@@ -29,3 +42,12 @@
     </div>
   </nav>
 </div>
+<script>
+(function(){
+  var b=document.getElementById('siteNavBurger'), m=document.getElementById('siteNavLinks');
+  if(!b||!m) return;
+  b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o);});
+  m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('open');b.setAttribute('aria-expanded','false');});});
+  document.addEventListener('click',function(e){if(!m.contains(e.target)&&!b.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+})();
+</script>
