@@ -1280,66 +1280,7 @@
 </head>
 <body>
     <!-- Main Header -->
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo-container">
-                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
-            </div>
-
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
-                <div class="search-results" id="dashboard-search-results"></div>
-            </div>
-
-            <div class="nav-icons">
-                <a href="{% url 'patient_dashboard' %}" class="nav-icon">
-                    <i class="fas fa-home"></i>
-                </a>
-                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon">
-                    <i class="fas fa-comment-alt"></i>
-                    {% if total_unread and total_unread > 0 %}
-                        <div class="notification-badge">{{ total_unread }}</div>
-                    {% endif %}
-                </a>
-                <a href="{% url 'search_clinics' %}" class="nav-icon">
-                    <i class="fas fa-search"></i>
-                </a>
-                <a href="{% url 'patient_appointments' %}" class="nav-icon active">
-                    <i class="fas fa-calendar-alt"></i>
-                </a>
-                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
-                    <i class="fas fa-cog"></i>
-                </a>
-            </div>
-
-            <div class="user-menu">
-                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.has_custom_avatar %}
-                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
-                    {% else %}
-                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
-                        {{ patient.user.username|first|upper }}
-                    </div>
-                    {% endif %}
-                </button>
-
-                <div class="avatar-dropdown" id="avatarDropdown">
-                    <div class="dropdown-header">
-                        <strong>{{ patient.user.username }}</strong>
-                    </div>
-                    <ul class="dropdown-list">
-                        <li>
-                            <a href="{% url 'logout' %}" style="color:#ef4444;">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
+    {% include 'includes/patient_nav.html' with active='appointments' search_placeholder='Search clinics, patients, or topics...' %}
 
     <!-- Main Content -->
     <main class="main-layout">
