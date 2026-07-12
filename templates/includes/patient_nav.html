@@ -7,56 +7,55 @@
     search_id           -> id for the search input   (default 'dashboard-search-bar')
     search_results_id   -> id for the results box     (default 'dashboard-search-results')
     search_placeholder  -> placeholder text           (default 'Search clinics by name...')
-  Layout: logo + search bar on the top row, navigation icons underneath.
+  Layout: logo + search bar + navigation icons all on ONE line.
   The !important locks below neutralize leftover per-page header media-queries so the
   header renders identically on every page at every width.
-  On mobile (<=1024px) the left sidebar (.sidebar-left) collapses into a "Menu" dropdown.
+  On mobile (<=1024px) a bars icon appears among the nav icons and drops down the
+  page's left sidebar (.sidebar-left) as a menu.
 {% endcomment %}
 <style>
-/* two-row header layout (overrides the per-page single-row / grid CSS) */
-.header-container.pnav{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:6px;padding:10px 24px !important}
-.pnav .pnav-top{display:flex;align-items:center;width:100%}
-.pnav .logo-container{width:104px !important;height:44px !important;flex-shrink:0;justify-content:flex-start !important;margin:0 !important}
-.pnav .search-container{flex:1 1 auto !important;width:auto !important;max-width:560px !important;margin:0 0 0 14px !important}
-.pnav .nav-icons{display:flex !important;justify-content:center !important;width:100% !important;gap:26px !important;margin:0 !important;padding:2px 0 0 !important}
-.pnav .nav-icon{width:40px !important;height:40px !important}
-/* mobile-only dropdown toggle for the left sidebar */
-.pnav-side-toggle{display:none;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:6px;
-  padding:9px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;color:#374151;
-  font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s}
-.pnav-side-toggle:hover{background:#f3f4f6}
-.pnav-side-toggle .chev{transition:transform .2s;font-size:12px;color:#9ca3af}
-.pnav-side-toggle.open .chev{transform:rotate(180deg)}
+/* single-row header layout (overrides the per-page single-row / grid CSS) */
+.header-container.pnav{display:flex !important;flex-direction:row !important;flex-wrap:nowrap !important;align-items:center !important;justify-content:space-between !important;gap:12px;padding:10px 24px !important}
+.pnav .logo-container{order:0 !important;width:104px !important;height:44px !important;flex-shrink:0;justify-content:flex-start !important;margin:0 !important}
+.pnav .search-container{order:1 !important;flex:1 1 auto !important;width:auto !important;max-width:480px !important;margin:0 8px !important;min-width:0}
+.pnav .nav-icons{order:2 !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;flex-shrink:0;width:auto !important;gap:14px !important;margin:0 !important;padding:0 !important}
+.pnav .nav-icon{width:40px !important;height:40px !important;flex-shrink:0}
+/* menu icon (mobile only, shown when the page has a left sidebar) */
+.pnav .nav-icon.pnav-menu-icon{display:none;border:none;background:#f3f4f6;cursor:pointer;font-family:inherit}
 @media (max-width:1024px){
-  .pnav-side-toggle.has-sidebar{display:flex}
+  .pnav .nav-icon.pnav-menu-icon.has-sidebar{display:flex}
   .sidebar-left{display:none !important}
   .sidebar-left.pnav-open{display:block !important;animation:pnavSlide .22s ease}
 }
 @keyframes pnavSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-@media (max-width:640px){
-  .pnav .search-container{margin-left:10px !important;max-width:none !important}
-  .pnav .nav-icons{gap:14px !important}
+@media (max-width:760px){
+  .header-container.pnav{padding:8px 12px !important;gap:8px}
+  .pnav .logo-container{width:70px !important;height:38px !important}
+  .pnav .search-container{margin:0 4px !important}
+  .pnav .nav-icons{gap:7px !important}
+  .pnav .nav-icon{width:34px !important;height:34px !important;font-size:13px}
 }
 </style>
 <header class="main-header">
     <div class="header-container pnav">
-        <div class="pnav-top">
-            <!-- Logo -->
-            <div class="logo-container">
-                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
-            </div>
-
-            <!-- Search Bar -->
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:'Search clinics by name...' }}">
-                <div class="search-results" id="{{ search_results_id|default:'dashboard-search-results' }}"></div>
-            </div>
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+            <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
         </div>
 
-        <!-- Navigation Icons (under the logo + search) -->
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:'Search clinics by name...' }}">
+            <div class="search-results" id="{{ search_results_id|default:'dashboard-search-results' }}"></div>
+        </div>
+
+        <!-- Navigation Icons -->
         <div class="nav-icons">
+            <button class="nav-icon pnav-menu-icon" id="pnavSideToggle" type="button" title="Menu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
             <a href="{% url 'patient_dashboard' %}" class="nav-icon{% if active == 'dashboard' %} active{% endif %}" title="Home">
                 <i class="fas fa-home"></i>
             </a>
@@ -77,11 +76,6 @@
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
-
-        <!-- Mobile: dropdown toggle for the page's left sidebar menu -->
-        <button class="pnav-side-toggle" id="pnavSideToggle" type="button" aria-expanded="false">
-            <i class="fas fa-bars"></i> Menu <i class="fas fa-chevron-down chev"></i>
-        </button>
     </div>
 </header>
 <script>
@@ -90,11 +84,10 @@
   if (!t) return;
   function init(){
     var s = document.querySelector('.sidebar-left');
-    if (!s) return; // page has no left sidebar -> button stays hidden
+    if (!s) return; // page has no left sidebar -> icon stays hidden
     t.classList.add('has-sidebar');
     t.addEventListener('click', function(){
       var open = s.classList.toggle('pnav-open');
-      t.classList.toggle('open', open);
       t.setAttribute('aria-expanded', open);
     });
   }
