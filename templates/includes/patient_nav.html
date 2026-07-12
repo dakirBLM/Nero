@@ -20,20 +20,28 @@
 .pnav .search-container{order:1 !important;flex:1 1 auto !important;width:auto !important;max-width:480px !important;margin:0 8px !important;min-width:0}
 .pnav .nav-icons{order:2 !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;flex-shrink:0;width:auto !important;gap:14px !important;margin:0 !important;padding:0 !important}
 .pnav .nav-icon{width:40px !important;height:40px !important;flex-shrink:0}
-/* menu icon (mobile only, shown when the page has a left sidebar) */
+/* menu icon (mobile only, shown when the page has side sections) */
 .pnav .nav-icon.pnav-menu-icon{display:none;border:none;background:#f3f4f6;cursor:pointer;font-family:inherit}
 @media (max-width:1024px){
   .pnav .nav-icon.pnav-menu-icon.has-sidebar{display:flex}
-  .sidebar-left{display:none !important}
-  .sidebar-left.pnav-open{display:block !important;animation:pnavSlide .22s ease}
+  /* both side sections (left menu + "Clinics You May Like"/"Active Community") hide behind the menu icon */
+  .sidebar-left,.sidebar-right{display:none !important}
+  .sidebar-left.pnav-open,.sidebar-right.pnav-open{display:block !important;animation:pnavSlide .22s ease}
+  /* when opened, both side sections stack right under the header (before the feed) */
+  .sidebar-left.pnav-open{order:-2}
+  .sidebar-right.pnav-open{order:-1}
+  /* mobile: logo + search on the first line, ALL icons on their own line below */
+  .header-container.pnav{flex-wrap:wrap !important}
+  .pnav .search-container{max-width:none !important}
+  .pnav .nav-icons{flex-basis:100% !important;justify-content:center !important;gap:16px !important;padding-top:4px !important}
 }
 @keyframes pnavSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @media (max-width:760px){
   .header-container.pnav{padding:8px 12px !important;gap:8px}
   .pnav .logo-container{width:70px !important;height:38px !important}
   .pnav .search-container{margin:0 4px !important}
-  .pnav .nav-icons{gap:7px !important}
-  .pnav .nav-icon{width:34px !important;height:34px !important;font-size:13px}
+  .pnav .nav-icons{gap:12px !important}
+  .pnav .nav-icon{width:36px !important;height:36px !important;font-size:14px}
 }
 </style>
 <header class="main-header">
@@ -83,11 +91,12 @@
   var t = document.getElementById('pnavSideToggle');
   if (!t) return;
   function init(){
-    var s = document.querySelector('.sidebar-left');
-    if (!s) return; // page has no left sidebar -> icon stays hidden
+    var sides = document.querySelectorAll('.sidebar-left, .sidebar-right');
+    if (!sides.length) return; // page has no side sections -> icon stays hidden
     t.classList.add('has-sidebar');
     t.addEventListener('click', function(){
-      var open = s.classList.toggle('pnav-open');
+      var open = !sides[0].classList.contains('pnav-open');
+      sides.forEach(function(s){ s.classList.toggle('pnav-open', open); });
       t.setAttribute('aria-expanded', open);
     });
   }
