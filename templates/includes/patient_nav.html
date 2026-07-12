@@ -42,28 +42,9 @@
             <a href="{% url 'patient_settings' %}" class="nav-icon{% if active == 'settings' %} active{% endif %}" title="Account Settings">
                 <i class="fas fa-cog"></i>
             </a>
-        </div>
-
-        <!-- User Menu (profile picture removed — neutral account icon keeps the logout menu reachable) -->
-        <div class="user-menu">
-            <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                <div class="user-avatar" id="avatarImg" style="display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;font-size:16px;">
-                    <i class="fas fa-user"></i>
-                </div>
-            </button>
-
-            <div class="avatar-dropdown" id="avatarDropdown">
-                <div class="dropdown-header">
-                    <strong>{{ request.user.username }}</strong>
-                </div>
-                <ul class="dropdown-list">
-                    <li>
-                        <a href="{% url 'logout' %}" style="color:#ef4444;">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <a href="{% url 'logout' %}" class="nav-icon" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 </header>
