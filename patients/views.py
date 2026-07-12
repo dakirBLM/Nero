@@ -670,6 +670,7 @@ def patient_dashboard_view(request):
 
     return render(request, 'patient/dashboard/patient_dashboard.html', {
         'patient': patient,
+        'show_onboarding': bool(patient and not patient.onboarding_done),
         'medical_records': medical_records,
         'upcoming_appointments': upcoming_appointments,
         'pending_appointments': pending_appointments,

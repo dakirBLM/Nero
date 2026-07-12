@@ -46,6 +46,7 @@ class Patient(models.Model):
     )
     social_avatar_url = models.URLField(max_length=500, blank=True, default='', help_text="Avatar URL from a social login (e.g. Google).")
     last_seen = models.DateTimeField(null=True, blank=True)
+    onboarding_done = models.BooleanField(default=False, help_text="First-run dashboard tour (King George onboarding) completed.")
     @property
     def age(self):
         from datetime import date

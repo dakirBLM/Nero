@@ -1899,5 +1899,97 @@
 })();
 </script>
 
+{% if show_onboarding %}
+<!-- ===== First-run onboarding: King George spotlights Smart Recommendations ===== -->
+<style>
+  #onboardOverlay{position:fixed;inset:0;background:rgba(8,10,14,.78);z-index:10050;backdrop-filter:blur(2px);animation:obFade .45s ease}
+  @keyframes obFade{from{opacity:0}to{opacity:1}}
+  .onboard-spot{position:fixed;z-index:10060;display:flex;align-items:center;gap:12px;padding:15px 22px;
+    background:#fff;border-radius:14px;color:#1d4ed8;font-weight:700;font-size:15px;text-decoration:none;
+    font-family:'Inter',sans-serif;box-shadow:0 0 0 6px rgba(59,130,246,.35),0 0 44px rgba(59,130,246,.55),0 18px 44px rgba(0,0,0,.5);
+    animation:obPulse 1.8s ease-in-out infinite}
+  .onboard-spot i{font-size:18px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .onboard-spot:hover{transform:scale(1.04)}
+  @keyframes obPulse{0%,100%{box-shadow:0 0 0 6px rgba(59,130,246,.35),0 0 44px rgba(59,130,246,.55),0 18px 44px rgba(0,0,0,.5)}
+    50%{box-shadow:0 0 0 12px rgba(59,130,246,.18),0 0 60px rgba(59,130,246,.75),0 18px 44px rgba(0,0,0,.5)}}
+  #onboardKG{position:fixed;z-index:10060;display:flex;align-items:flex-end;gap:2px;max-width:340px;animation:obFloat 3s ease-in-out infinite;pointer-events:none}
+  @keyframes obFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  #onboardKG img{width:110px;height:auto;filter:drop-shadow(0 12px 22px rgba(0,0,0,.5));flex-shrink:0}
+  .ob-bubble{position:relative;background:#fff;border-radius:18px;border-bottom-left-radius:5px;padding:16px 18px;
+    font-family:'Inter',sans-serif;font-size:14.5px;line-height:1.55;color:#17150f;box-shadow:0 18px 44px rgba(0,0,0,.45);margin-bottom:34px}
+  .ob-bubble strong{color:#1d4ed8}
+  .ob-bubble .ob-point{display:block;margin-top:8px;font-size:13px;color:#6f685c;font-style:italic}
+  .ob-bubble::after{content:"";position:absolute;left:-9px;bottom:14px;border:10px solid transparent;border-right-color:#fff;border-left:0}
+  /* mobile: stacked card — bubble on top, King George under it, button below */
+  #onboardKG.ob-mobile{flex-direction:column;align-items:center;gap:8px;max-width:none}
+  #onboardKG.ob-mobile img{width:92px;order:2}
+  #onboardKG.ob-mobile .ob-bubble{order:1;margin-bottom:0;border-bottom-left-radius:18px;max-width:min(340px,calc(100vw - 32px))}
+  #onboardKG.ob-mobile .ob-bubble::after{left:50%;bottom:-9px;transform:translateX(-50%);border:10px solid transparent;border-top-color:#fff;border-bottom:0;border-right-color:transparent}
+</style>
+<div id="onboardOverlay" aria-hidden="true"></div>
+<a id="onboardSpot" class="onboard-spot" href="{% url 'recommendations:questionnaire' %}">
+  <i class="fas fa-brain"></i> Smart Recommendations
+</a>
+<div id="onboardKG">
+  <img src="{% static 'king-george.png' %}" alt="King George">
+  <div class="ob-bubble">
+    👑 Welcome! I'm <strong>King George</strong>, your royal guide.
+    Please start your journey by clicking <strong>here</strong> —
+    I'll match you with the perfect clinic! 🦫
+    <span class="ob-point">Tap “Smart Recommendations” to begin →</span>
+  </div>
+</div>
+<script>
+(function(){
+  var overlay = document.getElementById('onboardOverlay');
+  var spot    = document.getElementById('onboardSpot');
+  var kg      = document.getElementById('onboardKG');
+  if (!overlay || !spot || !kg) return;
+
+  // lock the page while the tour is on (only the spotlight is clickable)
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+
+  var target = document.querySelector('.sidebar-nav a[href*="questionnaire"], .sidebar-nav a[href*="recommendations"]');
+
+  function place(){
+    var r = target ? target.getBoundingClientRect() : null;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    if (r && r.width > 10 && r.top < vh) {
+      // desktop: pin the glowing button over the real sidebar link
+      spot.style.left = (r.left - 4) + 'px';
+      spot.style.top  = (r.top - 6)  + 'px';
+      spot.style.transform = 'none';
+      // King George to the right of the link (or below if no room)
+      var kgLeft = r.right + 26;
+      if (vw - r.right > 400) {
+        kg.style.left = kgLeft + 'px';
+        kg.style.top  = Math.max(10, r.top - 90) + 'px';
+      } else {
+        kg.style.left = Math.max(10, r.left) + 'px';
+        kg.style.top  = (r.bottom + 24) + 'px';
+      }
+    } else {
+      // mobile (sidebar hidden): centered card — bubble, King George, then the button.
+      // Centered via computed px (transform is owned by the float animation).
+      kg.classList.add('ob-mobile');
+      kg.style.transform = 'none';
+      spot.style.transform = 'none';
+      var spotTop = Math.round(vh * 0.66);
+      requestAnimationFrame(function(){
+        spot.style.left = Math.max(8, Math.round((vw - spot.offsetWidth) / 2)) + 'px';
+        spot.style.top  = spotTop + 'px';
+        kg.style.left = Math.max(8, Math.round((vw - kg.offsetWidth) / 2)) + 'px';
+        kg.style.top  = Math.max(10, spotTop - kg.offsetHeight - 20) + 'px';
+      });
+    }
+  }
+  place();
+  window.addEventListener('resize', place);
+  window.addEventListener('orientationchange', place);
+})();
+</script>
+{% endif %}
+
 </body>
 </html>
