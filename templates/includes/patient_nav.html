@@ -7,24 +7,39 @@
     search_id           -> id for the search input   (default 'dashboard-search-bar')
     search_results_id   -> id for the results box     (default 'dashboard-search-results')
     search_placeholder  -> placeholder text           (default 'Search clinics by name...')
-  Styling + search/scroll/dropdown JS still live in each page (same class/id names).
+  Layout: logo + search bar on the top row, navigation icons underneath.
+  Base styling + search/scroll JS still live in each page; the overrides below shape the two-row layout.
 {% endcomment %}
+<style>
+/* two-row header layout (overrides the per-page single-row CSS) */
+.header-container.pnav{flex-direction:column;align-items:stretch;gap:6px;padding-top:10px;padding-bottom:10px}
+.pnav .pnav-top{display:flex;align-items:center;gap:6px}
+.pnav .logo-container{width:104px;height:44px;flex-shrink:0;justify-content:flex-start}
+.pnav .search-container{flex:1;max-width:560px;margin:0 0 0 14px}
+.pnav .nav-icons{justify-content:center;width:100%;gap:26px;padding-top:2px}
+@media (max-width:640px){
+  .pnav .search-container{margin-left:8px;max-width:none}
+  .pnav .nav-icons{gap:18px}
+}
+</style>
 <header class="main-header">
-    <div class="header-container">
-        <!-- Logo -->
-        <div class="logo-container">
-            <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-            <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+    <div class="header-container pnav">
+        <div class="pnav-top">
+            <!-- Logo -->
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:'Search clinics by name...' }}">
+                <div class="search-results" id="{{ search_results_id|default:'dashboard-search-results' }}"></div>
+            </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:'Search clinics by name...' }}">
-            <div class="search-results" id="{{ search_results_id|default:'dashboard-search-results' }}"></div>
-        </div>
-
-        <!-- Navigation Icons -->
+        <!-- Navigation Icons (under the logo + search) -->
         <div class="nav-icons">
             <a href="{% url 'patient_dashboard' %}" class="nav-icon{% if active == 'dashboard' %} active{% endif %}" title="Home">
                 <i class="fas fa-home"></i>
