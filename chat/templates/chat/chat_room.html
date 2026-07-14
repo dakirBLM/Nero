@@ -1312,12 +1312,7 @@
                     {% endif %}
                 </div>
                 <div class="chat-actions">
-                    <button class="chat-action-btn" title="{% trans 'Call' %}" onclick="startCall()">
-                        <i class="fas fa-phone"></i>
-                    </button>
-                    <button class="chat-action-btn" title="{% trans 'Video Call' %}" onclick="startVideoCall()">
-                        <i class="fas fa-video"></i>
-                    </button>
+                    {# Voice/video call buttons hidden until real calling is implemented #}
                     <button class="chat-action-btn" title="{% trans 'More options' %}" onclick="toggleChatOptions()">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
@@ -1782,16 +1777,6 @@
         // Mark as read initially
         markAsRead();
         
-        // Chat action functions
-        function startCall() {
-            showNotification('{% trans "Starting call..." %}', 'info');
-            // In a real app, this would initiate a voice call
-        }
-
-        function startVideoCall() {
-            showNotification('{% trans "Starting video call..." %}', 'info');
-            // In a real app, this would initiate a video call
-        }
 
         function toggleChatOptions() {
             showNotification('{% trans "Chat options" %}', 'info');

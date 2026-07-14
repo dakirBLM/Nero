@@ -575,7 +575,7 @@
                 </div>
 
                 <div class="forgot-password">
-                    <a href="#" class="forgot-link">{% trans "Forgot Password?" %}</a>
+                    <a href="{% url 'password_reset' %}" class="forgot-link">{% trans "Forgot Password?" %}</a>
                 </div>
             </div>
 
@@ -661,16 +661,6 @@
 
         document.querySelector('.back-link').addEventListener('mouseleave', function() {
             this.style.gap = '10px';
-        });
-
-        // Forgot password link functionality
-        document.querySelector('.forgot-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            const email = prompt('{% trans "Please enter your email address to reset your password:" %}');
-            if (email) {
-                alert('{% trans "Password reset instructions have been sent to" %} ' + email);
-                // In a real application, you would send a password reset email here
-            }
         });
 
         // Password visibility toggle

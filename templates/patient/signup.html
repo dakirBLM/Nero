@@ -844,6 +844,13 @@
                 </div>
             </div>
 
+            <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;margin:6px 0 4px;">
+                <input type="checkbox" name="consent" id="consentBox" required style="margin-top:4px;width:18px;height:18px;flex-shrink:0;accent-color:#6CA8C9;">
+                <label for="consentBox" style="font-size:13.5px;color:#4a5568;line-height:1.55;font-weight:400;cursor:pointer;">
+                    {% trans "I agree that NERO stores my account details and the medical information I choose to share, encrypted, for the purpose of matching me with rehabilitation clinics. Only clinics I send a request to can see my records, and I can ask for my data to be deleted at any time via" %} <a href="mailto:support@nero-medical.com" style="color:#6CA8C9;font-weight:600;">support@nero-medical.com</a>.
+                </label>
+            </div>
+
             <button type="submit" class="btn btn-primary" id="submitBtn">
                 {% trans "Create Patient Account" %}
             </button>

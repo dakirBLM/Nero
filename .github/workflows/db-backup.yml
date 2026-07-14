@@ -1,0 +1,30 @@
+name: Nightly DB backup
+
+on:
+  schedule:
+    - cron: "17 2 * * *"   # 02:17 UTC nightly
+  workflow_dispatch: {}     # manual "Run workflow" button
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Postgres client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+
+      - name: Dump database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          test -n "$DATABASE_URL" || { echo "DATABASE_URL secret is not set"; exit 1; }
+          pg_dump "$DATABASE_URL" -Fc -f "nero-$(date -u +%Y%m%d-%H%M).dump"
+          ls -la *.dump
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nero-db-backup-${{ github.run_id }}
+          path: "*.dump"
+          retention-days: 30

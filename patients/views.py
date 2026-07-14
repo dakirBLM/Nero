@@ -309,7 +309,10 @@ def _can_access_medical_record(user, medical_record):
 def patient_signup_view(request):
     if request.method == 'POST':
         user_form = PatientSignUpForm(request.POST, request.FILES)
-        if user_form.is_valid():
+        if not request.POST.get('consent'):
+            from django.utils.translation import gettext as _
+            messages.error(request, _('Please accept the data consent to create an account.'))
+        elif user_form.is_valid():
             user = user_form.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
