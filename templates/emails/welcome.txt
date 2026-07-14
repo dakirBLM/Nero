@@ -1,0 +1,18 @@
+{% load i18n %}{% autoescape off %}{% trans "Hi" %} {{ first_name }},
+
+{% trans "Welcome to Nero — the easy, flexible, fun way to care!" %}
+
+{% trans "Nero connects you with the right rehabilitation clinics — find care, share your records securely, chat with clinics, and book your treatment, all in one friendly place." %}
+
+{% trans "Here's what you can do:" %}
+- {% trans "Tell us about your case — our Smart Recommendations match you with the right clinics" %}
+- {% trans "Upload your medical records — encrypted, and only shared with clinics you choose" %}
+- {% trans "Chat with clinics, agree on dates, and manage your appointments in one place" %}
+
+{% trans "And if you're ever unsure where to start — just ask King George, your royal beaver guide!" %} 🦫👑
+
+{% trans "Open your dashboard:" %} {{ base_url }}/patients/dashboard/
+
+{% trans "Need help?" %} support@nero-medical.com
+{% trans "The NERO team" %}
+{% endautoescape %}

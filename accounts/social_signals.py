@@ -121,6 +121,9 @@ def _sync_google_data_to_user_and_patient(user, extra_data):
                 "phone": "0000000000",
             },
         )
+        if _created:
+            from accounts.emails import send_welcome_email
+            send_welcome_email(user)
 
         patient_changed = False
         if not patient.full_name:

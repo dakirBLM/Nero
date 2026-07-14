@@ -316,6 +316,8 @@ def patient_signup_view(request):
             user = user_form.save()
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
+            from accounts.emails import send_welcome_email
+            send_welcome_email(user, request)
             messages.success(request, 'Account created successfully! Your dashboard is ready.')
             return redirect('patient_dashboard')
     else:
