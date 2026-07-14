@@ -899,44 +899,8 @@
 <body>
 
     <!-- ===== HEADER ===== -->
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo-container">
-                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-                <img src="{% static 'logo1.png' %}" class="logo-fallback" alt="NERO Logo">
-            </div>
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="{% trans 'Search clinics, patients, or topics...' %}">
-                <div class="search-results" id="dashboard-search-results"></div>
-            </div>
-            <div class="nav-icons">
-                <a href="{% url 'patient_dashboard' %}" class="nav-icon" title="{% trans 'Home' %}"><i class="fas fa-home"></i></a>
-                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon" title="{% trans 'Messages' %}">
-                    <i class="fas fa-comment-alt"></i>
-                    {% if total_unread and total_unread > 0 %}<div class="notification-badge">{{ total_unread }}</div>{% endif %}
-                </a>
-                <a href="{% url 'search_clinics' %}" class="nav-icon" title="{% trans 'Find Clinics' %}"><i class="fas fa-search"></i></a>
-                <a href="{% url 'patient_appointments' %}" class="nav-icon" title="{% trans 'Appointments' %}"><i class="fas fa-calendar-alt"></i></a>
-                <a href="{% url 'patient_settings' %}" class="nav-icon" title="{% trans 'Settings' %}"><i class="fas fa-cog"></i></a>
-            </div>
-            <div class="user-menu">
-                <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
-                    {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
-                    {% else %}
-                        <div class="user-avatar" id="avatarImg" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;">{{ patient.user.username|first|upper }}</div>
-                    {% endif %}
-                </button>
-                <div class="avatar-dropdown" id="avatarDropdown">
-                    <div class="dropdown-header"><strong>{{ patient.user.username }}</strong></div>
-                    <ul class="dropdown-list">
-                        <li><a href="{% url 'logout' %}" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> {% trans "Logout" %}</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
+    {% trans 'Search clinics, patients, or topics...' as search_ph %}
+    {% include 'includes/patient_nav.html' with search_placeholder=search_ph %}
 
     <!-- ===== MAIN ===== -->
     <main class="main-layout">
@@ -1285,6 +1249,7 @@
     // ===== DATA FROM DJANGO =====
     const clinicFilterData  = JSON.parse('{{ clinic_filter_data_json|escapejs }}');
     const fixedClinicTypes  = '{{ clinic_types|join:"||"|escapejs }}'.split('||').filter(Boolean);
+    const clinicTypeLabels  = '{{ clinic_type_labels|join:"||"|escapejs }}'.split('||').filter(Boolean);
 
     // ===== I18N STRINGS =====
     {% trans "No clinic types available." as t_no_ct %}
@@ -1352,6 +1317,7 @@
         fixedClinicTypes.forEach((name, i) => {
             const s  = ctStyle(name);
             const id = `ct_${i}`;
+            const label = clinicTypeLabels[i] || name; // translated display; value stays English
             const card = document.createElement('label');
             card.className = 'ct-card';
             card.setAttribute('for', id);
@@ -1360,8 +1326,8 @@
             card.innerHTML = `
                 <input type="checkbox" id="${id}" name="clinic_type" value="${name}">
                 <div class="ct-check"><i class="fas fa-check"></i></div>
-                <div class="ct-name">${name}</div>
-                <div class="ct-desc">${I18N.ctDesc.replace('{name}', name.toLowerCase())}</div>
+                <div class="ct-name">${label}</div>
+                <div class="ct-desc">${I18N.ctDesc.replace('{name}', label === name ? label.toLowerCase() : label)}</div>
             `;
             card.addEventListener('change', () => syncCtCard(card));
             // Also handle clicks on the whole card

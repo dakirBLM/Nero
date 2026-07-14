@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Patients • NERO</title>
+    <title>{% trans "Search Patients" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles - Matching Dashboard */
@@ -889,22 +889,45 @@
             color: #1f2937;
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* RTL (Arabic) adjustments */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .dropdown-list li a:hover{padding-left:16px;padding-right:20px}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
+        @media (max-width: 480px) {
+            [dir="rtl"] .search-bar{padding:8px 38px 8px 12px}
+            [dir="rtl"] .user-menu{padding-left:0;padding-right:8px}
+        }
     </style>
 </head>
 <body>
     <!-- Main Header - Exact Match with Dashboard -->
+    {% if request.user.user_type == 'patient' %}
+        {% trans 'Search clinics, patients, or topics...' as search_ph %}
+        {% include 'includes/patient_nav.html' with search_placeholder=search_ph %}
+    {% else %}
     <header class="main-header">
         <div class="header-container">
             <!-- Logo -->
             <div class="logo-container">
-                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+                <div class="logo-gradient" role="img" aria-label="{% trans 'NERO Logo' %}"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="{% trans 'NERO Logo' %}">
             </div>
 
             <!-- Search Bar -->
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="{% trans 'Search clinics, patients, or topics...' %}">
                 <div class="search-results" id="dashboard-search-results"></div>
             </div>
 
@@ -925,7 +948,7 @@
                 <a href="{% url 'patient_appointments' %}" class="nav-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </a>
-                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="{% trans 'Account Settings' %}">
                     <i class="fas fa-cog"></i>
                 </a>
             </div>
@@ -934,9 +957,9 @@
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
                     {% if patient and patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="user-avatar" id="avatarImg">
                     {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
-                        <img src="{{ request.user.patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                        <img src="{{ request.user.patient.avatar_url }}" alt="{% trans 'Profile' %}" class="user-avatar" id="avatarImg">
                     {% elif request.user.is_authenticated %}
                         <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                             {{ request.user.username|first|upper }}
@@ -948,12 +971,12 @@
 
                 <div class="avatar-dropdown" id="avatarDropdown">
                     <div class="dropdown-header">
-                        <strong>{% if patient and patient.user.username %}{{ patient.user.username }}{% elif request.user.is_authenticated %}{{ request.user.username }}{% else %}Guest{% endif %}</strong>
+                        <strong>{% if patient and patient.user.username %}{{ patient.user.username }}{% elif request.user.is_authenticated %}{{ request.user.username }}{% else %}{% trans "Guest" %}{% endif %}</strong>
                     </div>
                     <ul class="dropdown-list">
                         <li>
                             <a href="{% url 'logout' %}" style="color:#ef4444;">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> {% trans "Logout" %}
                             </a>
                         </li>
                     </ul>
@@ -961,6 +984,7 @@
             </div>
         </div>
     </header>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -971,9 +995,9 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient and patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
-                        <img src="{{ request.user.patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ request.user.patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {% if patient and patient.user.username %}{{ patient.user.username|first|upper }}{% elif request.user.is_authenticated %}{{ request.user.username|first|upper }}{% else %}N{% endif %}
@@ -981,13 +1005,13 @@
                     {% endif %}
                     </div>
                     <div class="profile-info">
-                        <h3>{% if patient and patient.user.username %}{{ patient.user.username }}{% elif request.user.is_authenticated %}{{ request.user.username }}{% else %}NERO User{% endif %}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient and patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <h3>{% if patient and patient.user.username %}{{ patient.user.username }}{% elif request.user.is_authenticated %}{{ request.user.username }}{% else %}{% trans "NERO User" %}{% endif %}</h3>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient and patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {% if patient and patient.bio %}{{ patient.bio }}{% else %}Connect with other patients in the NERO community.{% endif %}
+                    {% if patient and patient.bio %}{{ patient.bio }}{% else %}{% trans "Connect with other patients in the NERO community." %}{% endif %}
                 </div>
             </div>
 
@@ -995,34 +1019,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item active">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1033,21 +1057,21 @@
             <div class="page-header">
                 <h1 class="page-title">
                     <i class="fas fa-users"></i>
-                    Find Patients
+                    {% trans "Find Patients" %}
                 </h1>
-                <p class="page-subtitle">Connect with other patients in the NERO community</p>
+                <p class="page-subtitle">{% trans "Connect with other patients in the NERO community" %}</p>
             </div>
 
             <!-- Search Form -->
             <div class="search-form-container">
                 <form method="get" class="search-form">
-                    <input type="text" name="q" class="search-input" 
-                           placeholder="Search by name, email, phone, or username" 
-                           value="{{ query }}" 
+                    <input type="text" name="q" class="search-input"
+                           placeholder="{% trans 'Search by name, email, phone, or username' %}"
+                           value="{{ query }}"
                            autocomplete="off">
                     <button type="submit" class="search-btn">
                         <i class="fas fa-search"></i>
-                        Search Patients
+                        {% trans "Search Patients" %}
                     </button>
                 </form>
             </div>
@@ -1055,7 +1079,7 @@
             {% if query %}
                 <!-- Results Info -->
                 <div class="results-info">
-                    <strong>{{ patients|length }}</strong> result{{ patients|length|pluralize }} found for "<em>{{ query }}</em>"
+                    {% blocktrans count counter=patients|length %}<strong>{{ counter }}</strong> result found for "<em>{{ query }}</em>"{% plural %}<strong>{{ counter }}</strong> results found for "<em>{{ query }}</em>"{% endblocktrans %}
                 </div>
                 
                 <!-- Patients Grid -->
@@ -1075,7 +1099,7 @@
                                     <h3>{{ patient.full_name }}</h3>
                                     <p>
                                         <i class="fas fa-user-injured"></i>
-                                        Patient
+                                        {% trans "Patient" %}
                                         {% if patient.city %}
                                             • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}
                                         {% endif %}
@@ -1086,7 +1110,7 @@
                             <div class="patient-details">
                                 <div class="detail-item">
                                     <i class="fas fa-phone"></i>
-                                    {{ patient.phone|default:"No phone number" }}
+                                    {% trans "No phone number" as no_phone %}{{ patient.phone|default:no_phone }}
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-envelope"></i>
@@ -1104,7 +1128,7 @@
                                
                                 <a href="{% url 'start_chat_with_user' %}?user_id={{ patient.user.id }}" class="btn btn-chat" style="flex: 1;">
                                     <i class="fas fa-comment-alt"></i>
-                                    Start Chat
+                                    {% trans "Start Chat" %}
                                 </a>
                             </div>
                         </div>
@@ -1116,14 +1140,13 @@
                         <div class="empty-icon">
                             <i class="fas fa-user-slash"></i>
                         </div>
-                        <h3 class="empty-title">No Patients Found</h3>
+                        <h3 class="empty-title">{% trans "No Patients Found" %}</h3>
                         <p class="empty-description">
-                            No patients found matching your search for "{{ query }}". 
-                            Try searching by first name, last name, phone number, email, or username.
+                            {% blocktrans %}No patients found matching your search for "{{ query }}". Try searching by first name, last name, phone number, email, or username.{% endblocktrans %}
                         </p>
                         <button onclick="document.querySelector('.search-input').focus()" class="btn btn-primary">
                             <i class="fas fa-search"></i>
-                            Try Another Search
+                            {% trans "Try Another Search" %}
                         </button>
                     </div>
                 {% endif %}
@@ -1132,7 +1155,7 @@
                 <!-- Initial State - Show assigned patients or prompt -->
                 {% if clinic and assigned_patients and assigned_patients.exists %}
                     <div class="results-info">
-                        <strong>{{ assigned_patients|length }}</strong> patient{{ assigned_patients|length|pluralize }} assigned to your clinic
+                        {% blocktrans count counter=assigned_patients|length %}<strong>{{ counter }}</strong> patient assigned to your clinic{% plural %}<strong>{{ counter }}</strong> patients assigned to your clinic{% endblocktrans %}
                     </div>
                     
                     <div class="patients-grid">
@@ -1150,7 +1173,7 @@
                                     <h3>{{ a.patient.full_name }}</h3>
                                     <p>
                                         <i class="fas fa-user-injured"></i>
-                                        Patient
+                                        {% trans "Patient" %}
                                         {% if a.patient.city %}
                                             • <i class="fas fa-map-marker-alt"></i> {{ a.patient.city }}
                                         {% endif %}
@@ -1161,7 +1184,7 @@
                             <div class="patient-details">
                                 <div class="detail-item">
                                     <i class="fas fa-phone"></i>
-                                    {{ a.patient.phone|default:"No phone number" }}
+                                    {% trans "No phone number" as no_phone %}{{ a.patient.phone|default:no_phone }}
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-envelope"></i>
@@ -1178,11 +1201,11 @@
                             <div class="patient-actions">
                                 <a href="{% url 'patient_detail' a.patient.id %}" class="btn btn-secondary" style="flex: 1;">
                                     <i class="fas fa-eye"></i>
-                                    View Profile
+                                    {% trans "View Profile" %}
                                 </a>
                                 <a href="{% url 'start_chat_with_user' %}?user_id={{ a.patient.user.id }}" class="btn btn-chat" style="flex: 1;">
                                     <i class="fas fa-comment-alt"></i>
-                                    Chat
+                                    {% trans "Chat" %}
                                 </a>
                             </div>
                         </div>
@@ -1194,14 +1217,13 @@
                         <div class="empty-icon">
                             <i class="fas fa-search"></i>
                         </div>
-                        <h3 class="empty-title">Find Other Patients</h3>
+                        <h3 class="empty-title">{% trans "Find Other Patients" %}</h3>
                         <p class="empty-description">
-                            Search for other patients in the NERO community by name, email, phone number, or username. 
-                            Connect with others who share similar health journeys.
+                            {% trans "Search for other patients in the NERO community by name, email, phone number, or username. Connect with others who share similar health journeys." %}
                         </p>
                         <button onclick="document.querySelector('.search-input').focus()" class="btn btn-primary">
                             <i class="fas fa-search"></i>
-                            Start Searching
+                            {% trans "Start Searching" %}
                         </button>
                     </div>
                 {% endif %}
@@ -1248,7 +1270,7 @@
             }
             
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 dashSearchResults.style.display = 'block';
                 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1292,7 +1314,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1304,7 +1326,7 @@
                     dashSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     dashSearchResults.style.display = 'block';
@@ -1374,7 +1396,7 @@
             searchForm.addEventListener('submit', function() {
                 const searchBtn = this.querySelector('.search-btn');
                 if (searchBtn) {
-                    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}';
                     searchBtn.classList.add('loading');
                 }
             });

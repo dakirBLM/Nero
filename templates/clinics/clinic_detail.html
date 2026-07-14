@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ clinic.clinic_name }} • NERO Medical Platform</title>
+    <title>{{ clinic.clinic_name }} • {% trans "NERO Medical Platform" %}</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== BASE STYLES (Matching Dashboard) ===== */
@@ -1400,22 +1400,43 @@
             display: flex;
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* ===== RTL (Arabic) ===== */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .dropdown-list li a:hover{padding-left:16px;padding-right:20px}
+        [dir="rtl"] .result-type-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
+        [dir="rtl"] .facility-item:hover{transform:translateX(-4px)}
+        [dir="rtl"] .connection-status{margin-left:0;margin-right:16px}
+        [dir="rtl"] .detail-value{text-align:left}
+        [dir="rtl"] .modal-close{right:auto;left:0}
+        [dir="rtl"] .loading-logo{margin-right:0;margin-left:8px}
     </style>
 </head>
 <body>
-    <!-- Main Header (Identical to Dashboard) -->
+    <!-- Main Header -->
+    {% if request.user.is_authenticated and request.user.user_type == 'patient' %}
+    {% trans 'Search clinics, patients, or topics...' as search_ph %}
+    {% include 'includes/patient_nav.html' with active='search' search_id='clinic-search-bar' search_results_id='clinic-search-results' search_placeholder=search_ph %}
+    {% else %}
     <header class="main-header">
         <div class="header-container">
             <!-- Logo -->
             <div class="logo-container">
-                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
-                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+                <div class="logo-gradient" role="img" aria-label="{% trans 'NERO Logo' %}"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="{% trans 'NERO Logo' %}">
             </div>
 
             <!-- Search Bar (live-search style same as dashboard) -->
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="clinic-search-bar" name="q" class="search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics..." value="{{ request.GET.q|default_if_none:'' }}">
+                <input type="text" id="clinic-search-bar" name="q" class="search-bar" autocomplete="off" placeholder="{% trans 'Search clinics, patients, or topics...' %}" value="{{ request.GET.q|default_if_none:'' }}">
                 <div class="search-results" id="clinic-search-results"></div>
             </div>
 
@@ -1436,7 +1457,7 @@
                 <a href="{% url 'patient_appointments' %}" class="nav-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </a>
-                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Account Settings">
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="{% trans 'Account Settings' %}">
                     <i class="fas fa-cog"></i>
                 </a>
             </div>
@@ -1445,7 +1466,7 @@
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
                     {% if patient.has_custom_avatar %}
-                    <img src="{{ patient.avatar_url }}" alt="Profile" class="user-avatar" id="avatarImg">
+                    <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="user-avatar" id="avatarImg">
                     {% else %}
                     <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ patient.user.username|first|upper }}
@@ -1460,7 +1481,7 @@
                     <ul class="dropdown-list">
                         <li>
                             <a href="{% url 'logout' %}" style="color:#ef4444;">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> {% trans 'Logout' %}
                             </a>
                         </li>
                     </ul>
@@ -1468,13 +1489,14 @@
             </div>
         </div>
     </header>
+    {% endif %}
 
     <!-- Main Clinic Content -->
     <main class="clinic-main-content">
         <!-- Clinic Cover -->
         <section class="clinic-cover-section">
             {% if clinic.cover_photo %}
-                <img src="{{ clinic.cover_photo.url }}" alt="{{ clinic.clinic_name }} cover" class="clinic-cover">
+                <img src="{{ clinic.cover_photo.url }}" alt="{% blocktrans with name=clinic.clinic_name %}{{ name }} cover{% endblocktrans %}" class="clinic-cover">
             {% endif %}
             <div class="cover-overlay"></div>
         </section>
@@ -1506,22 +1528,22 @@
 
                     <span class="meta-tag">
                         <i class="fas fa-star"></i>
-                        {{ display_rating|floatformat:1 }} ({{ reviews_count }} reviews)
+                        {{ display_rating|floatformat:1 }} {% blocktrans %}({{ reviews_count }} reviews){% endblocktrans %}
                     </span>
                     <span class="meta-tag">
                         <i class="fas fa-calendar-alt"></i>
-                        {{ clinic.years_in_operation }}+ years
+                        {% blocktrans with years=clinic.years_in_operation %}{{ years }}+ years{% endblocktrans %}
                     </span>
                     {% if is_connected %}
                         {% if connection_status == 'active' %}
                         <span class="connection-status">
                             <i class="fas fa-check-circle"></i>
-                            Connected
+                            {% trans "Connected" %}
                         </span>
                         {% elif connection_status == 'pending' %}
                         <span class="connection-status status-pending">
                             <i class="fas fa-clock"></i>
-                            Request Pending
+                            {% trans "Request Pending" %}
                         </span>
                         {% endif %}
                     {% endif %}
@@ -1535,28 +1557,28 @@
         <nav class="tab-nav-bar">
             <button class="tab-btn active" onclick="switchTab('about')">
                 <i class="fas fa-info-circle"></i>
-                About
+                {% trans "About" %}
             </button>
             <button class="tab-btn" onclick="switchTab('services')">
                 <i class="fas fa-concierge-bell"></i>
-                Services
+                {% trans "Services" %}
             </button>
             <button class="tab-btn" onclick="switchTab('gallery')">
                 <i class="fas fa-images"></i>
-                Gallery
+                {% trans "Gallery" %}
             </button>
             <button class="tab-btn" onclick="switchTab('posts')">
                 <i class="fas fa-newspaper"></i>
-                Posts
+                {% trans "Posts" %}
             </button>
             <button class="tab-btn" onclick="switchTab('details')">
                 <i class="fas fa-file-alt"></i>
-                Details
+                {% trans "Details" %}
             </button>
             {% if False %}
             <button class="tab-btn" onclick="switchTab('book')">
                 <i class="fas fa-calendar-check"></i>
-                Book Now
+                {% trans "Book Now" %}
             </button>
             {% endif %}
         </nav>
@@ -1566,23 +1588,23 @@
             <!-- About Tab -->
             <div id="about-tab" class="tab-content active">
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-info-circle"></i> About Our Clinic</h2>
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> {% trans "About Our Clinic" %}</h2>
                     <div class="about-content">
                         {{ clinic.description|linebreaks }}
                     </div>
                     <div class="stats-grid">
                         <div class="stat-item">
                             <span class="stat-number">{{ clinic.years_in_operation }}+</span>
-                            <span class="stat-label">Years Experience</span>
+                            <span class="stat-label">{% trans "Years Experience" %}</span>
                         </div>
 
                         <div class="stat-item">
                             <span class="stat-number">1,200+</span>
-                            <span class="stat-label">Patients Helped</span>
+                            <span class="stat-label">{% trans "Patients Helped" %}</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">98%</span>
-                            <span class="stat-label">Success Rate</span>
+                            <span class="stat-label">{% trans "Success Rate" %}</span>
                         </div>
                     </div>
                 </div>
@@ -1590,7 +1612,7 @@
                 {% if clinic.google_maps_url %}
                 <!-- Google Maps Location Card -->
                 <div class="content-card" style="margin-top: 32px;">
-                    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Location</h2>
+                    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> {% trans "Location" %}</h2>
                     <div style="width: 100%; height: 450px; border-radius: 12px; overflow: hidden; margin-top: 20px;">
                         <iframe
                             src="{{ clinic.google_maps_url }}"
@@ -1610,7 +1632,7 @@
                     <div class="info-card">
                         <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                         <div class="info-content">
-                            <h3>Location</h3>
+                            <h3>{% trans "Location" %}</h3>
                             <p>{{ clinic.full_address }}</p>
                         </div>
                     </div>
@@ -1618,7 +1640,7 @@
                     <div class="info-card">
                         <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
                         <div class="info-content">
-                            <h3>Contact</h3>
+                            <h3>{% trans "Contact" %}</h3>
                             <p>{{ clinic.phone_number }}</p>
                             <p>{{ clinic.contact_email }}</p>
                         </div>
@@ -1626,7 +1648,7 @@
                     <div class="info-card">
                         <div class="info-icon"><i class="fas fa-clock"></i></div>
                         <div class="info-content">
-                            <h3>Hours of Operation</h3>
+                            <h3>{% trans "Hours of Operation" %}</h3>
                             <p>{{ clinic.hours_of_operation|linebreaks }}</p>
                         </div>
                     </div>
@@ -1636,7 +1658,7 @@
 
 
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-star"></i> Reviews</h2>
+                    <h2 class="section-title"><i class="fas fa-star"></i> {% trans "Reviews" %}</h2>
 
                     <!-- Review Form -->
                     {% if patient %}
@@ -1649,28 +1671,28 @@
                         <form method="post" action="{% url 'reviews:submit_review' clinic.id %}" style="margin-bottom: 32px;">
                             {% csrf_token %}
                             <div class="form-group">
-                                <label for="id_review_description" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Your Review</label>
-                                <textarea name="review_description" id="id_review_description" class="form-control" required placeholder="Share your experience with this clinic..." rows="4"></textarea>
+                                <label for="id_review_description" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">{% trans "Your Review" %}</label>
+                                <textarea name="review_description" id="id_review_description" class="form-control" required placeholder="{% trans 'Share your experience with this clinic...' %}" rows="4"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="id_review_rating" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">Rating</label>
+                                <label for="id_review_rating" style="display: block; margin-bottom: 8px; font-weight: 500; color: #374151;">{% trans "Rating" %}</label>
                                 <select name="review_rating" id="id_review_rating" class="form-control" required>
-                                    <option value="">Select rating</option>
-                                    <option value="5">★★★★★ (5) Excellent</option>
-                                    <option value="4">★★★★☆ (4) Very Good</option>
-                                    <option value="3">★★★☆☆ (3) Good</option>
-                                    <option value="2">★★☆☆☆ (2) Fair</option>
-                                    <option value="1">★☆☆☆☆ (1) Poor</option>
+                                    <option value="">{% trans "Select rating" %}</option>
+                                    <option value="5">{% trans "★★★★★ (5) Excellent" %}</option>
+                                    <option value="4">{% trans "★★★★☆ (4) Very Good" %}</option>
+                                    <option value="3">{% trans "★★★☆☆ (3) Good" %}</option>
+                                    <option value="2">{% trans "★★☆☆☆ (2) Fair" %}</option>
+                                    <option value="1">{% trans "★☆☆☆☆ (1) Poor" %}</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Submit Review
+                                <i class="fas fa-paper-plane"></i> {% trans "Submit Review" %}
                             </button>
                         </form>
                     {% else %}
                         {% if not hide_patient_info %}
                         <div style="margin-bottom: 24px; padding: 16px; background: #f3f4f6; border-radius: 8px; color: #6b7280;">
-                            <i class="fas fa-info-circle"></i> You must be logged in as a patient to leave a review.
+                            <i class="fas fa-info-circle"></i> {% trans "You must be logged in as a patient to leave a review." %}
                         </div>
                         {% endif %}
                     {% endif %}
@@ -1710,8 +1732,8 @@
                     {% else %}
                     <div class="empty-state">
                         <div class="empty-state-icon"><i class="fas fa-star"></i></div>
-                        <h3>No Reviews Yet</h3>
-                        <p>Be the first to review this clinic!</p>
+                        <h3>{% trans "No Reviews Yet" %}</h3>
+                        <p>{% trans "Be the first to review this clinic!" %}</p>
                     </div>
                     {% endif %}
                 </div>
@@ -1720,7 +1742,7 @@
             <!-- Services Tab -->
             <div id="services-tab" class="tab-content">
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> Our Services & Treatments</h2>
+                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> {% trans "Our Services & Treatments" %}</h2>
                     <div class="services-grid">
                         {% for service in services %}
                         <div class="service-card">
@@ -1733,7 +1755,7 @@
                             </div>
                             <div class="service-content">
                                 <h4>{{ service.service_name }}</h4>
-                                <p>{{ service.description|default:"Comprehensive treatment and care" }}</p>
+                                <p>{{ service.description|default:_("Comprehensive treatment and care") }}</p>
                                 {% if service.price_range %}
                                 <span class="service-price">{{ service.price_range }}</span>
                                 {% endif %}
@@ -1742,8 +1764,8 @@
                         {% empty %}
                         <div class="empty-state">
                             <div class="empty-state-icon"><i class="fas fa-hospital"></i></div>
-                            <h3>No Services Listed</h3>
-                            <p>Services information coming soon.</p>
+                            <h3>{% trans "No Services Listed" %}</h3>
+                            <p>{% trans "Services information coming soon." %}</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -1753,12 +1775,12 @@
             <!-- Gallery Tab -->
             <div id="gallery-tab" class="tab-content">
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-images"></i> Clinic Gallery</h2>
+                    <h2 class="section-title"><i class="fas fa-images"></i> {% trans "Clinic Gallery" %}</h2>
                     {% if gallery_images %}
                     <div class="gallery-grid">
                         {% for image in gallery_images %}
                         <div class="gallery-item" onclick="openGallery({{ forloop.counter0 }})">
-                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Clinic photo' }}" loading="lazy">
+                            <img src="{{ image.image.url }}" alt="{{ image.caption|default:_('Clinic photo') }}" loading="lazy">
                             {% if image.caption %}
                             <div class="gallery-overlay">{{ image.caption|truncatechars:30 }}</div>
                             {% endif %}
@@ -1768,8 +1790,8 @@
                     {% else %}
                     <div class="empty-state">
                         <div class="empty-state-icon"><i class="fas fa-images"></i></div>
-                        <h3>No Photos Yet</h3>
-                        <p>Gallery coming soon.</p>
+                        <h3>{% trans "No Photos Yet" %}</h3>
+                        <p>{% trans "Gallery coming soon." %}</p>
                     </div>
                     {% endif %}
                 </div>
@@ -1778,7 +1800,7 @@
             <!-- Posts Tab -->
             <div id="posts-tab" class="tab-content">
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-newspaper"></i> Clinic Posts</h2>
+                    <h2 class="section-title"><i class="fas fa-newspaper"></i> {% trans "Clinic Posts" %}</h2>
                     {% if clinic_posts %}
                     <div class="reviews-list">
                         {% for post in clinic_posts %}
@@ -1790,14 +1812,14 @@
                             <div style="color:#374151; margin-bottom:8px;">{{ post.description|linebreaks }}</div>
                             {% if post.image %}
                             <div style="margin-top:8px;">
-                                <img src="{{ post.image.url }}" alt="post image" style="width:100%; border-radius:8px; object-fit:cover;">
+                                <img src="{{ post.image.url }}" alt="{% trans 'post image' %}" style="width:100%; border-radius:8px; object-fit:cover;">
                             </div>
                             {% endif %}
                             {% if post.video %}
                             <div style="margin-top:8px;">
                                 <video controls style="width:100%; border-radius:8px;">
                                     <source src="{{ post.video.url }}">
-                                    Your browser does not support the video tag.
+                                    {% trans "Your browser does not support the video tag." %}
                                 </video>
                             </div>
                             {% endif %}
@@ -1807,8 +1829,8 @@
                     {% else %}
                     <div class="empty-state">
                         <div class="empty-state-icon"><i class="fas fa-newspaper"></i></div>
-                        <h3>No Posts Yet</h3>
-                        <p>This clinic hasn't posted anything yet.</p>
+                        <h3>{% trans "No Posts Yet" %}</h3>
+                        <p>{% trans "This clinic hasn't posted anything yet." %}</p>
                     </div>
                     {% endif %}
                 </div>
@@ -1818,25 +1840,25 @@
             <div id="details-tab" class="tab-content">
                 <div class="details-grid">
                     <div class="content-card">
-                        <h3 class="section-title"><i class="fas fa-file-medical-alt"></i> Clinic Information</h3>
+                        <h3 class="section-title"><i class="fas fa-file-medical-alt"></i> {% trans "Clinic Information" %}</h3>
                         <div class="detail-list">
                             <div class="detail-item">
-                                <span class="detail-label">Specialization:</span>
+                                <span class="detail-label">{% trans "Specialization:" %}</span>
                                 <span class="detail-value">{{ clinic.specialization }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Languages:</span>
+                                <span class="detail-label">{% trans "Languages:" %}</span>
                                 <span class="detail-value">{{ clinic.languages_spoken }}</span>
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Established:</span>
+                                <span class="detail-label">{% trans "Established:" %}</span>
                                 <span class="detail-value">{{ clinic.established_date }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="content-card">
-                        <h3 class="section-title"><i class="fas fa-clipboard-check"></i> Medical Conditions Accepted</h3>
+                        <h3 class="section-title"><i class="fas fa-clipboard-check"></i> {% trans "Medical Conditions Accepted" %}</h3>
                         <div class="facilities-grid">
                             {% for field_name, field_label in acceptance_fields %}
                                 {% if forloop.counter <= 5 %}
@@ -1855,7 +1877,7 @@
                             {% if acceptance_fields|length > 5 %}
                             <div style="grid-column: 1/-1; text-align: center; margin-top: 8px;">
                                 <button id="toggleAcceptanceBtn" class="btn btn-secondary">
-                                    <i class="fas fa-plus"></i> Show more
+                                    <i class="fas fa-plus"></i> {% trans "Show more" %}
                                 </button>
                             </div>
                             {% endif %}
@@ -1863,44 +1885,44 @@
                     </div>
 
                     <div class="content-card">
-                        <h3 class="section-title"><i class="fas fa-link"></i> Social Media</h3>
+                        <h3 class="section-title"><i class="fas fa-link"></i> {% trans "Social Media" %}</h3>
                         <div class="detail-list">
                             {% if clinic.facebook_url %}
                             <div class="detail-item">
-                                <span class="detail-label">Facebook:</span>
+                                <span class="detail-label">{% trans "Facebook:" %}</span>
                                 <span class="detail-value">
                                     <a href="{{ clinic.facebook_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-facebook"></i> Visit Page
+                                        <i class="fab fa-facebook"></i> {% trans "Visit Page" %}
                                     </a>
                                 </span>
                             </div>
                             {% endif %}
                             {% if clinic.instagram_url %}
                             <div class="detail-item">
-                                <span class="detail-label">Instagram:</span>
+                                <span class="detail-label">{% trans "Instagram:" %}</span>
                                 <span class="detail-value">
                                     <a href="{{ clinic.instagram_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-instagram"></i> Visit Page
+                                        <i class="fab fa-instagram"></i> {% trans "Visit Page" %}
                                     </a>
                                 </span>
                             </div>
                             {% endif %}
                             {% if clinic.linkedin_url %}
                             <div class="detail-item">
-                                <span class="detail-label">LinkedIn:</span>
+                                <span class="detail-label">{% trans "LinkedIn:" %}</span>
                                 <span class="detail-value">
                                     <a href="{{ clinic.linkedin_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-linkedin"></i> Visit Page
+                                        <i class="fab fa-linkedin"></i> {% trans "Visit Page" %}
                                     </a>
                                 </span>
                             </div>
                             {% endif %}
                             {% if clinic.website %}
                             <div class="detail-item">
-                                <span class="detail-label">Website:</span>
+                                <span class="detail-label">{% trans "Website:" %}</span>
                                 <span class="detail-value">
                                     <a href="{{ clinic.website }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fas fa-globe"></i> Visit Website
+                                        <i class="fas fa-globe"></i> {% trans "Visit Website" %}
                                     </a>
                                 </span>
                             </div>
@@ -1914,24 +1936,24 @@
             <!-- Book Tab -->
             <div id="book-tab" class="tab-content">
                 <div class="content-card">
-                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> Book an Appointment</h2>
+                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> {% trans "Book an Appointment" %}</h2>
 
                     <div class="booking-options">
                         <div class="booking-card">
                             <div class="booking-icon"><i class="fas fa-calendar-alt"></i></div>
-                            <h3>Send Request</h3>
-                            <p>Use the multi-step request flow to send your case to clinics</p>
+                            <h3>{% trans "Send Request" %}</h3>
+                            <p>{% trans "Use the multi-step request flow to send your case to clinics" %}</p>
                             <a href="{% url 'recommendations:questionnaire' %}" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Start Request Flow
+                                <i class="fas fa-paper-plane"></i> {% trans "Start Request Flow" %}
                             </a>
                         </div>
 
                         <div class="booking-card">
                             <div class="booking-icon"><i class="fas fa-comments"></i></div>
-                            <h3>Chat with Clinic</h3>
-                            <p>Send a message to discuss your needs</p>
+                            <h3>{% trans "Chat with Clinic" %}</h3>
+                            <p>{% trans "Send a message to discuss your needs" %}</p>
                             <a href="{% url 'start_chat_with_clinic' %}?clinic_id={{ clinic.id }}" class="btn btn-secondary">
-                                <i class="fas fa-message"></i> Start Chat
+                                <i class="fas fa-message"></i> {% trans "Start Chat" %}
                             </a>
                         </div>
 
@@ -1940,13 +1962,13 @@
                     <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 24px; border-radius: 12px; border-left: 4px solid #3b82f6; margin-top: 32px;">
                         <h3 style="font-size: 18px; font-weight: 600; color: #1e40af; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-info-circle"></i>
-                            Booking Information
+                            {% trans "Booking Information" %}
                         </h3>
                         <ul style="color: #4b5563; padding-left: 20px;">
-                            <li style="margin-bottom: 8px;">Appointments are confirmed within 24 hours</li>
-                            <li style="margin-bottom: 8px;">Bring your medical records and ID</li>
-                            <li style="margin-bottom: 8px;">Free consultation for first-time patients</li>
-                            <li>Cancellation policy: 24 hours notice required</li>
+                            <li style="margin-bottom: 8px;">{% trans "Appointments are confirmed within 24 hours" %}</li>
+                            <li style="margin-bottom: 8px;">{% trans "Bring your medical records and ID" %}</li>
+                            <li style="margin-bottom: 8px;">{% trans "Free consultation for first-time patients" %}</li>
+                            <li>{% trans "Cancellation policy: 24 hours notice required" %}</li>
                         </ul>
                     </div>
                 </div>
@@ -1958,10 +1980,10 @@
     <!-- Gallery Modal -->
     <div id="galleryModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalCaption">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeGallery()" aria-label="Close gallery modal">×</button>
+            <button class="modal-close" onclick="closeGallery()" aria-label="{% trans 'Close gallery modal' %}">×</button>
             <div class="modal-nav">
-                <button class="modal-nav-btn" onclick="previousImage()" aria-label="Previous image">❮</button>
-                <button class="modal-nav-btn" onclick="nextImage()" aria-label="Next image">❯</button>
+                <button class="modal-nav-btn" onclick="previousImage()" aria-label="{% trans 'Previous image' %}">❮</button>
+                <button class="modal-nav-btn" onclick="nextImage()" aria-label="{% trans 'Next image' %}">❯</button>
             </div>
             <img id="modalImage" class="modal-image" src="" alt="" aria-describedby="modalCaption">
             <div id="modalCaption" class="modal-caption"></div>
@@ -1984,9 +2006,9 @@
             // Show selected tab
             document.getElementById(tabName + '-tab').classList.add('active');
 
-            // Set active tab button
+            // Set active tab button (match visible label or the language-independent onclick attribute)
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase())) {
+                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase()) || (btn.getAttribute('onclick') || '').includes("'" + tabName + "'")) {
                     btn.classList.add('active');
                 }
             });
@@ -2007,7 +2029,7 @@
         // Gallery functionality
         const galleryImages = [
             {% for image in gallery_images %}
-            { url: '{{ image.image.url }}', caption: '{{ image.caption|default:"Clinic Photo" }}' },
+            { url: '{{ image.image.url }}', caption: '{{ image.caption|default:_("Clinic Photo") }}' },
             {% endfor %}
         ];
 
@@ -2074,7 +2096,7 @@
                 }
 
                 clinicSearchTimeout = setTimeout(() => {
-                    clinicSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                    clinicSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"{% trans 'Loading' %}\"> {% trans 'Searching...' %}</div>";
                     clinicSearchResults.style.display = 'block';
 
                     {% if omit_booking %}
@@ -2105,7 +2127,7 @@
                                     list.classList.add('results-list');
                                     results += `
                                         <div class="results-section-title">
-                                            <i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>
+                                            <i class="${(title.textContent.includes('Patients') || title.textContent.includes('المرضى')) ? 'fas fa-users' : 'fas fa-hospital'}"></i>
                                             ${title.textContent}
                                         </div>
                                         ${list.outerHTML}
@@ -2117,7 +2139,7 @@
                             results = `
                                 <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                     <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                    <p>No results found for "${query}"</p>
+                                    <p>{% blocktrans %}No results found for "${query}"{% endblocktrans %}</p>
                                 </div>
                             `;
                         }
@@ -2128,7 +2150,7 @@
                         clinicSearchResults.innerHTML = `
                             <div style="padding: 20px; text-align: center; color: #ef4444;">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <p>Search failed. Please try again.</p>
+                                <p>{% trans "Search failed. Please try again." %}</p>
                             </div>
                         `;
                         clinicSearchResults.style.display = 'block';
@@ -2203,8 +2225,8 @@
                 });
                 btn.setAttribute('aria-expanded', (!expanded).toString());
                 btn.innerHTML = (!expanded) ?
-                    '<i class="fas fa-minus"></i> Show less' :
-                    '<i class="fas fa-plus"></i> Show more';
+                    '<i class="fas fa-minus"></i> {% trans "Show less" %}' :
+                    '<i class="fas fa-plus"></i> {% trans "Show more" %}';
             });
         })();
     </script>

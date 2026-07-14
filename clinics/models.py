@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from patients.models import MedicalRecord, Patient
 from core.validators import validate_video_extension, validate_video_size
@@ -30,17 +31,17 @@ class Post(models.Model):
 
 class Clinic(models.Model):
     SPECIALIZATION_CHOICES = (
-        ('Convalescence', 'Convalescence'),
-        ('Weight loss', 'Weight loss'),
-        ('Musculoskeletal treatment', 'Musculoskeletal treatment'),
-        ('Neurological treatment', 'Neurological treatment'),
+        ('Convalescence', _('Convalescence')),
+        ('Weight loss', _('Weight loss')),
+        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
+        ('Neurological treatment', _('Neurological treatment')),
     )
 
     CLINIC_TYPE_CHOICES = (
-        ('Convalescence', 'Convalescence'),
-        ('Weight loss', 'Weight loss'),
-        ('Musculoskeletal treatment', 'Musculoskeletal treatment'),
-        ('Neurological treatment', 'Neurological treatment'),
+        ('Convalescence', _('Convalescence')),
+        ('Weight loss', _('Weight loss')),
+        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
+        ('Neurological treatment', _('Neurological treatment')),
     )
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)

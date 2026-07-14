@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext_lazy as _
 from patients.models import Patient
 from clinics.models import Clinic
 from .models import User
@@ -183,10 +184,10 @@ class ClinicSignUpForm(UserCreationForm):
     
     # Professional Information
     SPECIALIZATION_CHOICES = (
-        ('Convalescence', 'Convalescence'),
-        ('Weight loss', 'Weight loss'),
-        ('Musculoskeletal treatment', 'Musculoskeletal treatment'),
-        ('Neurological treatment', 'Neurological treatment'),
+        ('Convalescence', _('Convalescence')),
+        ('Weight loss', _('Weight loss')),
+        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
+        ('Neurological treatment', _('Neurological treatment')),
     )
     
     specialization = forms.MultipleChoiceField(

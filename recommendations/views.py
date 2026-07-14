@@ -225,6 +225,8 @@ def _base_filter_context(patient, preselected_record_id=''):
     continents = sorted({row['continent'] for row in clinic_filter_data if row['continent']})
 
     clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
+    # Display labels (translated); submitted values stay the English choice keys.
+    clinic_type_labels = [str(choice[1]) for choice in Clinic.CLINIC_TYPE_CHOICES]
 
     return {
         'patient': patient,
@@ -233,6 +235,7 @@ def _base_filter_context(patient, preselected_record_id=''):
         'countries': [],
         'continents': continents,
         'clinic_types': clinic_types,
+        'clinic_type_labels': clinic_type_labels,
         'clinic_filter_data_json': json.dumps(clinic_filter_data),
         'preselected_record_id': str(preselected_record_id or ''),
     }
