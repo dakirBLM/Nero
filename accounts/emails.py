@@ -13,11 +13,21 @@ logger = logging.getLogger(__name__)
 
 
 def _base_url(request=None):
-    if request is not None:
-        return request.build_absolute_uri('/').rstrip('/')
+    # Deterministic order: Render's real hostname beats request headers (which
+    # can be skewed by proxies), then the Sites framework, then the request.
     host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
     if host:
         return f'https://{host}'
+    try:
+        from django.contrib.sites.models import Site
+        domain = Site.objects.get_current().domain
+        if domain and 'example.com' not in domain:
+            scheme = 'http' if domain.startswith(('localhost', '127.')) else 'https'
+            return f'{scheme}://{domain}'
+    except Exception:
+        pass
+    if request is not None:
+        return request.build_absolute_uri('/').rstrip('/')
     return os.environ.get('SITE_BASE_URL', 'http://localhost:8000')
 
 
