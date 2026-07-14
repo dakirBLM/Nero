@@ -242,6 +242,9 @@ if os.environ.get('EMAIL_HOST'):
     EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').strip().lower() == 'true'
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    # Never let a hung SMTP connection freeze a web request (misconfigured
+    # host/port would otherwise block for minutes).
+    EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Nero <noreply@nero.app>')
