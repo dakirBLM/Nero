@@ -35,8 +35,9 @@ def send_welcome_email(user, request=None):
         html_body = render_to_string('emails/welcome.html', ctx)
         msg = EmailMultiAlternatives(subject, text_body, to=[user.email])
         msg.attach_alternative(html_body, 'text/html')
-        msg.send(fail_silently=True)
-        return True
+        sent = msg.send(fail_silently=False)
+        logger.info('Welcome email sent=%s to user %s <%s>', sent, user.pk, user.email)
+        return bool(sent)
     except Exception:
-        logger.exception('Welcome email failed for user %s', user.pk)
+        logger.exception('Welcome email FAILED for user %s <%s>', user.pk, user.email)
         return False

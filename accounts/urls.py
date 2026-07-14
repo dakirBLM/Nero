@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from .forms import AnyAccountPasswordResetForm
 from .views import CustomLoginView, custom_logout_view, dashboard_redirect_view, google_start_view
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
         email_template_name='accounts/password_reset_email.txt',
         html_email_template_name='accounts/password_reset_email.html',
         subject_template_name='accounts/password_reset_subject.txt',
+        form_class=AnyAccountPasswordResetForm,  # include Google-created accounts
     ), name='password_reset'),
     path('password-reset/sent/', auth_views.PasswordResetDoneView.as_view(
         template_name='accounts/password_reset_done.html',

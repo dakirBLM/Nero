@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.utils.translation import gettext_lazy as _
 from patients.models import Patient
 from clinics.models import Clinic
@@ -450,3 +450,25 @@ class ClinicSignUpForm(UserCreationForm):
         
         return cleaned_data
    
+
+class AnyAccountPasswordResetForm(PasswordResetForm):
+    """Password reset that ALSO covers accounts created via Google login.
+
+    Django's default skips users without a usable password (social-only
+    accounts). We include them so a Google user can set a password and then
+    log in either way (Google or username+password).
+    """
+
+    def get_users(self, email):
+        from django.contrib.auth import get_user_model
+        from django.contrib.auth.forms import _unicode_ci_compare
+        UserModel = get_user_model()
+        email_field_name = UserModel.get_email_field_name()
+        active_users = UserModel._default_manager.filter(**{
+            '%s__iexact' % email_field_name: email,
+            'is_active': True,
+        })
+        return (
+            u for u in active_users
+            if _unicode_ci_compare(email, getattr(u, email_field_name))
+        )
