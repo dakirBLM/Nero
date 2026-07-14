@@ -234,7 +234,11 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 # localhost:25 fails. When a provider's EMAIL_HOST is set (Brevo/Resend/Gmail/…)
 # we send via SMTP; otherwise we print emails to the logs so password-reset and
 # allauth signup-verification never crash the request.
-if os.environ.get('EMAIL_HOST'):
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
+if BREVO_API_KEY:
+    # HTTPS API (port 443) — immune to SMTP port blocking on the host network.
+    EMAIL_BACKEND = 'core.email_backend.BrevoAPIBackend'
+elif os.environ.get('EMAIL_HOST'):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.environ['EMAIL_HOST']
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
