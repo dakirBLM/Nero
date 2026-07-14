@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Clinics • NERO</title>
+    <title>{% trans "Find Clinics" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles */
@@ -1126,11 +1126,32 @@
             }
         }
         {% include 'includes/search_bar_styles.html' %}
+        /* RTL (Arabic) adjustments */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar { padding: 10px 44px 10px 16px; }
+        [dir="rtl"] .search-icon { left: auto; right: 16px; }
+        [dir="rtl"] .notification-badge { right: auto; left: -2px; }
+        [dir="rtl"] .user-menu { padding-left: 0; padding-right: 12px; border-left: none; border-right: 1px solid #e5e7eb; }
+        [dir="rtl"] .avatar-dropdown { right: auto; left: 0; }
+        [dir="rtl"] .dropdown-list li a:hover { padding-left: 16px; padding-right: 20px; }
+        [dir="rtl"] .nav-item { border-left: none; border-right: 3px solid transparent; }
+        [dir="rtl"] .nav-item:hover { padding-left: 20px; padding-right: 24px; }
+        [dir="rtl"] .nav-item.active { border-right-color: #3b82f6; }
+        [dir="rtl"] .nav-badge { margin-left: 0; margin-right: auto; }
+        [dir="rtl"] .result-type-badge { margin-left: 0; margin-right: auto; }
+        [dir="rtl"] .clinic-description { border-left: none; border-right: 4px solid #3b82f6; }
+        [dir="rtl"] select.form-control { background-position: left 12px center; padding-right: 16px; padding-left: 40px; }
+        @media (max-width: 480px) {
+            [dir="rtl"] .search-bar { padding: 8px 38px 8px 12px; }
+            [dir="rtl"] .user-menu { padding-right: 8px; }
+        }
     </style>
 </head>
 <body>
     <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
-    {% include 'includes/patient_nav.html' with active='search' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder='Search clinics, doctors, or specializations...' %}
+    {% trans "Search clinics, doctors, or specializations..." as nav_search_placeholder %}
+    {% include 'includes/patient_nav.html' with active='search' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder=nav_search_placeholder %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1141,7 +1162,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient.has_custom_avatar %}
-                    <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                    <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                     <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                         {{ patient.full_name|first|upper }}
@@ -1150,12 +1171,12 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.full_name }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Find the best clinics for your rehabilitation needs." }}
+                    {% trans "Find the best clinics for your rehabilitation needs." as bio_default %}{{ patient.bio|default:bio_default }}
                 </div>
             </div>
 
@@ -1163,34 +1184,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item active">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1203,9 +1224,9 @@
                     <div>
                         <h1 class="page-title">
                             <i class="fas fa-search"></i>
-                            Find Rehabilitation Clinics
+                            {% trans "Find Rehabilitation Clinics" %}
                         </h1>
-                        <p class="page-subtitle">Discover specialized clinics for your recovery journey</p>
+                        <p class="page-subtitle">{% trans "Discover specialized clinics for your recovery journey" %}</p>
                     </div>
                 </div>
 
@@ -1213,22 +1234,22 @@
                 <div class="search-form-container">
                     <h3 class="form-title">
                         <i class="fas fa-sliders-h"></i>
-                        Search Filters
+                        {% trans "Search Filters" %}
                     </h3>
-                    <p class="form-description">Find clinics based on specialization, location, and more</p>
-                    
+                    <p class="form-description">{% trans "Find clinics based on specialization, location, and more" %}</p>
+
                     <form method="get" class="search-form">
                         <div class="form-group">
-                            <label for="q" class="form-label">Clinic Name or Keyword</label>
-                            <input type="text" id="q" name="q" value="{{ query }}" 
-                                   placeholder="Search clinics, doctors, or services..." 
+                            <label for="q" class="form-label">{% trans "Clinic Name or Keyword" %}</label>
+                            <input type="text" id="q" name="q" value="{{ query }}"
+                                   placeholder="{% trans 'Search clinics, doctors, or services...' %}"
                                    class="form-control">
                         </div>
-                        
+
                         <div class="form-group">
-                            <label for="specialization" class="form-label">Specialization</label>
+                            <label for="specialization" class="form-label">{% trans "Specialization" %}</label>
                             <select id="specialization" name="specialization" class="form-control">
-                                <option value="all">All Specializations</option>
+                                <option value="all">{% trans "All Specializations" %}</option>
                                 {% for value, label in specialization_choices %}
                                     <option value="{{ value }}" {% if specialization == value %}selected{% endif %}>
                                         {{ label }}
@@ -1238,16 +1259,16 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="city" class="form-label">City or Location</label>
-                            <input type="text" id="city" name="city" value="{{ city }}" 
-                                   placeholder="Enter city or location" class="form-control">
+                            <label for="city" class="form-label">{% trans "City or Location" %}</label>
+                            <input type="text" id="city" name="city" value="{{ city }}"
+                                   placeholder="{% trans 'Enter city or location' %}" class="form-control">
                         </div>
-                        
+
                         <div class="form-group">
-                            <label class="form-label" style="visibility: hidden;">Search</label>
+                            <label class="form-label" style="visibility: hidden;">{% trans "Search" %}</label>
                             <button type="submit" class="btn btn-primary btn-block">
                                 <i class="fas fa-search"></i>
-                                Search Clinics
+                                {% trans "Search Clinics" %}
                             </button>
                         </div>
                     </form>
@@ -1259,15 +1280,15 @@
                 <h2 class="results-title">
                     <i class="fas fa-clinic-medical"></i>
                     {% if query or specialization != 'all' or city %}
-                        Search Results
+                        {% trans "Search Results" %}
                     {% else %}
-                        Featured Clinics
+                        {% trans "Featured Clinics" %}
                     {% endif %}
                 </h2>
-                
+
                 {% if clinics %}
                     <div class="results-count">
-                        {{ clinics.paginator.count }} clinic{{ clinics.paginator.count|pluralize }} found
+                        {% blocktrans count counter=clinics.paginator.count %}{{ counter }} clinic found{% plural %}{{ counter }} clinics found{% endblocktrans %}
                     </div>
                 {% endif %}
             </div>
@@ -1280,7 +1301,7 @@
                         <div class="clinic-card">
                             <div class="clinic-header" style="display: flex; align-items: center; gap: 16px;">
                                 {% if clinic.has_custom_avatar %}
-                                    <img src="{{ clinic.avatar_url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
+                                    <img src="{{ clinic.avatar_url }}" alt="{% trans 'Clinic Logo' %}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
                                 {% else %}
                                     <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border: 2px solid #3b82f6;">
                                         {{ clinic.clinic_name|first|upper }}
@@ -1290,7 +1311,7 @@
                                     <h3 class="clinic-title" style="margin-bottom: 0;">
                                         {{ clinic.clinic_name }}
                                         {% if clinic.is_featured %}
-                                            <span class="badge badge-featured">Featured</span>
+                                            <span class="badge badge-featured">{% trans "Featured" %}</span>
                                         {% endif %}
                                     </h3>
                                     {% if clinic.tagline %}
@@ -1301,31 +1322,31 @@
                             
                             <div class="clinic-info-grid">
                                 <div class="info-item">
-                                    <span class="info-label">Specialization</span>
+                                    <span class="info-label">{% trans "Specialization" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-stethoscope" style="color: #3b82f6;"></i>
                                         {{ clinic.specialization }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Location</span>
+                                    <span class="info-label">{% trans "Location" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-map-marker-alt" style="color: #10b981;"></i>
                                         {{ clinic.city }}, {{ clinic.state }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Contact</span>
+                                    <span class="info-label">{% trans "Contact" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-phone" style="color: #8b5cf6;"></i>
-                                        {{ clinic.phone_number|default:"Not provided" }}
+                                        {% trans "Not provided" as not_provided %}{{ clinic.phone_number|default:not_provided }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Experience</span>
+                                    <span class="info-label">{% trans "Experience" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-clock" style="color: #f59e0b;"></i>
-                                        {{ clinic.years_in_operation }} year{{ clinic.years_in_operation|pluralize }}
+                                        {% blocktrans count counter=clinic.years_in_operation %}{{ counter }} year{% plural %}{{ counter }} years{% endblocktrans %}
                                     </span>
                                 </div>
                             </div>
@@ -1339,11 +1360,11 @@
                             <div class="clinic-actions">
                                 <a href="{% url 'clinic_detail' clinic.id %}" class="btn btn-primary">
                                     <i class="fas fa-eye"></i>
-                                    View Details
+                                    {% trans "View Details" %}
                                 </a>
                                 <a href="{% url 'start_chat_with_clinic' %}?clinic_id={{ clinic.id }}" class="btn btn-secondary">
                                     <i class="fas fa-comment"></i>
-                                    Chat Now
+                                    {% trans "Chat Now" %}
                                 </a>
                             </div>
                         </div>
@@ -1357,18 +1378,18 @@
                             <a href="?page={{ clinics.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}" 
                                class="pagination-link">
                                 <i class="fas fa-chevron-left"></i>
-                                Previous
+                                {% trans "Previous" %}
                             </a>
                         {% endif %}
                         
                         <span class="pagination-current">
-                            Page {{ clinics.number }} of {{ clinics.paginator.num_pages }}
+                            {% blocktrans with number=clinics.number num_pages=clinics.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}
                         </span>
                         
                         {% if clinics.has_next %}
                             <a href="?page={{ clinics.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}" 
                                class="pagination-link">
-                                Next
+                                {% trans "Next" %}
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         {% endif %}
@@ -1380,13 +1401,13 @@
                         <div class="no-results-icon">
                             <i class="fas fa-search"></i>
                         </div>
-                        <h3>No clinics found</h3>
+                        <h3>{% trans "No clinics found" %}</h3>
                         <p>
-                            No clinics match your search criteria. Try adjusting your filters or browse our featured clinics below.
+                            {% trans "No clinics match your search criteria. Try adjusting your filters or browse our featured clinics below." %}
                         </p>
                         <a href="?" class="btn btn-primary">
                             <i class="fas fa-eye"></i>
-                            View All Clinics
+                            {% trans "View All Clinics" %}
                         </a>
                     </div>
                 {% endif %}
@@ -1398,7 +1419,7 @@
                         <div class="clinic-card">
                             <div class="clinic-header" style="display: flex; align-items: center; gap: 16px;">
                                 {% if clinic.has_custom_avatar %}
-                                    <img src="{{ clinic.avatar_url }}" alt="Clinic Logo" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
+                                    <img src="{{ clinic.avatar_url }}" alt="{% trans 'Clinic Logo' %}" style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; background: #f3f4f6;">
                                 {% else %}
                                     <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; border: 2px solid #3b82f6;">
                                         {{ clinic.clinic_name|first|upper }}
@@ -1408,7 +1429,7 @@
                                     <h3 class="clinic-title" style="margin-bottom: 0;">
                                         {{ clinic.clinic_name }}
                                         {% if clinic.is_featured %}
-                                            <span class="badge badge-featured">Featured</span>
+                                            <span class="badge badge-featured">{% trans "Featured" %}</span>
                                         {% endif %}
                                     </h3>
                                     {% if clinic.tagline %}
@@ -1419,31 +1440,31 @@
                             
                             <div class="clinic-info-grid">
                                 <div class="info-item">
-                                    <span class="info-label">Specialization</span>
+                                    <span class="info-label">{% trans "Specialization" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-stethoscope" style="color: #3b82f6;"></i>
                                         {{ clinic.specialization }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Location</span>
+                                    <span class="info-label">{% trans "Location" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-map-marker-alt" style="color: #10b981;"></i>
                                         {{ clinic.city }}, {{ clinic.state }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Contact</span>
+                                    <span class="info-label">{% trans "Contact" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-phone" style="color: #8b5cf6;"></i>
-                                        {{ clinic.phone_number|default:"Not provided" }}
+                                        {% trans "Not provided" as not_provided %}{{ clinic.phone_number|default:not_provided }}
                                     </span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="info-label">Experience</span>
+                                    <span class="info-label">{% trans "Experience" %}</span>
                                     <span class="info-value">
                                         <i class="fas fa-clock" style="color: #f59e0b;"></i>
-                                        {{ clinic.years_in_operation }} year{{ clinic.years_in_operation|pluralize }}
+                                        {% blocktrans count counter=clinic.years_in_operation %}{{ counter }} year{% plural %}{{ counter }} years{% endblocktrans %}
                                     </span>
                                 </div>
                             </div>
@@ -1457,11 +1478,11 @@
                             <div class="clinic-actions">
                                 <a href="{% url 'clinic_detail' clinic.id %}" class="btn btn-primary">
                                     <i class="fas fa-eye"></i>
-                                    View Details
+                                    {% trans "View Details" %}
                                 </a>
                                 <a href="{% url 'start_chat_with_clinic' %}?clinic_id={{ clinic.id }}" class="btn btn-secondary">
                                     <i class="fas fa-comment"></i>
-                                    Chat Now
+                                    {% trans "Chat Now" %}
                                 </a>
                             </div>
                         </div>
@@ -1475,18 +1496,18 @@
                             <a href="?page={{ clinics.previous_page_number }}" 
                                class="pagination-link">
                                 <i class="fas fa-chevron-left"></i>
-                                Previous
+                                {% trans "Previous" %}
                             </a>
                         {% endif %}
                         
                         <span class="pagination-current">
-                            Page {{ clinics.number }} of {{ clinics.paginator.num_pages }}
+                            {% blocktrans with number=clinics.number num_pages=clinics.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}
                         </span>
                         
                         {% if clinics.has_next %}
                             <a href="?page={{ clinics.next_page_number }}" 
                                class="pagination-link">
-                                Next
+                                {% trans "Next" %}
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         {% endif %}
@@ -1497,8 +1518,8 @@
                         <div class="no-results-icon">
                             <i class="fas fa-hospital"></i>
                         </div>
-                        <h3>No clinics available</h3>
-                        <p>There are currently no clinics in our system. Please check back later or contact support.</p>
+                        <h3>{% trans "No clinics available" %}</h3>
+                        <p>{% trans "There are currently no clinics in our system. Please check back later or contact support." %}</p>
                     </div>
                 {% endif %}
             {% endif %}
@@ -1544,7 +1565,7 @@
             }
             
             headerSearchTimeout = setTimeout(() => {
-                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 headerSearchResults.style.display = 'block';
                 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1586,7 +1607,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1598,7 +1619,7 @@
                     headerSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     headerSearchResults.style.display = 'block';
@@ -1638,7 +1659,7 @@
                 searchForm.addEventListener('submit', function(e) {
                     const submitBtn = this.querySelector('button[type="submit"]');
                     if (submitBtn) {
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}';
                         submitBtn.disabled = true;
                         submitBtn.style.opacity = '0.7';
                     }

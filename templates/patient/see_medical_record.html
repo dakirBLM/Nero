@@ -1,10 +1,10 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Record - {{ medical_record.main_diagnosis }} - NERO</title>
+    <title>{% trans "Medical Record" %} - {{ medical_record.main_diagnosis }} - NERO</title>
     <style>
         /* Reset & Base */
         * {
@@ -722,12 +722,19 @@
         }
 
         {% include 'includes/search_bar_styles.html' %}
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .info-value{text-align:left}
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Main Header -->
-    {% include 'includes/patient_nav.html' with active='' search_placeholder='Search clinics, patients, or topics...' %}
+    {% include 'includes/patient_nav.html' with active='' search_placeholder=_('Search clinics, patients, or topics...') %}
 
     <!-- Main Content -->
     <main class="main-container">
@@ -737,7 +744,7 @@
             <div class="profile-card">
                 <div class="profile-header">
                     {% if patient.has_custom_avatar %}
-                    <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                    <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                     <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                         {{ patient.full_name|first|upper }}
@@ -745,11 +752,11 @@
                     {% endif %}
                     <div class="profile-info">
                         <h3>{{ patient.full_name }}</h3>
-                        <p>Patient • Location: Hidden</p>
+                        <p>{% trans "Patient" %} • {% trans "Location: Hidden" %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4;">
-                    {{ patient.bio|default:"Welcome to NERO! Manage your medical records securely." }}
+                    {{ patient.bio|default:_("Welcome to NERO! Manage your medical records securely.") }}
                 </div>
             </div>
 
@@ -759,7 +766,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    Dashboard
+                    {% trans "Dashboard" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item active">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -767,7 +774,7 @@
                         <line x1="9" y1="13" x2="15" y2="13"/>
                         <line x1="9" y1="17" x2="15" y2="17"/>
                     </svg>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -776,14 +783,14 @@
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="10"/>
                         <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
                     </svg>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -792,13 +799,13 @@
                         <path d="M22 21v-2a4 4 0 00-3-3.87"/>
                         <path d="M16 3.13a4 4 0 010 7.75"/>
                     </svg>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
                     </svg>
-                    Messages
+                    {% trans "Messages" %}
                     <div style="margin-left: auto; background: #3b82f6; color: white; font-size: 12px; padding: 2px 8px; border-radius: 10px;">3</div>
                 </a>
             </nav>
@@ -808,11 +815,11 @@
         <div class="main-content">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+                <a href="{% url 'patient_dashboard' %}">{% trans "Dashboard" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="{% url 'patient_medical_records' %}">Medical Records</a>
+                <a href="{% url 'patient_medical_records' %}">{% trans "Medical Records" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <span>Record Details</span>
+                <span>{% trans "Record Details" %}</span>
             </div>
 
             <!-- Record Detail Container -->
@@ -825,7 +832,7 @@
                             <p class="record-subtitle">
                                 {{ medical_record.first_name }} {{ medical_record.last_name }}
                                 {% if medical_record.is_urgent %}
-                                <span class="status-badge urgent" style="margin-left: 12px;">Urgent</span>
+                                <span class="status-badge urgent" style="margin-left: 12px;">{% trans "Urgent" %}</span>
                                 {% endif %}
                             </p>
                             <div class="record-tags">
@@ -840,13 +847,13 @@
                                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
-                                Edit
+                                {% trans "Edit" %}
                             </a>
                             <a href="{% url 'patient_medical_records' %}" class="header-action-btn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                                 </svg>
-                                Back
+                                {% trans "Back" %}
                             </a>
                         </div>
                     </div>
@@ -857,19 +864,19 @@
                     <!-- Patient Overview -->
                     <div class="patient-overview">
                         <div class="overview-card">
-                            <div class="overview-label">Date of Birth</div>
+                            <div class="overview-label">{% trans "Date of Birth" %}</div>
                             <div class="overview-value">{{ medical_record.date_of_birth|date:"F j, Y" }}</div>
                         </div>
                         <div class="overview-card">
-                            <div class="overview-label">Age</div>
-                            <div class="overview-value">{{ medical_record.get_age }} years</div>
+                            <div class="overview-label">{% trans "Age" %}</div>
+                            <div class="overview-value">{% blocktrans with age=medical_record.get_age %}{{ age }} years{% endblocktrans %}</div>
                         </div>
                         <div class="overview-card">
-                            <div class="overview-label">Height & Weight</div>
-                            <div class="overview-value">{{ medical_record.height }}cm • {{ medical_record.weight }}kg</div>
+                            <div class="overview-label">{% trans "Height & Weight" %}</div>
+                            <div class="overview-value">{% blocktrans with height=medical_record.height weight=medical_record.weight %}{{ height }}cm • {{ weight }}kg{% endblocktrans %}</div>
                         </div>
                         <div class="overview-card">
-                            <div class="overview-label">Injury Date</div>
+                            <div class="overview-label">{% trans "Injury Date" %}</div>
                             <div class="overview-value">{{ medical_record.injury_date|date:"F j, Y" }}</div>
                         </div>
                     </div>
@@ -883,20 +890,20 @@
                                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
-                                Personal Information
+                                {% trans "Personal Information" %}
                             </h3>
                             <div class="info-grid">
                                 <div class="info-row">
-                                    <span class="info-label">Full Name</span>
+                                    <span class="info-label">{% trans "Full Name" %}</span>
                                     <span class="info-value">{{ medical_record.first_name }} {{ medical_record.last_name }}</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Gender</span>
+                                    <span class="info-label">{% trans "Gender" %}</span>
                                     <span class="info-value">{{ medical_record.get_gender_display }}</span>
                                 </div>
                                 <!-- Address removed to avoid sharing contact/location details -->
                                 <div class="info-row">
-                                    <span class="info-label">Country</span>
+                                    <span class="info-label">{% trans "Country" %}</span>
                                     <span class="info-value">{{ medical_record.country }}</span>
                                 </div>
                             </div>
@@ -908,24 +915,24 @@
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                                 </svg>
-                                Medical Information
+                                {% trans "Medical Information" %}
                             </h3>
                             <div class="info-grid">
                                 <div class="info-row">
-                                    <span class="info-label">Main Diagnosis</span>
+                                    <span class="info-label">{% trans "Main Diagnosis" %}</span>
                                     <span class="info-value">{{ medical_record.main_diagnosis }}</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Movement Ability</span>
+                                    <span class="info-label">{% trans "Movement Ability" %}</span>
                                     <span class="info-value">{{ medical_record.get_movement_ability_display }}</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">BMI</span>
+                                    <span class="info-label">{% trans "BMI" %}</span>
                                     <span class="info-value">{{ medical_record.calculate_bmi|floatformat:1 }}</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Injury Duration</span>
-                                    <span class="info-value">{{ medical_record.get_injury_duration }} days</span>
+                                    <span class="info-label">{% trans "Injury Duration" %}</span>
+                                    <span class="info-value">{% blocktrans with duration=medical_record.get_injury_duration %}{{ duration }} days{% endblocktrans %}</span>
                                 </div>
                             </div>
                         </div>
@@ -939,10 +946,10 @@
                                 <line x1="12" y1="8" x2="12" y2="16"/>
                                 <line x1="8" y1="12" x2="16" y2="12"/>
                             </svg>
-                            Current Medications
+                            {% trans "Current Medications" %}
                         </h3>
                         <div class="text-content {% if not medical_record.current_medications %}empty{% endif %}">
-                            {{ medical_record.current_medications|default:"No medications recorded"|linebreaks }}
+                            {{ medical_record.current_medications|default:_("No medications recorded")|linebreaks }}
                         </div>
                     </div>
 
@@ -955,10 +962,10 @@
                                 <line x1="9" y1="9" x2="9.01" y2="9"/>
                                 <line x1="15" y1="9" x2="15.01" y2="9"/>
                             </svg>
-                            Allergies
+                            {% trans "Allergies" %}
                         </h3>
                         <div class="text-content {% if not medical_record.allergies %}empty{% endif %}">
-                            {{ medical_record.allergies|default:"No allergies recorded"|linebreaks }}
+                            {{ medical_record.allergies|default:_("No allergies recorded")|linebreaks }}
                         </div>
                     </div>
 
@@ -968,10 +975,10 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
                             </svg>
-                            Previous Surgeries
+                            {% trans "Previous Surgeries" %}
                         </h3>
                         <div class="text-content {% if not medical_record.previous_surgeries %}empty{% endif %}">
-                            {{ medical_record.previous_surgeries|default:"No previous surgeries recorded"|linebreaks }}
+                            {{ medical_record.previous_surgeries|default:_("No previous surgeries recorded")|linebreaks }}
                         </div>
                     </div>
 
@@ -986,7 +993,7 @@
                                 <line x1="16" y1="17" x2="8" y2="17"/>
                                 <polyline points="10 9 9 9 8 9"/>
                             </svg>
-                            Detailed Diagnosis
+                            {% trans "Detailed Diagnosis" %}
                         </h3>
                         <div class="text-content">
                             {{ medical_record.detailed_diagnosis|linebreaks }}
@@ -1001,7 +1008,7 @@
                                 <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
                                 <polyline points="13 2 13 9 20 9"/>
                             </svg>
-                            Attached Files
+                            {% trans "Attached Files" %}
                         </h3>
                         <div class="file-list">
                             {% if medical_record.medical_reports %}
@@ -1016,8 +1023,8 @@
                                     </svg>
                                 </div>
                                 <div class="file-info">
-                                    <div class="file-name">Medical Report</div>
-                                    <div class="file-meta">PDF Document</div>
+                                    <div class="file-name">{% trans "Medical Report" %}</div>
+                                    <div class="file-meta">{% trans "PDF Document" %}</div>
                                 </div>
                                 <a href="{% url 'secure_medical_report_download' medical_record.id %}" download class="file-download-btn">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1025,7 +1032,7 @@
                                         <polyline points="7 10 12 15 17 10"/>
                                         <line x1="12" y1="15" x2="12" y2="3"/>
                                     </svg>
-                                    Download
+                                    {% trans "Download" %}
                                 </a>
                             </div>
                             {% endif %}
@@ -1039,21 +1046,21 @@
                                     </svg>
                                 </div>
                                 <div class="file-info">
-                                    <div class="file-name">Movement Video</div>
-                                    <div class="file-meta">Video File</div>
+                                    <div class="file-name">{% trans "Movement Video" %}</div>
+                                    <div class="file-meta">{% trans "Video File" %}</div>
                                 </div>
                                 <a href="{% url 'secure_movement_video_view' medical_record.id %}" target="_blank" class="file-download-btn">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polygon points="5 3 19 12 5 21 5 3"/>
                                     </svg>
-                                    Play
+                                    {% trans "Play" %}
                                 </a>
                             </div>
                             {% endif %}
                             
                             {% if not medical_record.medical_reports and not medical_record.patient_movement_video %}
                             <div class="text-content empty" style="text-align: center; padding: 32px;">
-                                No files attached to this record
+                                {% trans "No files attached to this record" %}
                             </div>
                             {% endif %}
                         </div>
@@ -1063,22 +1070,22 @@
                     <div class="metadata-footer">
                         <div class="metadata-grid">
                             <div class="metadata-item">
-                                <span class="metadata-label">Record Created</span>
+                                <span class="metadata-label">{% trans "Record Created" %}</span>
                                 <span class="metadata-value">{{ medical_record.created_at|date:"F j, Y g:i A" }}</span>
                             </div>
                             <div class="metadata-item">
-                                <span class="metadata-label">Last Updated</span>
+                                <span class="metadata-label">{% trans "Last Updated" %}</span>
                                 <span class="metadata-value">{{ medical_record.updated_at|date:"F j, Y g:i A" }}</span>
                             </div>
                             <div class="metadata-item">
-                                <span class="metadata-label">Record ID</span>
+                                <span class="metadata-label">{% trans "Record ID" %}</span>
                                 <span class="metadata-value">#{{ medical_record.id }}</span>
                             </div>
                             <div class="metadata-item">
-                                <span class="metadata-label">Status</span>
+                                <span class="metadata-label">{% trans "Status" %}</span>
                                 <span class="metadata-value">
                                     <span class="status-badge {% if medical_record.is_urgent %}urgent{% else %}stable{% endif %}">
-                                        {% if medical_record.is_urgent %}Urgent{% else %}Stable{% endif %}
+                                        {% if medical_record.is_urgent %}{% trans "Urgent" %}{% else %}{% trans "Stable" %}{% endif %}
                                     </span>
                                 </span>
                             </div>
@@ -1096,7 +1103,7 @@
             if (e.key === 'Enter') {
                 const query = this.value.trim();
                 if (query) {
-                    alert(`Searching for: ${query}`);
+                    alert(`{% trans "Searching for:" %} ${query}`);
                     // In real app, this would redirect to search results
                 }
             }
@@ -1131,7 +1138,7 @@
                 const birthDate = "{{ medical_record.date_of_birth|date:'Y-m-d' }}";
                 if (birthDate) {
                     const age = calculateAge(birthDate);
-                    dobElement.textContent = `${age} years`;
+                    dobElement.textContent = `${age} {% trans "years" %}`;
                 }
             }
             
@@ -1180,7 +1187,7 @@
         function copyRecordId() {
             const recordId = "{{ medical_record.id }}";
             navigator.clipboard.writeText(`Record ID: #${recordId}`).then(() => {
-                alert('Record ID copied to clipboard');
+                alert('{% trans "Record ID copied to clipboard" %}');
             });
         }
 
@@ -1233,7 +1240,7 @@
         const deleteBtn = document.querySelector('a[href*="delete"]');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function(e) {
-                if (!confirm('Are you sure you want to delete this medical record? This action cannot be undone.')) {
+                if (!confirm('{% trans "Are you sure you want to delete this medical record? This action cannot be undone." %}')) {
                     e.preventDefault();
                 }
             });

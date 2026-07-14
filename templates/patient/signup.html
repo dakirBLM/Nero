@@ -1,11 +1,11 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Patient Sign Up - NERO</title>
+    <title>{% trans "Patient Sign Up - NERO" %}</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Instrument+Serif:ital@1&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -598,6 +598,15 @@
         .password-strength-bar.fair { width: 50%; background: #d69e2e; }
         .password-strength-bar.good { width: 75%; background: #38a169; }
         .password-strength-bar.strong { width: 100%; background: #2f855a; }
+
+        /* ================= RTL SUPPORT ================= */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .form-label .required{margin-left:0;margin-right:3px}
+        [dir="rtl"] .password-wrapper .form-control{padding-right:20px;padding-left:52px}
+        [dir="rtl"] .password-toggle{right:auto;left:14px}
+        [dir="rtl"] select.form-control{padding-right:20px;padding-left:40px;background-position:left 12px center}
+        [dir="rtl"] .error-list ul{padding-left:0;padding-right:20px}
     </style>
     <!-- Music toggle styles (match site-wide) -->
     <style>
@@ -634,12 +643,12 @@
     <!-- Signup Container -->
     <div class="signup-container fade-in">
         <a href="{% url 'choice_page' %}" class="back-link">
-            ← Back to Choices
+            ← {% trans "Back to Choices" %}
         </a>
 
         <div class="signup-header">
-            <h1 class="signup-title">Patient <span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">Registration</span></h1>
-            <p class="signup-subtitle">Create your personal medical profile</p>
+            <h1 class="signup-title">{% trans "Patient" %} <span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">{% trans "Registration" %}</span></h1>
+            <p class="signup-subtitle">{% trans "Create your personal medical profile" %}</p>
         </div>
 
         <!-- Google Login Option -->
@@ -653,12 +662,12 @@
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
             </span>
-            Continue with Google
+            {% trans "Continue with Google" %}
         </a>
 
         <div class="divider-section">
             <div class="divider-line"></div>
-            <span class="divider-text">or sign up manually</span>
+            <span class="divider-text">{% trans "or sign up manually" %}</span>
             <div class="divider-line"></div>
         </div>
         {% endif %}
@@ -666,7 +675,7 @@
         <!-- Error Messages -->
         {% if form.errors %}
         <div class="error-list">
-            <strong>Please correct the following errors:</strong>
+            <strong>{% trans "Please correct the following errors:" %}</strong>
             <ul>
                 {% for field, errors in form.errors.items %}
                     {% for error in errors %}
@@ -684,7 +693,7 @@
             <div class="form-row">
                 <div class="form-group full-width">
                     <label for="id_profile_picture" class="form-label">
-                        Profile Picture (optional)
+                        {% trans "Profile Picture (optional)" %}
                     </label>
                     <input type="file" id="id_profile_picture" name="profile_picture" class="form-control" accept="image/*">
                     {% if form.profile_picture.errors %}
@@ -693,11 +702,11 @@
                 </div>
                 <div class="form-group">
                     <label for="id_username" class="form-label">
-                        Username <span class="required">*</span>
+                        {% trans "Username" %} <span class="required">*</span>
                     </label>
                     <input type="text" id="id_username" name="username"
                            class="form-control {% if form.username.errors %}error{% endif %}"
-                           placeholder="Enter username"
+                           placeholder="{% trans 'Enter username' %}"
                            value="{{ form.username.value|default:'' }}"
                            required>
                     {% if form.username.errors %}
@@ -707,11 +716,11 @@
 
                 <div class="form-group">
                     <label for="id_full_name" class="form-label">
-                        Full Name <span class="required">*</span>
+                        {% trans "Full Name" %} <span class="required">*</span>
                     </label>
                     <input type="text" id="id_full_name" name="full_name"
                            class="form-control {% if form.full_name.errors %}error{% endif %}"
-                           placeholder="Enter full name"
+                           placeholder="{% trans 'Enter full name' %}"
                            value="{{ form.full_name.value|default:'' }}"
                            required>
                     {% if form.full_name.errors %}
@@ -721,11 +730,11 @@
 
                 <div class="form-group full-width">
                     <label for="id_email" class="form-label">
-                        Email Address <span class="required">*</span>
+                        {% trans "Email Address" %} <span class="required">*</span>
                     </label>
                     <input type="email" id="id_email" name="email"
                            class="form-control {% if form.email.errors %}error{% endif %}"
-                           placeholder="Enter email address"
+                           placeholder="{% trans 'Enter email address' %}"
                            value="{{ form.email.value|default:'' }}"
                            required>
                     {% if form.email.errors %}
@@ -735,7 +744,7 @@
 
                 <div class="form-group">
                     <label for="id_date_of_birth" class="form-label">
-                        Date of Birth <span class="required">*</span>
+                        {% trans "Date of Birth" %} <span class="required">*</span>
                     </label>
                     <input type="date" id="id_date_of_birth" name="date_of_birth"
                            class="form-control {% if form.date_of_birth.errors %}error{% endif %}"
@@ -748,13 +757,13 @@
 
                 <div class="form-group">
                     <label for="id_gender" class="form-label">
-                        Gender <span class="required">*</span>
+                        {% trans "Gender" %} <span class="required">*</span>
                     </label>
                     <select id="id_gender" name="gender" class="form-control {% if form.gender.errors %}error{% endif %}" required>
-                        <option value="">Select gender</option>
-                        <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>Male</option>
-                        <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>Female</option>
-                        <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>Other</option>
+                        <option value="">{% trans "Select gender" %}</option>
+                        <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>{% trans "Male" %}</option>
+                        <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>{% trans "Female" %}</option>
+                        <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>{% trans "Other" %}</option>
                     </select>
                     {% if form.gender.errors %}
                         <div class="field-error">⚠ {{ form.gender.errors.0 }}</div>
@@ -763,11 +772,11 @@
 
                 <div class="form-group">
                     <label for="id_phone" class="form-label">
-                        Phone Number <span class="required">*</span>
+                        {% trans "Phone Number" %} <span class="required">*</span>
                     </label>
                     <input type="tel" id="id_phone" name="phone"
                            class="form-control {% if form.phone.errors %}error{% endif %}"
-                           placeholder="Enter phone number"
+                           placeholder="{% trans 'Enter phone number' %}"
                            value="{{ form.phone.value|default:'' }}"
                            required>
                     {% if form.phone.errors %}
@@ -777,14 +786,14 @@
 
                 <div class="form-group">
                     <label for="id_password1" class="form-label">
-                        Password <span class="required">*</span>
+                        {% trans "Password" %} <span class="required">*</span>
                     </label>
                     <div class="password-wrapper">
                         <input type="password" id="id_password1" name="password1"
                                class="form-control {% if form.password1.errors %}error{% endif %}"
-                               placeholder="Create password"
+                               placeholder="{% trans 'Create password' %}"
                                required>
-                        <button type="button" class="password-toggle" id="passwordToggle1" aria-label="Show password" aria-pressed="false">
+                        <button type="button" class="password-toggle" id="passwordToggle1" aria-label="{% trans 'Show password' %}" aria-pressed="false">
                             <svg id="eyeOpenIcon1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -800,7 +809,7 @@
                         <div class="password-strength-bar" id="passwordStrengthBar"></div>
                     </div>
                     <div class="password-help">
-                        Use at least 8 characters with a mix of letters, numbers, and symbols
+                        {% trans "Use at least 8 characters with a mix of letters, numbers, and symbols" %}
                     </div>
                     {% if form.password1.errors %}
                         <div class="field-error">⚠ {{ form.password1.errors.0 }}</div>
@@ -809,14 +818,14 @@
 
                 <div class="form-group">
                     <label for="id_password2" class="form-label">
-                        Confirm Password <span class="required">*</span>
+                        {% trans "Confirm Password" %} <span class="required">*</span>
                     </label>
                     <div class="password-wrapper">
                         <input type="password" id="id_password2" name="password2"
                                class="form-control {% if form.password2.errors %}error{% endif %}"
-                               placeholder="Confirm password"
+                               placeholder="{% trans 'Confirm password' %}"
                                required>
-                        <button type="button" class="password-toggle" id="passwordToggle2" aria-label="Show password" aria-pressed="false">
+                        <button type="button" class="password-toggle" id="passwordToggle2" aria-label="{% trans 'Show password' %}" aria-pressed="false">
                             <svg id="eyeOpenIcon2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -836,16 +845,16 @@
             </div>
 
             <button type="submit" class="btn btn-primary" id="submitBtn">
-                Create Patient Account
+                {% trans "Create Patient Account" %}
             </button>
         </form>
 
         <!-- Links Section -->
         <div class="links-section">
-            <p class="links-text">Already have an account?</p>
+            <p class="links-text">{% trans "Already have an account?" %}</p>
             <div class="links">
-                <a href="{% url 'login' %}" class="link">Login here</a>
-                <a href="{% url 'clinic_signup' %}" class="link">Clinic sign up here</a>
+                <a href="{% url 'login' %}" class="link">{% trans "Login here" %}</a>
+                <a href="{% url 'clinic_signup' %}" class="link">{% trans "Clinic sign up here" %}</a>
             </div>
         </div>
     </div>
@@ -884,7 +893,7 @@
                 input.type = isHidden ? 'text' : 'password';
                 openIcon.style.display = isHidden ? 'none' : 'block';
                 closedIcon.style.display = isHidden ? 'block' : 'none';
-                toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                toggle.setAttribute('aria-label', isHidden ? '{% trans "Hide password" %}' : '{% trans "Show password" %}');
                 toggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
             });
         }
@@ -936,10 +945,10 @@
                 matchMessage.textContent = '';
                 matchMessage.style.color = '#718096';
             } else if (password1 === password2) {
-                matchMessage.textContent = '✓ Passwords match';
+                matchMessage.textContent = '✓ {% trans "Passwords match" %}';
                 matchMessage.style.color = '#38a169';
             } else {
-                matchMessage.textContent = '✗ Passwords do not match';
+                matchMessage.textContent = '✗ {% trans "Passwords do not match" %}';
                 matchMessage.style.color = '#e53e3e';
             }
         });
@@ -959,7 +968,7 @@
                     if (!input.nextElementSibling?.classList.contains('field-error')) {
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'field-error';
-                        errorDiv.textContent = '⚠ This field is required';
+                        errorDiv.textContent = '⚠ {% trans "This field is required" %}';
                         input.parentNode.insertBefore(errorDiv, input.nextSibling);
                     }
                 }
@@ -974,7 +983,7 @@
                 if (!password2Input.nextElementSibling?.classList.contains('field-error')) {
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'field-error';
-                    errorDiv.textContent = '⚠ Passwords do not match';
+                    errorDiv.textContent = '⚠ {% trans "Passwords do not match" %}';
                     password2Input.parentNode.insertBefore(errorDiv, password2Input.nextSibling);
                 }
             }
@@ -985,7 +994,7 @@
             }
 
             // Add loading state
-            submitBtn.innerHTML = 'Creating Account...';
+            submitBtn.innerHTML = '{% trans "Creating Account..." %}';
             submitBtn.disabled = true;
             submitBtn.classList.add('disabled');
         });
@@ -1018,7 +1027,7 @@
             if (age < 13) {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'field-error';
-                errorDiv.textContent = '⚠ You must be at least 13 years old';
+                errorDiv.textContent = '⚠ {% trans "You must be at least 13 years old" %}';
                 this.parentNode.insertBefore(errorDiv, this.nextSibling);
             }
         });
@@ -1033,7 +1042,7 @@
                 if (!this.nextElementSibling?.classList.contains('field-error')) {
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'field-error';
-                    errorDiv.textContent = '⚠ Please enter a valid email address';
+                    errorDiv.textContent = '⚠ {% trans "Please enter a valid email address" %}';
                     this.parentNode.insertBefore(errorDiv, this.nextSibling);
                 }
             }

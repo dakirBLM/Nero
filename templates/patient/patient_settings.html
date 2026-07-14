@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NERO • Account Settings</title>
+    <title>NERO • {% trans "Account Settings" %}</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== BASE STYLES (Matching Dashboard) ===== */
@@ -821,16 +821,40 @@
             }
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* ===== RTL SUPPORT ===== */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar { padding: 10px 52px 10px 16px; }
+        [dir="rtl"] .search-icon { left: auto; right: 18px; }
+        [dir="rtl"] .notification-badge { right: auto; left: -2px; }
+        [dir="rtl"] .user-menu { padding-left: 0; padding-right: 12px; border-left: none; border-right: 1px solid #e5e7eb; }
+        [dir="rtl"] .avatar-dropdown { right: auto; left: 0; }
+        [dir="rtl"] .dropdown-list li a:hover { padding-left: 16px; padding-right: 20px; }
+        [dir="rtl"] .result-type-badge { margin-left: 0; margin-right: auto; }
+        [dir="rtl"] select { background-position: left 16px center; padding-right: 16px; padding-left: 40px; }
+        @media (max-width: 768px) {
+            [dir="rtl"] .search-bar { padding: 10px 46px 10px 14px; }
+            [dir="rtl"] .search-icon { left: auto; right: 16px; }
+            [dir="rtl"] .user-menu { margin-left: 0; margin-right: auto; border-right: 0; padding-right: 0; }
+        }
+        @media (max-width: 480px) {
+            [dir="rtl"] .search-container { margin: 0 0 0 8px; }
+            [dir="rtl"] .search-bar { padding: 10px 46px 10px 14px; }
+            [dir="rtl"] .search-icon { left: auto; right: 16px; }
+            [dir="rtl"] .user-menu { margin-left: 0; margin-right: auto; border-right: 0; padding-right: 0; }
+        }
     </style>
 </head>
 <body>
     <!-- Main Header (Identical to Dashboard) -->
-    {% include 'includes/patient_nav.html' with active='settings' search_placeholder='Search clinics, patients, or topics...' %}
+    {% trans "Search clinics, patients, or topics..." as search_ph %}
+    {% include 'includes/patient_nav.html' with active='settings' search_placeholder=search_ph %}
 
     <!-- Settings Content -->
     <main class="settings-container">
         <div class="settings-card">
-            <div class="settings-title"><i class="fas fa-cog"></i> Account Settings</div>
+            <div class="settings-title"><i class="fas fa-cog"></i> {% trans "Account Settings" %}</div>
             
             {% if messages %}
             <div class="messages">
@@ -846,8 +870,8 @@
             {% if not google_connected %}
             <div class="alert alert-info" style="margin-bottom: 16px;">
                 <i class="fab fa-google"></i>
-                Google is not connected to this account yet.
-                <a href="{% url 'patient_connect_google' %}" style="margin-left: 8px; font-weight: 600; color: #1d4ed8; text-decoration: none;">Connect Google now</a>
+                {% trans "Google is not connected to this account yet." %}
+                <a href="{% url 'patient_connect_google' %}" style="margin-left: 8px; font-weight: 600; color: #1d4ed8; text-decoration: none;">{% trans "Connect Google now" %}</a>
             </div>
             {% endif %}
             
@@ -855,7 +879,7 @@
                 {% csrf_token %}
                 
                 {% if user_form %}
-                <div class="section-heading"><i class="fas fa-user-circle"></i> Account Information</div>
+                <div class="section-heading"><i class="fas fa-user-circle"></i> {% trans "Account Information" %}</div>
                 
                 {% for field in user_form %}
                 <div class="field-wrapper">
@@ -875,13 +899,13 @@
                 {% endfor %}
                 {% endif %}
 
-                <div class="section-heading"><i class="fas fa-id-card"></i> Profile Information</div>
+                <div class="section-heading"><i class="fas fa-id-card"></i> {% trans "Profile Information" %}</div>
                 
                 <!-- Current Profile Picture -->
                 <div class="current-profile-pic">
-                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Profile Picture (click to change)</p>
+                    <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">{% trans "Profile Picture (click to change)" %}</p>
                     {% if patient.has_custom_avatar %}
-                    <img src="{{ patient.avatar_url }}" alt="Current profile picture" id="profilePicPreview" style="cursor:pointer; width:100px; height:100px; border-radius:50%; object-fit:cover;" onclick="document.getElementById('profileFileInput').click();">
+                    <img src="{{ patient.avatar_url }}" alt="{% trans 'Current profile picture' %}" id="profilePicPreview" style="cursor:pointer; width:100px; height:100px; border-radius:50%; object-fit:cover;" onclick="document.getElementById('profileFileInput').click();">
                     {% else %}
                     <div id="profilePicPreview" style="width:100px; height:100px; border-radius:50%; background: linear-gradient(135deg, #3bc4f6, #5f5cf6); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:28px; cursor:pointer;" onclick="document.getElementById('profileFileInput').click();">{{ user.username|first|upper }}</div>
                     {% endif %}
@@ -912,7 +936,7 @@
                 <!-- Medical Conditions Checkboxes -->
                 {% if 'medical_conditions' in form.fields %}
                 <div class="field-wrapper">
-                    <label>Medical Conditions (Optional)</label>
+                    <label>{% trans "Medical Conditions (Optional)" %}</label>
                     <div class="conditions-grid">
                         {% for condition in form.medical_conditions %}
                         <div class="condition-checkbox">
@@ -936,13 +960,13 @@
 
                 <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
+                        <i class="fas fa-save"></i> {% trans "Save Changes" %}
                     </button>
                 </div>
             </form>
             
             <a class="back-link" href="{% url 'patient_dashboard' %}">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> {% trans "Back to Dashboard" %}
             </a>
         </div>
     </main>
@@ -1046,7 +1070,7 @@
             }
 
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"{% trans 'Loading' %}\"> {% trans 'Searching...' %}</div>";
                 dashSearchResults.style.display = 'block';
 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
@@ -1088,7 +1112,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1100,7 +1124,7 @@
                     dashSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     dashSearchResults.style.display = 'block';

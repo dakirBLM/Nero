@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %}{% load i18n %}
 {% comment %}
   Shared patient-side header. Include on every patient page:
     {% include 'includes/patient_nav.html' with active='dashboard' %}
@@ -52,6 +52,8 @@
   .pnav .nav-icons{gap:6px !important}
   .pnav .nav-icon{width:32px !important;height:32px !important;font-size:12.5px}
 }
+[dir="rtl"] .pnav .search-icon{left:auto;right:16px}
+[dir="rtl"] .pnav .search-bar{padding:10px 44px 10px 16px}
 </style>
 <header class="main-header">
     <div class="header-container pnav">
@@ -64,34 +66,41 @@
         <!-- Search Bar -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:'Search clinics by name...' }}">
+            {% trans 'Search clinics by name...' as default_ph %}
+            <input type="text" name="q" class="search-bar" id="{{ search_id|default:'dashboard-search-bar' }}" autocomplete="off" placeholder="{{ search_placeholder|default:default_ph }}">
             <div class="search-results" id="{{ search_results_id|default:'dashboard-search-results' }}"></div>
         </div>
 
         <!-- Navigation Icons -->
         <div class="nav-icons">
-            <button class="nav-icon pnav-menu-icon" id="pnavSideToggle" type="button" title="Menu" aria-expanded="false">
+            <button class="nav-icon pnav-menu-icon" id="pnavSideToggle" type="button" title="{% trans 'Menu' %}" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
-            <a href="{% url 'patient_dashboard' %}" class="nav-icon{% if active == 'dashboard' %} active{% endif %}" title="Home">
+            <a href="{% url 'patient_dashboard' %}" class="nav-icon{% if active == 'dashboard' %} active{% endif %}" title="{% trans 'Home' %}">
                 <i class="fas fa-home"></i>
             </a>
-            <a href="{% url 'chat_room_list_patient' %}" class="nav-icon{% if active == 'chat' %} active{% endif %}" title="Messages">
+            <a href="{% url 'chat_room_list_patient' %}" class="nav-icon{% if active == 'chat' %} active{% endif %}" title="{% trans 'Messages' %}">
                 <i class="fas fa-comment-alt"></i>
                 {% if total_unread and total_unread > 0 %}<div class="notification-badge">{{ total_unread }}</div>{% endif %}
             </a>
-            <a href="{% url 'search_clinics' %}" class="nav-icon{% if active == 'search' %} active{% endif %}" title="Find clinics">
+            <a href="{% url 'search_clinics' %}" class="nav-icon{% if active == 'search' %} active{% endif %}" title="{% trans 'Find clinics' %}">
                 <i class="fas fa-search"></i>
             </a>
-            <a href="{% url 'patient_appointments' %}" class="nav-icon{% if active == 'appointments' %} active{% endif %}" title="Appointments">
+            <a href="{% url 'patient_appointments' %}" class="nav-icon{% if active == 'appointments' %} active{% endif %}" title="{% trans 'Appointments' %}">
                 <i class="fas fa-calendar-alt"></i>
             </a>
-            <a href="{% url 'patient_settings' %}" class="nav-icon{% if active == 'settings' %} active{% endif %}" title="Account Settings">
+            <a href="{% url 'patient_settings' %}" class="nav-icon{% if active == 'settings' %} active{% endif %}" title="{% trans 'Account Settings' %}">
                 <i class="fas fa-cog"></i>
             </a>
-            <a href="{% url 'logout' %}" class="nav-icon" title="Logout">
+            <a href="{% url 'logout' %}" class="nav-icon" title="{% trans 'Logout' %}">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
+            {% get_current_language as LANGUAGE_CODE %}
+            <form action="{% url 'set_language' %}" method="post" style="display:flex;margin:0">{% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <input type="hidden" name="language" value="{% if LANGUAGE_CODE == 'ar' %}en{% else %}ar{% endif %}">
+                <button type="submit" class="nav-icon pnav-lang" title="{% trans 'Switch language' %}" style="border:none;background:#f3f4f6;cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;color:#374151">{% if LANGUAGE_CODE == 'ar' %}EN{% else %}ع{% endif %}</button>
+            </form>
         </div>
     </div>
 </header>

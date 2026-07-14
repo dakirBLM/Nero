@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Record {% if is_update %}Updated{% else %}Submitted{% endif %} - NERO</title>
+    <title>{% if is_update %}{% trans "Medical Record Updated" %}{% else %}{% trans "Medical Record Submitted" %}{% endif %} - NERO</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles - Matching medical_record_form.html */
@@ -1036,11 +1036,24 @@
             }
         }
         {% include 'includes/search_bar_styles.html' %}
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .dropdown-list li a:hover{padding-left:16px;padding-right:20px}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
     </style>
 </head>
 <body>
     <!-- Main Header - Exact Match with medical_record_form.html -->
-    {% include 'includes/patient_nav.html' with active='' search_placeholder='Search clinics, patients, or topics...' %}
+    {% include 'includes/patient_nav.html' with active='' search_placeholder=_('Search clinics, patients, or topics...') %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1051,7 +1064,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                         {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                         {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -1060,12 +1073,12 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Your medical record has been successfully processed." }}
+                    {{ patient.bio|default:_("Your medical record has been successfully processed.") }}
                 </div>
             </div>
 
@@ -1073,34 +1086,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item active">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1109,11 +1122,11 @@
         <div class="main-content">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+                <a href="{% url 'patient_dashboard' %}">{% trans "Dashboard" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="{% url 'patient_medical_records' %}">Medical Records</a>
+                <a href="{% url 'patient_medical_records' %}">{% trans "Medical Records" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <span>Success</span>
+                <span>{% trans "Success" %}</span>
             </div>
 
             <!-- Success Container -->
@@ -1131,14 +1144,14 @@
                     </div>
                     
                     <h1 class="success-title">
-                        Medical Record {% if is_update %}Updated{% else %}Submitted{% endif %} Successfully!
+                        {% if is_update %}{% trans "Medical Record Updated Successfully!" %}{% else %}{% trans "Medical Record Submitted Successfully!" %}{% endif %}
                     </h1>
-                    
+
                     <p class="success-subtitle">
                         {% if is_update %}
-                        Your medical information has been updated securely. Your changes are now live and will be used for all future recommendations.
+                        {% trans "Your medical information has been updated securely. Your changes are now live and will be used for all future recommendations." %}
                         {% else %}
-                        Your medical record has been securely submitted and stored. Our system will now use this information to provide personalized healthcare recommendations.
+                        {% trans "Your medical record has been securely submitted and stored. Our system will now use this information to provide personalized healthcare recommendations." %}
                         {% endif %}
                     </p>
                 </div>
@@ -1149,10 +1162,10 @@
                     <div class="status-badge">
                         {% if is_update %}
                         <i class="fas fa-sync-alt"></i>
-                        RECORD UPDATED
+                        {% trans "RECORD UPDATED" %}
                         {% else %}
                         <i class="fas fa-check-circle"></i>
-                        RECORD SUBMITTED
+                        {% trans "RECORD SUBMITTED" %}
                         {% endif %}
                     </div>
 
@@ -1161,7 +1174,7 @@
                     <div class="record-id-container">
                         <i class="fas fa-id-badge" style="color: #3b82f6; font-size: 20px;"></i>
                         <div>
-                            <div class="record-id-label">Record ID</div>
+                            <div class="record-id-label">{% trans "Record ID" %}</div>
                             <div class="record-id-value">#{{ medical_record.id }}</div>
                         </div>
                     </div>
@@ -1171,27 +1184,27 @@
                     <div class="action-buttons">
                         <a href="{% url 'patient_dashboard' %}" class="btn btn-primary">
                             <i class="fas fa-home"></i>
-                            Return to Dashboard
+                            {% trans "Return to Dashboard" %}
                         </a>
                         
                         <a href="{% url 'patient_medical_records' %}" class="btn btn-secondary">
                             <i class="fas fa-file-medical-alt"></i>
-                            View All Records
+                            {% trans "View All Records" %}
                         </a>
                         
                         {% if medical_record %}
                         <a href="{% url 'see_medical_record_view' medical_record.id %}" class="btn btn-secondary">
                             <i class="fas fa-eye"></i>
-                            View This Record
+                            {% trans "View This Record" %}
                         </a>
                         {% endif %}
                     </div>
 
                     <!-- Next Steps Section -->
                     <div class="next-steps">
-                        <h2 class="next-steps-title">What's Next?</h2>
+                        <h2 class="next-steps-title">{% trans "What's Next?" %}</h2>
                         <p style="text-align: center; color: #6b7280; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                            Here are the next steps in your healthcare journey with NERO:
+                            {% trans "Here are the next steps in your healthcare journey with NERO:" %}
                         </p>
                         
                         <div class="steps-grid">
@@ -1199,32 +1212,32 @@
                                 <div class="step-icon">
                                     <i class="fas fa-brain"></i>
                                 </div>
-                                <h3>Smart Recommendations</h3>
-                                <p>Based on your medical record, our AI will analyze your data and provide personalized clinic recommendations within 24 hours.</p>
+                                <h3>{% trans "Smart Recommendations" %}</h3>
+                                <p>{% trans "Based on your medical record, our AI will analyze your data and provide personalized clinic recommendations within 24 hours." %}</p>
                             </div>
                             
                             <div class="step">
                                 <div class="step-icon">
                                     <i class="fas fa-hospital"></i>
                                 </div>
-                                <h3>Clinic Matching</h3>
-                                <p>We'll match you with specialized clinics that best fit your medical needs, location preferences, and treatment requirements.</p>
+                                <h3>{% trans "Clinic Matching" %}</h3>
+                                <p>{% trans "We'll match you with specialized clinics that best fit your medical needs, location preferences, and treatment requirements." %}</p>
                             </div>
                             
                             <div class="step">
                                 <div class="step-icon">
                                     <i class="fas fa-calendar-check"></i>
                                 </div>
-                                <h3>Appointment Scheduling</h3>
-                                <p>Once matched, you can select multiple clinics and send pending appointment requests in one step.</p>
+                                <h3>{% trans "Appointment Scheduling" %}</h3>
+                                <p>{% trans "Once matched, you can select multiple clinics and send pending appointment requests in one step." %}</p>
                             </div>
                             
                             <div class="step">
                                 <div class="step-icon">
                                     <i class="fas fa-chart-line"></i>
                                 </div>
-                                <h3>Progress Tracking</h3>
-                                <p>Track your treatment progress, update your records, and communicate with clinics through your personal dashboard.</p>
+                                <h3>{% trans "Progress Tracking" %}</h3>
+                                <p>{% trans "Track your treatment progress, update your records, and communicate with clinics through your personal dashboard." %}</p>
                             </div>
                         </div>
                     </div>
@@ -1234,36 +1247,36 @@
                     <div class="record-summary">
                         <h3 class="summary-title">
                             <i class="fas fa-clipboard-list"></i>
-                            Record Summary
+                            {% trans "Record Summary" %}
                         </h3>
                         <div class="summary-grid">
                             <div class="summary-item">
                                 <div class="summary-label">
                                     <i class="fas fa-user"></i>
-                                    Patient Name
+                                    {% trans "Patient Name" %}
                                 </div>
                                 <div class="summary-value">{{ medical_record.first_name }} {{ medical_record.last_name }}</div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">
                                     <i class="fas fa-diagnoses"></i>
-                                    Main Diagnosis
+                                    {% trans "Main Diagnosis" %}
                                 </div>
                                 <div class="summary-value">{{ medical_record.main_diagnosis }}</div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">
                                     <i class="fas fa-circle"></i>
-                                    Status
+                                    {% trans "Status" %}
                                 </div>
                                 <div class="summary-value" style="color: #10b981;">
-                                    <i class="fas fa-check-circle"></i> Active
+                                    <i class="fas fa-check-circle"></i> {% trans "Active" %}
                                 </div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">
                                     <i class="fas fa-calendar-alt"></i>
-                                    Date {% if is_update %}Updated{% else %}Created{% endif %}
+                                    {% if is_update %}{% trans "Date Updated" %}{% else %}{% trans "Date Created" %}{% endif %}
                                 </div>
                                 <div class="summary-value">{{ medical_record.updated_at|date:"M d, Y" }}</div>
                             </div>
@@ -1275,8 +1288,7 @@
                     <div class="security-notice">
                         <i class="fas fa-shield-alt"></i>
                         <p>
-                            <strong>Your data is secure:</strong> All medical records are encrypted and stored securely. 
-                            Only authorized medical professionals have access to your information.
+                            <strong>{% trans "Your data is secure:" %}</strong> {% trans "All medical records are encrypted and stored securely. Only authorized medical professionals have access to your information." %}
                         </p>
                     </div>
 
@@ -1284,15 +1296,15 @@
                     <div class="share-options">
                         <a href="#" class="share-btn" onclick="printPage()">
                             <i class="fas fa-print"></i>
-                            Print Confirmation
+                            {% trans "Print Confirmation" %}
                         </a>
                         <a href="{% url 'patient_medical_records' %}" class="share-btn">
                             <i class="fas fa-share-alt"></i>
-                            Share with Clinics
+                            {% trans "Share with Clinics" %}
                         </a>
                         <a href="{% url 'recommendations:questionnaire' %}" class="share-btn">
                             <i class="fas fa-brain"></i>
-                            Get Recommendations
+                            {% trans "Get Recommendations" %}
                         </a>
                     </div>
                 </div>
@@ -1341,7 +1353,7 @@
                 }
 
                 dashSearchTimeout = setTimeout(() => {
-                    dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                    dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                     dashSearchResults.style.display = 'block';
 
                     fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1383,7 +1395,7 @@
                             results = `
                                 <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                     <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                    <p>No results found for "${query}"</p>
+                                    <p>{% trans "No results found for" %} "${query}"</p>
                                 </div>
                             `;
                         }
@@ -1395,7 +1407,7 @@
                         dashSearchResults.innerHTML = `
                             <div style="padding: 20px; text-align: center; color: #ef4444;">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <p>Search failed. Please try again.</p>
+                                <p>{% trans "Search failed. Please try again." %}</p>
                             </div>
                         `;
                         dashSearchResults.style.display = 'block';
@@ -1437,7 +1449,7 @@
             
             // Auto-redirect after 15 seconds
             setTimeout(() => {
-                showNotification('You will be redirected to dashboard in 10 seconds...', 'info');
+                showNotification('{% trans "You will be redirected to dashboard in 10 seconds..." %}', 'info');
             }, 5000);
             
             setTimeout(() => {
@@ -1504,7 +1516,7 @@
             const recordId = "{{ medical_record.id }}";
             if (recordId) {
                 navigator.clipboard.writeText(`NERO Medical Record ID: #${recordId}`).then(() => {
-                    showNotification('Record ID copied to clipboard!', 'success');
+                    showNotification('{% trans "Record ID copied to clipboard!" %}', 'success');
                 });
             }
         }

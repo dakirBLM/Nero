@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NERO • Medical Social Platform</title>
+    <title>{% trans "NERO • Medical Social Platform" %}</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles */
@@ -1223,12 +1223,32 @@
     .nero-chat-window { width: calc(100vw - 40px); }
     .nero-fab { bottom: 18px; left: 16px; }
   }
+
+  /* ===== RTL (Arabic) adjustments ===== */
+  [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea{font-family:'Tajawal','Inter',sans-serif}
+  [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+  [dir="rtl"] .sidebar-nav .nav-item{border-left:none;border-right:3px solid transparent}
+  [dir="rtl"] .sidebar-nav .nav-item.active{border-right-color:#3b82f6}
+  [dir="rtl"] .nav-item:hover{padding-right:24px;padding-left:20px}
+  [dir="rtl"] .msg.ai{border-radius:16px 16px 5px 16px}
+  [dir="rtl"] .msg.user{border-radius:16px 16px 16px 5px}
+  [dir="rtl"] .msg.thinking{border-radius:16px 16px 5px 16px}
+  [dir="rtl"] .nero-fab{left:auto;right:28px;align-items:flex-end}
+  [dir="rtl"] .nero-chat-window{left:auto;right:0}
+  [dir="rtl"] .notification-badge{right:auto;left:-2px}
+  [dir="rtl"] .search-icon{left:auto;right:16px}
+  [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+  @media (max-width: 480px) {
+    [dir="rtl"] .nero-fab{left:auto;right:16px}
+    [dir="rtl"] .search-bar{padding:8px 38px 8px 12px}
+  }
         {% include 'includes/search_bar_styles.html' %}
     </style>
 </head>
 <body>
     <!-- Main Header -->
-    {% include 'includes/patient_nav.html' with active='dashboard' search_placeholder='Search clinics by name...' %}
+    {% trans "Search clinics by name..." as search_placeholder_i18n %}
+    {% include 'includes/patient_nav.html' with active='dashboard' search_placeholder=search_placeholder_i18n %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1239,7 +1259,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -1248,12 +1268,13 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Welcome to NERO! Connect with clinics and other patients for better healthcare." }}
+                    {% trans "Welcome to NERO! Connect with clinics and other patients for better healthcare." as default_bio_i18n %}
+                    {{ patient.bio|default:default_bio_i18n }}
                 </div>
             </div>
 
@@ -1261,34 +1282,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item " >
                     <i   class="fas fa-brain shiny-text"></i>
-                    <span id="shiny-recommendation" class ="shiny-text" >Smart Recommendations</span>
+                    <span id="shiny-recommendation" class ="shiny-text" >{% trans "Smart Recommendations" %}</span>
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1304,22 +1325,22 @@
                             <i class="fas fa-exclamation-circle"></i> {{ post_error }}
                         </div>
                     {% endif %}
-                    <textarea class="post-input" name="post_content" placeholder="What's on your mind? Share your health journey...">{% if request.POST.post_content %}{{ request.POST.post_content }}{% endif %}</textarea>
+                    <textarea class="post-input" name="post_content" placeholder="{% trans "What's on your mind? Share your health journey..." %}">{% if request.POST.post_content %}{{ request.POST.post_content }}{% endif %}</textarea>
                     <div class="post-actions">
                         <div class="media-options">
                             <label class="media-btn" style="cursor:pointer;">
                                 <i class="fas fa-image"></i>
-                                Photo
+                                {% trans "Photo" %}
                                 <input type="file" name="post_image" accept="image/*" style="display:none;">
                             </label>
                             <label class="media-btn" style="cursor:pointer;">
                                 <i class="fas fa-video"></i>
-                                Video
+                                {% trans "Video" %}
                                 <input type="file" name="post_video" accept="video/*" style="display:none;">
                             </label>
                         </div>
                         <button class="post-btn" type="submit">
-                            <i class="fas fa-paper-plane"></i> Post
+                            <i class="fas fa-paper-plane"></i> {% trans "Post" %}
                         </button>
                     </div>
                 </form>
@@ -1344,7 +1365,7 @@
                                     <h4>
                                         {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}
                                     </h4>
-                                    <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                                    <span class="time"><i class="far fa-clock"></i> {% blocktrans with time_since=post.created_at|timesince %}{{ time_since }} ago{% endblocktrans %}</span>
                                 </div>
                             </a>
                         {% elif post.clinic %}
@@ -1358,7 +1379,7 @@
                                 {% endif %}
                                 <div class="update-info">
                                     <h4>{{ post.clinic.clinic_name }}</h4>
-                                    <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                                    <span class="time"><i class="far fa-clock"></i> {% blocktrans with time_since=post.created_at|timesince %}{{ time_since }} ago{% endblocktrans %}</span>
                                 </div>
                             </a>
                         {% else %}
@@ -1370,20 +1391,20 @@
                                 </div>
                             {% endif %}
                             <div class="update-info">
-                                <h4>NERO User</h4>
-                                <span class="time"><i class="far fa-clock"></i> {{ post.created_at|timesince }} ago</span>
+                                <h4>{% trans "NERO User" %}</h4>
+                                <span class="time"><i class="far fa-clock"></i> {% blocktrans with time_since=post.created_at|timesince %}{{ time_since }} ago{% endblocktrans %}</span>
                             </div>
                         {% endif %}
                     </div>
                     <div class="update-content">
                         <p class="post-description">{{ post.description|linebreaksbr }}</p>
                         {% if post.image %}
-                            <img src="{{ post.image.url }}" alt="Post Image" class="update-image">
+                            <img src="{{ post.image.url }}" alt="{% trans 'Post Image' %}" class="update-image">
                         {% endif %}
                         {% if post.video %}
                             <video controls class="update-image">
                                 <source src="{{ post.video.url }}">
-                                Your browser does not support the video tag.
+                                {% trans "Your browser does not support the video tag." %}
                             </video>
                         {% endif %}
                     </div>
@@ -1392,13 +1413,13 @@
                 </div>
                 {% if posts|length > 3 %}
                     <div style="text-align:center; margin: 12px 0;">
-                        <button id="show-more-posts" class="post-btn" style="padding:8px 18px; border-radius:12px;">Show more</button>
+                        <button id="show-more-posts" class="post-btn" style="padding:8px 18px; border-radius:12px;">{% trans "Show more" %}</button>
                     </div>
                 {% endif %}
             {% else %}
                 <div class="update-card" style="text-align: center; color: #6b7280; padding: 40px 20px;">
                     <i class="fas fa-newspaper" style="font-size: 48px; margin-bottom: 16px; color: #d1d5db;"></i>
-                    <p>No posts to show yet. Be the first to share your health journey!</p>
+                    <p>{% trans "No posts to show yet. Be the first to share your health journey!" %}</p>
                 </div>
             {% endif %}
         </section>
@@ -1409,7 +1430,7 @@
             <div class="clinic-suggestions">
                 <h3 class="suggestions-title">
                     <i class="fas fa-hospital"></i>
-                    Clinics You May Like
+                    {% trans "Clinics You May Like" %}
                 </h3>
                 {% if suggested_clinics %}
                     {% for clinic in suggested_clinics %}
@@ -1430,7 +1451,7 @@
                 {% else %}
                     <div style="color: #6b7280; padding: 20px; text-align: center;">
                         <i class="fas fa-search" style="font-size: 24px; margin-bottom: 8px;"></i>
-                        <p>No clinic suggestions available yet.</p>
+                        <p>{% trans "No clinic suggestions available yet." %}</p>
                     </div>
                 {% endif %}
             </div>
@@ -1439,7 +1460,7 @@
             <div class="community-card">
                 <h3 class="community-title">
                     <i class="fas fa-heartbeat"></i>
-                    Active Community
+                    {% trans "Active Community" %}
                 </h3>
                 <div class="community-members">
                     {% if active_patients %}
@@ -1460,9 +1481,9 @@
                             <div class="member-info">
                                 <h4>{{ member.full_name }}</h4>
                                 {% if member.is_online %}
-                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> Online now</p>
+                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> {% trans "Online now" %}</p>
                                 {% else %}
-                                    <p><i class="fas fa-circle" style="color: #9ca3af; font-size: 8px;"></i> Offline</p>
+                                    <p><i class="fas fa-circle" style="color: #9ca3af; font-size: 8px;"></i> {% trans "Offline" %}</p>
                                 {% endif %}
                             </div>
                         </a>
@@ -1485,9 +1506,9 @@
                             <div class="member-info">
                                 <h4>{{ member.full_name }}</h4>
                                 {% if member.is_online %}
-                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> Online now</p>
+                                    <p><i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i> {% trans "Online now" %}</p>
                                 {% else %}
-                                    <p><i class="far fa-comment-dots"></i> Recently chatted</p>
+                                    <p><i class="far fa-comment-dots"></i> {% trans "Recently chatted" %}</p>
                                 {% endif %}
                             </div>
                         </a>
@@ -1495,7 +1516,7 @@
                     {% else %}
                         <div style="color: #6b7280; padding: 20px; text-align: center;">
                             <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px;"></i>
-                            <p>No active members online.</p>
+                            <p>{% trans "No active members online." %}</p>
                         </div>
                     {% endif %}
                 </div>
@@ -1507,21 +1528,21 @@
   <!-- Chat window -->
   <div class="nero-chat-window" id="neroChatWindow">
     <div class="nero-chat-header">
-      <img class="header-orb" src="{% static 'king-george.png' %}" alt="King George Avatar">
+      <img class="header-orb" src="{% static 'king-george.png' %}" alt="{% trans 'King George Avatar' %}">
       <div class="header-text">
-        <strong>King George</strong>
-        <span class="header-status">Online · your guide</span>
+        <strong>{% trans "King George" %}</strong>
+        <span class="header-status">{% trans "Online · your guide" %}</span>
       </div>
-      <button class="close-btn" id="neroCloseBtn" title="Close">✕</button>
+      <button class="close-btn" id="neroCloseBtn" title="{% trans 'Close' %}">✕</button>
     </div>
 
     <div class="nero-chat-msgs" id="neroChatMsgs">
-      <div class="msg ai">Hi! I'm King George 👋 I can help you find clinics, answer health questions, or guide you through the platform. How can I help?</div>
+      <div class="msg ai">{% trans "Hi! I'm King George 👋 I can help you find clinics, answer health questions, or guide you through the platform. How can I help?" %}</div>
     </div>
 
     <div class="nero-chat-input-row">
-      <input class="nero-chat-input" id="neroChatInput" type="text" placeholder="Ask King George anything..." autocomplete="off">
-      <button class="nero-send-btn" id="neroSendBtn" title="Send">
+      <input class="nero-chat-input" id="neroChatInput" type="text" placeholder="{% trans 'Ask King George anything...' %}" autocomplete="off">
+      <button class="nero-send-btn" id="neroSendBtn" title="{% trans 'Send' %}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -1533,9 +1554,9 @@
   <!-- FAB button -->
   <div style="position: relative; display: inline-block;">
     <div class="nero-fab-ring"></div>
-    <button class="nero-fab-btn" id="neroFabBtn" title="Chat with King George">
+    <button class="nero-fab-btn" id="neroFabBtn" title="{% trans 'Chat with King George' %}">
       <div class="nero-fab-inner">
-        <img class="nero-fab-avatar" src="{% static 'king-george.png' %}" alt="King George Avatar">
+        <img class="nero-fab-avatar" src="{% static 'king-george.png' %}" alt="{% trans 'King George Avatar' %}">
       </div>
       <span class="nero-fab-dot"></span>
     </button>
@@ -1582,7 +1603,7 @@
             }
 
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Searching...</div>";
+                dashSearchResults.innerHTML = "<div style=\"padding: 20px; text-align: center; color: #6b7280;\"><img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"{% trans 'Loading' %}\"> {% trans 'Searching...' %}</div>";
                 dashSearchResults.style.display = 'block';
 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
@@ -1610,7 +1631,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans 'No results found for' %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1622,7 +1643,7 @@
                     dashSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans 'Search failed. Please try again.' %}</p>
                         </div>
                     `;
                     dashSearchResults.style.display = 'block';
@@ -1697,7 +1718,7 @@
         document.querySelector('form').addEventListener('submit', function() {
             const postBtn = this.querySelector('.post-btn');
             if (postBtn) {
-                postBtn.innerHTML = "<img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"Loading\"> Posting...";
+                postBtn.innerHTML = "<img src=\"{% static 'logo1.png' %}\" class=\"loading-logo\" alt=\"{% trans 'Loading' %}\"> {% trans 'Posting...' %}";
                 postBtn.classList.add('loading');
             }
         });
@@ -1770,11 +1791,11 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'learn-more-btn';
-                    btn.textContent = 'Learn more';
+                    btn.textContent = '{% trans "Learn more" %}';
 
                     btn.addEventListener('click', function() {
                         const expanded = desc.classList.toggle('clamped') === false;
-                        btn.textContent = expanded ? 'Show less' : 'Learn more';
+                        btn.textContent = expanded ? '{% trans "Show less" %}' : '{% trans "Learn more" %}';
                     });
 
                     desc.insertAdjacentElement('afterend', btn);
@@ -1868,7 +1889,7 @@
     if (!q) return;
     inputEl.value = '';
     addMsg(q, 'user');
-    const thinking = addMsg('NERO is thinking…', 'thinking');
+    const thinking = addMsg('{% trans "NERO is thinking…" %}', 'thinking');
     sendBtn.disabled = true;
 
     try {
@@ -1883,10 +1904,10 @@
       });
       const data = await res.json();
       thinking.remove();
-      addMsg(data.reply || 'Sorry, I could not get a response.', 'ai');
+      addMsg(data.reply || '{% trans "Sorry, I could not get a response." %}', 'ai');
     } catch(e) {
       thinking.remove();
-      addMsg('Sorry, something went wrong. Please try again.', 'ai');
+      addMsg('{% trans "Sorry, something went wrong. Please try again." %}', 'ai');
     }
     sendBtn.disabled = false;
     inputEl.focus();
@@ -1928,15 +1949,17 @@
 </style>
 <div id="onboardOverlay" aria-hidden="true"></div>
 <a id="onboardSpot" class="onboard-spot" href="{% url 'recommendations:questionnaire' %}">
-  <i class="fas fa-brain"></i> Smart Recommendations
+  <i class="fas fa-brain"></i> {% trans "Smart Recommendations" %}
 </a>
 <div id="onboardKG">
-  <img src="{% static 'king-george.png' %}" alt="King George">
+  <img src="{% static 'king-george.png' %}" alt="{% trans 'King George' %}">
   <div class="ob-bubble">
+    {% blocktrans trimmed %}
     👑 Welcome! I'm <strong>King George</strong>, your royal guide.
     Please start your journey by clicking <strong>here</strong> —
     I'll match you with the perfect clinic! 🦫
-    <span class="ob-point">Tap “Smart Recommendations” to begin →</span>
+    {% endblocktrans %}
+    <span class="ob-point">{% trans "Tap “Smart Recommendations” to begin →" %}</span>
   </div>
 </div>
 <script>

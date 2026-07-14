@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages • NERO</title>
+    <title>{% trans "Messages" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Reset & Base Styles - MATCHING NERO */
@@ -999,11 +999,26 @@
             overflow-y: auto;
         }
         {% include 'includes/search_bar_styles.html' %}
+        /* RTL support */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .chat-search{padding:12px 44px 12px 16px}
+        [dir="rtl"] .chat-search-icon{left:auto;right:16px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .chat-room-card.unread{border-left:1px solid #f1f5f9;border-right:4px solid #3b82f6}
+        [dir="rtl"] .time-ago{margin-left:0;margin-right:auto}
     </style>
 </head>
 <body>
     <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
-    {% include 'includes/patient_nav.html' with active='chat' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder='Search messages or users...' %}
+    {% include 'includes/patient_nav.html' with active='chat' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder=_('Search messages or users...') %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1023,12 +1038,12 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Stay connected with your healthcare providers." }}
+                    {{ patient.bio|default:_("Stay connected with your healthcare providers.") }}
                 </div>
             </div>
 
@@ -1036,35 +1051,35 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item active">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                       {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
-                    
+
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1077,13 +1092,13 @@
                 <div>
                     <h1 class="page-title">
                         <i class="fas fa-comments"></i>
-                        Messages
+                        {% trans "Messages" %}
                     </h1>
                     <p class="page-subtitle">
                         {% if total_unread %}
-                            You have {{ total_unread }} unread message{{ total_unread|pluralize }}
+                            {% blocktrans count total_unread=total_unread %}You have {{ total_unread }} unread message{% plural %}You have {{ total_unread }} unread messages{% endblocktrans %}
                         {% else %}
-                            All your conversations in one place
+                            {% trans "All your conversations in one place" %}
                         {% endif %}
                     </p>
                 </div>
@@ -1094,7 +1109,7 @@
             <!-- Chat Search -->
             <div style="position: relative;">
                 <i class="fas fa-search chat-search-icon"></i>
-                <input type="text" class="chat-search" placeholder="Search conversations..." id="chatSearch">
+                <input type="text" class="chat-search" placeholder="{% trans 'Search conversations...' %}" id="chatSearch">
             </div>
 
             <!-- Chat Rooms List -->
@@ -1126,10 +1141,10 @@
                         <div class="chat-info">
                             <div class="chat-title">
                                 {% if other.clinic %}
-                                    <span class="chat-type clinic"><i class="fas fa-hospital"></i> Clinic</span>
+                                    <span class="chat-type clinic"><i class="fas fa-hospital"></i> {% trans "Clinic" %}</span>
                                     {{ other.clinic.clinic_name }}
                                 {% elif other.patient %}
-                                    <span class="chat-type patient"><i class="fas fa-user-injured"></i> Patient</span>
+                                    <span class="chat-type patient"><i class="fas fa-user-injured"></i> {% trans "Patient" %}</span>
                                     {% if request.user.user_type == 'clinic' %}
                                         {{ other.username }}
                                     {% else %}
@@ -1143,7 +1158,7 @@
                                 {% if other.clinic %}
                                     <span class="status-indicator">
                                         <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
-                                        {% if other.is_online %}Online now{% else %}Offline{% endif %}
+                                        {% if other.is_online %}{% trans "Online now" %}{% else %}{% trans "Offline" %}{% endif %}
                                     </span>
                                     {% if other.clinic.city %}
                                         <span><i class="fas fa-map-marker-alt"></i> {{ other.clinic.city }}</span>
@@ -1151,7 +1166,7 @@
                                 {% elif other.patient %}
                                     <span class="status-indicator">
                                         <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
-                                        {% if other.is_online %}Online now{% else %}Offline{% endif %}
+                                        {% if other.is_online %}{% trans "Online now" %}{% else %}{% trans "Offline" %}{% endif %}
                                     </span>
                                     {% if other.patient.city %}
                                         <span><i class="fas fa-map-marker-alt"></i> {{ other.patient.city }}</span>
@@ -1167,7 +1182,7 @@
 
                         <!-- Last Activity Time -->
                         {% if room.last_message_at %}
-                            <span class="time-ago">{{ room.last_message_at|timesince }} ago</span>
+                            <span class="time-ago">{% blocktrans with time_since=room.last_message_at|timesince %}{{ time_since }} ago{% endblocktrans %}</span>
                         {% endif %}
                     </a>
                     {% endwith %}
@@ -1176,18 +1191,18 @@
                         <div class="no-chats-icon">
                             <i class="fas fa-comments"></i>
                         </div>
-                        <h3>No conversations yet</h3>
+                        <h3>{% trans "No conversations yet" %}</h3>
                         <p>
                             {% if request.user.user_type == 'patient' %}
-                                Start chatting with clinics by connecting with them from their profile pages.
+                                {% trans "Start chatting with clinics by connecting with them from their profile pages." %}
                             {% else %}
-                                Connect with patients to start conversations about their treatment.
+                                {% trans "Connect with patients to start conversations about their treatment." %}
                             {% endif %}
                         </p>
                         {% if request.user.user_type == 'patient' %}
                             <a href="{% url 'search_clinics' %}" class="btn btn-primary">
                                 <i class="fas fa-search"></i>
-                                Find Clinics to Chat With
+                                {% trans "Find Clinics to Chat With" %}
                             </a>
                         {% endif %}
                     </div>
@@ -1236,7 +1251,7 @@
             }
             
             headerSearchTimeout = setTimeout(() => {
-                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 headerSearchResults.style.display = 'block';
                 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1278,7 +1293,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1290,7 +1305,7 @@
                     headerSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     headerSearchResults.style.display = 'block';
@@ -1367,9 +1382,9 @@
         
         // Mark all as read
         function markAllAsRead() {
-            if (confirm('Mark all messages as read?')) {
+            if (confirm('{% trans "Mark all messages as read?" %}')) {
                 // In a real app, this would call an API
-                showNotification('All messages marked as read', 'success');
+                showNotification('{% trans "All messages marked as read" %}', 'success');
                 // Reload the page after 1 second
                 setTimeout(() => {
                     window.location.reload();
@@ -1431,7 +1446,7 @@
             // Ctrl/Cmd + N to start new chat
             if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
                 e.preventDefault();
-                if (window.confirm('Start a new chat?')) {
+                if (window.confirm('{% trans "Start a new chat?" %}')) {
                     window.location.href = "{% url 'search_clinics' %}";
                 }
             }

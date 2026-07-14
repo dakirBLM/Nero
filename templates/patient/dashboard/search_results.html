@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}{% load i18n %}
 {% block content %}
 <div class="search-results-container" style="max-width: 720px; margin: 0 auto; padding: 24px; display:grid; gap:18px;">
     {% if patient_results %}
     <section class="results-section">
-        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">Patients</h3>
+        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">{% trans "Patients" %}</h3>
         <ul class="results-list" style="list-style:none; margin:0; padding:0; display:grid; gap:10px;">
             {% for patient in patient_results %}
                 <li>
@@ -27,7 +28,7 @@
 
     {% if clinic_results %}
     <section class="results-section">
-        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">Clinics</h3>
+        <h3 style="font-size:14px; font-weight:700; color:#334155; margin-bottom:10px;">{% trans "Clinics" %}</h3>
         <ul class="results-list" style="list-style:none; margin:0; padding:0; display:grid; gap:10px;">
             {% for clinic in clinic_results %}
                 <li>
@@ -51,7 +52,7 @@
 
     {% if not patient_results and not clinic_results %}
         <div style="padding: 20px; text-align: center; color: #64748b;">
-            No results found.
+            {% trans "No results found." %}
         </div>
     {% endif %}
 </div>

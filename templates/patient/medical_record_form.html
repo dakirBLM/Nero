@@ -1,12 +1,12 @@
-{% load static file_extras %}
+{% load static file_extras %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Medical Record • NERO</title>
+    <title>{% trans "Complete Medical Record" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles - Matching Dashboard */
@@ -1185,11 +1185,27 @@
             background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
         }
         {% include 'includes/search_bar_styles.html' %}
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar,[dir="rtl"] .main-header .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .search-icon,[dir="rtl"] .main-header .search-icon{left:auto;right:16px}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .dropdown-list li a:hover{padding-left:16px;padding-right:20px}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
+        [dir="rtl"] .progress-bar{left:auto;right:0}
+        [dir="rtl"] .form-label .required{margin-left:0;margin-right:4px}
+        [dir="rtl"] .error-list ul{padding-left:0;padding-right:20px}
     </style>
 </head>
 <body>
     <!-- Main Header - Exact Match with Dashboard -->
-    {% include 'includes/patient_nav.html' with active='' search_placeholder='Search clinics, patients, or topics...' %}
+    {% include 'includes/patient_nav.html' with active='' search_placeholder=_('Search clinics, patients, or topics...') %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1200,7 +1216,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -1209,12 +1225,12 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Complete your medical record for personalized care." }}
+                    {{ patient.bio|default:_("Complete your medical record for personalized care.") }}
                 </div>
             </div>
 
@@ -1222,34 +1238,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item active">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1258,11 +1274,11 @@
         <div class="main-content">
             <!-- Breadcrumb -->
             <div class="breadcrumb">
-                <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+                <a href="{% url 'patient_dashboard' %}">{% trans "Dashboard" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <a href="{% url 'patient_medical_records' %}">Medical Records</a>
+                <a href="{% url 'patient_medical_records' %}">{% trans "Medical Records" %}</a>
                 <span class="breadcrumb-separator">/</span>
-                <span>{{ medical_record.id|default:'New Medical Record' }}</span>
+                <span>{{ medical_record.id|default:_('New Medical Record') }}</span>
             </div>
 
             <!-- Form Container -->
@@ -1270,31 +1286,31 @@
                 <!-- Form Header -->
                 <div class="form-header">
                     <div class="form-header-content">
-                        <h1><i class="fas fa-file-medical-alt"></i> Complete Your Medical Record</h1>
-                        <p>Provide comprehensive information for personalized healthcare recommendations</p>
+                        <h1><i class="fas fa-file-medical-alt"></i> {% trans "Complete Your Medical Record" %}</h1>
+                        <p>{% trans "Provide comprehensive information for personalized healthcare recommendations" %}</p>
                         
                         <!-- Progress Bar -->
                         <div class="form-progress">
                             <div class="progress-steps">
                                 <div class="progress-step" data-step="1">
                                     <div class="step-icon active"><i class="fas fa-user"></i></div>
-                                    <div class="step-label">Personal</div>
+                                    <div class="step-label">{% trans "Personal" %}</div>
                                 </div>
                                 <div class="progress-step" data-step="2">
                                     <div class="step-icon"><i class="fas fa-stethoscope"></i></div>
-                                    <div class="step-label">Medical</div>
+                                    <div class="step-label">{% trans "Medical" %}</div>
                                 </div>
                                 <div class="progress-step" data-step="3">
                                     <div class="step-icon"><i class="fas fa-wheelchair"></i></div>
-                                    <div class="step-label">Mobility</div>
+                                    <div class="step-label">{% trans "Mobility" %}</div>
                                 </div>
                                 <div class="progress-step" data-step="4">
                                     <div class="step-icon"><i class="fas fa-heartbeat"></i></div>
-                                    <div class="step-label">Health</div>
+                                    <div class="step-label">{% trans "Health" %}</div>
                                 </div>
                                 <div class="progress-step" data-step="5">
                                     <div class="step-icon"><i class="fas fa-file-upload"></i></div>
-                                    <div class="step-label">Files</div>
+                                    <div class="step-label">{% trans "Files" %}</div>
                                 </div>
                                 <div class="progress-bar" style="width: 0%"></div>
                             </div>
@@ -1306,7 +1322,7 @@
                 <div class="form-content">
                     {% if medical_form.errors %}
                     <div class="error-list">
-                        <strong><i class="fas fa-exclamation-triangle"></i> Please correct the following errors:</strong>
+                        <strong><i class="fas fa-exclamation-triangle"></i> {% trans "Please correct the following errors:" %}</strong>
                         <ul>
                             {% for field, errors in medical_form.errors.items %}
                                 {% for error in errors %}
@@ -1324,14 +1340,14 @@
                         <!-- Step 1: Personal Information -->
                         <div class="form-step active" data-step="1">
                             <div class="step-header">
-                                <h2 class="step-title"><i class="fas fa-user"></i> Personal Information</h2>
-                                <p class="step-description">Basic information about the patient</p>
+                                <h2 class="step-title"><i class="fas fa-user"></i> {% trans "Personal Information" %}</h2>
+                                <p class="step-description">{% trans "Basic information about the patient" %}</p>
                             </div>
                             
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label class="form-label" for="id_first_name">
-                                        <i class="fas fa-user"></i> First Name <span class="required">*</span>
+                                        <i class="fas fa-user"></i> {% trans "First Name" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.first_name }}
                                     {% if medical_form.first_name.errors %}
@@ -1341,7 +1357,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_last_name">
-                                        <i class="fas fa-user"></i> Last Name <span class="required">*</span>
+                                        <i class="fas fa-user"></i> {% trans "Last Name" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.last_name }}
                                     {% if medical_form.last_name.errors %}
@@ -1351,7 +1367,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_gender">
-                                        <i class="fas fa-venus-mars"></i> Gender <span class="required">*</span>
+                                        <i class="fas fa-venus-mars"></i> {% trans "Gender" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.gender }}
                                     {% if medical_form.gender.errors %}
@@ -1361,18 +1377,18 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_date_of_birth">
-                                        <i class="fas fa-birthday-cake"></i> Date of Birth <span class="required">*</span>
+                                        <i class="fas fa-birthday-cake"></i> {% trans "Date of Birth" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.date_of_birth }}
                                     {% if medical_form.date_of_birth.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.date_of_birth.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> Patient must be at least 13 years old</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% trans "Patient must be at least 13 years old" %}</div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_address">
-                                        <i class="fas fa-map-marker-alt"></i> Address <span class="required">*</span>
+                                        <i class="fas fa-map-marker-alt"></i> {% trans "Address" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.address }}
                                     {% if medical_form.address.errors %}
@@ -1382,7 +1398,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_country">
-                                        <i class="fas fa-globe"></i> Country <span class="required">*</span>
+                                        <i class="fas fa-globe"></i> {% trans "Country" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.country }}
                                     {% if medical_form.country.errors %}
@@ -1392,7 +1408,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_email">
-                                        <i class="fas fa-envelope"></i> Email Address
+                                        <i class="fas fa-envelope"></i> {% trans "Email Address" %}
                                     </label>
                                     {{ medical_form.email }}
                                     {% if medical_form.email.errors %}
@@ -1402,7 +1418,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_mobile_number">
-                                        <i class="fas fa-phone"></i> Mobile Number
+                                        <i class="fas fa-phone"></i> {% trans "Mobile Number" %}
                                     </label>
                                     {{ medical_form.mobile_number }}
                                     {% if medical_form.mobile_number.errors %}
@@ -1412,7 +1428,7 @@
 
                                 <div class="form-group">
                                     <label class="form-label" for="id_whatsapp_number">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp Number
+                                        <i class="fab fa-whatsapp"></i> {% trans "WhatsApp Number" %}
                                     </label>
                                     {{ medical_form.whatsapp_number }}
                                     {% if medical_form.whatsapp_number.errors %}
@@ -1425,10 +1441,10 @@
                                 <div class="step-buttons">
                                     <button type="button" class="btn btn-secondary" onclick="window.history.back()">
                                         <i class="fas fa-times"></i>
-                                        Cancel
+                                        {% trans "Cancel" %}
                                     </button>
                                     <button type="button" class="btn btn-primary next-step" data-next="2">
-                                        Next: Medical Details
+                                        {% trans "Next: Medical Details" %}
                                         <i class="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
@@ -1438,14 +1454,14 @@
                         <!-- Step 2: Medical Details -->
                         <div class="form-step" data-step="2">
                             <div class="step-header">
-                                <h2 class="step-title"><i class="fas fa-stethoscope"></i> Medical Details</h2>
-                                <p class="step-description">Medical history and current conditions</p>
+                                <h2 class="step-title"><i class="fas fa-stethoscope"></i> {% trans "Medical Details" %}</h2>
+                                <p class="step-description">{% trans "Medical history and current conditions" %}</p>
                             </div>
                             
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label class="form-label" for="id_main_diagnosis">
-                                        <i class="fas fa-diagnoses"></i> Main Diagnosis <span class="required">*</span>
+                                        <i class="fas fa-diagnoses"></i> {% trans "Main Diagnosis" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.main_diagnosis }}
                                     {% if medical_form.main_diagnosis.errors %}
@@ -1455,7 +1471,7 @@
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_injury_date">
-                                        <i class="fas fa-calendar-alt"></i> Injury/Illness Date <span class="required">*</span>
+                                        <i class="fas fa-calendar-alt"></i> {% trans "Injury/Illness Date" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.injury_date }}
                                     {% if medical_form.injury_date.errors %}
@@ -1465,72 +1481,72 @@
 
                                 <div class="form-group">
                                     <label class="form-label" for="id_height">
-                                        <i class="fas fa-ruler-vertical"></i> Height (cm) <span class="required">*</span>
+                                        <i class="fas fa-ruler-vertical"></i> {% trans "Height (cm)" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.height }}
                                     {% if medical_form.height.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.height.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> Enter height in centimeters</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% trans "Enter height in centimeters" %}</div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_weight">
-                                        <i class="fas fa-weight"></i> Weight (kg) <span class="required">*</span>
+                                        <i class="fas fa-weight"></i> {% trans "Weight (kg)" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.weight }}
                                     {% if medical_form.weight.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.weight.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> Enter weight in kilograms</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% trans "Enter weight in kilograms" %}</div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_current_medications">
-                                        <i class="fas fa-pills"></i> Current Medications <span class="required">*</span>
+                                        <i class="fas fa-pills"></i> {% trans "Current Medications" %} <span class="required">*</span>
                                     </label>
-                                    <label class="form-label" for="id_current_medications_choice">Any current medications?</label>
+                                    <label class="form-label" for="id_current_medications_choice">{% trans "Any current medications?" %}</label>
                                     <select id="id_current_medications_choice" class="form-control" style="margin-bottom: 10px;">
-                                        <option value="no">No</option>
-                                        <option value="yes">Yes</option>
+                                        <option value="no">{% trans "No" %}</option>
+                                        <option value="yes">{% trans "Yes" %}</option>
                                     </select>
                                     {{ medical_form.current_medications }}
                                     {% if medical_form.current_medications.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.current_medications.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% blocktrans %}If Yes, explain details. If No, it will be set to "I don't have any".{% endblocktrans %}</div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_allergies">
-                                        <i class="fas fa-allergies"></i> Allergies <span class="required">*</span>
+                                        <i class="fas fa-allergies"></i> {% trans "Allergies" %} <span class="required">*</span>
                                     </label>
-                                    <label class="form-label" for="id_allergies_choice">Any allergies?</label>
+                                    <label class="form-label" for="id_allergies_choice">{% trans "Any allergies?" %}</label>
                                     <select id="id_allergies_choice" class="form-control" style="margin-bottom: 10px;">
-                                        <option value="no">No</option>
-                                        <option value="yes">Yes</option>
+                                        <option value="no">{% trans "No" %}</option>
+                                        <option value="yes">{% trans "Yes" %}</option>
                                     </select>
                                     {{ medical_form.allergies }}
                                     {% if medical_form.allergies.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.allergies.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% blocktrans %}If Yes, explain details. If No, it will be set to "I don't have any".{% endblocktrans %}</div>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label class="form-label" for="id_previous_surgeries">
-                                        <i class="fas fa-procedures"></i> Previous Surgeries <span class="required">*</span>
+                                        <i class="fas fa-procedures"></i> {% trans "Previous Surgeries" %} <span class="required">*</span>
                                     </label>
-                                    <label class="form-label" for="id_previous_surgeries_choice">Any previous surgeries?</label>
+                                    <label class="form-label" for="id_previous_surgeries_choice">{% trans "Any previous surgeries?" %}</label>
                                     <select id="id_previous_surgeries_choice" class="form-control" style="margin-bottom: 10px;">
-                                        <option value="no">No</option>
-                                        <option value="yes">Yes</option>
+                                        <option value="no">{% trans "No" %}</option>
+                                        <option value="yes">{% trans "Yes" %}</option>
                                     </select>
                                     {{ medical_form.previous_surgeries }}
                                     {% if medical_form.previous_surgeries.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.previous_surgeries.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> If Yes, explain details. If No, it will be set to "I don't have any".</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% blocktrans %}If Yes, explain details. If No, it will be set to "I don't have any".{% endblocktrans %}</div>
                                 </div>
                                 
                             </div>
@@ -1539,10 +1555,10 @@
                                 <div class="step-buttons">
                                     <button type="button" class="btn btn-text prev-step" data-prev="1">
                                         <i class="fas fa-arrow-left"></i>
-                                        Previous
+                                        {% trans "Previous" %}
                                     </button>
                                     <button type="button" class="btn btn-primary next-step" data-next="3">
-                                        Next: Mobility Assessment
+                                        {% trans "Next: Mobility Assessment" %}
                                         <i class="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
@@ -1552,15 +1568,15 @@
                         <!-- Step 3: Mobility Assessment -->
                         <div class="form-step" data-step="3">
                             <div class="step-header">
-                                <h2 class="step-title"><i class="fas fa-wheelchair"></i> Mobility Assessment</h2>
-                                <p class="step-description">Information about movement ability and assistive devices</p>
+                                <h2 class="step-title"><i class="fas fa-wheelchair"></i> {% trans "Mobility Assessment" %}</h2>
+                                <p class="step-description">{% trans "Information about movement ability and assistive devices" %}</p>
                             </div>
                             
                             <div class="form-grid">
                                 <!-- Movement Ability -->
                                 <div class="form-group">
                                     <label class="form-label" for="id_movement_ability">
-                                        <i class="fas fa-walking"></i> Movement Ability <span class="required">*</span>
+                                        <i class="fas fa-walking"></i> {% trans "Movement Ability" %} <span class="required">*</span>
                                     </label>
                                     {{ medical_form.movement_ability }}
                                     {% if medical_form.movement_ability.errors %}
@@ -1573,29 +1589,29 @@
                                     <div class="toggle-header" onclick="toggleSection('assistiveDevicesSection')">
                                         <div class="toggle-title">
                                             <i class="fas fa-chevron-down toggle-icon"></i>
-                                            <i class="fas fa-wheelchair"></i> Assistive Devices Used
+                                            <i class="fas fa-wheelchair"></i> {% trans "Assistive Devices Used" %}
                                         </div>
                                     </div>
                                     <div class="toggle-content">
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_wheelchair }}
-                                            <label for="id_uses_wheelchair">Uses Wheelchair</label>
+                                            <label for="id_uses_wheelchair">{% trans "Uses Wheelchair" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_walker }}
-                                            <label for="id_uses_walker">Uses Walker</label>
+                                            <label for="id_uses_walker">{% trans "Uses Walker" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_crutch }}
-                                            <label for="id_uses_crutch">Uses Crutch</label>
+                                            <label for="id_uses_crutch">{% trans "Uses Crutch" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_electric_wheelchair }}
-                                            <label for="id_uses_electric_wheelchair">Uses Electric Wheelchair</label>
+                                            <label for="id_uses_electric_wheelchair">{% trans "Uses Electric Wheelchair" %}</label>
                                         </div>
                                     </div>
                                     {% if medical_form.uses_wheelchair.errors or medical_form.uses_walker.errors or medical_form.uses_crutch.errors or medical_form.uses_electric_wheelchair.errors %}
-                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable assistive devices</div>
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable assistive devices" %}</div>
                                     {% endif %}
                                 </div>
                                 
@@ -1604,37 +1620,37 @@
                                     <div class="toggle-header" onclick="toggleSection('bladderBowelSection')">
                                         <div class="toggle-title">
                                             <i class="fas fa-chevron-down toggle-icon"></i>
-                                            <i class="fas fa-toilet"></i> Bladder & Bowel Function
+                                            <i class="fas fa-toilet"></i> {% trans "Bladder & Bowel Function" %}
                                         </div>
                                     </div>
                                     <div class="toggle-content">
                                         <div class="checkbox-item">
                                             {{ medical_form.bowel_control }}
-                                            <label for="id_bowel_control">Bowel Control</label>
+                                            <label for="id_bowel_control">{% trans "Bowel Control" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.urine_control }}
-                                            <label for="id_urine_control">Urine Control</label>
+                                            <label for="id_urine_control">{% trans "Urine Control" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_permanent_catheter }}
-                                            <label for="id_uses_permanent_catheter">Uses Permanent Catheter</label>
+                                            <label for="id_uses_permanent_catheter">{% trans "Uses Permanent Catheter" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_intermittent_catheter }}
-                                            <label for="id_uses_intermittent_catheter">Uses Intermittent Catheter</label>
+                                            <label for="id_uses_intermittent_catheter">{% trans "Uses Intermittent Catheter" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_medical_condom }}
-                                            <label for="id_uses_medical_condom">Uses Medical Condom</label>
+                                            <label for="id_uses_medical_condom">{% trans "Uses Medical Condom" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_diapers }}
-                                            <label for="id_uses_diapers">Uses Diapers</label>
+                                            <label for="id_uses_diapers">{% trans "Uses Diapers" %}</label>
                                         </div>
                                     </div>
                                     {% if medical_form.bowel_control.errors or medical_form.urine_control.errors %}
-                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable options</div>
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable options" %}</div>
                                     {% endif %}
                                 </div>
                                 
@@ -1643,33 +1659,33 @@
                                     <div class="toggle-header" onclick="toggleSection('independentFunctionsSection')">
                                         <div class="toggle-title">
                                             <i class="fas fa-chevron-down toggle-icon"></i>
-                                            <i class="fas fa-user-check"></i> Independent Functions
+                                            <i class="fas fa-user-check"></i> {% trans "Independent Functions" %}
                                         </div>
                                     </div>
                                     <div class="toggle-content">
                                         <div class="checkbox-item">
                                             {{ medical_form.can_breathe_normally }}
-                                            <label for="id_can_breathe_normally">Can Breathe Normally</label>
+                                            <label for="id_can_breathe_normally">{% trans "Can Breathe Normally" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.can_eat_independently }}
-                                            <label for="id_can_eat_independently">Can Eat Independently</label>
+                                            <label for="id_can_eat_independently">{% trans "Can Eat Independently" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.can_dress_independently }}
-                                            <label for="id_can_dress_independently">Can Dress Independently</label>
+                                            <label for="id_can_dress_independently">{% trans "Can Dress Independently" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.is_aware_and_cooperative }}
-                                            <label for="id_is_aware_and_cooperative">Is Aware and Cooperative</label>
+                                            <label for="id_is_aware_and_cooperative">{% trans "Is Aware and Cooperative" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.is_self_reliant }}
-                                            <label for="id_is_self_reliant">Is Self-Reliant</label>
+                                            <label for="id_is_self_reliant">{% trans "Is Self-Reliant" %}</label>
                                         </div>
                                     </div>
                                     {% if medical_form.can_breathe_normally.errors or medical_form.can_eat_independently.errors %}
-                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable functions</div>
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable functions" %}</div>
                                     {% endif %}
                                 </div>
                                 
@@ -1678,25 +1694,25 @@
                                     <div class="toggle-header" onclick="toggleSection('medicalTubesSection')">
                                         <div class="toggle-title">
                                             <i class="fas fa-chevron-down toggle-icon"></i>
-                                            <i class="fas fa-tube"></i> Medical Tubes
+                                            <i class="fas fa-tube"></i> {% trans "Medical Tubes" %}
                                         </div>
                                     </div>
                                     <div class="toggle-content">
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_feeding_tube }}
-                                            <label for="id_uses_feeding_tube">Uses Feeding Tube</label>
+                                            <label for="id_uses_feeding_tube">{% trans "Uses Feeding Tube" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_stool_tube }}
-                                            <label for="id_uses_stool_tube">Uses Stool Tube</label>
+                                            <label for="id_uses_stool_tube">{% trans "Uses Stool Tube" %}</label>
                                         </div>
                                         <div class="checkbox-item">
                                             {{ medical_form.uses_urine_tube }}
-                                            <label for="id_uses_urine_tube">Uses Urine Tube</label>
+                                            <label for="id_uses_urine_tube">{% trans "Uses Urine Tube" %}</label>
                                         </div>
                                     </div>
                                     {% if medical_form.uses_feeding_tube.errors or medical_form.uses_stool_tube.errors or medical_form.uses_urine_tube.errors %}
-                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> Please check all applicable medical tubes</div>
+                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable medical tubes" %}</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -1705,10 +1721,10 @@
                                 <div class="step-buttons">
                                     <button type="button" class="btn btn-text prev-step" data-prev="2">
                                         <i class="fas fa-arrow-left"></i>
-                                        Previous
+                                        {% trans "Previous" %}
                                     </button>
                                     <button type="button" class="btn btn-primary next-step" data-next="4">
-                                        Next: Health Conditions
+                                        {% trans "Next: Health Conditions" %}
                                         <i class="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
@@ -1718,14 +1734,14 @@
                         <!-- Step 4: Health Conditions -->
                         <div class="form-step" data-step="4">
                             <div class="step-header">
-                                <h2 class="step-title"><i class="fas fa-heartbeat"></i> Health Conditions</h2>
-                                <p class="step-description">Existing medical conditions and health status</p>
+                                <h2 class="step-title"><i class="fas fa-heartbeat"></i> {% trans "Health Conditions" %}</h2>
+                                <p class="step-description">{% trans "Existing medical conditions and health status" %}</p>
                             </div>
                             
                             <div class="form-grid">
                                 <div class="checkbox-item">
                                     {{ medical_form.has_bedsores }}
-                                    <label for="id_has_bedsores">Has Bedsores</label>
+                                    <label for="id_has_bedsores">{% trans "Has Bedsores" %}</label>
                                     {% if medical_form.has_bedsores.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_bedsores.errors.0 }}</div>
                                     {% endif %}
@@ -1733,7 +1749,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_diabetes }}
-                                    <label for="id_has_diabetes">Has Diabetes</label>
+                                    <label for="id_has_diabetes">{% trans "Has Diabetes" %}</label>
                                     {% if medical_form.has_diabetes.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_diabetes.errors.0 }}</div>
                                     {% endif %}
@@ -1741,7 +1757,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.uses_insulin }}
-                                    <label for="id_uses_insulin">Uses Insulin</label>
+                                    <label for="id_uses_insulin">{% trans "Uses Insulin" %}</label>
                                     {% if medical_form.uses_insulin.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.uses_insulin.errors.0 }}</div>
                                     {% endif %}
@@ -1749,7 +1765,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_heart_problems }}
-                                    <label for="id_has_heart_problems">Has Heart Problems</label>
+                                    <label for="id_has_heart_problems">{% trans "Has Heart Problems" %}</label>
                                     {% if medical_form.has_heart_problems.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_heart_problems.errors.0 }}</div>
                                     {% endif %}
@@ -1757,7 +1773,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_high_blood_pressure }}
-                                    <label for="id_has_high_blood_pressure">Has High Blood Pressure</label>
+                                    <label for="id_has_high_blood_pressure">{% trans "Has High Blood Pressure" %}</label>
                                     {% if medical_form.has_high_blood_pressure.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_high_blood_pressure.errors.0 }}</div>
                                     {% endif %}
@@ -1765,7 +1781,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_infectious_diseases }}
-                                    <label for="id_has_infectious_diseases">Has Infectious Diseases</label>
+                                    <label for="id_has_infectious_diseases">{% trans "Has Infectious Diseases" %}</label>
                                     {% if medical_form.has_infectious_diseases.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_infectious_diseases.errors.0 }}</div>
                                     {% endif %}
@@ -1773,7 +1789,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_vein_thrombosis }}
-                                    <label for="id_has_vein_thrombosis">Has Vein Thrombosis</label>
+                                    <label for="id_has_vein_thrombosis">{% trans "Has Vein Thrombosis" %}</label>
                                     {% if medical_form.has_vein_thrombosis.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_vein_thrombosis.errors.0 }}</div>
                                     {% endif %}
@@ -1781,7 +1797,7 @@
                                 
                                 <div class="checkbox-item">
                                     {{ medical_form.has_depression }}
-                                    <label for="id_has_depression">Has Depression</label>
+                                    <label for="id_has_depression">{% trans "Has Depression" %}</label>
                                     {% if medical_form.has_depression.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.has_depression.errors.0 }}</div>
                                     {% endif %}
@@ -1792,10 +1808,10 @@
                                 <div class="step-buttons">
                                     <button type="button" class="btn btn-text prev-step" data-prev="3">
                                         <i class="fas fa-arrow-left"></i>
-                                        Previous
+                                        {% trans "Previous" %}
                                     </button>
                                     <button type="button" class="btn btn-primary next-step" data-next="5">
-                                        Next: File Uploads
+                                        {% trans "Next: File Uploads" %}
                                         <i class="fas fa-arrow-right"></i>
                                     </button>
                                 </div>
@@ -1805,21 +1821,21 @@
                         <!-- Step 5: File Uploads -->
                         <div class="form-step" data-step="5">
                             <div class="step-header">
-                                <h2 class="step-title"><i class="fas fa-file-upload"></i> File Uploads</h2>
-                                <p class="step-description">Upload medical reports and movement videos</p>
+                                <h2 class="step-title"><i class="fas fa-file-upload"></i> {% trans "File Uploads" %}</h2>
+                                <p class="step-description">{% trans "Upload medical reports and movement videos" %}</p>
                             </div>
                             
                             <div class="form-grid">
                                 <div class="form-group file-upload">
                                     <label class="form-label" for="id_medical_reports">
-                                        <i class="fas fa-file-medical"></i> Medical Reports
+                                        <i class="fas fa-file-medical"></i> {% trans "Medical Reports" %}
                                     </label>
                                     {{ medical_form.medical_reports }}
                                     <input type="file" name="medical_report_files" id="id_medical_report_files" multiple accept=".pdf,.jpg,.jpeg,.png" style="margin-top:10px;">
                                     {% if medical_form.medical_reports.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.medical_reports.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> You can upload one or many files (PDF/JPG/JPEG/PNG, max 3MB each).</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% trans "You can upload one or many files (PDF/JPG/JPEG/PNG, max 3MB each)." %}</div>
                                     <div class="file-preview" id="medicalReportsPreview" style="display: none;">
                                         <div class="file-icon">
                                             <i class="fas fa-file-pdf"></i>
@@ -1836,11 +1852,11 @@
                                     <div class="file-preview" id="existingMedicalReportPreview" style="display: flex; margin-top:12px;">
                                         <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
                                         <div class="file-info">
-                                            <div class="file-name">Existing medical report</div>
+                                            <div class="file-name">{% trans "Existing medical report" %}</div>
                                             <div class="file-size">{{ medical_record.medical_reports.name|basename }}</div>
                                         </div>
                                         <a href="{% url 'secure_medical_report_download' medical_record.id %}" class="action-btn download" style="margin-left:12px; padding:8px 10px;">
-                                            <i class="fas fa-download"></i> Download
+                                            <i class="fas fa-download"></i> {% trans "Download" %}
                                         </a>
                                         <button type="button" class="file-remove" onclick="clearFile('medical_reports')">
                                             <i class="fas fa-times"></i>
@@ -1852,11 +1868,11 @@
                                         <div class="file-preview" style="display:flex; margin-top:12px;">
                                             <div class="file-icon"><i class="fas fa-file-medical"></i></div>
                                             <div class="file-info">
-                                                <div class="file-name">Additional report</div>
+                                                <div class="file-name">{% trans "Additional report" %}</div>
                                                 <div class="file-size">{{ report.file.name|basename }}</div>
                                             </div>
                                             <a href="{% url 'secure_encrypted_media' report.file.name %}" class="action-btn download" style="margin-left:12px; padding:8px 10px;">
-                                                <i class="fas fa-download"></i> Download
+                                                <i class="fas fa-download"></i> {% trans "Download" %}
                                             </a>
                                         </div>
                                         {% endfor %}
@@ -1865,14 +1881,14 @@
                                 
                                 <div class="form-group file-upload">
                                     <label class="form-label" for="id_patient_movement_video">
-                                        <i class="fas fa-video"></i> Movement Video
+                                        <i class="fas fa-video"></i> {% trans "Movement Video" %}
                                     </label>
                                     {{ medical_form.patient_movement_video }}
                                     <input type="file" name="movement_video_files" id="id_movement_video_files" multiple accept=".mp4" style="margin-top:10px;">
                                     {% if medical_form.patient_movement_video.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.patient_movement_video.errors.0 }}</div>
                                     {% endif %}
-                                    <div class="help-text"><i class="fas fa-info-circle"></i> You can upload one or many MP4 videos (max 50MB each).</div>
+                                    <div class="help-text"><i class="fas fa-info-circle"></i> {% trans "You can upload one or many MP4 videos (max 50MB each)." %}</div>
                                     <div class="file-preview" id="movementVideoPreview" style="display: none;">
                                         <div class="file-icon">
                                             <i class="fas fa-file-video"></i>
@@ -1889,11 +1905,11 @@
                                     <div class="file-preview" id="existingMovementVideoPreview" style="display: flex; margin-top:12px;">
                                         <div class="file-icon"><i class="fas fa-file-video"></i></div>
                                         <div class="file-info">
-                                            <div class="file-name">Existing movement video</div>
+                                            <div class="file-name">{% trans "Existing movement video" %}</div>
                                             <div class="file-size">{{ medical_record.patient_movement_video.name|basename }}</div>
                                         </div>
                                         <a href="{% url 'secure_movement_video_view' medical_record.id %}" target="_blank" class="action-btn view" style="margin-left:12px; padding:8px 10px;">
-                                            <i class="fas fa-play"></i> Play
+                                            <i class="fas fa-play"></i> {% trans "Play" %}
                                         </a>
                                         <button type="button" class="file-remove" onclick="clearFile('patient_movement_video')">
                                             <i class="fas fa-times"></i>
@@ -1905,11 +1921,11 @@
                                         <div class="file-preview" style="display:flex; margin-top:12px;">
                                             <div class="file-icon"><i class="fas fa-file-video"></i></div>
                                             <div class="file-info">
-                                                <div class="file-name">Additional movement video</div>
+                                                <div class="file-name">{% trans "Additional movement video" %}</div>
                                                 <div class="file-size">{{ video.file.name|basename }}</div>
                                             </div>
                                             <a href="{% url 'secure_encrypted_media' video.file.name %}" target="_blank" class="action-btn view" style="margin-left:12px; padding:8px 10px;">
-                                                <i class="fas fa-play"></i> Play
+                                                <i class="fas fa-play"></i> {% trans "Play" %}
                                             </a>
                                         </div>
                                         {% endfor %}
@@ -1921,11 +1937,11 @@
                                 <div class="step-buttons">
                                     <button type="button" class="btn btn-text prev-step" data-prev="4">
                                         <i class="fas fa-arrow-left"></i>
-                                        Previous
+                                        {% trans "Previous" %}
                                     </button>
                                     <button type="submit" class="btn btn-primary" id="submitBtn">
                                         <i class="fas fa-check-circle"></i>
-                                        Submit Medical Record
+                                        {% trans "Submit Medical Record" %}
                                     </button>
                                 </div>
                             </div>
@@ -1977,7 +1993,7 @@
                 }
 
                 dashSearchTimeout = setTimeout(() => {
-                    dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                    dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                     dashSearchResults.style.display = 'block';
 
                     fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -2019,7 +2035,7 @@
                             results = `
                                 <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                     <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                    <p>No results found for "${query}"</p>
+                                    <p>{% trans "No results found for" %} "${query}"</p>
                                 </div>
                             `;
                         }
@@ -2031,7 +2047,7 @@
                         dashSearchResults.innerHTML = `
                             <div style="padding: 20px; text-align: center; color: #ef4444;">
                                 <i class="fas fa-exclamation-circle"></i>
-                                <p>Search failed. Please try again.</p>
+                                <p>{% trans "Search failed. Please try again." %}</p>
                             </div>
                         `;
                         dashSearchResults.style.display = 'block';
@@ -2077,7 +2093,7 @@
                         }
                         textarea.readOnly = false;
                         textarea.required = true;
-                        textarea.placeholder = 'Please explain the situation in detail';
+                        textarea.placeholder = '{% trans "Please explain the situation in detail" %}';
                     } else {
                         textarea.value = noText;
                         textarea.readOnly = true;
@@ -2161,13 +2177,13 @@
                 
                 if (!allValid) {
                     e.preventDefault();
-                    showNotification('Please fix all errors before submitting.', 'error');
+                    showNotification('{% trans "Please fix all errors before submitting." %}', 'error');
                     return false;
                 }
                 
                 // Show loading state
                 const submitBtn = document.getElementById('submitBtn');
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Submitting..." %}';
                 submitBtn.disabled = true;
                 submitBtn.classList.add('loading');
                 return true;
@@ -2187,7 +2203,7 @@
                     const dob = new Date(this.value);
                     const age = calculateAge(dob);
                     if (age < 13) {
-                        showFieldError(this, 'Patient must be at least 13 years old');
+                        showFieldError(this, '{% trans "Patient must be at least 13 years old" %}');
                         this.value = '';
                     } else {
                         clearFieldError(this);
@@ -2200,7 +2216,7 @@
             if (emailField) {
                 emailField.addEventListener('blur', function() {
                     if (this.value && !isValidEmail(this.value)) {
-                        showFieldError(this, 'Please enter a valid email address');
+                        showFieldError(this, '{% trans "Please enter a valid email address" %}');
                     } else {
                         clearFieldError(this);
                     }
@@ -2283,14 +2299,14 @@
                 } else if (field.type === 'select-one') {
                     // For select fields
                     if (!field.value) {
-                        showFieldError(field, 'This field is required');
+                        showFieldError(field, '{% trans "This field is required" %}');
                         isValid = false;
                     } else {
                         clearFieldError(field);
                     }
                 } else if (!field.value.trim()) {
                     // For text inputs, textareas, etc.
-                    showFieldError(field, 'This field is required');
+                    showFieldError(field, '{% trans "This field is required" %}');
                     isValid = false;
                 } else {
                     clearFieldError(field);
@@ -2304,7 +2320,7 @@
                     const dob = new Date(dobField.value);
                     const age = calculateAge(dob);
                     if (age < 13) {
-                        showFieldError(dobField, 'Patient must be at least 13 years old');
+                        showFieldError(dobField, '{% trans "Patient must be at least 13 years old" %}');
                         isValid = false;
                     }
                 }
@@ -2314,7 +2330,7 @@
             if (stepNumber === '1') {
                 const emailField = document.getElementById('id_email');
                 if (emailField && emailField.value && !isValidEmail(emailField.value)) {
-                    showFieldError(emailField, 'Please enter a valid email address');
+                    showFieldError(emailField, '{% trans "Please enter a valid email address" %}');
                     isValid = false;
                 }
             }
@@ -2393,7 +2409,7 @@
                     // Validate file size
                     const maxSize = previewId === 'medicalReports' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB or 50MB
                     if (file.size > maxSize) {
-                        showFieldError(input, `File size exceeds maximum allowed size (${formatFileSize(maxSize)})`);
+                        showFieldError(input, `{% trans "File size exceeds maximum allowed size" %} (${formatFileSize(maxSize)})`);
                         clearFile(input.name);
                     } else {
                         clearFieldError(input);
@@ -2492,7 +2508,7 @@
             
             // Escape to cancel
             if (e.key === 'Escape') {
-                if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+                if (confirm('{% trans "Are you sure you want to cancel? All unsaved changes will be lost." %}')) {
                     window.history.back();
                 }
             }

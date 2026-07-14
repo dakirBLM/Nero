@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% load static %}{% load i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Clinic Sign Up - NERO</title>
-    {% load static %}
+    <title>{% trans "Clinic Sign Up - NERO" %}</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Instrument+Serif:ital@1&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -1118,6 +1117,16 @@
         .password-strength-bar.fair { width: 50%; background: #d69e2e; }
         .password-strength-bar.good { width: 75%; background: #38a169; }
         .password-strength-bar.strong { width: 100%; background: #2f855a; }
+
+        /* ================= RTL SUPPORT ================= */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .password-toggle{right:auto;left:14px}
+        [dir="rtl"] .password-wrapper .form-control{padding-right:20px;padding-left:52px}
+        [dir="rtl"] select.form-control{background-position:left 20px center;padding-right:20px;padding-left:40px}
+        [dir="rtl"] .form-label .required{margin-left:0;margin-right:3px}
+        [dir="rtl"] .error-list ul{padding-left:0;padding-right:20px}
+        [dir="rtl"] input[type="file"]::file-selector-button{margin-right:0;margin-left:10px}
     </style>
 </head>
 <body>
@@ -1127,15 +1136,15 @@
     <!-- Signup Container -->
     <div class="signup-container fade-in">
         <a href="{% url 'choice_page' %}" class="back-link">
-            ← Back to Choices
+            ← {% trans "Back to Choices" %}
         </a>
 
         <div class="signup-header">
-            <h1 class="signup-title">Clinic <span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">Registration</span></h1>
-            <p class="signup-subtitle">Register your clinic to connect with patients on NERO</p>
+            <h1 class="signup-title">{% trans "Clinic" %} <span style="font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400">{% trans "Registration" %}</span></h1>
+            <p class="signup-subtitle">{% trans "Register your clinic to connect with patients on NERO" %}</p>
             {% if google_prefill_mode %}
             <p class="signup-subtitle" style="margin-top: 8px; font-size: 14px; color: #6CA8C9; opacity: 1;">
-                Complete only your clinic information below. Your clinic profile will be created after submission.
+                {% trans "Complete only your clinic information below. Your clinic profile will be created after submission." %}
             </p>
             {% endif %}
         </div>
@@ -1151,12 +1160,12 @@
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
             </span>
-            Continue with Google
+            {% trans "Continue with Google" %}
         </a>
 
         <div class="divider-section">
             <div class="divider-line"></div>
-            <span class="divider-text">or sign up manually</span>
+            <span class="divider-text">{% trans "or sign up manually" %}</span>
             <div class="divider-line"></div>
         </div>
         {% endif %}
@@ -1164,7 +1173,7 @@
         <!-- Error Messages -->
         {% if form.errors %}
         <div class="error-list">
-            <strong>Please correct the following errors:</strong>
+            <strong>{% trans "Please correct the following errors:" %}</strong>
             <ul>
                 {% for field, errors in form.errors.items %}
                     {% for error in errors %}
@@ -1181,16 +1190,16 @@
 
             <!-- Section 1: Account Information -->
             <div class="form-section">
-                <h2>Account Information</h2>
+                <h2>{% trans "Account Information" %}</h2>
                 {% if google_prefill_mode %}
                 <p class="helper-text" style="margin-bottom: 16px; color: #2c5282;">
-                    Username and email are already filled from Google. You only need to complete clinic fields below.
+                    {% trans "Username and email are already filled from Google. You only need to complete clinic fields below." %}
                 </p>
                 {% endif %}
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="id_username" class="form-label">
-                            Username <span class="required">*</span>
+                            {% trans "Username" %} <span class="required">*</span>
                         </label>
                         {{ form.username }}
                         {% if form.username.errors %}
@@ -1200,7 +1209,7 @@
 
                     <div class="form-group">
                         <label for="id_email" class="form-label">
-                            Email Address <span class="required">*</span>
+                            {% trans "Email Address" %} <span class="required">*</span>
                         </label>
                         {{ form.email }}
                         {% if form.email.errors %}
@@ -1211,11 +1220,11 @@
                     {% if not google_prefill_mode %}
                     <div class="form-group">
                         <label for="id_password1" class="form-label">
-                            Password <span class="required">*</span>
+                            {% trans "Password" %} <span class="required">*</span>
                         </label>
                         <div class="password-wrapper">
                             {{ form.password1 }}
-                            <button type="button" class="password-toggle" id="passwordToggle1" aria-label="Show password" aria-pressed="false">
+                            <button type="button" class="password-toggle" id="passwordToggle1" aria-label="{% trans 'Show password' %}" aria-pressed="false">
                                 <svg id="eyeOpenIcon1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
@@ -1231,7 +1240,7 @@
                             <div class="password-strength-bar" id="passwordStrengthBar"></div>
                         </div>
                         <div class="helper-text">
-                            Use at least 8 characters with a mix of letters, numbers, and symbols
+                            {% trans "Use at least 8 characters with a mix of letters, numbers, and symbols" %}
                         </div>
                         {% if form.password1.errors %}
                             <div class="field-error">⚠ {{ form.password1.errors.0 }}</div>
@@ -1240,11 +1249,11 @@
 
                     <div class="form-group">
                         <label for="id_password2" class="form-label">
-                            Confirm Password <span class="required">*</span>
+                            {% trans "Confirm Password" %} <span class="required">*</span>
                         </label>
                         <div class="password-wrapper">
                             {{ form.password2 }}
-                            <button type="button" class="password-toggle" id="passwordToggle2" aria-label="Show password" aria-pressed="false">
+                            <button type="button" class="password-toggle" id="passwordToggle2" aria-label="{% trans 'Show password' %}" aria-pressed="false">
                                 <svg id="eyeOpenIcon2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
@@ -1267,11 +1276,11 @@
 
             <!-- Section 2: Clinic Information -->
             <div class="form-section">
-                <h2>Clinic Information</h2>
+                <h2>{% trans "Clinic Information" %}</h2>
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label for="id_clinic_name" class="form-label">
-                            Clinic Name <span class="required">*</span>
+                            {% trans "Clinic Name" %} <span class="required">*</span>
                         </label>
                         {{ form.clinic_name }}
                         {% if form.clinic_name.errors %}
@@ -1281,18 +1290,18 @@
 
                     <div class="form-group full-width">
                         <label for="id_tagline" class="form-label">
-                            Clinic Tagline
+                            {% trans "Clinic Tagline" %}
                         </label>
                         {{ form.tagline }}
-                        <div class="helper-text">Brief tagline that describes your clinic (appears on your profile)</div>
+                        <div class="helper-text">{% trans "Brief tagline that describes your clinic (appears on your profile)" %}</div>
                     </div>
 
                     <div class="form-group full-width">
                         <label for="id_description" class="form-label">
-                            Clinic Description <span class="required">*</span>
+                            {% trans "Clinic Description" %} <span class="required">*</span>
                         </label>
                         {{ form.description }}
-                        <div class="helper-text">Describe your clinic, your approach, and what makes you unique</div>
+                        <div class="helper-text">{% trans "Describe your clinic, your approach, and what makes you unique" %}</div>
                         {% if form.description.errors %}
                             <div class="field-error">⚠ {{ form.description.errors.0 }}</div>
                         {% endif %}
@@ -1300,7 +1309,7 @@
 
                     <div class="form-group full-width">
                         <label for="id_address" class="form-label">
-                            Address <span class="required">*</span>
+                            {% trans "Address" %} <span class="required">*</span>
                         </label>
                         {{ form.address }}
                         {% if form.address.errors %}
@@ -1310,7 +1319,7 @@
 
                     <div class="form-group">
                         <label for="id_city" class="form-label">
-                            City <span class="required">*</span>
+                            {% trans "City" %} <span class="required">*</span>
                         </label>
                         {{ form.city }}
                         {% if form.city.errors %}
@@ -1320,7 +1329,7 @@
 
                     <div class="form-group">
                         <label for="id_state" class="form-label">
-                            State <span class="required">*</span>
+                            {% trans "State" %} <span class="required">*</span>
                         </label>
                         {{ form.state }}
                         {% if form.state.errors %}
@@ -1330,7 +1339,7 @@
 
                     <div class="form-group">
                         <label for="id_country" class="form-label">
-                            Country <span class="required">*</span>
+                            {% trans "Country" %} <span class="required">*</span>
                         </label>
                         {{ form.country }}
                         {% if form.country.errors %}
@@ -1340,7 +1349,7 @@
 
                     <div class="form-group">
                         <label for="id_continent" class="form-label">
-                            Continent <span class="required">*</span>
+                            {% trans "Continent" %} <span class="required">*</span>
                         </label>
                         {{ form.continent }}
                         {% if form.continent.errors %}
@@ -1350,7 +1359,7 @@
 
                     <div class="form-group">
                         <label for="id_zip_code" class="form-label">
-                            ZIP Code <span class="required">*</span>
+                            {% trans "ZIP Code" %} <span class="required">*</span>
                         </label>
                         {{ form.zip_code }}
                         {% if form.zip_code.errors %}
@@ -1360,7 +1369,7 @@
 
                     <div class="form-group">
                         <label for="id_phone_number" class="form-label">
-                            Phone Number <span class="required">*</span>
+                            {% trans "Phone Number" %} <span class="required">*</span>
                         </label>
                         {{ form.phone_number }}
                         {% if form.phone_number.errors %}
@@ -1370,7 +1379,7 @@
 
                     <div class="form-group">
                         <label for="id_contact_email" class="form-label">
-                            Contact Email <span class="required">*</span>
+                            {% trans "Contact Email" %} <span class="required">*</span>
                         </label>
                         {{ form.contact_email }}
                         {% if form.contact_email.errors %}
@@ -1380,20 +1389,20 @@
 
                     <div class="form-group">
                         <label for="id_website" class="form-label">
-                            Website
+                            {% trans "Website" %}
                         </label>
                         {{ form.website }}
                     </div>
 
                     <div class="form-group">
                         <label for="id_google_maps_url" class="form-label">
-                            Google Maps Embed URL (Optional)
+                            {% trans "Google Maps Embed URL (Optional)" %}
                         </label>
                         {{ form.google_maps_url }}
                         <small class="form-help" style="display: block; margin-top: 5px; line-height: 1.6;">
-                            <strong style="color: #ef4444;">⚠ Must be EMBED URL</strong> (starts with https://www.google.com/maps/embed?pb=...)<br>
-                            <strong>Steps:</strong> Google Maps → Search address → Share → Embed a map → Copy HTML → Paste ONLY the URL from src="..."<br>
-                            <strong style="color: #ef4444;">Don't use short links</strong> like maps.app.goo.gl - they won't work!
+                            <strong style="color: #ef4444;">⚠ {% trans "Must be EMBED URL" %}</strong> {% trans "(starts with https://www.google.com/maps/embed?pb=...)" %}<br>
+                            <strong>{% trans "Steps:" %}</strong> {% trans 'Google Maps → Search address → Share → Embed a map → Copy HTML → Paste ONLY the URL from src="..."' %}<br>
+                            <strong style="color: #ef4444;">{% trans "Don't use short links" %}</strong> {% trans "like maps.app.goo.gl - they won't work!" %}
                         </small>
                     </div>
                 </div>
@@ -1401,11 +1410,11 @@
 
             <!-- Section 3: Professional Information -->
             <div class="form-section">
-                <h2>Professional Information</h2>
+                <h2>{% trans "Professional Information" %}</h2>
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label class="form-label">
-                            Type of Clinic <span class="required">*</span>
+                            {% trans "Type of Clinic" %} <span class="required">*</span>
                         </label>
                         <div class="checkbox-grid">
                             {% for value, label in form.specialization.field.choices %}
@@ -1422,7 +1431,7 @@
 
                     <div class="form-group">
                         <label for="id_established_date" class="form-label">
-                            Established Date <span class="required">*</span>
+                            {% trans "Established Date" %} <span class="required">*</span>
                         </label>
                         {{ form.established_date }}
                         {% if form.established_date.errors %}
@@ -1432,22 +1441,22 @@
 
                     <div class="form-group">
                         <label for="id_languages_spoken" class="form-label">
-                            Languages Spoken <span class="required">*</span>
+                            {% trans "Languages Spoken" %} <span class="required">*</span>
                         </label>
                         {{ form.languages_spoken }}
                     </div>
 
                     <div class="form-group full-width">
                         <label for="id_facilities" class="form-label">
-                            Facilities & Equipment
+                            {% trans "Facilities & Equipment" %}
                         </label>
                         {{ form.facilities }}
-                        <div class="helper-text">Available facilities and equipment (comma separated)</div>
+                        <div class="helper-text">{% trans "Available facilities and equipment (comma separated)" %}</div>
                     </div>
 
                     <div class="form-group full-width">
                         <label for="id_hours_of_operation" class="form-label">
-                            Hours of Operation <span class="required">*</span>
+                            {% trans "Hours of Operation" %} <span class="required">*</span>
                         </label>
                         {{ form.hours_of_operation }}
                         {% if form.hours_of_operation.errors %}
@@ -1459,7 +1468,7 @@
 
             <!-- Section 4: Clinic Capabilities -->
             <div class="form-section">
-                <h2>Clinic Capabilities</h2>
+                <h2>{% trans "Clinic Capabilities" %}</h2>
                 <div class="checkbox-grid">
                     {% for field in form %}
                         {% if field.name|slice:"0:8" == "accepts_" %}
@@ -1479,41 +1488,41 @@
 
             <!-- Section 5: Media & Social -->
             <div class="form-section">
-                <h2>Media & Social Links</h2>
+                <h2>{% trans "Media & Social Links" %}</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="id_profile_picture" class="form-label">
-                            Profile Picture
+                            {% trans "Profile Picture" %}
                         </label>
                         {{ form.profile_picture }}
-                        <div class="helper-text">Recommended: 400x400px square image</div>
+                        <div class="helper-text">{% trans "Recommended: 400x400px square image" %}</div>
                     </div>
 
                     <div class="form-group">
                         <label for="id_cover_photo" class="form-label">
-                            Cover Photo
+                            {% trans "Cover Photo" %}
                         </label>
                         {{ form.cover_photo }}
-                        <div class="helper-text">Recommended: 1200x300px landscape image</div>
+                        <div class="helper-text">{% trans "Recommended: 1200x300px landscape image" %}</div>
                     </div>
 
                     <div class="form-group">
                         <label for="id_facebook_url" class="form-label">
-                            Facebook URL
+                            {% trans "Facebook URL" %}
                         </label>
                         {{ form.facebook_url }}
                     </div>
 
                     <div class="form-group">
                         <label for="id_instagram_url" class="form-label">
-                            Instagram URL
+                            {% trans "Instagram URL" %}
                         </label>
                         {{ form.instagram_url }}
                     </div>
 
                     <div class="form-group">
                         <label for="id_linkedin_url" class="form-label">
-                            LinkedIn URL
+                            {% trans "LinkedIn URL" %}
                         </label>
                         {{ form.linkedin_url }}
                     </div>
@@ -1522,19 +1531,19 @@
 
             <button type="submit" class="btn btn-primary" id="submitBtn">
                 {% if google_prefill_mode %}
-                    Complete Clinic Profile
+                    {% trans "Complete Clinic Profile" %}
                 {% else %}
-                    Create Clinic Account
+                    {% trans "Create Clinic Account" %}
                 {% endif %}
             </button>
         </form>
 
         <!-- Links Section -->
         <div class="links-section">
-            <p class="links-text">Already have an account?</p>
+            <p class="links-text">{% trans "Already have an account?" %}</p>
             <div class="links">
-                <a href="{% url 'login' %}" class="link">Login here</a>
-                <a href="{% url 'patient_signup' %}" class="link">Patient sign up here</a>
+                <a href="{% url 'login' %}" class="link">{% trans "Login here" %}</a>
+                <a href="{% url 'patient_signup' %}" class="link">{% trans "Patient sign up here" %}</a>
             </div>
         </div>
     </div>
@@ -1570,7 +1579,7 @@
                 input.type = isHidden ? 'text' : 'password';
                 openIcon.style.display = isHidden ? 'none' : 'block';
                 closedIcon.style.display = isHidden ? 'block' : 'none';
-                toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+                toggle.setAttribute('aria-label', isHidden ? '{% trans "Hide password" %}' : '{% trans "Show password" %}');
                 toggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
             });
         }
@@ -1625,10 +1634,10 @@
                     matchMessage.textContent = '';
                     matchMessage.style.color = '#718096';
                 } else if (password1 === password2) {
-                    matchMessage.textContent = '✓ Passwords match';
+                    matchMessage.textContent = '✓ {% trans "Passwords match" %}';
                     matchMessage.style.color = '#38a169';
                 } else {
-                    matchMessage.textContent = '✗ Passwords do not match';
+                    matchMessage.textContent = '✗ {% trans "Passwords do not match" %}';
                     matchMessage.style.color = '#e53e3e';
                 }
             });
@@ -1648,7 +1657,7 @@
                 color: #991b1b;
                 font-size: 13px;
             `;
-            warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Invalid URL!</strong> This is a share link. Use the EMBED URL instead (from "Embed a map" tab).';
+            warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>{% trans "Invalid URL!" %}</strong> {% trans 'This is a share link. Use the EMBED URL instead (from "Embed a map" tab).' %}';
             googleMapsInput.parentNode.insertBefore(warningDiv, googleMapsInput.nextSibling);
 
             googleMapsInput.addEventListener('input', function() {
@@ -1681,7 +1690,7 @@
                         if (!field.nextElementSibling?.classList.contains('field-error')) {
                             const errorDiv = document.createElement('div');
                             errorDiv.className = 'field-error';
-                            errorDiv.textContent = '⚠ This field is required';
+                            errorDiv.textContent = '⚠ {% trans "This field is required" %}';
                             field.parentNode.insertBefore(errorDiv, field.nextSibling);
                         }
                     }
@@ -1695,7 +1704,7 @@
                         if (!password2Input.nextElementSibling?.classList.contains('field-error')) {
                             const errorDiv = document.createElement('div');
                             errorDiv.className = 'field-error';
-                            errorDiv.textContent = '⚠ Passwords do not match';
+                            errorDiv.textContent = '⚠ {% trans "Passwords do not match" %}';
                             password2Input.parentNode.insertBefore(errorDiv, password2Input.nextSibling);
                         }
                     }
@@ -1707,7 +1716,7 @@
                 }
 
                 // Add loading state
-                submitBtn.innerHTML = 'Creating Account...';
+                submitBtn.innerHTML = '{% trans "Creating Account..." %}';
                 submitBtn.disabled = true;
                 submitBtn.classList.add('disabled');
             });
@@ -1737,7 +1746,7 @@
                     if (!this.nextElementSibling?.classList.contains('field-error')) {
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'field-error';
-                        errorDiv.textContent = '⚠ Please enter a valid email address';
+                        errorDiv.textContent = '⚠ {% trans "Please enter a valid email address" %}';
                         this.parentNode.insertBefore(errorDiv, this.nextSibling);
                     }
                 }

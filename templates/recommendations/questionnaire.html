@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Smart Recommendations • NERO</title>
+    <title>{% trans "Smart Recommendations • NERO" %}</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== BASE ===== */
@@ -871,6 +871,29 @@
             .results-grid { grid-template-columns: 1fr; }
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* ===== RTL (Arabic) ===== */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .service-input-icon{left:auto;right:16px}
+        [dir="rtl"] .service-input{padding:14px 46px 14px 16px}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-item.smart-rec.active{border-right-color:#1a82c7}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .msg-card{border-left:none;border-right:4px solid #16a34a}
+        [dir="rtl"] .msg-card.msg-error{border-right-color:#dc2626}
+        [dir="rtl"] .msg-card.msg-warning{border-right-color:#d97706}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .notification-badge{right:auto;left:-2px}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .ct-check{right:auto;left:12px}
+        [dir="rtl"] .loc-tick,[dir="rtl"] .nav-badge,[dir="rtl"] .nav-item.smart-rec .ai-dots{margin-left:0;margin-right:auto}
+        [dir="rtl"] select.form-control{background-position:left 10px center;padding-right:14px;padding-left:40px}
+        [dir="rtl"] .record-card:hover,[dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
+        [dir="rtl"] .btn .fa-arrow-right,[dir="rtl"] .btn .fa-arrow-left{transform:scaleX(-1)}
     </style>
 </head>
 <body>
@@ -884,18 +907,18 @@
             </div>
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="Search clinics, patients, or topics...">
+                <input type="text" name="q" class="search-bar" id="dashboard-search-bar" autocomplete="off" placeholder="{% trans 'Search clinics, patients, or topics...' %}">
                 <div class="search-results" id="dashboard-search-results"></div>
             </div>
             <div class="nav-icons">
-                <a href="{% url 'patient_dashboard' %}" class="nav-icon" title="Home"><i class="fas fa-home"></i></a>
-                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon" title="Messages">
+                <a href="{% url 'patient_dashboard' %}" class="nav-icon" title="{% trans 'Home' %}"><i class="fas fa-home"></i></a>
+                <a href="{% url 'chat_room_list_patient' %}" class="nav-icon" title="{% trans 'Messages' %}">
                     <i class="fas fa-comment-alt"></i>
                     {% if total_unread and total_unread > 0 %}<div class="notification-badge">{{ total_unread }}</div>{% endif %}
                 </a>
-                <a href="{% url 'search_clinics' %}" class="nav-icon" title="Find Clinics"><i class="fas fa-search"></i></a>
-                <a href="{% url 'patient_appointments' %}" class="nav-icon" title="Appointments"><i class="fas fa-calendar-alt"></i></a>
-                <a href="{% url 'patient_settings' %}" class="nav-icon" title="Settings"><i class="fas fa-cog"></i></a>
+                <a href="{% url 'search_clinics' %}" class="nav-icon" title="{% trans 'Find Clinics' %}"><i class="fas fa-search"></i></a>
+                <a href="{% url 'patient_appointments' %}" class="nav-icon" title="{% trans 'Appointments' %}"><i class="fas fa-calendar-alt"></i></a>
+                <a href="{% url 'patient_settings' %}" class="nav-icon" title="{% trans 'Settings' %}"><i class="fas fa-cog"></i></a>
             </div>
             <div class="user-menu">
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
@@ -908,7 +931,7 @@
                 <div class="avatar-dropdown" id="avatarDropdown">
                     <div class="dropdown-header"><strong>{{ patient.user.username }}</strong></div>
                     <ul class="dropdown-list">
-                        <li><a href="{% url 'logout' %}" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        <li><a href="{% url 'logout' %}" style="color:#ef4444;"><i class="fas fa-sign-out-alt"></i> {% trans "Logout" %}</a></li>
                     </ul>
                 </div>
             </div>
@@ -931,29 +954,30 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size:14px;color:#6b7280;line-height:1.4;padding-top:12px;border-top:1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color:#3b82f6;margin-right:4px;"></i>
-                    {{ patient.bio|default:"Find the best clinic for your needs." }}
+                    {% trans "Find the best clinic for your needs." as default_bio %}
+                    {{ patient.bio|default:default_bio }}
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="{% url 'search_clinics' %}" class="nav-item"><i class="fas fa-search"></i> Find Clinics</a>
-                <a href="{% url 'patient_medical_records' %}" class="nav-item"><i class="fas fa-file-medical-alt"></i> Medical Records</a>
-                <a href="{% url 'patient_appointments' %}" class="nav-item"><i class="fas fa-calendar-check"></i> Appointments</a>
+                <a href="{% url 'search_clinics' %}" class="nav-item"><i class="fas fa-search"></i> {% trans "Find Clinics" %}</a>
+                <a href="{% url 'patient_medical_records' %}" class="nav-item"><i class="fas fa-file-medical-alt"></i> {% trans "Medical Records" %}</a>
+                <a href="{% url 'patient_appointments' %}" class="nav-item"><i class="fas fa-calendar-check"></i> {% trans "Appointments" %}</a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item smart-rec active">
                     <span class="brain-icon"><i class="fas fa-brain"></i></span>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                     <span class="ai-dots"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></span>
                 </a>
-                <a href="{% url 'search_patients' %}" class="nav-item"><i class="fas fa-users"></i> Community</a>
+                <a href="{% url 'search_patients' %}" class="nav-item"><i class="fas fa-users"></i> {% trans "Community" %}</a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
-                    <i class="fas fa-comments"></i> Messages
+                    <i class="fas fa-comments"></i> {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}<div class="nav-badge">{{ total_unread }}</div>{% endif %}
                 </a>
-                <a href="{% url 'patient_settings' %}" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+                <a href="{% url 'patient_settings' %}" class="nav-item"><i class="fas fa-cog"></i> {% trans "Settings" %}</a>
             </nav>
         </aside>
 
@@ -964,21 +988,21 @@
             <div class="page-header">
                 <div class="page-title">
                     <span class="icon-box"><i class="fas fa-brain"></i></span>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </div>
-                <p class="page-subtitle">Answer a few questions and we'll match you with the best clinics worldwide.</p>
+                <p class="page-subtitle">{% trans "Answer a few questions and we'll match you with the best clinics worldwide." %}</p>
             </div>
 
             {% if has_searched %}
             <!-- ===== RESULTS VIEW ===== -->
             <div class="step-card" style="animation:fadeIn 0.3s ease-out;">
                 <div class="steps">
-                    <div class="step-pill"><i class="fas fa-filter"></i> Step 1–5: Your Filters</div>
-                    <div class="step-pill active"><i class="fas fa-paper-plane"></i> Dispatch to Matching Clinics</div>
+                    <div class="step-pill"><i class="fas fa-filter"></i> {% trans "Step 1–5: Your Filters" %}</div>
+                    <div class="step-pill active"><i class="fas fa-paper-plane"></i> {% trans "Dispatch to Matching Clinics" %}</div>
                 </div>
 
-                <div style="font-size:14px;font-weight:600;color:#1f2937;margin-bottom:4px;">Matching analysis completed</div>
-                <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">Clinic names and scores are hidden at this stage. Your request will be sent automatically to all matching clinics.</p>
+                <div style="font-size:14px;font-weight:600;color:#1f2937;margin-bottom:4px;">{% trans "Matching analysis completed" %}</div>
+                <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">{% trans "Clinic names and scores are hidden at this stage. Your request will be sent automatically to all matching clinics." %}</p>
 
                 <form method="post" action="{% url 'recommendations:send_requests' %}" id="auto-dispatch-form" data-autosend="{% if match_count or results %}1{% else %}0{% endif %}">
                     {% csrf_token %}
@@ -994,9 +1018,9 @@
 
                     <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:20px;color:#475569;">
                         {% if match_count %}
-                            <strong style="color:#0f172a;">{{ match_count }} matching clinic{{ match_count|pluralize }}</strong> will receive your request package.
+                            <strong style="color:#0f172a;">{% blocktrans count count=match_count %}{{ count }} matching clinic{% plural %}{{ count }} matching clinics{% endblocktrans %}</strong> {% trans "will receive your request package." %}
                         {% else %}
-                            No matching clinics found. Try adjusting your filters.
+                            {% trans "No matching clinics found. Try adjusting your filters." %}
                         {% endif %}
                     </div>
 
@@ -1011,11 +1035,11 @@
 
                     <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9;flex-wrap:wrap;">
                         <a href="{% url 'recommendations:questionnaire' %}?medical_record_id={{ form_data.medical_record_id }}" class="btn btn-ghost">
-                            <i class="fas fa-rotate-left"></i> Change Filters
+                            <i class="fas fa-rotate-left"></i> {% trans "Change Filters" %}
                         </a>
                         <div style="font-size:13px;color:#64748b;display:flex;align-items:center;gap:8px;">
                             <i class="fas fa-spinner fa-spin" style="color:#3b82f6;"></i>
-                            Sending automatically to matching clinics...
+                            {% trans "Sending automatically to matching clinics..." %}
                         </div>
                         <input type="hidden" name="send_all" value="1">
                     </div>
@@ -1030,23 +1054,23 @@
                 <div class="progress-steps">
                     <div class="progress-step active" id="prog-1">
                         <div class="step-circle"><i class="fas fa-hospital"></i></div>
-                        <div class="step-label">Clinic type</div>
+                        <div class="step-label">{% trans "Clinic type" %}</div>
                     </div>
                     <div class="progress-step" id="prog-2">
                         <div class="step-circle"><i class="fas fa-file-medical"></i></div>
-                        <div class="step-label">Medical record</div>
+                        <div class="step-label">{% trans "Medical record" %}</div>
                     </div>
                     <div class="progress-step" id="prog-3">
                         <div class="step-circle"><i class="fas fa-globe"></i></div>
-                        <div class="step-label">Location</div>
+                        <div class="step-label">{% trans "Location" %}</div>
                     </div>
                     <div class="progress-step" id="prog-4">
                         <div class="step-circle"><i class="fas fa-hotel"></i></div>
-                        <div class="step-label">Accommodation</div>
+                        <div class="step-label">{% trans "Accommodation" %}</div>
                     </div>
                     <div class="progress-step" id="prog-5">
                         <div class="step-circle"><i class="fas fa-stethoscope"></i></div>
-                        <div class="step-label">Treatment</div>
+                        <div class="step-label">{% trans "Treatment" %}</div>
                     </div>
                 </div>
             </div>
@@ -1057,20 +1081,20 @@
                 <!-- ══ STEP 1: Clinic Type ══ -->
                 <div class="step-screen active" id="screen-1">
                     <div class="step-card">
-                        <div class="step-eyebrow"><i class="fas fa-hospital"></i> Step 1 of 4</div>
-                        <div class="step-title">What type of clinic are you looking for?</div>
-                        <div class="step-desc">Choose one or more specialties that match your healthcare needs. Each type focuses on different treatments and expertise.</div>
+                        <div class="step-eyebrow"><i class="fas fa-hospital"></i> {% trans "Step 1 of 4" %}</div>
+                        <div class="step-title">{% trans "What type of clinic are you looking for?" %}</div>
+                        <div class="step-desc">{% trans "Choose one or more specialties that match your healthcare needs. Each type focuses on different treatments and expertise." %}</div>
 
                         <div class="clinic-type-grid" id="ct-grid">
                             <!-- Populated by JS from clinic_types context -->
                         </div>
 
-                        <div class="step-error" id="err-1"><i class="fas fa-exclamation-circle"></i> Please select at least one clinic type.</div>
+                        <div class="step-error" id="err-1"><i class="fas fa-exclamation-circle"></i> {% trans "Please select at least one clinic type." %}</div>
 
                         <div class="step-nav" style="border-top:none;padding-top:16px;margin-top:16px;">
                             <span></span>
                             <button type="button" class="btn btn-primary" onclick="goNext(1)">
-                                Continue <i class="fas fa-arrow-right"></i>
+                                {% trans "Continue" %} <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -1079,13 +1103,13 @@
                 <!-- ══ STEP 2: Medical Record ══ -->
                 <div class="step-screen" id="screen-2">
                     <div class="step-card">
-                        <div class="step-eyebrow"><i class="fas fa-file-medical"></i> Step 2 of 4</div>
-                        <div class="step-title">Which medical record should we send?</div>
-                        <div class="step-desc">Select the record that best describes your current condition. Clinics will review this to assess compatibility.</div>
+                        <div class="step-eyebrow"><i class="fas fa-file-medical"></i> {% trans "Step 2 of 4" %}</div>
+                        <div class="step-title">{% trans "Which medical record should we send?" %}</div>
+                        <div class="step-desc">{% trans "Select the record that best describes your current condition. Clinics will review this to assess compatibility." %}</div>
 
                         <div style="display:flex;justify-content:flex-end;margin:8px 0 14px;">
                             <a href="{% url 'medical_record_create' %}?next={% url 'recommendations:questionnaire' %}" class="btn btn-ghost">
-                                <i class="fas fa-plus"></i> Create New Medical Record
+                                <i class="fas fa-plus"></i> {% trans "Create New Medical Record" %}
                             </a>
                         </div>
 
@@ -1097,27 +1121,28 @@
                                 <div class="record-avatar"><i class="fas fa-file-medical-alt"></i></div>
                                 <div class="record-info">
                                     <div class="record-name">{{ record.first_name }} {{ record.last_name }}</div>
-                                    <div class="record-diag">{{ record.main_diagnosis|default:'No diagnosis noted' }}</div>
+                                    {% trans 'No diagnosis noted' as no_diag %}
+                                    <div class="record-diag">{{ record.main_diagnosis|default:no_diag }}</div>
                                 </div>
                                 <div class="record-radio-dot"></div>
                             </label>
                             {% empty %}
                             <div class="no-records-msg">
                                 <i class="fas fa-folder-open" style="font-size:32px;color:#d1d5db;display:block;margin-bottom:12px;"></i>
-                                <strong>No medical records yet</strong>
-                                <p style="font-size:13px;margin-top:6px;">You need to create a medical record first before sending requests to clinics.</p>
+                                <strong>{% trans "No medical records yet" %}</strong>
+                                <p style="font-size:13px;margin-top:6px;">{% trans "You need to create a medical record first before sending requests to clinics." %}</p>
                                 <a href="{% url 'medical_record_create' %}?next={% url 'recommendations:questionnaire' %}" class="btn btn-primary" style="margin-top:16px;">
-                                    <i class="fas fa-plus"></i> Create Medical Record
+                                    <i class="fas fa-plus"></i> {% trans "Create Medical Record" %}
                                 </a>
                             </div>
                             {% endfor %}
                         </div>
 
-                        <div class="step-error" id="err-2"><i class="fas fa-exclamation-circle"></i> Please select a medical record.</div>
+                        <div class="step-error" id="err-2"><i class="fas fa-exclamation-circle"></i> {% trans "Please select a medical record." %}</div>
 
                         <div class="step-nav">
-                            <button type="button" class="btn btn-ghost" onclick="goBack(2)"><i class="fas fa-arrow-left"></i> Back</button>
-                            <button type="button" class="btn btn-primary" onclick="goNext(2)">Continue <i class="fas fa-arrow-right"></i></button>
+                            <button type="button" class="btn btn-ghost" onclick="goBack(2)"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(2)">{% trans "Continue" %} <i class="fas fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1125,16 +1150,16 @@
                 <!-- ══ STEP 3: Location ══ -->
                 <div class="step-screen" id="screen-3">
                     <div class="step-card">
-                        <div class="step-eyebrow"><i class="fas fa-globe"></i> Step 3 of 4</div>
-                        <div class="step-title">Where would you like to receive treatment?</div>
-                        <div class="step-desc">Pick a continent to see available countries, then select the specific countries you're open to.</div>
+                        <div class="step-eyebrow"><i class="fas fa-globe"></i> {% trans "Step 3 of 4" %}</div>
+                        <div class="step-title">{% trans "Where would you like to receive treatment?" %}</div>
+                        <div class="step-desc">{% trans "Pick a continent to see available countries, then select the specific countries you're open to." %}</div>
 
                         <!-- Continent pills -->
-                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-map" style="color:#3b82f6;margin-right:6px;"></i> Select continent</div>
+                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-map" style="color:#3b82f6;margin-right:6px;"></i> {% trans "Select continent" %}</div>
                         <div class="continent-grid">
                             <label class="loc-card" for="continent_all">
                                 <input type="checkbox" id="continent_all" name="continent" value="all">
-                                <span class="loc-name">All continents</span>
+                                <span class="loc-name">{% trans "All continents" %}</span>
                                 <span class="loc-tick"><i class="fas fa-check"></i></span>
                             </label>
                             {% for c in continents %}
@@ -1148,16 +1173,16 @@
 
                         <!-- Country tags — hidden until continent is chosen -->
                         <div class="country-section" id="country-section" style="display:none;">
-                            <div class="country-section-title"><i class="fas fa-flag" style="color:#3b82f6;"></i> Select country</div>
+                            <div class="country-section-title"><i class="fas fa-flag" style="color:#3b82f6;"></i> {% trans "Select country" %}</div>
                             <div class="country-grid" id="country-options"></div>
                             <div class="country-hint" id="countryHint"></div>
                         </div>
 
-                        <div class="step-error" id="err-3"><i class="fas fa-exclamation-circle"></i> Please select at least one continent and one country.</div>
+                        <div class="step-error" id="err-3"><i class="fas fa-exclamation-circle"></i> {% trans "Please select at least one continent and one country." %}</div>
 
                         <div class="step-nav">
-                            <button type="button" class="btn btn-ghost" onclick="goBack(3)"><i class="fas fa-arrow-left"></i> Back</button>
-                            <button type="button" class="btn btn-primary" onclick="goNext(3)">Continue <i class="fas fa-arrow-right"></i></button>
+                            <button type="button" class="btn btn-ghost" onclick="goBack(3)"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(3)">{% trans "Continue" %} <i class="fas fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1165,24 +1190,24 @@
                 <!-- ══ STEP 4: Accommodation ══ -->
                 <div class="step-screen" id="screen-4">
                     <div class="step-card">
-                        <div class="step-eyebrow"><i class="fas fa-hotel"></i> Step 4 of 5</div>
-                        <div class="step-title">Do you need accommodation support?</div>
-                        <div class="step-desc">Choose your accommodation preference. If accommodation is required, include expected companions and treatment dates.</div>
+                        <div class="step-eyebrow"><i class="fas fa-hotel"></i> {% trans "Step 4 of 5" %}</div>
+                        <div class="step-title">{% trans "Do you need accommodation support?" %}</div>
+                        <div class="step-desc">{% trans "Choose your accommodation preference. If accommodation is required, include expected companions and treatment dates." %}</div>
 
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label">Accommodation type <span style="color:#ef4444;">*</span></label>
+                                <label class="form-label">{% trans "Accommodation type" %} <span style="color:#ef4444;">*</span></label>
                                 <select name="accommodation_type" id="accommodation_type" class="form-control" required>
-                                    <option value="">Select accommodation type</option>
-                                    <option value="no_accommodation">No accommodation</option>
-                                    <option value="single_room">Single room</option>
-                                    <option value="double_room">Double room</option>
-                                    <option value="double_suite">Double suite</option>
-                                    <option value="quad_suite">Quad suite</option>
+                                    <option value="">{% trans "Select accommodation type" %}</option>
+                                    <option value="no_accommodation">{% trans "No accommodation" %}</option>
+                                    <option value="single_room">{% trans "Single room" %}</option>
+                                    <option value="double_room">{% trans "Double room" %}</option>
+                                    <option value="double_suite">{% trans "Double suite" %}</option>
+                                    <option value="quad_suite">{% trans "Quad suite" %}</option>
                                 </select>
                             </div>
                             <div class="form-group" id="companions-group" style="display:none;">
-                                <label class="form-label">Companions count <span id="companions-required-badge" style="color:#ef4444;">*</span></label>
+                                <label class="form-label">{% trans "Companions count" %} <span id="companions-required-badge" style="color:#ef4444;">*</span></label>
                                 <input type="number" name="companions_count" id="companions_count" min="0" value="0" class="form-control" disabled>
                             </div>
                         </div>
@@ -1190,26 +1215,26 @@
                         <div id="companions-options" style="display:none;margin:-8px 0 16px 0;">
                             <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;transition:all 0.2s ease;background:#f9fafb;">
                                 <input type="checkbox" id="coming-alone" style="width:18px;height:18px;cursor:pointer;" onchange="toggleComingAlone()">
-                                <span style="font-weight:500;color:#1f2937;flex:1;"><i class="fas fa-user" style="color:#3b82f6;margin-right:6px;"></i>I will come alone</span>
+                                <span style="font-weight:500;color:#1f2937;flex:1;"><i class="fas fa-user" style="color:#3b82f6;margin-right:6px;"></i>{% trans "I will come alone" %}</span>
                             </label>
                         </div>
 
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label">Treatment start date <span style="color:#ef4444;">*</span></label>
+                                <label class="form-label">{% trans "Treatment start date" %} <span style="color:#ef4444;">*</span></label>
                                 <input type="date" name="treatment_start_date" id="treatment_start_date" class="form-control" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Treatment end date <span style="color:#ef4444;">*</span></label>
+                                <label class="form-label">{% trans "Treatment end date" %} <span style="color:#ef4444;">*</span></label>
                                 <input type="date" name="treatment_end_date" id="treatment_end_date" class="form-control" required>
                             </div>
                         </div>
 
-                        <div class="step-error" id="err-4"><i class="fas fa-exclamation-circle"></i> Please select accommodation type and valid treatment dates. Companions count is required when accommodation is needed.</div>
+                        <div class="step-error" id="err-4"><i class="fas fa-exclamation-circle"></i> {% trans "Please select accommodation type and valid treatment dates. Companions count is required when accommodation is needed." %}</div>
 
                         <div class="step-nav">
-                            <button type="button" class="btn btn-ghost" onclick="goBack(4)"><i class="fas fa-arrow-left"></i> Back</button>
-                            <button type="button" class="btn btn-primary" onclick="goNext(4)">Continue <i class="fas fa-arrow-right"></i></button>
+                            <button type="button" class="btn btn-ghost" onclick="goBack(4)"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
+                            <button type="button" class="btn btn-primary" onclick="goNext(4)">{% trans "Continue" %} <i class="fas fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -1217,34 +1242,34 @@
                 <!-- ══ STEP 5: Treatment ══ -->
                 <div class="step-screen" id="screen-5">
                     <div class="step-card">
-                        <div class="step-eyebrow"><i class="fas fa-stethoscope"></i> Step 5 of 5</div>
-                        <div class="step-title">What treatment or service do you need?</div>
-                        <div class="step-desc">Describe the treatment, procedure, or therapy you're looking for. Be as specific as you like — the more detail, the better the match.</div>
+                        <div class="step-eyebrow"><i class="fas fa-stethoscope"></i> {% trans "Step 5 of 5" %}</div>
+                        <div class="step-title">{% trans "What treatment or service do you need?" %}</div>
+                        <div class="step-desc">{% trans "Describe the treatment, procedure, or therapy you're looking for. Be as specific as you like — the more detail, the better the match." %}</div>
 
                         <!-- Quick-pick suggestions -->
-                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-bolt" style="color:#f59e0b;margin-right:6px;"></i> Quick picks</div>
+                        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;"><i class="fas fa-bolt" style="color:#f59e0b;margin-right:6px;"></i> {% trans "Quick picks" %}</div>
                         <div class="service-suggestions" id="sug-wrap">
-                            <span class="sug-tag" data-val="Neurological rehabilitation"><i class="fas fa-brain"></i> Neuro rehab</span>
-                            <span class="sug-tag" data-val="Orthopedic surgery"><i class="fas fa-bone"></i> Orthopedic surgery</span>
-                            <span class="sug-tag" data-val="Post-operative recovery"><i class="fas fa-procedures"></i> Post-op recovery</span>
-                            <span class="sug-tag" data-val="Cardiac rehabilitation"><i class="fas fa-heart-pulse"></i> Cardiac rehab</span>
-                            <span class="sug-tag" data-val="Oncology treatment"><i class="fas fa-ribbon"></i> Oncology</span>
-                            <span class="sug-tag" data-val="Physical therapy"><i class="fas fa-dumbbell"></i> Physical therapy</span>
-                            <span class="sug-tag" data-val="Spinal treatment"><i class="fas fa-user-injured"></i> Spinal treatment</span>
+                            <span class="sug-tag" data-val="Neurological rehabilitation"><i class="fas fa-brain"></i> {% trans "Neuro rehab" %}</span>
+                            <span class="sug-tag" data-val="Orthopedic surgery"><i class="fas fa-bone"></i> {% trans "Orthopedic surgery" %}</span>
+                            <span class="sug-tag" data-val="Post-operative recovery"><i class="fas fa-procedures"></i> {% trans "Post-op recovery" %}</span>
+                            <span class="sug-tag" data-val="Cardiac rehabilitation"><i class="fas fa-heart-pulse"></i> {% trans "Cardiac rehab" %}</span>
+                            <span class="sug-tag" data-val="Oncology treatment"><i class="fas fa-ribbon"></i> {% trans "Oncology" %}</span>
+                            <span class="sug-tag" data-val="Physical therapy"><i class="fas fa-dumbbell"></i> {% trans "Physical therapy" %}</span>
+                            <span class="sug-tag" data-val="Spinal treatment"><i class="fas fa-user-injured"></i> {% trans "Spinal treatment" %}</span>
                         </div>
 
                         <div class="service-input-wrap" style="margin-top:4px;">
                             <i class="fas fa-search service-input-icon"></i>
                             <input type="text" id="service" name="service" class="service-input"
-                                   placeholder="e.g. knee replacement, stroke rehabilitation, IVF treatment…">
+                                   placeholder="{% trans 'e.g. knee replacement, stroke rehabilitation, IVF treatment…' %}">
                         </div>
 
-                        <div class="step-error" id="err-5"><i class="fas fa-exclamation-circle"></i> Please describe the treatment or service you need.</div>
+                        <div class="step-error" id="err-5"><i class="fas fa-exclamation-circle"></i> {% trans "Please describe the treatment or service you need." %}</div>
 
                         <div class="step-nav">
-                            <button type="button" class="btn btn-ghost" onclick="goBack(5)"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="button" class="btn btn-ghost" onclick="goBack(5)"><i class="fas fa-arrow-left"></i> {% trans "Back" %}</button>
                             <button type="submit" class="btn btn-primary" id="submit-btn">
-                                <i class="fas fa-search"></i> Find Matching Clinics
+                                <i class="fas fa-search"></i> {% trans "Find Matching Clinics" %}
                             </button>
                         </div>
                     </div>
@@ -1260,6 +1285,28 @@
     // ===== DATA FROM DJANGO =====
     const clinicFilterData  = JSON.parse('{{ clinic_filter_data_json|escapejs }}');
     const fixedClinicTypes  = '{{ clinic_types|join:"||"|escapejs }}'.split('||').filter(Boolean);
+
+    // ===== I18N STRINGS =====
+    {% trans "No clinic types available." as t_no_ct %}
+    {% blocktrans asvar t_ct_desc %}Clinics specializing in {name} care and treatments.{% endblocktrans %}
+    {% trans "Medical record created and selected!" as t_rec_created %}
+    {% trans "All countries" as t_all_countries %}
+    {% blocktrans asvar t_countries_avail %}{count} countries available — select any combination{% endblocktrans %}
+    {% trans "No countries available for this continent." as t_no_countries %}
+    {% trans "Searching..." as t_searching %}
+    {% blocktrans asvar t_no_results %}No results for "{query}"{% endblocktrans %}
+    {% trans "Search failed." as t_search_failed %}
+    const I18N = {
+        noClinicTypes:  "{{ t_no_ct|escapejs }}",
+        ctDesc:         "{{ t_ct_desc|escapejs }}",
+        recCreated:     "{{ t_rec_created|escapejs }}",
+        allCountries:   "{{ t_all_countries|escapejs }}",
+        countriesAvail: "{{ t_countries_avail|escapejs }}",
+        noCountries:    "{{ t_no_countries|escapejs }}",
+        searching:      "{{ t_searching|escapejs }}",
+        noResults:      "{{ t_no_results|escapejs }}",
+        searchFailed:   "{{ t_search_failed|escapejs }}"
+    };
 
     // ===== CLINIC TYPE CARD DEFINITIONS (icon + colour per type) =====
     const CT_STYLES = {
@@ -1299,7 +1346,7 @@
     (function buildCtCards() {
         const grid = document.getElementById('ct-grid');
         if (!grid || !fixedClinicTypes.length) {
-            if (grid) grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;">No clinic types available.</p>';
+            if (grid) grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;">' + I18N.noClinicTypes + '</p>';
             return;
         }
         fixedClinicTypes.forEach((name, i) => {
@@ -1314,7 +1361,7 @@
                 <input type="checkbox" id="${id}" name="clinic_type" value="${name}">
                 <div class="ct-check"><i class="fas fa-check"></i></div>
                 <div class="ct-name">${name}</div>
-                <div class="ct-desc">Clinics specializing in ${name.toLowerCase()} care and treatments.</div>
+                <div class="ct-desc">${I18N.ctDesc.replace('{name}', name.toLowerCase())}</div>
             `;
             card.addEventListener('change', () => syncCtCard(card));
             // Also handle clicks on the whole card
@@ -1406,7 +1453,7 @@
             const allWrap = document.createElement('label');
             allWrap.className = 'country-tag';
             allWrap.setAttribute('for', 'country_all');
-            allWrap.innerHTML = `<input type="checkbox" id="country_all" name="country" value="all"><span class="tag-pill"><i class="fas fa-globe"></i> All countries</span>`;
+            allWrap.innerHTML = `<input type="checkbox" id="country_all" name="country" value="all"><span class="tag-pill"><i class="fas fa-globe"></i> ${I18N.allCountries}</span>`;
             allWrap.querySelector('input').addEventListener('change', e => enforceAllBehavior('country', e.target));
             countryOptionsEl.appendChild(allWrap);
 
@@ -1423,8 +1470,8 @@
 
         if (countryHint) {
             countryHint.textContent = countries.length
-                ? `${countries.length} countries available — select any combination`
-                : 'No countries available for this continent.';
+                ? I18N.countriesAvail.replace('{count}', countries.length)
+                : I18N.noCountries;
         }
     }
 
@@ -1540,7 +1587,7 @@
                     // Show success notification
                     const notification = document.createElement('div');
                     notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:14px 20px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:9999;font-weight:500;display:flex;align-items:center;gap:8px;animation:slideInRight 0.3s ease;';
-                    notification.innerHTML = '<i class="fas fa-check-circle"></i> Medical record created and selected!';
+                    notification.innerHTML = '<i class="fas fa-check-circle"></i> ' + I18N.recCreated;
                     document.body.appendChild(notification);
                     setTimeout(() => { notification.remove(); }, 3000);
                     
@@ -1677,7 +1724,7 @@
             const query = this.value.trim();
             if (!query) { dashSearchResults.style.display = 'none'; dashSearchResults.innerHTML = ''; return; }
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#6b7280;"><i class="fas fa-spinner fa-spin"></i> ' + I18N.searching + '</div>';
                 dashSearchResults.style.display = 'block';
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
                     credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -1692,14 +1739,14 @@
                         const list  = section.querySelector('ul');
                         if (title && list) {
                             list.classList.add('results-list');
-                            results += `<div class="results-section-title"><i class="${title.textContent.includes('Patients') ? 'fas fa-users' : 'fas fa-hospital'}"></i>${title.textContent}</div>${list.outerHTML}`;
+                            results += `<div class="results-section-title"><i class="${(title.textContent.includes('Patients') || title.textContent.includes('المرضى')) ? 'fas fa-users' : 'fas fa-hospital'}"></i>${title.textContent}</div>${list.outerHTML}`;
                         }
                     });
-                    if (!results) results = `<div style="padding:40px 20px;text-align:center;color:#6b7280;"><i class="fas fa-search" style="font-size:24px;margin-bottom:12px;"></i><p>No results for "${query}"</p></div>`;
+                    if (!results) results = `<div style="padding:40px 20px;text-align:center;color:#6b7280;"><i class="fas fa-search" style="font-size:24px;margin-bottom:12px;"></i><p>${I18N.noResults.replace('{query}', query)}</p></div>`;
                     dashSearchResults.innerHTML = results;
                     dashSearchResults.style.display = 'block';
                 })
-                .catch(() => { dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Search failed.</div>'; dashSearchResults.style.display = 'block'; });
+                .catch(() => { dashSearchResults.innerHTML = '<div style="padding:20px;text-align:center;color:#ef4444;"><i class="fas fa-exclamation-circle"></i> ' + I18N.searchFailed + '</div>'; dashSearchResults.style.display = 'block'; });
             }, 300);
         });
 

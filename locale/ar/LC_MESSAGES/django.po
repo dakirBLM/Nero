@@ -1,0 +1,2829 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 09:26+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: chat/templates/chat/chat_room.html:7
+msgid "Chat"
+msgstr "المحادثات"
+
+#: chat/templates/chat/chat_room.html:1133
+#: chat/templates/chat/chat_room_list.html:1021
+msgid "Search messages or users..."
+msgstr "ابحث في الرسائل أو المستخدمين..."
+
+#: chat/templates/chat/chat_room.html:1142
+msgid "Back to Chats"
+msgstr "العودة إلى المحادثات"
+
+#: chat/templates/chat/chat_room.html:1160
+#: chat/templates/chat/chat_room_list.html:1041
+#: chat/templates/chat/chat_room_list.html:1147
+#: templates/patient/appointments.html:1328
+#: templates/patient/dashboard/my_posts.html:870
+#: templates/patient/dashboard/patient_dashboard.html:1271
+#: templates/patient/medical_record_form.html:1228
+#: templates/patient/medical_record_success.html:1076
+#: templates/patient/medical_records.html:1013
+#: templates/patient/search_clinics.html:1174
+#: templates/patient/see_medical_record.html:755
+#: templates/patient/signup.html:650
+#: templates/recommendations/questionnaire.html:957
+msgid "Patient"
+msgstr "مريض"
+
+#: chat/templates/chat/chat_room.html:1174
+#: chat/templates/chat/chat_room_list.html:1144
+#: templates/clinics/signup.html:1143
+msgid "Clinic"
+msgstr "عيادة"
+
+#: chat/templates/chat/chat_room.html:1181
+#: chat/templates/chat/chat_room_list.html:1046
+msgid "Stay connected with your healthcare providers."
+msgstr "ابقَ على تواصل مع مقدمي الرعاية الصحية."
+
+#: chat/templates/chat/chat_room.html:1183
+msgid "Stay connected with your patients."
+msgstr "ابقَ على تواصل مع مرضاك."
+
+#: chat/templates/chat/chat_room.html:1192
+#: chat/templates/chat/chat_room_list.html:1054
+#: templates/patient/appointments.html:1340
+#: templates/patient/dashboard/my_posts.html:883
+#: templates/patient/dashboard/patient_dashboard.html:1285
+#: templates/patient/medical_record_form.html:1241
+#: templates/patient/medical_record_success.html:1089
+#: templates/patient/medical_records.html:1026
+#: templates/patient/search_clinics.html:7
+#: templates/patient/search_clinics.html:1187
+#: templates/recommendations/questionnaire.html:919
+#: templates/recommendations/questionnaire.html:967
+msgid "Find Clinics"
+msgstr "البحث عن عيادات"
+
+#: chat/templates/chat/chat_room.html:1196
+#: chat/templates/chat/chat_room_list.html:1058
+#: templates/patient/appointments.html:1344
+#: templates/patient/dashboard/my_posts.html:887
+#: templates/patient/dashboard/patient_dashboard.html:1289
+#: templates/patient/medical_record_form.html:1245
+#: templates/patient/medical_record_form.html:1279
+#: templates/patient/medical_record_success.html:1093
+#: templates/patient/medical_record_success.html:1127
+#: templates/patient/medical_records.html:1030
+#: templates/patient/search_clinics.html:1191
+#: templates/patient/see_medical_record.html:777
+#: templates/patient/see_medical_record.html:820
+#: templates/recommendations/questionnaire.html:968
+msgid "Medical Records"
+msgstr "السجلات الطبية"
+
+#: chat/templates/chat/chat_room.html:1200
+#: chat/templates/chat/chat_room_list.html:1062
+#: templates/includes/patient_nav.html:89
+#: templates/patient/appointments.html:1348
+#: templates/patient/dashboard/my_posts.html:891
+#: templates/patient/dashboard/patient_dashboard.html:1293
+#: templates/patient/medical_record_form.html:1249
+#: templates/patient/medical_record_success.html:1097
+#: templates/patient/medical_records.html:1034
+#: templates/patient/search_clinics.html:1195
+#: templates/patient/see_medical_record.html:786
+#: templates/recommendations/questionnaire.html:920
+#: templates/recommendations/questionnaire.html:969
+msgid "Appointments"
+msgstr "المواعيد"
+
+#: chat/templates/chat/chat_room.html:1204
+#: chat/templates/chat/chat_room_list.html:1066
+#: templates/patient/appointments.html:1352
+#: templates/patient/dashboard/my_posts.html:895
+#: templates/patient/dashboard/patient_dashboard.html:1297
+#: templates/patient/dashboard/patient_dashboard.html:1952
+#: templates/patient/medical_record_form.html:1253
+#: templates/patient/medical_record_success.html:1101
+#: templates/patient/medical_record_success.html:1215
+#: templates/patient/medical_records.html:1038
+#: templates/patient/search_clinics.html:1199
+#: templates/patient/see_medical_record.html:793
+#: templates/recommendations/questionnaire.html:972
+#: templates/recommendations/questionnaire.html:991
+msgid "Smart Recommendations"
+msgstr "التوصيات الذكية"
+
+#: chat/templates/chat/chat_room.html:1208
+#: chat/templates/chat/chat_room_list.html:1070
+#: templates/patient/appointments.html:1356
+#: templates/patient/dashboard/my_posts.html:899
+#: templates/patient/dashboard/patient_dashboard.html:1301
+#: templates/patient/medical_record_form.html:1257
+#: templates/patient/medical_record_success.html:1105
+#: templates/patient/medical_records.html:1042
+#: templates/patient/search_clinics.html:1203
+#: templates/patient/see_medical_record.html:802
+#: templates/recommendations/questionnaire.html:975
+msgid "Community"
+msgstr "المجتمع"
+
+#: chat/templates/chat/chat_room.html:1212
+#: chat/templates/chat/chat_room_list.html:7
+#: chat/templates/chat/chat_room_list.html:1074
+#: chat/templates/chat/chat_room_list.html:1095
+#: templates/includes/patient_nav.html:82
+#: templates/patient/appointments.html:1360
+#: templates/patient/dashboard/my_posts.html:903
+#: templates/patient/dashboard/patient_dashboard.html:1305
+#: templates/patient/medical_record_form.html:1261
+#: templates/patient/medical_record_success.html:1109
+#: templates/patient/medical_records.html:1046
+#: templates/patient/search_clinics.html:1207
+#: templates/patient/see_medical_record.html:808
+#: templates/recommendations/questionnaire.html:915
+#: templates/recommendations/questionnaire.html:977
+msgid "Messages"
+msgstr "الرسائل"
+
+#: chat/templates/chat/chat_room.html:1219
+#: chat/templates/chat/chat_room_list.html:1082
+#: templates/patient/appointments.html:1367
+#: templates/patient/dashboard/my_posts.html:7
+#: templates/patient/dashboard/my_posts.html:910
+#: templates/patient/dashboard/my_posts.html:919
+#: templates/patient/dashboard/patient_dashboard.html:1312
+#: templates/patient/medical_record_form.html:1268
+#: templates/patient/medical_record_success.html:1116
+#: templates/patient/medical_records.html:1053
+#: templates/patient/search_clinics.html:1214
+msgid "My Posts"
+msgstr "منشوراتي"
+
+#: chat/templates/chat/chat_room.html:1229
+msgid "Back to chats"
+msgstr "العودة إلى المحادثات"
+
+#: chat/templates/chat/chat_room.html:1260
+#: chat/templates/chat/chat_room.html:1299
+msgid "Online"
+msgstr "متصل"
+
+#: chat/templates/chat/chat_room.html:1263
+#: chat/templates/chat/chat_room.html:1265
+#: chat/templates/chat/chat_room.html:1267
+#: chat/templates/chat/chat_room.html:1302
+#: chat/templates/chat/chat_room.html:1304
+#: chat/templates/chat/chat_room.html:1306
+#, python-format
+msgid "Last seen %(time_since)s ago"
+msgstr "آخر ظهور منذ %(time_since)s"
+
+#: chat/templates/chat/chat_room.html:1315
+msgid "Call"
+msgstr "اتصال"
+
+#: chat/templates/chat/chat_room.html:1318
+msgid "Video Call"
+msgstr "مكالمة فيديو"
+
+#: chat/templates/chat/chat_room.html:1321
+msgid "More options"
+msgstr "خيارات إضافية"
+
+#: chat/templates/chat/chat_room.html:1336
+msgid "Today"
+msgstr "اليوم"
+
+#: chat/templates/chat/chat_room.html:1338
+msgid "Yesterday"
+msgstr "أمس"
+
+#: chat/templates/chat/chat_room.html:1371
+msgid "No messages yet"
+msgstr "لا توجد رسائل بعد"
+
+#: chat/templates/chat/chat_room.html:1372
+msgid "Start the conversation by sending a message!"
+msgstr "ابدأ المحادثة بإرسال رسالة!"
+
+#: chat/templates/chat/chat_room.html:1375
+msgid "You can discuss appointments, ask medical questions, or share updates."
+msgstr "يمكنك مناقشة المواعيد أو طرح أسئلة طبية أو مشاركة المستجدات."
+
+#: chat/templates/chat/chat_room.html:1385
+msgid "Messages are available only when there is a payed appointment between the patient and clinic. If you want to ask questions, please contact info@nero.com."
+msgstr "المراسلة متاحة فقط عند وجود موعد مدفوع بين المريض والعيادة. إذا كانت لديك أسئلة، يرجى التواصل عبر info@nero.com."
+
+#: chat/templates/chat/chat_room.html:1395
+msgid "Messaging unlocks when appointment status is payed"
+msgstr "تُفتح المراسلة عندما تصبح حالة الموعد مدفوعة"
+
+#: chat/templates/chat/chat_room.html:1395
+msgid "Type your message..."
+msgstr "اكتب رسالتك..."
+
+#: chat/templates/chat/chat_room.html:1403
+#: chat/templates/chat/chat_room.html:1648
+#: chat/templates/chat/chat_room.html:1656 templates/landing_page.html:279
+#: templates/patient/dashboard/patient_dashboard.html:1545
+msgid "Send"
+msgstr "إرسال"
+
+#: chat/templates/chat/chat_room.html:1449
+#: chat/templates/chat/chat_room_list.html:1254
+#: templates/patient/appointments.html:1799
+#: templates/patient/dashboard/my_posts.html:1051
+#: templates/patient/dashboard/patient_dashboard.html:1606
+#: templates/patient/medical_record_form.html:1996
+#: templates/patient/medical_record_success.html:1356
+#: templates/patient/medical_records.html:1194
+#: templates/patient/patient_settings.html:1073
+#: templates/patient/search_clinics.html:1568
+#: templates/patient/search_clinics.html:1662
+#: templates/recommendations/questionnaire.html:1296
+msgid "Searching..."
+msgstr "جارٍ البحث..."
+
+#: chat/templates/chat/chat_room.html:1491
+#: chat/templates/chat/chat_room_list.html:1296
+#: templates/patient/appointments.html:1833
+#: templates/patient/dashboard/my_posts.html:1095
+#: templates/patient/dashboard/patient_dashboard.html:1634
+#: templates/patient/medical_record_form.html:2038
+#: templates/patient/medical_record_success.html:1398
+#: templates/patient/medical_records.html:1238
+#: templates/patient/patient_settings.html:1115
+#: templates/patient/search_clinics.html:1610
+msgid "No results found for"
+msgstr "لا توجد نتائج لـ"
+
+#: chat/templates/chat/chat_room.html:1503
+#: chat/templates/chat/chat_room_list.html:1308
+#: templates/patient/appointments.html:1841
+#: templates/patient/dashboard/my_posts.html:1107
+#: templates/patient/dashboard/patient_dashboard.html:1646
+#: templates/patient/medical_record_form.html:2050
+#: templates/patient/medical_record_success.html:1410
+#: templates/patient/medical_records.html:1250
+#: templates/patient/patient_settings.html:1127
+#: templates/patient/search_clinics.html:1622
+msgid "Search failed. Please try again."
+msgstr "فشل البحث. يرجى المحاولة مرة أخرى."
+
+#: chat/templates/chat/chat_room.html:1610
+msgid "This room is locked until there is a payed appointment. If you want to ask questions, please contact info@nero.com."
+msgstr "هذه المحادثة مقفلة حتى يكون هناك موعد مدفوع. إذا كانت لديك أسئلة، يرجى التواصل عبر info@nero.com."
+
+#: chat/templates/chat/chat_room.html:1644
+msgid "Failed to send message"
+msgstr "فشل إرسال الرسالة"
+
+#: chat/templates/chat/chat_room.html:1653
+msgid "Network error. Please try again."
+msgstr "خطأ في الشبكة. يرجى المحاولة مرة أخرى."
+
+#: chat/templates/chat/chat_room.html:1678
+msgid "Sending..."
+msgstr "جارٍ الإرسال..."
+
+#: chat/templates/chat/chat_room.html:1787
+msgid "Starting call..."
+msgstr "جارٍ بدء المكالمة..."
+
+#: chat/templates/chat/chat_room.html:1792
+msgid "Starting video call..."
+msgstr "جارٍ بدء مكالمة الفيديو..."
+
+#: chat/templates/chat/chat_room.html:1797
+msgid "Chat options"
+msgstr "خيارات المحادثة"
+
+#: chat/templates/chat/chat_room_list.html:1099
+#, python-format
+msgid "You have %(total_unread)s unread message"
+msgid_plural "You have %(total_unread)s unread messages"
+msgstr[0] "ليس لديك رسائل غير مقروءة"
+msgstr[1] "لديك رسالة واحدة غير مقروءة"
+msgstr[2] "لديك رسالتان غير مقروءتين"
+msgstr[3] "لديك %(total_unread)s رسائل غير مقروءة"
+msgstr[4] "لديك %(total_unread)s رسالة غير مقروءة"
+msgstr[5] "لديك %(total_unread)s رسالة غير مقروءة"
+
+#: chat/templates/chat/chat_room_list.html:1101
+msgid "All your conversations in one place"
+msgstr "كل محادثاتك في مكان واحد"
+
+#: chat/templates/chat/chat_room_list.html:1112
+msgid "Search conversations..."
+msgstr "ابحث في المحادثات..."
+
+#: chat/templates/chat/chat_room_list.html:1161
+#: chat/templates/chat/chat_room_list.html:1169
+#: templates/patient/dashboard/patient_dashboard.html:1484
+#: templates/patient/dashboard/patient_dashboard.html:1509
+msgid "Online now"
+msgstr "متصل الآن"
+
+#: chat/templates/chat/chat_room_list.html:1161
+#: chat/templates/chat/chat_room_list.html:1169
+#: templates/patient/dashboard/patient_dashboard.html:1486
+msgid "Offline"
+msgstr "غير متصل"
+
+#: chat/templates/chat/chat_room_list.html:1185
+#: templates/patient/dashboard/patient_dashboard.html:1368
+#: templates/patient/dashboard/patient_dashboard.html:1382
+#: templates/patient/dashboard/patient_dashboard.html:1395
+#, python-format
+msgid "%(time_since)s ago"
+msgstr "منذ %(time_since)s"
+
+#: chat/templates/chat/chat_room_list.html:1194
+msgid "No conversations yet"
+msgstr "لا توجد محادثات بعد"
+
+#: chat/templates/chat/chat_room_list.html:1197
+msgid "Start chatting with clinics by connecting with them from their profile pages."
+msgstr "ابدأ التواصل مع العيادات من صفحاتها الشخصية."
+
+#: chat/templates/chat/chat_room_list.html:1199
+msgid "Connect with patients to start conversations about their treatment."
+msgstr "تواصل مع المرضى لبدء محادثات حول علاجهم."
+
+#: chat/templates/chat/chat_room_list.html:1205
+msgid "Find Clinics to Chat With"
+msgstr "ابحث عن عيادات للتحدث معها"
+
+#: chat/templates/chat/chat_room_list.html:1385
+msgid "Mark all messages as read?"
+msgstr "وضع علامة مقروء على جميع الرسائل؟"
+
+#: chat/templates/chat/chat_room_list.html:1387
+msgid "All messages marked as read"
+msgstr "تم وضع علامة مقروء على جميع الرسائل"
+
+#: chat/templates/chat/chat_room_list.html:1449
+msgid "Start a new chat?"
+msgstr "بدء محادثة جديدة؟"
+
+#: templates/accounts/login.html:5
+msgid "Login - NERO"
+msgstr "تسجيل الدخول - نيرو"
+
+#: templates/accounts/login.html:531 templates/clinics/signup.html:1139
+#: templates/patient/signup.html:646
+msgid "Back to Choices"
+msgstr "العودة إلى الاختيارات"
+
+#: templates/accounts/login.html:535
+msgid "Login to"
+msgstr "تسجيل الدخول إلى"
+
+#: templates/accounts/login.html:536
+msgid "Access your medical platform account"
+msgstr "ادخل إلى حسابك في المنصة الطبية"
+
+#: templates/accounts/login.html:543
+msgid "Error"
+msgstr "خطأ"
+
+#: templates/accounts/login.html:554
+msgid "Username or Email"
+msgstr "اسم المستخدم أو البريد الإلكتروني"
+
+#: templates/accounts/login.html:556
+msgid "Enter your username or email"
+msgstr "أدخل اسم المستخدم أو البريد الإلكتروني"
+
+#: templates/accounts/login.html:560 templates/clinics/signup.html:1223
+#: templates/patient/signup.html:789
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: templates/accounts/login.html:563
+msgid "Enter your password"
+msgstr "أدخل كلمة المرور"
+
+#: templates/accounts/login.html:564 templates/accounts/login.html:687
+#: templates/clinics/signup.html:1227 templates/clinics/signup.html:1256
+#: templates/clinics/signup.html:1582 templates/patient/signup.html:796
+#: templates/patient/signup.html:828 templates/patient/signup.html:896
+msgid "Show password"
+msgstr "إظهار كلمة المرور"
+
+#: templates/accounts/login.html:578
+msgid "Forgot Password?"
+msgstr "نسيت كلمة المرور؟"
+
+#: templates/accounts/login.html:585
+msgid "Remember me"
+msgstr "تذكرني"
+
+#: templates/accounts/login.html:589
+msgid "Login to Account"
+msgstr "تسجيل الدخول"
+
+#: templates/accounts/login.html:592
+msgid "or use google"
+msgstr "أو عبر جوجل"
+
+#: templates/accounts/login.html:602 templates/clinics/signup.html:1163
+#: templates/patient/signup.html:665
+msgid "Continue with Google"
+msgstr "المتابعة عبر جوجل"
+
+#: templates/accounts/login.html:606
+msgid "Google login is not configured yet. Add Google Client ID/Secret in Admin > Social applications."
+msgstr "تسجيل الدخول عبر جوجل غير مفعّل بعد. أضف معرّف عميل جوجل في لوحة الإدارة > التطبيقات الاجتماعية."
+
+#: templates/accounts/login.html:613
+msgid "Don't have an account?"
+msgstr "ليس لديك حساب؟"
+
+#: templates/accounts/login.html:615
+msgid "Sign up as Patient"
+msgstr "سجّل كمريض"
+
+#: templates/accounts/login.html:617
+msgid "Sign up as Clinic"
+msgstr "سجّل كعيادة"
+
+#: templates/accounts/login.html:669
+msgid "Please enter your email address to reset your password:"
+msgstr "يرجى إدخال بريدك الإلكتروني لإعادة تعيين كلمة المرور:"
+
+#: templates/accounts/login.html:671
+msgid "Password reset instructions have been sent to"
+msgstr "تم إرسال تعليمات إعادة تعيين كلمة المرور إلى"
+
+#: templates/accounts/login.html:687 templates/clinics/signup.html:1582
+#: templates/patient/signup.html:896
+msgid "Hide password"
+msgstr "إخفاء كلمة المرور"
+
+#: templates/accounts/login.html:713
+msgid "Please fill in both username/email and password fields."
+msgstr "يرجى تعبئة حقلي اسم المستخدم/البريد الإلكتروني وكلمة المرور."
+
+#: templates/accounts/login.html:719
+msgid "Logging in..."
+msgstr "جارٍ تسجيل الدخول..."
+
+#: templates/choice_page.html:7
+msgid "NERO — Patient or Clinic?"
+msgstr "نيرو — مريض أم عيادة؟"
+
+#: templates/choice_page.html:88
+msgid "Welcome to Nero"
+msgstr "مرحبًا بك في نيرو"
+
+#: templates/choice_page.html:89
+msgid "How would you like to"
+msgstr "كيف تودّ"
+
+#: templates/choice_page.html:89
+msgid "continue?"
+msgstr "المتابعة؟"
+
+#: templates/choice_page.html:90
+msgid "Choose your path — you can always reach the other side later."
+msgstr "اختر مسارك — يمكنك دائمًا الوصول إلى الجانب الآخر لاحقًا."
+
+#: templates/choice_page.html:96
+msgid "Patient receiving rehabilitation care"
+msgstr "مريض يتلقى رعاية تأهيلية"
+
+#: templates/choice_page.html:98
+msgid "PATIENT"
+msgstr "مريض"
+
+#: templates/choice_page.html:100
+msgid "I'm a patient"
+msgstr "أنا مريض"
+
+#: templates/choice_page.html:101
+msgid "Find specialized clinics, share your records securely, and book the care that fits you."
+msgstr "اعثر على عيادات متخصصة، وشارك سجلاتك بأمان، واحجز الرعاية التي تناسبك."
+
+#: templates/choice_page.html:103
+msgid "Match with clinics for your condition"
+msgstr "تطابق مع عيادات تناسب حالتك"
+
+#: templates/choice_page.html:104
+msgid "Securely upload your medical records"
+msgstr "ارفع سجلاتك الطبية بأمان"
+
+#: templates/choice_page.html:105
+msgid "Chat with clinics & book appointments"
+msgstr "تحدث مع العيادات واحجز المواعيد"
+
+#: templates/choice_page.html:108
+msgid "Sign up as patient"
+msgstr "سجّل كمريض"
+
+#: templates/choice_page.html:109
+msgid "Existing patient? Log in"
+msgstr "مريض حالي؟ سجّل الدخول"
+
+#: templates/choice_page.html:116
+msgid "Modern rehabilitation clinic"
+msgstr "عيادة تأهيل حديثة"
+
+#: templates/choice_page.html:118
+msgid "CLINIC"
+msgstr "عيادة"
+
+#: templates/choice_page.html:120
+msgid "I'm a clinic"
+msgstr "أنا عيادة"
+
+#: templates/choice_page.html:121
+msgid "Showcase your services, reach the right patients, and manage your practice end-to-end."
+msgstr "اعرض خدماتك، وصِل إلى المرضى المناسبين، وأدر عيادتك من البداية إلى النهاية."
+
+#: templates/choice_page.html:123
+msgid "Build a profile with services, photos & videos"
+msgstr "أنشئ صفحة بخدماتك وصورك وفيديوهاتك"
+
+#: templates/choice_page.html:124
+msgid "Review patient records & chat with prospects"
+msgstr "راجع سجلات المرضى وتحدث مع المهتمين"
+
+#: templates/choice_page.html:125
+msgid "Manage appointments from request to recovery"
+msgstr "أدر المواعيد من الطلب حتى التعافي"
+
+#: templates/choice_page.html:128
+msgid "Sign up as clinic"
+msgstr "سجّل كعيادة"
+
+#: templates/choice_page.html:129
+msgid "Existing clinic? Log in"
+msgstr "عيادة حالية؟ سجّل الدخول"
+
+#: templates/choice_page.html:140 templates/landing_page.html:300
+msgid "Toggle background music"
+msgstr "تشغيل/إيقاف الموسيقى الخلفية"
+
+#: templates/clinics/signup.html:5
+msgid "Clinic Sign Up - NERO"
+msgstr "تسجيل عيادة - نيرو"
+
+#: templates/clinics/signup.html:1143 templates/patient/signup.html:650
+msgid "Registration"
+msgstr "التسجيل"
+
+#: templates/clinics/signup.html:1144
+msgid "Register your clinic to connect with patients on NERO"
+msgstr "سجّل عيادتك للتواصل مع المرضى على نيرو"
+
+#: templates/clinics/signup.html:1147
+msgid "Complete only your clinic information below. Your clinic profile will be created after submission."
+msgstr "أكمل معلومات عيادتك أدناه فقط. سيتم إنشاء صفحة عيادتك بعد الإرسال."
+
+#: templates/clinics/signup.html:1168 templates/patient/signup.html:670
+msgid "or sign up manually"
+msgstr "أو سجّل يدويًا"
+
+#: templates/clinics/signup.html:1176
+#: templates/patient/medical_record_form.html:1325
+#: templates/patient/signup.html:678
+msgid "Please correct the following errors:"
+msgstr "يرجى تصحيح الأخطاء التالية:"
+
+#: templates/clinics/signup.html:1193
+#: templates/patient/patient_settings.html:882
+msgid "Account Information"
+msgstr "معلومات الحساب"
+
+#: templates/clinics/signup.html:1196
+msgid "Username and email are already filled from Google. You only need to complete clinic fields below."
+msgstr "تم تعبئة اسم المستخدم والبريد الإلكتروني من جوجل. تحتاج فقط لإكمال حقول العيادة أدناه."
+
+#: templates/clinics/signup.html:1202 templates/patient/signup.html:705
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#: templates/clinics/signup.html:1212
+#: templates/patient/medical_record_form.html:1411
+#: templates/patient/signup.html:733
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+#: templates/clinics/signup.html:1243 templates/patient/signup.html:812
+msgid "Use at least 8 characters with a mix of letters, numbers, and symbols"
+msgstr "استخدم 8 أحرف على الأقل مع مزيج من الحروف والأرقام والرموز"
+
+#: templates/clinics/signup.html:1252 templates/patient/signup.html:821
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+#: templates/clinics/signup.html:1279
+msgid "Clinic Information"
+msgstr "معلومات العيادة"
+
+#: templates/clinics/signup.html:1283
+msgid "Clinic Name"
+msgstr "اسم العيادة"
+
+#: templates/clinics/signup.html:1293
+msgid "Clinic Tagline"
+msgstr "شعار العيادة"
+
+#: templates/clinics/signup.html:1296
+msgid "Brief tagline that describes your clinic (appears on your profile)"
+msgstr "شعار قصير يصف عيادتك (يظهر على صفحتك)"
+
+#: templates/clinics/signup.html:1301
+msgid "Clinic Description"
+msgstr "وصف العيادة"
+
+#: templates/clinics/signup.html:1304
+msgid "Describe your clinic, your approach, and what makes you unique"
+msgstr "صِف عيادتك ونهجك وما يميزك"
+
+#: templates/clinics/signup.html:1312
+#: templates/patient/medical_record_form.html:1391
+msgid "Address"
+msgstr "العنوان"
+
+#: templates/clinics/signup.html:1322
+msgid "City"
+msgstr "المدينة"
+
+#: templates/clinics/signup.html:1332
+msgid "State"
+msgstr "الولاية/المنطقة"
+
+#: templates/clinics/signup.html:1342
+#: templates/patient/medical_record_form.html:1401
+#: templates/patient/see_medical_record.html:906
+msgid "Country"
+msgstr "الدولة"
+
+#: templates/clinics/signup.html:1352
+msgid "Continent"
+msgstr "القارة"
+
+#: templates/clinics/signup.html:1362
+msgid "ZIP Code"
+msgstr "الرمز البريدي"
+
+#: templates/clinics/signup.html:1372 templates/patient/signup.html:775
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+#: templates/clinics/signup.html:1382
+msgid "Contact Email"
+msgstr "بريد التواصل"
+
+#: templates/clinics/signup.html:1392
+msgid "Website"
+msgstr "الموقع الإلكتروني"
+
+#: templates/clinics/signup.html:1399
+msgid "Google Maps Embed URL (Optional)"
+msgstr "رابط خرائط جوجل المضمّن (اختياري)"
+
+#: templates/clinics/signup.html:1403
+msgid "Must be EMBED URL"
+msgstr "يجب أن يكون رابط تضمين (EMBED)"
+
+#: templates/clinics/signup.html:1403
+msgid "(starts with https://www.google.com/maps/embed?pb=...)"
+msgstr "(يبدأ بـ https://www.google.com/maps/embed?pb=...)"
+
+#: templates/clinics/signup.html:1404
+msgid "Steps:"
+msgstr "الخطوات:"
+
+#: templates/clinics/signup.html:1404
+msgid "Google Maps → Search address → Share → Embed a map → Copy HTML → Paste ONLY the URL from src=\"...\""
+msgstr "خرائط جوجل ← ابحث عن العنوان ← مشاركة ← تضمين خريطة ← انسخ HTML ← الصق فقط الرابط من src=\"...\""
+
+#: templates/clinics/signup.html:1405
+msgid "Don't use short links"
+msgstr "لا تستخدم الروابط المختصرة"
+
+#: templates/clinics/signup.html:1405
+msgid "like maps.app.goo.gl - they won't work!"
+msgstr "مثل maps.app.goo.gl — لن تعمل!"
+
+#: templates/clinics/signup.html:1413
+msgid "Professional Information"
+msgstr "المعلومات المهنية"
+
+#: templates/clinics/signup.html:1417
+msgid "Type of Clinic"
+msgstr "نوع العيادة"
+
+#: templates/clinics/signup.html:1434
+msgid "Established Date"
+msgstr "تاريخ التأسيس"
+
+#: templates/clinics/signup.html:1444
+msgid "Languages Spoken"
+msgstr "اللغات المتحدَّث بها"
+
+#: templates/clinics/signup.html:1451
+msgid "Facilities & Equipment"
+msgstr "المرافق والمعدات"
+
+#: templates/clinics/signup.html:1454
+msgid "Available facilities and equipment (comma separated)"
+msgstr "المرافق والمعدات المتوفرة (مفصولة بفواصل)"
+
+#: templates/clinics/signup.html:1459
+msgid "Hours of Operation"
+msgstr "ساعات العمل"
+
+#: templates/clinics/signup.html:1471
+msgid "Clinic Capabilities"
+msgstr "قدرات العيادة"
+
+#: templates/clinics/signup.html:1491
+msgid "Media & Social Links"
+msgstr "الوسائط وروابط التواصل"
+
+#: templates/clinics/signup.html:1495
+msgid "Profile Picture"
+msgstr "الصورة الشخصية"
+
+#: templates/clinics/signup.html:1498
+msgid "Recommended: 400x400px square image"
+msgstr "يُنصح بصورة مربعة 400×400 بكسل"
+
+#: templates/clinics/signup.html:1503
+msgid "Cover Photo"
+msgstr "صورة الغلاف"
+
+#: templates/clinics/signup.html:1506
+msgid "Recommended: 1200x300px landscape image"
+msgstr "يُنصح بصورة أفقية 1200×300 بكسل"
+
+#: templates/clinics/signup.html:1511
+msgid "Facebook URL"
+msgstr "رابط فيسبوك"
+
+#: templates/clinics/signup.html:1518
+msgid "Instagram URL"
+msgstr "رابط إنستغرام"
+
+#: templates/clinics/signup.html:1525
+msgid "LinkedIn URL"
+msgstr "رابط لينكدإن"
+
+#: templates/clinics/signup.html:1534
+msgid "Complete Clinic Profile"
+msgstr "أكمل ملف العيادة"
+
+#: templates/clinics/signup.html:1536
+msgid "Create Clinic Account"
+msgstr "إنشاء حساب العيادة"
+
+#: templates/clinics/signup.html:1543 templates/patient/signup.html:854
+msgid "Already have an account?"
+msgstr "لديك حساب بالفعل؟"
+
+#: templates/clinics/signup.html:1545 templates/patient/signup.html:856
+msgid "Login here"
+msgstr "سجّل الدخول هنا"
+
+#: templates/clinics/signup.html:1546
+msgid "Patient sign up here"
+msgstr "تسجيل المرضى هنا"
+
+#: templates/clinics/signup.html:1637 templates/patient/signup.html:948
+msgid "Passwords match"
+msgstr "كلمتا المرور متطابقتان"
+
+#: templates/clinics/signup.html:1640 templates/clinics/signup.html:1707
+#: templates/patient/signup.html:951 templates/patient/signup.html:986
+msgid "Passwords do not match"
+msgstr "كلمتا المرور غير متطابقتين"
+
+#: templates/clinics/signup.html:1660
+msgid "Invalid URL!"
+msgstr "رابط غير صالح!"
+
+#: templates/clinics/signup.html:1660
+msgid "This is a share link. Use the EMBED URL instead (from \"Embed a map\" tab)."
+msgstr "هذا رابط مشاركة. استخدم رابط التضمين بدلاً منه (من تبويب \"تضمين خريطة\")."
+
+#: templates/clinics/signup.html:1693
+#: templates/patient/medical_record_form.html:2302
+#: templates/patient/medical_record_form.html:2309
+#: templates/patient/signup.html:971
+msgid "This field is required"
+msgstr "هذا الحقل مطلوب"
+
+#: templates/clinics/signup.html:1719 templates/patient/signup.html:997
+msgid "Creating Account..."
+msgstr "جارٍ إنشاء الحساب..."
+
+#: templates/clinics/signup.html:1749
+#: templates/patient/medical_record_form.html:2219
+#: templates/patient/medical_record_form.html:2333
+#: templates/patient/signup.html:1045
+msgid "Please enter a valid email address"
+msgstr "يرجى إدخال بريد إلكتروني صالح"
+
+#: templates/includes/patient_nav.html:69
+#: templates/patient/dashboard/patient_dashboard.html:1250
+msgid "Search clinics by name..."
+msgstr "ابحث عن العيادات بالاسم..."
+
+#: templates/includes/patient_nav.html:76 templates/landing_page.html:169
+msgid "Menu"
+msgstr "القائمة"
+
+#: templates/includes/patient_nav.html:79
+#: templates/recommendations/questionnaire.html:914
+msgid "Home"
+msgstr "الرئيسية"
+
+#: templates/includes/patient_nav.html:86
+msgid "Find clinics"
+msgstr "البحث عن عيادات"
+
+#: templates/includes/patient_nav.html:92
+#: templates/patient/patient_settings.html:7
+#: templates/patient/patient_settings.html:857
+msgid "Account Settings"
+msgstr "إعدادات الحساب"
+
+#: templates/includes/patient_nav.html:95
+#: templates/recommendations/questionnaire.html:934
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+#: templates/includes/patient_nav.html:102 templates/includes/site_nav.html:46
+msgid "Switch language"
+msgstr "تغيير اللغة"
+
+#: templates/includes/site_footer.html:6
+msgid "© 2026 NERO — the easy, flexible, fun way to care."
+msgstr "© 2026 نيرو — الطريقة السهلة والمرنة والممتعة للرعاية."
+
+#: templates/includes/site_footer.html:7 templates/landing_page.html:295
+msgid "Need help?"
+msgstr "تحتاج مساعدة؟"
+
+#: templates/includes/site_footer.html:7 templates/landing_page.html:295
+msgid "Contact support"
+msgstr "تواصل مع الدعم"
+
+#: templates/includes/site_nav.html:37 templates/landing_page.html:173
+#: templates/landing_page.html:240
+msgid "For patients"
+msgstr "للمرضى"
+
+#: templates/includes/site_nav.html:38 templates/landing_page.html:174
+#: templates/landing_page.html:253
+msgid "For clinics"
+msgstr "للعيادات"
+
+#: templates/includes/site_nav.html:39 templates/landing_page.html:175
+#: templates/patient/dashboard/patient_dashboard.html:1533
+#: templates/patient/dashboard/patient_dashboard.html:1955
+msgid "King George"
+msgstr "الملك جورج"
+
+#: templates/includes/site_nav.html:40 templates/landing_page.html:176
+#: templates/landing_page.html:219
+msgid "Log in"
+msgstr "تسجيل الدخول"
+
+#: templates/includes/site_nav.html:41 templates/landing_page.html:177
+#: templates/landing_page.html:218
+msgid "Get started"
+msgstr "ابدأ الآن"
+
+#: templates/landing_page.html:7
+msgid "NERO — the easy, flexible, fun way to care"
+msgstr "نيرو — الطريقة السهلة والمرنة والممتعة للرعاية"
+
+#: templates/landing_page.html:8
+msgid "Nero connects patients with the right rehabilitation clinics — find care, share records, chat, and book, all in one friendly place."
+msgstr "نيرو يصل المرضى بعيادات التأهيل المناسبة — اعثر على الرعاية، شارك السجلات، تحدث، واحجز، كل ذلك في مكان واحد وودود."
+
+#: templates/landing_page.html:201
+msgid "Rehabilitation care — a therapist, a clinic and physiotherapy"
+msgstr "رعاية تأهيلية — معالِجة وعيادة وعلاج طبيعي"
+
+#: templates/landing_page.html:208
+msgid "Scroll"
+msgstr "مرّر للأسفل"
+
+#: templates/landing_page.html:214
+msgid "Care that's easy, flexible,"
+msgstr "رعاية سهلة ومرنة،"
+
+#: templates/landing_page.html:214
+msgid "and"
+msgstr "و"
+
+#: templates/landing_page.html:214
+msgid "a joyful journey."
+msgstr "رحلة ممتعة."
+
+#: templates/landing_page.html:216
+msgid "Nero connects patients with the right rehabilitation clinics — find care, share your records, chat, and book, all in one friendly place."
+msgstr "نيرو يصل المرضى بعيادات التأهيل المناسبة — اعثر على الرعاية، شارك سجلاتك، تحدث، واحجز، كل ذلك في مكان واحد وودود."
+
+#: templates/landing_page.html:224
+msgid "partner clinics"
+msgstr "عيادة شريكة"
+
+#: templates/landing_page.html:226
+msgid "patients helped"
+msgstr "مريض تمت مساعدتهم"
+
+#: templates/landing_page.html:228
+msgid "support"
+msgstr "دعم"
+
+#: templates/landing_page.html:241 templates/landing_page.html:254
+msgid "Are you a"
+msgstr "هل أنت"
+
+#: templates/landing_page.html:241
+msgid "patient?"
+msgstr "مريض؟"
+
+#: templates/landing_page.html:242
+msgid "Tell us about your case and let Nero find the best clinic for you. Our recommendation system matches you to the right fit, sends your request to the clinic we think suits you best — and you stay in contact through the whole process. All in one place."
+msgstr "أخبرنا عن حالتك ودع نيرو يجد أفضل عيادة لك. نظام التوصيات لدينا يطابقك مع الخيار الأنسب، ويرسل طلبك إلى العيادة التي نراها الأفضل لك — وتبقى على تواصل طوال العملية. كل ذلك في مكان واحد."
+
+#: templates/landing_page.html:243
+msgid "Find my clinic"
+msgstr "اعثر على عيادتي"
+
+#: templates/landing_page.html:245
+msgid "A patient receiving care"
+msgstr "مريض يتلقى الرعاية"
+
+#: templates/landing_page.html:254
+msgid "clinic?"
+msgstr "عيادة؟"
+
+#: templates/landing_page.html:255
+msgid "Register with Nero and build your page — showcase your treatments, photos and videos. Then let patients discover you, read your reviews, and book appointments. We bring the right patients to you."
+msgstr "سجّل في نيرو وأنشئ صفحتك — اعرض علاجاتك وصورك وفيديوهاتك. ثم دع المرضى يكتشفونك، ويقرؤون تقييماتك، ويحجزون المواعيد. نحن نجلب المرضى المناسبين إليك."
+
+#: templates/landing_page.html:256
+msgid "Join as a clinic"
+msgstr "انضم كعيادة"
+
+#: templates/landing_page.html:258
+msgid "A modern rehabilitation clinic"
+msgstr "عيادة تأهيل حديثة"
+
+#: templates/landing_page.html:266
+msgid "Meet your guide"
+msgstr "تعرّف على مرشدك"
+
+#: templates/landing_page.html:267
+msgid "Not sure where to start?"
+msgstr "لا تعرف من أين تبدأ؟"
+
+#: templates/landing_page.html:267
+msgid "Just ask"
+msgstr "فقط اسأل"
+
+#: templates/landing_page.html:267
+msgid "King George."
+msgstr "الملك جورج."
+
+#: templates/landing_page.html:268
+msgid "King George is our friendly AI assistant. Tell him what you need and he'll guide you to the right place — whether you're a patient looking for care or a clinic getting set up."
+msgstr "الملك جورج هو مساعدنا الذكي الودود. أخبره بما تحتاجه وسيرشدك إلى المكان الصحيح — سواء كنت مريضًا يبحث عن رعاية أو عيادة تجهّز صفحتها."
+
+#: templates/landing_page.html:269
+#: templates/patient/dashboard/patient_dashboard.html:1557
+msgid "Chat with King George"
+msgstr "تحدث مع الملك جورج"
+
+#: templates/landing_page.html:272
+msgid "King George, the Nero AI assistant"
+msgstr "الملك جورج، مساعد نيرو الذكي"
+
+#: templates/landing_page.html:275
+msgid "Hi! I'm King George 👋 Tell me what you need and I'll point you the right way — patient or clinic."
+msgstr "مرحبًا! أنا الملك جورج 👋 أخبرني بما تحتاجه وسأوجهك إلى الطريق الصحيح — مريضًا كنت أم عيادة."
+
+#: templates/landing_page.html:278
+#: templates/patient/dashboard/patient_dashboard.html:1544
+msgid "Ask King George anything..."
+msgstr "اسأل الملك جورج أي شيء..."
+
+#: templates/landing_page.html:294
+msgid "NERO — the easy, flexible, fun way to care."
+msgstr "نيرو — الطريقة السهلة والمرنة والممتعة للرعاية."
+
+#: templates/landing_page.html:344
+msgid "King George is thinking…"
+msgstr "الملك جورج يفكر…"
+
+#: templates/landing_page.html:358
+#: templates/patient/dashboard/patient_dashboard.html:1907
+msgid "Sorry, I could not get a response."
+msgstr "عذرًا، لم أتمكن من الحصول على رد."
+
+#: templates/landing_page.html:361
+#: templates/patient/dashboard/patient_dashboard.html:1910
+msgid "Sorry, something went wrong. Please try again."
+msgstr "عذرًا، حدث خطأ ما. يرجى المحاولة مرة أخرى."
+
+#: templates/patient/appointments.html:7
+#: templates/patient/appointments.html:1390
+msgid "My Appointments"
+msgstr "مواعيدي"
+
+#: templates/patient/appointments.html:1308
+#: templates/patient/dashboard/my_posts.html:849
+#: templates/patient/medical_record_form.html:1208
+#: templates/patient/medical_record_success.html:1056
+#: templates/patient/medical_records.html:993
+#: templates/patient/patient_settings.html:851
+#: templates/patient/see_medical_record.html:737
+#: templates/recommendations/questionnaire.html:910
+msgid "Search clinics, patients, or topics..."
+msgstr "ابحث عن عيادات أو مرضى أو مواضيع..."
+
+#: templates/patient/appointments.html:1319
+#: templates/patient/dashboard/my_posts.html:861
+#: templates/patient/dashboard/patient_dashboard.html:1262
+#: templates/patient/medical_record_form.html:1219
+#: templates/patient/medical_record_success.html:1067
+#: templates/patient/medical_records.html:1004
+#: templates/patient/search_clinics.html:1165
+#: templates/patient/see_medical_record.html:747
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+#: templates/patient/appointments.html:1333
+msgid "Manage your appointments and healthcare schedule."
+msgstr "أدر مواعيدك وجدولك الصحي."
+
+#: templates/patient/appointments.html:1392
+msgid "Manage your healthcare schedule and upcoming visits"
+msgstr "أدر جدولك الصحي وزياراتك القادمة"
+
+#: templates/patient/appointments.html:1395
+#, python-format
+msgid "Showing <strong>%(counter)s</strong> appointment for filter \"<em>%(status_filter)s</em>\"."
+msgid_plural "Showing <strong>%(counter)s</strong> appointments for filter \"<em>%(status_filter)s</em>\"."
+msgstr[0] "لا تظهر أي مواعيد للفلتر \"<em>%(status_filter)s</em>\"."
+msgstr[1] "يظهر <strong>%(counter)s</strong> موعد واحد للفلتر \"<em>%(status_filter)s</em>\"."
+msgstr[2] "يظهر <strong>%(counter)s</strong> موعدان للفلتر \"<em>%(status_filter)s</em>\"."
+msgstr[3] "تظهر <strong>%(counter)s</strong> مواعيد للفلتر \"<em>%(status_filter)s</em>\"."
+msgstr[4] "يظهر <strong>%(counter)s</strong> موعدًا للفلتر \"<em>%(status_filter)s</em>\"."
+msgstr[5] "يظهر <strong>%(counter)s</strong> موعد للفلتر \"<em>%(status_filter)s</em>\"."
+
+#: templates/patient/appointments.html:1397
+#, python-format
+msgid "Showing <strong>%(shown)s</strong> of <strong>%(total_appointments)s</strong> total appointments."
+msgstr "يظهر <strong>%(shown)s</strong> من إجمالي <strong>%(total_appointments)s</strong> موعد."
+
+#: templates/patient/appointments.html:1408
+msgid "Filter by Status"
+msgstr "التصفية حسب الحالة"
+
+#: templates/patient/appointments.html:1411
+msgid "All Appointments"
+msgstr "جميع المواعيد"
+
+#: templates/patient/appointments.html:1443
+#, python-format
+msgid "Requested %(requested_date)s"
+msgstr "طُلب في %(requested_date)s"
+
+#: templates/patient/appointments.html:1462
+#: templates/patient/see_medical_record.html:7
+msgid "Medical Record"
+msgstr "السجل الطبي"
+
+#: templates/patient/appointments.html:1472
+#: templates/recommendations/questionnaire.html:1069
+msgid "Accommodation"
+msgstr "الإقامة"
+
+#: templates/patient/appointments.html:1476
+#, python-format
+msgid "%(companions)s companion(s)"
+msgstr "%(companions)s مرافق/مرافقين"
+
+#: templates/patient/appointments.html:1478
+msgid "Requested (legacy)"
+msgstr "طلب سابق (قديم)"
+
+#: templates/patient/appointments.html:1480
+#, python-format
+msgid "%(travelers)s traveler(s)"
+msgstr "%(travelers)s مسافر/مسافرين"
+
+#: templates/patient/appointments.html:1484
+msgid "Not needed"
+msgstr "غير مطلوبة"
+
+#: templates/patient/appointments.html:1491
+msgid "Treatment Dates"
+msgstr "تواريخ العلاج"
+
+#: templates/patient/appointments.html:1496
+msgid "Not submitted yet"
+msgstr "لم تُقدَّم بعد"
+
+#: templates/patient/appointments.html:1500
+#, python-format
+msgid "Clinic proposal: %(proposed_start)s – %(proposed_end)s"
+msgstr "اقتراح العيادة: %(proposed_start)s – %(proposed_end)s"
+
+#: templates/patient/appointments.html:1512
+msgid "Payment"
+msgstr "الدفع"
+
+#: templates/patient/appointments.html:1515
+msgid "Completed"
+msgstr "مكتمل"
+
+#: templates/patient/appointments.html:1517
+#, python-format
+msgid "Amount: %(amount)s"
+msgstr "المبلغ: %(amount)s"
+
+#: templates/patient/appointments.html:1521
+#, python-format
+msgid "Amount due: %(amount)s"
+msgstr "المبلغ المستحق: %(amount)s"
+
+#: templates/patient/appointments.html:1523
+#, python-format
+msgid "Due by %(due_date)s"
+msgstr "يُستحق بحلول %(due_date)s"
+
+#: templates/patient/appointments.html:1526
+msgid "Waiting for clinic to set payment amount"
+msgstr "بانتظار تحديد العيادة لمبلغ الدفع"
+
+#: templates/patient/appointments.html:1528
+msgid "Pending status"
+msgstr "حالة معلّقة"
+
+#: templates/patient/appointments.html:1536
+msgid "Clinic Contact"
+msgstr "بيانات تواصل العيادة"
+
+#: templates/patient/appointments.html:1538
+msgid "N/A"
+msgstr "غير متوفر"
+
+#: templates/patient/appointments.html:1550
+msgid "Your notes"
+msgstr "ملاحظاتك"
+
+#: templates/patient/appointments.html:1557
+msgid "Clinic proposal note"
+msgstr "ملاحظة اقتراح العيادة"
+
+#: templates/patient/appointments.html:1564
+msgid "Your reply"
+msgstr "ردّك"
+
+#: templates/patient/appointments.html:1573
+msgid "Rejection Reason"
+msgstr "سبب الرفض"
+
+#: templates/patient/appointments.html:1586
+msgid "Action required — submit accommodation &amp; treatment dates"
+msgstr "إجراء مطلوب — قدّم الإقامة وتواريخ العلاج"
+
+#: templates/patient/appointments.html:1592
+#: templates/recommendations/questionnaire.html:1199
+msgid "Accommodation type"
+msgstr "نوع الإقامة"
+
+#: templates/patient/appointments.html:1594
+msgid "Select…"
+msgstr "اختر…"
+
+#: templates/patient/appointments.html:1595
+msgid "No accommodation (auto-confirm)"
+msgstr "بدون إقامة (تأكيد تلقائي)"
+
+#: templates/patient/appointments.html:1596
+#: templates/recommendations/questionnaire.html:1203
+msgid "Single room"
+msgstr "غرفة مفردة"
+
+#: templates/patient/appointments.html:1597
+#: templates/recommendations/questionnaire.html:1204
+msgid "Double room"
+msgstr "غرفة مزدوجة"
+
+#: templates/patient/appointments.html:1598
+#: templates/recommendations/questionnaire.html:1205
+msgid "Double suite"
+msgstr "جناح مزدوج"
+
+#: templates/patient/appointments.html:1599
+#: templates/recommendations/questionnaire.html:1206
+msgid "Quad suite"
+msgstr "جناح رباعي"
+
+#: templates/patient/appointments.html:1603
+msgid "Number of companions"
+msgstr "عدد المرافقين"
+
+#: templates/patient/appointments.html:1609
+#: templates/recommendations/questionnaire.html:1224
+msgid "Treatment start date"
+msgstr "تاريخ بدء العلاج"
+
+#: templates/patient/appointments.html:1613
+#: templates/recommendations/questionnaire.html:1228
+msgid "Treatment end date"
+msgstr "تاريخ انتهاء العلاج"
+
+#: templates/patient/appointments.html:1619
+msgid "Confirm &amp; Submit"
+msgstr "تأكيد وإرسال"
+
+#: templates/patient/appointments.html:1630
+msgid "Respond to clinic's proposed dates"
+msgstr "الرد على التواريخ المقترحة من العيادة"
+
+#: templates/patient/appointments.html:1636
+msgid "Optional note to clinic"
+msgstr "ملاحظة اختيارية للعيادة"
+
+#: templates/patient/appointments.html:1637
+msgid "e.g. Confirmed, see you then"
+msgstr "مثال: تم التأكيد، أراكم حينها"
+
+#: templates/patient/appointments.html:1641
+msgid "Accept &amp; Confirm"
+msgstr "قبول وتأكيد"
+
+#: templates/patient/appointments.html:1647
+msgid "Tell the clinic what to change"
+msgstr "أخبر العيادة بما تريد تغييره"
+
+#: templates/patient/appointments.html:1648
+msgid "e.g. Please try April instead"
+msgstr "مثال: يرجى تجربة شهر أبريل بدلاً من ذلك"
+
+#: templates/patient/appointments.html:1652
+msgid "Request Other Dates"
+msgstr "طلب تواريخ أخرى"
+
+#: templates/patient/appointments.html:1666
+msgid "View Clinic"
+msgstr "عرض العيادة"
+
+#: templates/patient/appointments.html:1673
+msgid "View Record"
+msgstr "عرض السجل"
+
+#: templates/patient/appointments.html:1680
+msgid "View Report"
+msgstr "عرض التقرير"
+
+#: templates/patient/appointments.html:1688
+msgid "Are you sure you want to cancel this appointment?"
+msgstr "هل أنت متأكد من إلغاء هذا الموعد؟"
+
+#: templates/patient/appointments.html:1690
+#: templates/patient/dashboard/my_posts.html:967
+#: templates/patient/medical_record_form.html:1444
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: templates/patient/appointments.html:1699
+msgid "Confirm payment for this clinic? Other pending offers for this case will be cancelled."
+msgstr "تأكيد الدفع لهذه العيادة؟ سيتم إلغاء العروض المعلّقة الأخرى لهذه الحالة."
+
+#: templates/patient/appointments.html:1702
+#, python-format
+msgid "Pay %(amount)s"
+msgstr "دفع %(amount)s"
+
+#: templates/patient/appointments.html:1704
+msgid "Confirm Payment"
+msgstr "تأكيد الدفع"
+
+#: templates/patient/appointments.html:1713
+msgid "Add to Google Calendar"
+msgstr "إضافة إلى تقويم جوجل"
+
+#: templates/patient/appointments.html:1721
+msgid "Delete this appointment? This cannot be undone."
+msgstr "حذف هذا الموعد؟ لا يمكن التراجع عن هذا الإجراء."
+
+#: templates/patient/appointments.html:1723
+#: templates/patient/medical_records.html:1124
+msgid "Delete"
+msgstr "حذف"
+
+#: templates/patient/appointments.html:1741
+msgid "No Appointments Found"
+msgstr "لا توجد مواعيد"
+
+#: templates/patient/appointments.html:1744
+#, python-format
+msgid "You don't have any %(status_filter)s appointments."
+msgstr "ليس لديك أي مواعيد بحالة %(status_filter)s."
+
+#: templates/patient/appointments.html:1746
+msgid "You haven't sent any clinic requests yet. Create a medical record and use the new request flow to send to multiple clinics."
+msgstr "لم ترسل أي طلبات للعيادات بعد. أنشئ سجلاً طبيًا واستخدم نظام الطلبات الجديد للإرسال إلى عدة عيادات."
+
+#: templates/patient/appointments.html:1751
+msgid "Find Clinics &amp; Book Appointment"
+msgstr "ابحث عن عيادات واحجز موعدًا"
+
+#: templates/patient/appointments.html:1864
+msgid "Processing…"
+msgstr "جارٍ المعالجة…"
+
+#: templates/patient/dashboard/my_posts.html:875
+msgid "View and manage all your posts."
+msgstr "اعرض وأدر جميع منشوراتك."
+
+#: templates/patient/dashboard/my_posts.html:920
+msgid "View and manage all your posts in one place"
+msgstr "اعرض وأدر جميع منشوراتك في مكان واحد"
+
+#: templates/patient/dashboard/my_posts.html:949
+msgid "Edit Description"
+msgstr "تعديل الوصف"
+
+#: templates/patient/dashboard/my_posts.html:953
+msgid "Delete Post"
+msgstr "حذف المنشور"
+
+#: templates/patient/dashboard/my_posts.html:970
+msgid "Save Description"
+msgstr "حفظ الوصف"
+
+#: templates/patient/dashboard/my_posts.html:977
+msgid "Post image"
+msgstr "صورة المنشور"
+
+#: templates/patient/dashboard/my_posts.html:985
+#: templates/patient/dashboard/patient_dashboard.html:1407
+msgid "Your browser does not support the video tag."
+msgstr "متصفحك لا يدعم عرض الفيديو."
+
+#: templates/patient/dashboard/my_posts.html:998
+msgid "No Posts Found"
+msgstr "لا توجد منشورات"
+
+#: templates/patient/dashboard/my_posts.html:1000
+msgid "You haven't created any posts yet. Share your health journey and experiences with the community."
+msgstr "لم تنشئ أي منشورات بعد. شارك رحلتك الصحية وتجاربك مع المجتمع."
+
+#: templates/patient/dashboard/my_posts.html:1004
+msgid "Create Your First Post"
+msgstr "أنشئ منشورك الأول"
+
+#: templates/patient/dashboard/my_posts.html:1138
+msgid "Are you sure you want to delete this post? This action cannot be undone."
+msgstr "هل أنت متأكد من حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء."
+
+#: templates/patient/dashboard/my_posts.html:1142
+msgid "Deleting..."
+msgstr "جارٍ الحذف..."
+
+#: templates/patient/dashboard/patient_dashboard.html:7
+msgid "NERO • Medical Social Platform"
+msgstr "نيرو • منصة طبية اجتماعية"
+
+#: templates/patient/dashboard/patient_dashboard.html:1276
+msgid "Welcome to NERO! Connect with clinics and other patients for better healthcare."
+msgstr "مرحبًا بك في نيرو! تواصل مع العيادات والمرضى الآخرين لرعاية صحية أفضل."
+
+#: templates/patient/dashboard/patient_dashboard.html:1328
+msgid "What's on your mind? Share your health journey..."
+msgstr "بمَ تفكر؟ شارك رحلتك الصحية..."
+
+#: templates/patient/dashboard/patient_dashboard.html:1333
+msgid "Photo"
+msgstr "صورة"
+
+#: templates/patient/dashboard/patient_dashboard.html:1338
+msgid "Video"
+msgstr "فيديو"
+
+#: templates/patient/dashboard/patient_dashboard.html:1343
+msgid "Post"
+msgstr "نشر"
+
+#: templates/patient/dashboard/patient_dashboard.html:1394
+msgid "NERO User"
+msgstr "مستخدم نيرو"
+
+#: templates/patient/dashboard/patient_dashboard.html:1402
+msgid "Post Image"
+msgstr "صورة المنشور"
+
+#: templates/patient/dashboard/patient_dashboard.html:1416
+msgid "Show more"
+msgstr "عرض المزيد"
+
+#: templates/patient/dashboard/patient_dashboard.html:1422
+msgid "No posts to show yet. Be the first to share your health journey!"
+msgstr "لا توجد منشورات بعد. كن أول من يشارك رحلته الصحية!"
+
+#: templates/patient/dashboard/patient_dashboard.html:1433
+msgid "Clinics You May Like"
+msgstr "عيادات قد تعجبك"
+
+#: templates/patient/dashboard/patient_dashboard.html:1454
+msgid "No clinic suggestions available yet."
+msgstr "لا توجد اقتراحات عيادات بعد."
+
+#: templates/patient/dashboard/patient_dashboard.html:1463
+msgid "Active Community"
+msgstr "المجتمع النشط"
+
+#: templates/patient/dashboard/patient_dashboard.html:1511
+msgid "Recently chatted"
+msgstr "تحدث مؤخرًا"
+
+#: templates/patient/dashboard/patient_dashboard.html:1519
+msgid "No active members online."
+msgstr "لا يوجد أعضاء متصلون حاليًا."
+
+#: templates/patient/dashboard/patient_dashboard.html:1531
+#: templates/patient/dashboard/patient_dashboard.html:1559
+msgid "King George Avatar"
+msgstr "صورة الملك جورج"
+
+#: templates/patient/dashboard/patient_dashboard.html:1534
+msgid "Online · your guide"
+msgstr "متصل · مرشدك الشخصي"
+
+#: templates/patient/dashboard/patient_dashboard.html:1536
+msgid "Close"
+msgstr "إغلاق"
+
+#: templates/patient/dashboard/patient_dashboard.html:1540
+msgid "Hi! I'm King George 👋 I can help you find clinics, answer health questions, or guide you through the platform. How can I help?"
+msgstr "مرحبًا! أنا الملك جورج 👋 يمكنني مساعدتك في العثور على عيادات، والإجابة عن الأسئلة الصحية، أو إرشادك داخل المنصة. كيف أساعدك؟"
+
+#: templates/patient/dashboard/patient_dashboard.html:1606
+#: templates/patient/dashboard/patient_dashboard.html:1721
+#: templates/patient/patient_settings.html:1073
+msgid "Loading"
+msgstr "جارٍ التحميل"
+
+#: templates/patient/dashboard/patient_dashboard.html:1721
+msgid "Posting..."
+msgstr "جارٍ النشر..."
+
+#: templates/patient/dashboard/patient_dashboard.html:1794
+#: templates/patient/dashboard/patient_dashboard.html:1798
+msgid "Learn more"
+msgstr "اقرأ المزيد"
+
+#: templates/patient/dashboard/patient_dashboard.html:1798
+msgid "Show less"
+msgstr "عرض أقل"
+
+#: templates/patient/dashboard/patient_dashboard.html:1892
+msgid "NERO is thinking…"
+msgstr "نيرو يفكر…"
+
+#: templates/patient/dashboard/patient_dashboard.html:1957
+msgid "👑 Welcome! I'm <strong>King George</strong>, your royal guide. Please start your journey by clicking <strong>here</strong> — I'll match you with the perfect clinic! 🦫"
+msgstr "👑 أهلاً بك! أنا <strong>الملك جورج</strong>، مرشدك الملكي. ابدأ رحلتك بالنقر <strong>هنا</strong> — سأطابقك مع العيادة المثالية! 🦫"
+
+#: templates/patient/dashboard/patient_dashboard.html:1962
+msgid "Tap “Smart Recommendations” to begin →"
+msgstr "اضغط على «التوصيات الذكية» للبدء ←"
+
+#: templates/patient/dashboard/search_results.html:7
+msgid "Patients"
+msgstr "المرضى"
+
+#: templates/patient/dashboard/search_results.html:31
+msgid "Clinics"
+msgstr "العيادات"
+
+#: templates/patient/dashboard/search_results.html:55
+msgid "No results found."
+msgstr "لا توجد نتائج."
+
+#: templates/patient/medical_record_form.html:7
+msgid "Complete Medical Record"
+msgstr "إكمال السجل الطبي"
+
+#: templates/patient/medical_record_form.html:1233
+msgid "Complete your medical record for personalized care."
+msgstr "أكمل سجلك الطبي للحصول على رعاية مخصصة."
+
+#: templates/patient/medical_record_form.html:1277
+#: templates/patient/medical_record_success.html:1125
+#: templates/patient/see_medical_record.html:769
+#: templates/patient/see_medical_record.html:818
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+#: templates/patient/medical_record_form.html:1281
+msgid "New Medical Record"
+msgstr "سجل طبي جديد"
+
+#: templates/patient/medical_record_form.html:1289
+msgid "Complete Your Medical Record"
+msgstr "أكمل سجلك الطبي"
+
+#: templates/patient/medical_record_form.html:1290
+msgid "Provide comprehensive information for personalized healthcare recommendations"
+msgstr "قدّم معلومات شاملة للحصول على توصيات رعاية صحية مخصصة"
+
+#: templates/patient/medical_record_form.html:1297
+msgid "Personal"
+msgstr "شخصي"
+
+#: templates/patient/medical_record_form.html:1301
+msgid "Medical"
+msgstr "طبي"
+
+#: templates/patient/medical_record_form.html:1305
+msgid "Mobility"
+msgstr "الحركة"
+
+#: templates/patient/medical_record_form.html:1309
+msgid "Health"
+msgstr "الصحة"
+
+#: templates/patient/medical_record_form.html:1313
+msgid "Files"
+msgstr "الملفات"
+
+#: templates/patient/medical_record_form.html:1343
+#: templates/patient/see_medical_record.html:893
+msgid "Personal Information"
+msgstr "المعلومات الشخصية"
+
+#: templates/patient/medical_record_form.html:1344
+msgid "Basic information about the patient"
+msgstr "معلومات أساسية عن المريض"
+
+#: templates/patient/medical_record_form.html:1350
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#: templates/patient/medical_record_form.html:1360
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+#: templates/patient/medical_record_form.html:1370
+#: templates/patient/see_medical_record.html:901
+#: templates/patient/signup.html:760
+msgid "Gender"
+msgstr "الجنس"
+
+#: templates/patient/medical_record_form.html:1380
+#: templates/patient/see_medical_record.html:867
+#: templates/patient/signup.html:747
+msgid "Date of Birth"
+msgstr "تاريخ الميلاد"
+
+#: templates/patient/medical_record_form.html:1386
+#: templates/patient/medical_record_form.html:2206
+#: templates/patient/medical_record_form.html:2323
+msgid "Patient must be at least 13 years old"
+msgstr "يجب أن يكون عمر المريض 13 عامًا على الأقل"
+
+#: templates/patient/medical_record_form.html:1421
+msgid "Mobile Number"
+msgstr "رقم الجوال"
+
+#: templates/patient/medical_record_form.html:1431
+msgid "WhatsApp Number"
+msgstr "رقم واتساب"
+
+#: templates/patient/medical_record_form.html:1447
+msgid "Next: Medical Details"
+msgstr "التالي: التفاصيل الطبية"
+
+#: templates/patient/medical_record_form.html:1457
+msgid "Medical Details"
+msgstr "التفاصيل الطبية"
+
+#: templates/patient/medical_record_form.html:1458
+msgid "Medical history and current conditions"
+msgstr "التاريخ الطبي والحالات الحالية"
+
+#: templates/patient/medical_record_form.html:1464
+#: templates/patient/medical_record_success.html:1263
+#: templates/patient/see_medical_record.html:922
+msgid "Main Diagnosis"
+msgstr "التشخيص الرئيسي"
+
+#: templates/patient/medical_record_form.html:1474
+msgid "Injury/Illness Date"
+msgstr "تاريخ الإصابة/المرض"
+
+#: templates/patient/medical_record_form.html:1484
+msgid "Height (cm)"
+msgstr "الطول (سم)"
+
+#: templates/patient/medical_record_form.html:1490
+msgid "Enter height in centimeters"
+msgstr "أدخل الطول بالسنتيمتر"
+
+#: templates/patient/medical_record_form.html:1495
+msgid "Weight (kg)"
+msgstr "الوزن (كغ)"
+
+#: templates/patient/medical_record_form.html:1501
+msgid "Enter weight in kilograms"
+msgstr "أدخل الوزن بالكيلوغرام"
+
+#: templates/patient/medical_record_form.html:1506
+#: templates/patient/see_medical_record.html:949
+msgid "Current Medications"
+msgstr "الأدوية الحالية"
+
+#: templates/patient/medical_record_form.html:1508
+msgid "Any current medications?"
+msgstr "هل تتناول أدوية حاليًا؟"
+
+#: templates/patient/medical_record_form.html:1510
+#: templates/patient/medical_record_form.html:1526
+#: templates/patient/medical_record_form.html:1542
+msgid "No"
+msgstr "لا"
+
+#: templates/patient/medical_record_form.html:1511
+#: templates/patient/medical_record_form.html:1527
+#: templates/patient/medical_record_form.html:1543
+msgid "Yes"
+msgstr "نعم"
+
+#: templates/patient/medical_record_form.html:1517
+#: templates/patient/medical_record_form.html:1533
+#: templates/patient/medical_record_form.html:1549
+msgid "If Yes, explain details. If No, it will be set to \"I don't have any\"."
+msgstr "إذا كانت الإجابة نعم، اشرح التفاصيل. إذا كانت لا، سيتم تعيينها إلى \"لا يوجد لدي\"."
+
+#: templates/patient/medical_record_form.html:1522
+#: templates/patient/see_medical_record.html:965
+msgid "Allergies"
+msgstr "الحساسية"
+
+#: templates/patient/medical_record_form.html:1524
+msgid "Any allergies?"
+msgstr "هل لديك أي حساسية؟"
+
+#: templates/patient/medical_record_form.html:1538
+#: templates/patient/see_medical_record.html:978
+msgid "Previous Surgeries"
+msgstr "العمليات الجراحية السابقة"
+
+#: templates/patient/medical_record_form.html:1540
+msgid "Any previous surgeries?"
+msgstr "هل أجريت عمليات جراحية سابقة؟"
+
+#: templates/patient/medical_record_form.html:1558
+#: templates/patient/medical_record_form.html:1724
+#: templates/patient/medical_record_form.html:1811
+#: templates/patient/medical_record_form.html:1940
+#: templates/patient/search_clinics.html:1381
+#: templates/patient/search_clinics.html:1499
+msgid "Previous"
+msgstr "السابق"
+
+#: templates/patient/medical_record_form.html:1561
+msgid "Next: Mobility Assessment"
+msgstr "التالي: تقييم الحركة"
+
+#: templates/patient/medical_record_form.html:1571
+msgid "Mobility Assessment"
+msgstr "تقييم الحركة"
+
+#: templates/patient/medical_record_form.html:1572
+msgid "Information about movement ability and assistive devices"
+msgstr "معلومات عن القدرة على الحركة والأجهزة المساعدة"
+
+#: templates/patient/medical_record_form.html:1579
+#: templates/patient/see_medical_record.html:926
+msgid "Movement Ability"
+msgstr "القدرة على الحركة"
+
+#: templates/patient/medical_record_form.html:1592
+msgid "Assistive Devices Used"
+msgstr "الأجهزة المساعدة المستخدمة"
+
+#: templates/patient/medical_record_form.html:1598
+msgid "Uses Wheelchair"
+msgstr "يستخدم كرسيًا متحركًا"
+
+#: templates/patient/medical_record_form.html:1602
+msgid "Uses Walker"
+msgstr "يستخدم مشّاية"
+
+#: templates/patient/medical_record_form.html:1606
+msgid "Uses Crutch"
+msgstr "يستخدم عكازًا"
+
+#: templates/patient/medical_record_form.html:1610
+msgid "Uses Electric Wheelchair"
+msgstr "يستخدم كرسيًا متحركًا كهربائيًا"
+
+#: templates/patient/medical_record_form.html:1614
+msgid "Please check all applicable assistive devices"
+msgstr "يرجى تحديد جميع الأجهزة المساعدة المنطبقة"
+
+#: templates/patient/medical_record_form.html:1623
+msgid "Bladder & Bowel Function"
+msgstr "وظائف المثانة والأمعاء"
+
+#: templates/patient/medical_record_form.html:1629
+msgid "Bowel Control"
+msgstr "التحكم في الأمعاء"
+
+#: templates/patient/medical_record_form.html:1633
+msgid "Urine Control"
+msgstr "التحكم في التبول"
+
+#: templates/patient/medical_record_form.html:1637
+msgid "Uses Permanent Catheter"
+msgstr "يستخدم قسطرة دائمة"
+
+#: templates/patient/medical_record_form.html:1641
+msgid "Uses Intermittent Catheter"
+msgstr "يستخدم قسطرة متقطعة"
+
+#: templates/patient/medical_record_form.html:1645
+msgid "Uses Medical Condom"
+msgstr "يستخدم واقيًا طبيًا"
+
+#: templates/patient/medical_record_form.html:1649
+msgid "Uses Diapers"
+msgstr "يستخدم حفاضات"
+
+#: templates/patient/medical_record_form.html:1653
+msgid "Please check all applicable options"
+msgstr "يرجى تحديد جميع الخيارات المنطبقة"
+
+#: templates/patient/medical_record_form.html:1662
+msgid "Independent Functions"
+msgstr "الوظائف المستقلة"
+
+#: templates/patient/medical_record_form.html:1668
+msgid "Can Breathe Normally"
+msgstr "يتنفس بشكل طبيعي"
+
+#: templates/patient/medical_record_form.html:1672
+msgid "Can Eat Independently"
+msgstr "يأكل بشكل مستقل"
+
+#: templates/patient/medical_record_form.html:1676
+msgid "Can Dress Independently"
+msgstr "يرتدي ملابسه بشكل مستقل"
+
+#: templates/patient/medical_record_form.html:1680
+msgid "Is Aware and Cooperative"
+msgstr "واعٍ ومتعاون"
+
+#: templates/patient/medical_record_form.html:1684
+msgid "Is Self-Reliant"
+msgstr "معتمد على نفسه"
+
+#: templates/patient/medical_record_form.html:1688
+msgid "Please check all applicable functions"
+msgstr "يرجى تحديد جميع الوظائف المنطبقة"
+
+#: templates/patient/medical_record_form.html:1697
+msgid "Medical Tubes"
+msgstr "الأنابيب الطبية"
+
+#: templates/patient/medical_record_form.html:1703
+msgid "Uses Feeding Tube"
+msgstr "يستخدم أنبوب تغذية"
+
+#: templates/patient/medical_record_form.html:1707
+msgid "Uses Stool Tube"
+msgstr "يستخدم أنبوب براز"
+
+#: templates/patient/medical_record_form.html:1711
+msgid "Uses Urine Tube"
+msgstr "يستخدم أنبوب بول"
+
+#: templates/patient/medical_record_form.html:1715
+msgid "Please check all applicable medical tubes"
+msgstr "يرجى تحديد جميع الأنابيب الطبية المنطبقة"
+
+#: templates/patient/medical_record_form.html:1727
+msgid "Next: Health Conditions"
+msgstr "التالي: الحالات الصحية"
+
+#: templates/patient/medical_record_form.html:1737
+msgid "Health Conditions"
+msgstr "الحالات الصحية"
+
+#: templates/patient/medical_record_form.html:1738
+msgid "Existing medical conditions and health status"
+msgstr "الحالات الطبية الموجودة والوضع الصحي"
+
+#: templates/patient/medical_record_form.html:1744
+msgid "Has Bedsores"
+msgstr "لديه قرح فراش"
+
+#: templates/patient/medical_record_form.html:1752
+msgid "Has Diabetes"
+msgstr "لديه سكري"
+
+#: templates/patient/medical_record_form.html:1760
+msgid "Uses Insulin"
+msgstr "يستخدم الأنسولين"
+
+#: templates/patient/medical_record_form.html:1768
+msgid "Has Heart Problems"
+msgstr "لديه مشاكل قلبية"
+
+#: templates/patient/medical_record_form.html:1776
+msgid "Has High Blood Pressure"
+msgstr "لديه ارتفاع ضغط الدم"
+
+#: templates/patient/medical_record_form.html:1784
+msgid "Has Infectious Diseases"
+msgstr "لديه أمراض معدية"
+
+#: templates/patient/medical_record_form.html:1792
+msgid "Has Vein Thrombosis"
+msgstr "لديه تجلط وريدي"
+
+#: templates/patient/medical_record_form.html:1800
+msgid "Has Depression"
+msgstr "لديه اكتئاب"
+
+#: templates/patient/medical_record_form.html:1814
+msgid "Next: File Uploads"
+msgstr "التالي: رفع الملفات"
+
+#: templates/patient/medical_record_form.html:1824
+msgid "File Uploads"
+msgstr "رفع الملفات"
+
+#: templates/patient/medical_record_form.html:1825
+msgid "Upload medical reports and movement videos"
+msgstr "ارفع التقارير الطبية وفيديوهات الحركة"
+
+#: templates/patient/medical_record_form.html:1831
+msgid "Medical Reports"
+msgstr "التقارير الطبية"
+
+#: templates/patient/medical_record_form.html:1838
+msgid "You can upload one or many files (PDF/JPG/JPEG/PNG, max 3MB each)."
+msgstr "يمكنك رفع ملف واحد أو أكثر (PDF/JPG/JPEG/PNG، بحد أقصى 3MB لكل ملف)."
+
+#: templates/patient/medical_record_form.html:1855
+msgid "Existing medical report"
+msgstr "تقرير طبي موجود"
+
+#: templates/patient/medical_record_form.html:1859
+#: templates/patient/medical_record_form.html:1875
+#: templates/patient/medical_records.html:1129
+#: templates/patient/see_medical_record.html:1035
+msgid "Download"
+msgstr "تحميل"
+
+#: templates/patient/medical_record_form.html:1871
+msgid "Additional report"
+msgstr "تقرير إضافي"
+
+#: templates/patient/medical_record_form.html:1884
+#: templates/patient/see_medical_record.html:1049
+msgid "Movement Video"
+msgstr "فيديو الحركة"
+
+#: templates/patient/medical_record_form.html:1891
+msgid "You can upload one or many MP4 videos (max 50MB each)."
+msgstr "يمكنك رفع فيديو MP4 واحد أو أكثر (بحد أقصى 50MB لكل فيديو)."
+
+#: templates/patient/medical_record_form.html:1908
+msgid "Existing movement video"
+msgstr "فيديو حركة موجود"
+
+#: templates/patient/medical_record_form.html:1912
+#: templates/patient/medical_record_form.html:1928
+#: templates/patient/see_medical_record.html:1056
+msgid "Play"
+msgstr "تشغيل"
+
+#: templates/patient/medical_record_form.html:1924
+msgid "Additional movement video"
+msgstr "فيديو حركة إضافي"
+
+#: templates/patient/medical_record_form.html:1944
+msgid "Submit Medical Record"
+msgstr "إرسال السجل الطبي"
+
+#: templates/patient/medical_record_form.html:2096
+msgid "Please explain the situation in detail"
+msgstr "يرجى شرح الحالة بالتفصيل"
+
+#: templates/patient/medical_record_form.html:2180
+msgid "Please fix all errors before submitting."
+msgstr "يرجى إصلاح جميع الأخطاء قبل الإرسال."
+
+#: templates/patient/medical_record_form.html:2186
+msgid "Submitting..."
+msgstr "جارٍ الإرسال..."
+
+#: templates/patient/medical_record_form.html:2412
+msgid "File size exceeds maximum allowed size"
+msgstr "حجم الملف يتجاوز الحد الأقصى المسموح"
+
+#: templates/patient/medical_record_form.html:2511
+msgid "Are you sure you want to cancel? All unsaved changes will be lost."
+msgstr "هل أنت متأكد من الإلغاء؟ ستفقد جميع التغييرات غير المحفوظة."
+
+#: templates/patient/medical_record_success.html:7
+msgid "Medical Record Updated"
+msgstr "تم تحديث السجل الطبي"
+
+#: templates/patient/medical_record_success.html:7
+msgid "Medical Record Submitted"
+msgstr "تم إرسال السجل الطبي"
+
+#: templates/patient/medical_record_success.html:1081
+msgid "Your medical record has been successfully processed."
+msgstr "تمت معالجة سجلك الطبي بنجاح."
+
+#: templates/patient/medical_record_success.html:1129
+msgid "Success"
+msgstr "نجاح"
+
+#: templates/patient/medical_record_success.html:1147
+msgid "Medical Record Updated Successfully!"
+msgstr "تم تحديث السجل الطبي بنجاح!"
+
+#: templates/patient/medical_record_success.html:1147
+msgid "Medical Record Submitted Successfully!"
+msgstr "تم إرسال السجل الطبي بنجاح!"
+
+#: templates/patient/medical_record_success.html:1152
+msgid "Your medical information has been updated securely. Your changes are now live and will be used for all future recommendations."
+msgstr "تم تحديث معلوماتك الطبية بأمان. تغييراتك سارية الآن وستُستخدم في جميع التوصيات المستقبلية."
+
+#: templates/patient/medical_record_success.html:1154
+msgid "Your medical record has been securely submitted and stored. Our system will now use this information to provide personalized healthcare recommendations."
+msgstr "تم إرسال سجلك الطبي وتخزينه بأمان. سيستخدم نظامنا هذه المعلومات لتقديم توصيات رعاية صحية مخصصة."
+
+#: templates/patient/medical_record_success.html:1165
+msgid "RECORD UPDATED"
+msgstr "تم تحديث السجل"
+
+#: templates/patient/medical_record_success.html:1168
+msgid "RECORD SUBMITTED"
+msgstr "تم إرسال السجل"
+
+#: templates/patient/medical_record_success.html:1177
+#: templates/patient/see_medical_record.html:1081
+msgid "Record ID"
+msgstr "معرّف السجل"
+
+#: templates/patient/medical_record_success.html:1187
+msgid "Return to Dashboard"
+msgstr "العودة إلى لوحة التحكم"
+
+#: templates/patient/medical_record_success.html:1192
+msgid "View All Records"
+msgstr "عرض جميع السجلات"
+
+#: templates/patient/medical_record_success.html:1198
+msgid "View This Record"
+msgstr "عرض هذا السجل"
+
+#: templates/patient/medical_record_success.html:1205
+msgid "What's Next?"
+msgstr "ما التالي؟"
+
+#: templates/patient/medical_record_success.html:1207
+msgid "Here are the next steps in your healthcare journey with NERO:"
+msgstr "إليك الخطوات التالية في رحلتك الصحية مع نيرو:"
+
+#: templates/patient/medical_record_success.html:1216
+msgid "Based on your medical record, our AI will analyze your data and provide personalized clinic recommendations within 24 hours."
+msgstr "بناءً على سجلك الطبي، سيحلل ذكاؤنا الاصطناعي بياناتك ويقدم توصيات عيادات مخصصة خلال 24 ساعة."
+
+#: templates/patient/medical_record_success.html:1223
+msgid "Clinic Matching"
+msgstr "مطابقة العيادات"
+
+#: templates/patient/medical_record_success.html:1224
+msgid "We'll match you with specialized clinics that best fit your medical needs, location preferences, and treatment requirements."
+msgstr "سنطابقك مع عيادات متخصصة تناسب احتياجاتك الطبية وتفضيلات موقعك ومتطلبات علاجك."
+
+#: templates/patient/medical_record_success.html:1231
+msgid "Appointment Scheduling"
+msgstr "جدولة المواعيد"
+
+#: templates/patient/medical_record_success.html:1232
+msgid "Once matched, you can select multiple clinics and send pending appointment requests in one step."
+msgstr "بعد المطابقة، يمكنك اختيار عدة عيادات وإرسال طلبات مواعيد معلّقة في خطوة واحدة."
+
+#: templates/patient/medical_record_success.html:1239
+msgid "Progress Tracking"
+msgstr "متابعة التقدم"
+
+#: templates/patient/medical_record_success.html:1240
+msgid "Track your treatment progress, update your records, and communicate with clinics through your personal dashboard."
+msgstr "تابع تقدم علاجك، وحدّث سجلاتك، وتواصل مع العيادات من خلال لوحة التحكم الشخصية."
+
+#: templates/patient/medical_record_success.html:1250
+msgid "Record Summary"
+msgstr "ملخص السجل"
+
+#: templates/patient/medical_record_success.html:1256
+msgid "Patient Name"
+msgstr "اسم المريض"
+
+#: templates/patient/medical_record_success.html:1270
+#: templates/patient/see_medical_record.html:1085
+msgid "Status"
+msgstr "الحالة"
+
+#: templates/patient/medical_record_success.html:1273
+msgid "Active"
+msgstr "نشط"
+
+#: templates/patient/medical_record_success.html:1279
+msgid "Date Updated"
+msgstr "تاريخ التحديث"
+
+#: templates/patient/medical_record_success.html:1279
+msgid "Date Created"
+msgstr "تاريخ الإنشاء"
+
+#: templates/patient/medical_record_success.html:1291
+msgid "Your data is secure:"
+msgstr "بياناتك آمنة:"
+
+#: templates/patient/medical_record_success.html:1291
+msgid "All medical records are encrypted and stored securely. Only authorized medical professionals have access to your information."
+msgstr "جميع السجلات الطبية مشفّرة ومخزّنة بأمان. لا يصل إلى معلوماتك سوى المختصون الطبيون المصرّح لهم."
+
+#: templates/patient/medical_record_success.html:1299
+msgid "Print Confirmation"
+msgstr "طباعة التأكيد"
+
+#: templates/patient/medical_record_success.html:1303
+msgid "Share with Clinics"
+msgstr "مشاركة مع العيادات"
+
+#: templates/patient/medical_record_success.html:1307
+msgid "Get Recommendations"
+msgstr "احصل على التوصيات"
+
+#: templates/patient/medical_record_success.html:1452
+msgid "You will be redirected to dashboard in 10 seconds..."
+msgstr "سيتم توجيهك إلى لوحة التحكم خلال 10 ثوانٍ..."
+
+#: templates/patient/medical_record_success.html:1519
+msgid "Record ID copied to clipboard!"
+msgstr "تم نسخ معرّف السجل!"
+
+#: templates/patient/medical_records.html:7
+#: templates/patient/medical_records.html:1066
+msgid "My Medical Records"
+msgstr "سجلاتي الطبية"
+
+#: templates/patient/medical_records.html:1018
+msgid "Manage your medical records securely."
+msgstr "أدر سجلاتك الطبية بأمان."
+
+#: templates/patient/medical_records.html:1068
+msgid "Manage and access all your medical documents securely"
+msgstr "أدر جميع مستنداتك الطبية وادخل إليها بأمان"
+
+#: templates/patient/medical_records.html:1073
+#: templates/patient/medical_records.html:1148
+msgid "Start Smart Recommendation"
+msgstr "ابدأ التوصية الذكية"
+
+#: templates/patient/medical_records.html:1089
+msgid "New Today"
+msgstr "جديد اليوم"
+
+#: templates/patient/medical_records.html:1095
+#: templates/patient/see_medical_record.html:835
+#: templates/patient/see_medical_record.html:1088
+msgid "Urgent"
+msgstr "عاجل"
+
+#: templates/patient/medical_records.html:1104
+#, python-format
+msgid "Created %(created_date)s"
+msgstr "أُنشئ في %(created_date)s"
+
+#: templates/patient/medical_records.html:1108
+#, python-format
+msgid "Last updated %(time_since)s ago"
+msgstr "آخر تحديث منذ %(time_since)s"
+
+#: templates/patient/medical_records.html:1115
+msgid "Use For Smart Match"
+msgstr "استخدم للمطابقة الذكية"
+
+#: templates/patient/medical_records.html:1120
+#: templates/patient/see_medical_record.html:850
+msgid "Edit"
+msgstr "تعديل"
+
+#: templates/patient/medical_records.html:1142
+msgid "No Medical Records Found"
+msgstr "لا توجد سجلات طبية"
+
+#: templates/patient/medical_records.html:1144
+msgid "You haven't added any medical records yet. Start by creating your first record to keep track of your health information securely."
+msgstr "لم تضف أي سجلات طبية بعد. ابدأ بإنشاء سجلك الأول لحفظ معلوماتك الصحية بأمان."
+
+#: templates/patient/medical_records.html:1310
+#: templates/patient/see_medical_record.html:1243
+msgid "Are you sure you want to delete this medical record? This action cannot be undone."
+msgstr "هل أنت متأكد من حذف هذا السجل الطبي؟ لا يمكن التراجع عن هذا الإجراء."
+
+#: templates/patient/patient_settings.html:873
+msgid "Google is not connected to this account yet."
+msgstr "لم يتم ربط جوجل بهذا الحساب بعد."
+
+#: templates/patient/patient_settings.html:874
+msgid "Connect Google now"
+msgstr "اربط جوجل الآن"
+
+#: templates/patient/patient_settings.html:902
+msgid "Profile Information"
+msgstr "معلومات الملف الشخصي"
+
+#: templates/patient/patient_settings.html:906
+msgid "Profile Picture (click to change)"
+msgstr "الصورة الشخصية (انقر للتغيير)"
+
+#: templates/patient/patient_settings.html:908
+msgid "Current profile picture"
+msgstr "الصورة الشخصية الحالية"
+
+#: templates/patient/patient_settings.html:939
+msgid "Medical Conditions (Optional)"
+msgstr "الحالات الطبية (اختياري)"
+
+#: templates/patient/patient_settings.html:963
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+#: templates/patient/patient_settings.html:969
+msgid "Back to Dashboard"
+msgstr "العودة إلى لوحة التحكم"
+
+#: templates/patient/search_clinics.html:1153
+msgid "Search clinics, doctors, or specializations..."
+msgstr "ابحث عن عيادات أو أطباء أو تخصصات..."
+
+#: templates/patient/search_clinics.html:1179
+msgid "Find the best clinics for your rehabilitation needs."
+msgstr "اعثر على أفضل العيادات لاحتياجاتك التأهيلية."
+
+#: templates/patient/search_clinics.html:1227
+msgid "Find Rehabilitation Clinics"
+msgstr "ابحث عن عيادات التأهيل"
+
+#: templates/patient/search_clinics.html:1229
+msgid "Discover specialized clinics for your recovery journey"
+msgstr "اكتشف عيادات متخصصة لرحلة تعافيك"
+
+#: templates/patient/search_clinics.html:1237
+msgid "Search Filters"
+msgstr "فلاتر البحث"
+
+#: templates/patient/search_clinics.html:1239
+msgid "Find clinics based on specialization, location, and more"
+msgstr "ابحث عن العيادات حسب التخصص والموقع والمزيد"
+
+#: templates/patient/search_clinics.html:1243
+msgid "Clinic Name or Keyword"
+msgstr "اسم العيادة أو كلمة مفتاحية"
+
+#: templates/patient/search_clinics.html:1245
+msgid "Search clinics, doctors, or services..."
+msgstr "ابحث عن عيادات أو أطباء أو خدمات..."
+
+#: templates/patient/search_clinics.html:1250
+#: templates/patient/search_clinics.html:1325
+#: templates/patient/search_clinics.html:1443
+msgid "Specialization"
+msgstr "التخصص"
+
+#: templates/patient/search_clinics.html:1252
+msgid "All Specializations"
+msgstr "جميع التخصصات"
+
+#: templates/patient/search_clinics.html:1262
+msgid "City or Location"
+msgstr "المدينة أو الموقع"
+
+#: templates/patient/search_clinics.html:1264
+msgid "Enter city or location"
+msgstr "أدخل المدينة أو الموقع"
+
+#: templates/patient/search_clinics.html:1268
+msgid "Search"
+msgstr "بحث"
+
+#: templates/patient/search_clinics.html:1271
+msgid "Search Clinics"
+msgstr "البحث عن عيادات"
+
+#: templates/patient/search_clinics.html:1283
+msgid "Search Results"
+msgstr "نتائج البحث"
+
+#: templates/patient/search_clinics.html:1285
+msgid "Featured Clinics"
+msgstr "عيادات مميزة"
+
+#: templates/patient/search_clinics.html:1291
+#, python-format
+msgid "%(counter)s clinic found"
+msgid_plural "%(counter)s clinics found"
+msgstr[0] "لم يتم العثور على عيادات"
+msgstr[1] "تم العثور على عيادة واحدة"
+msgstr[2] "تم العثور على عيادتين"
+msgstr[3] "تم العثور على %(counter)s عيادات"
+msgstr[4] "تم العثور على %(counter)s عيادة"
+msgstr[5] "تم العثور على %(counter)s عيادة"
+
+#: templates/patient/search_clinics.html:1304
+#: templates/patient/search_clinics.html:1422
+msgid "Clinic Logo"
+msgstr "شعار العيادة"
+
+#: templates/patient/search_clinics.html:1314
+#: templates/patient/search_clinics.html:1432
+msgid "Featured"
+msgstr "مميزة"
+
+#: templates/patient/search_clinics.html:1332
+#: templates/patient/search_clinics.html:1450
+#: templates/recommendations/questionnaire.html:1065
+msgid "Location"
+msgstr "الموقع"
+
+#: templates/patient/search_clinics.html:1339
+#: templates/patient/search_clinics.html:1457
+msgid "Contact"
+msgstr "التواصل"
+
+#: templates/patient/search_clinics.html:1342
+#: templates/patient/search_clinics.html:1460
+msgid "Not provided"
+msgstr "غير متوفر"
+
+#: templates/patient/search_clinics.html:1346
+#: templates/patient/search_clinics.html:1464
+msgid "Experience"
+msgstr "الخبرة"
+
+#: templates/patient/search_clinics.html:1349
+#: templates/patient/search_clinics.html:1467
+#, python-format
+msgid "%(counter)s year"
+msgid_plural "%(counter)s years"
+msgstr[0] "أقل من سنة"
+msgstr[1] "سنة واحدة"
+msgstr[2] "سنتان"
+msgstr[3] "%(counter)s سنوات"
+msgstr[4] "%(counter)s سنة"
+msgstr[5] "%(counter)s سنة"
+
+#: templates/patient/search_clinics.html:1363
+#: templates/patient/search_clinics.html:1481
+msgid "View Details"
+msgstr "عرض التفاصيل"
+
+#: templates/patient/search_clinics.html:1367
+#: templates/patient/search_clinics.html:1485
+msgid "Chat Now"
+msgstr "تحدث الآن"
+
+#: templates/patient/search_clinics.html:1386
+#: templates/patient/search_clinics.html:1504
+#, python-format
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "صفحة %(number)s من %(num_pages)s"
+
+#: templates/patient/search_clinics.html:1392
+#: templates/patient/search_clinics.html:1510
+msgid "Next"
+msgstr "التالي"
+
+#: templates/patient/search_clinics.html:1404
+msgid "No clinics found"
+msgstr "لم يتم العثور على عيادات"
+
+#: templates/patient/search_clinics.html:1406
+msgid "No clinics match your search criteria. Try adjusting your filters or browse our featured clinics below."
+msgstr "لا توجد عيادات تطابق معايير بحثك. جرّب تعديل الفلاتر أو تصفح العيادات المميزة أدناه."
+
+#: templates/patient/search_clinics.html:1410
+msgid "View All Clinics"
+msgstr "عرض جميع العيادات"
+
+#: templates/patient/search_clinics.html:1521
+msgid "No clinics available"
+msgstr "لا توجد عيادات متاحة"
+
+#: templates/patient/search_clinics.html:1522
+msgid "There are currently no clinics in our system. Please check back later or contact support."
+msgstr "لا توجد حاليًا عيادات في نظامنا. يرجى المحاولة لاحقًا أو التواصل مع الدعم."
+
+#: templates/patient/see_medical_record.html:755
+msgid "Location: Hidden"
+msgstr "الموقع: مخفي"
+
+#: templates/patient/see_medical_record.html:759
+msgid "Welcome to NERO! Manage your medical records securely."
+msgstr "مرحبًا بك في نيرو! أدر سجلاتك الطبية بأمان."
+
+#: templates/patient/see_medical_record.html:822
+msgid "Record Details"
+msgstr "تفاصيل السجل"
+
+#: templates/patient/see_medical_record.html:856
+#: templates/recommendations/questionnaire.html:1144
+#: templates/recommendations/questionnaire.html:1184
+#: templates/recommendations/questionnaire.html:1236
+#: templates/recommendations/questionnaire.html:1270
+msgid "Back"
+msgstr "رجوع"
+
+#: templates/patient/see_medical_record.html:871
+msgid "Age"
+msgstr "العمر"
+
+#: templates/patient/see_medical_record.html:872
+#, python-format
+msgid "%(age)s years"
+msgstr "%(age)s سنة"
+
+#: templates/patient/see_medical_record.html:875
+msgid "Height & Weight"
+msgstr "الطول والوزن"
+
+#: templates/patient/see_medical_record.html:876
+#, python-format
+msgid "%(height)scm • %(weight)skg"
+msgstr "%(height)s سم • %(weight)s كغ"
+
+#: templates/patient/see_medical_record.html:879
+msgid "Injury Date"
+msgstr "تاريخ الإصابة"
+
+#: templates/patient/see_medical_record.html:897
+#: templates/patient/signup.html:719
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+#: templates/patient/see_medical_record.html:918
+msgid "Medical Information"
+msgstr "المعلومات الطبية"
+
+#: templates/patient/see_medical_record.html:930
+msgid "BMI"
+msgstr "مؤشر كتلة الجسم"
+
+#: templates/patient/see_medical_record.html:934
+msgid "Injury Duration"
+msgstr "مدة الإصابة"
+
+#: templates/patient/see_medical_record.html:935
+#, python-format
+msgid "%(duration)s days"
+msgstr "%(duration)s يوم"
+
+#: templates/patient/see_medical_record.html:952
+msgid "No medications recorded"
+msgstr "لا توجد أدوية مسجلة"
+
+#: templates/patient/see_medical_record.html:968
+msgid "No allergies recorded"
+msgstr "لا توجد حساسية مسجلة"
+
+#: templates/patient/see_medical_record.html:981
+msgid "No previous surgeries recorded"
+msgstr "لا توجد عمليات جراحية سابقة مسجلة"
+
+#: templates/patient/see_medical_record.html:996
+msgid "Detailed Diagnosis"
+msgstr "التشخيص التفصيلي"
+
+#: templates/patient/see_medical_record.html:1011
+msgid "Attached Files"
+msgstr "الملفات المرفقة"
+
+#: templates/patient/see_medical_record.html:1026
+msgid "Medical Report"
+msgstr "التقرير الطبي"
+
+#: templates/patient/see_medical_record.html:1027
+msgid "PDF Document"
+msgstr "مستند PDF"
+
+#: templates/patient/see_medical_record.html:1050
+msgid "Video File"
+msgstr "ملف فيديو"
+
+#: templates/patient/see_medical_record.html:1063
+msgid "No files attached to this record"
+msgstr "لا توجد ملفات مرفقة بهذا السجل"
+
+#: templates/patient/see_medical_record.html:1073
+msgid "Record Created"
+msgstr "تاريخ إنشاء السجل"
+
+#: templates/patient/see_medical_record.html:1077
+msgid "Last Updated"
+msgstr "آخر تحديث"
+
+#: templates/patient/see_medical_record.html:1088
+msgid "Stable"
+msgstr "مستقرة"
+
+#: templates/patient/see_medical_record.html:1106
+msgid "Searching for:"
+msgstr "البحث عن:"
+
+#: templates/patient/see_medical_record.html:1141
+msgid "years"
+msgstr "سنوات"
+
+#: templates/patient/see_medical_record.html:1190
+msgid "Record ID copied to clipboard"
+msgstr "تم نسخ معرّف السجل"
+
+#: templates/patient/signup.html:6
+msgid "Patient Sign Up - NERO"
+msgstr "تسجيل مريض - نيرو"
+
+#: templates/patient/signup.html:651
+msgid "Create your personal medical profile"
+msgstr "أنشئ ملفك الطبي الشخصي"
+
+#: templates/patient/signup.html:696
+msgid "Profile Picture (optional)"
+msgstr "الصورة الشخصية (اختياري)"
+
+#: templates/patient/signup.html:709
+msgid "Enter username"
+msgstr "أدخل اسم المستخدم"
+
+#: templates/patient/signup.html:723
+msgid "Enter full name"
+msgstr "أدخل الاسم الكامل"
+
+#: templates/patient/signup.html:737
+msgid "Enter email address"
+msgstr "أدخل البريد الإلكتروني"
+
+#: templates/patient/signup.html:763
+msgid "Select gender"
+msgstr "اختر الجنس"
+
+#: templates/patient/signup.html:764
+msgid "Male"
+msgstr "ذكر"
+
+#: templates/patient/signup.html:765
+msgid "Female"
+msgstr "أنثى"
+
+#: templates/patient/signup.html:766
+msgid "Other"
+msgstr "آخر"
+
+#: templates/patient/signup.html:779
+msgid "Enter phone number"
+msgstr "أدخل رقم الهاتف"
+
+#: templates/patient/signup.html:794
+msgid "Create password"
+msgstr "أنشئ كلمة المرور"
+
+#: templates/patient/signup.html:826
+msgid "Confirm password"
+msgstr "أكّد كلمة المرور"
+
+#: templates/patient/signup.html:848
+msgid "Create Patient Account"
+msgstr "إنشاء حساب مريض"
+
+#: templates/patient/signup.html:857
+msgid "Clinic sign up here"
+msgstr "تسجيل العيادات هنا"
+
+#: templates/patient/signup.html:1030
+msgid "You must be at least 13 years old"
+msgstr "يجب أن يكون عمرك 13 عامًا على الأقل"
+
+#: templates/recommendations/questionnaire.html:7
+msgid "Smart Recommendations • NERO"
+msgstr "التوصيات الذكية • نيرو"
+
+#: templates/recommendations/questionnaire.html:921
+#: templates/recommendations/questionnaire.html:980
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: templates/recommendations/questionnaire.html:962
+msgid "Find the best clinic for your needs."
+msgstr "اعثر على أفضل عيادة لاحتياجاتك."
+
+#: templates/recommendations/questionnaire.html:993
+msgid "Answer a few questions and we'll match you with the best clinics worldwide."
+msgstr "أجب عن بضعة أسئلة وسنطابقك مع أفضل العيادات حول العالم."
+
+#: templates/recommendations/questionnaire.html:1000
+msgid "Step 1–5: Your Filters"
+msgstr "الخطوات 1–5: فلاترك"
+
+#: templates/recommendations/questionnaire.html:1001
+msgid "Dispatch to Matching Clinics"
+msgstr "الإرسال إلى العيادات المطابقة"
+
+#: templates/recommendations/questionnaire.html:1004
+msgid "Matching analysis completed"
+msgstr "اكتمل تحليل المطابقة"
+
+#: templates/recommendations/questionnaire.html:1005
+msgid "Clinic names and scores are hidden at this stage. Your request will be sent automatically to all matching clinics."
+msgstr "أسماء العيادات ونتائجها مخفية في هذه المرحلة. سيُرسل طلبك تلقائيًا إلى جميع العيادات المطابقة."
+
+#: templates/recommendations/questionnaire.html:1021
+#, python-format
+msgid "%(count)s matching clinic"
+msgid_plural "%(count)s matching clinics"
+msgstr[0] "لا توجد عيادات مطابقة"
+msgstr[1] "عيادة واحدة مطابقة"
+msgstr[2] "عيادتان مطابقتان"
+msgstr[3] "%(count)s عيادات مطابقة"
+msgstr[4] "%(count)s عيادة مطابقة"
+msgstr[5] "%(count)s عيادة مطابقة"
+
+#: templates/recommendations/questionnaire.html:1021
+msgid "will receive your request package."
+msgstr "ستستلم حزمة طلبك."
+
+#: templates/recommendations/questionnaire.html:1023
+msgid "No matching clinics found. Try adjusting your filters."
+msgstr "لم يتم العثور على عيادات مطابقة. جرّب تعديل الفلاتر."
+
+#: templates/recommendations/questionnaire.html:1038
+msgid "Change Filters"
+msgstr "تغيير الفلاتر"
+
+#: templates/recommendations/questionnaire.html:1042
+msgid "Sending automatically to matching clinics..."
+msgstr "جارٍ الإرسال تلقائيًا إلى العيادات المطابقة..."
+
+#: templates/recommendations/questionnaire.html:1057
+msgid "Clinic type"
+msgstr "نوع العيادة"
+
+#: templates/recommendations/questionnaire.html:1061
+msgid "Medical record"
+msgstr "السجل الطبي"
+
+#: templates/recommendations/questionnaire.html:1073
+msgid "Treatment"
+msgstr "العلاج"
+
+#: templates/recommendations/questionnaire.html:1084
+msgid "Step 1 of 4"
+msgstr "الخطوة 1 من 4"
+
+#: templates/recommendations/questionnaire.html:1085
+msgid "What type of clinic are you looking for?"
+msgstr "ما نوع العيادة التي تبحث عنها؟"
+
+#: templates/recommendations/questionnaire.html:1086
+msgid "Choose one or more specialties that match your healthcare needs. Each type focuses on different treatments and expertise."
+msgstr "اختر تخصصًا أو أكثر يناسب احتياجاتك الصحية. كل نوع يركز على علاجات وخبرات مختلفة."
+
+#: templates/recommendations/questionnaire.html:1092
+msgid "Please select at least one clinic type."
+msgstr "يرجى اختيار نوع عيادة واحد على الأقل."
+
+#: templates/recommendations/questionnaire.html:1097
+#: templates/recommendations/questionnaire.html:1145
+#: templates/recommendations/questionnaire.html:1185
+#: templates/recommendations/questionnaire.html:1237
+msgid "Continue"
+msgstr "متابعة"
+
+#: templates/recommendations/questionnaire.html:1106
+msgid "Step 2 of 4"
+msgstr "الخطوة 2 من 4"
+
+#: templates/recommendations/questionnaire.html:1107
+msgid "Which medical record should we send?"
+msgstr "أي سجل طبي نرسل؟"
+
+#: templates/recommendations/questionnaire.html:1108
+msgid "Select the record that best describes your current condition. Clinics will review this to assess compatibility."
+msgstr "اختر السجل الذي يصف حالتك الحالية بشكل أفضل. ستراجعه العيادات لتقييم التوافق."
+
+#: templates/recommendations/questionnaire.html:1112
+msgid "Create New Medical Record"
+msgstr "إنشاء سجل طبي جديد"
+
+#: templates/recommendations/questionnaire.html:1124
+msgid "No diagnosis noted"
+msgstr "لا يوجد تشخيص مدوّن"
+
+#: templates/recommendations/questionnaire.html:1132
+msgid "No medical records yet"
+msgstr "لا توجد سجلات طبية بعد"
+
+#: templates/recommendations/questionnaire.html:1133
+msgid "You need to create a medical record first before sending requests to clinics."
+msgstr "تحتاج إلى إنشاء سجل طبي أولاً قبل إرسال الطلبات إلى العيادات."
+
+#: templates/recommendations/questionnaire.html:1135
+msgid "Create Medical Record"
+msgstr "إنشاء سجل طبي"
+
+#: templates/recommendations/questionnaire.html:1141
+msgid "Please select a medical record."
+msgstr "يرجى اختيار سجل طبي."
+
+#: templates/recommendations/questionnaire.html:1153
+msgid "Step 3 of 4"
+msgstr "الخطوة 3 من 4"
+
+#: templates/recommendations/questionnaire.html:1154
+msgid "Where would you like to receive treatment?"
+msgstr "أين تودّ تلقي العلاج؟"
+
+#: templates/recommendations/questionnaire.html:1155
+msgid "Pick a continent to see available countries, then select the specific countries you're open to."
+msgstr "اختر قارة لعرض الدول المتاحة، ثم حدد الدول التي تناسبك."
+
+#: templates/recommendations/questionnaire.html:1158
+msgid "Select continent"
+msgstr "اختر القارة"
+
+#: templates/recommendations/questionnaire.html:1162
+msgid "All continents"
+msgstr "جميع القارات"
+
+#: templates/recommendations/questionnaire.html:1176
+msgid "Select country"
+msgstr "اختر الدولة"
+
+#: templates/recommendations/questionnaire.html:1181
+msgid "Please select at least one continent and one country."
+msgstr "يرجى اختيار قارة واحدة ودولة واحدة على الأقل."
+
+#: templates/recommendations/questionnaire.html:1193
+msgid "Step 4 of 5"
+msgstr "الخطوة 4 من 5"
+
+#: templates/recommendations/questionnaire.html:1194
+msgid "Do you need accommodation support?"
+msgstr "هل تحتاج إلى دعم في الإقامة؟"
+
+#: templates/recommendations/questionnaire.html:1195
+msgid "Choose your accommodation preference. If accommodation is required, include expected companions and treatment dates."
+msgstr "اختر تفضيل الإقامة. إذا كانت الإقامة مطلوبة، أضف عدد المرافقين المتوقع وتواريخ العلاج."
+
+#: templates/recommendations/questionnaire.html:1201
+msgid "Select accommodation type"
+msgstr "اختر نوع الإقامة"
+
+#: templates/recommendations/questionnaire.html:1202
+msgid "No accommodation"
+msgstr "بدون إقامة"
+
+#: templates/recommendations/questionnaire.html:1210
+msgid "Companions count"
+msgstr "عدد المرافقين"
+
+#: templates/recommendations/questionnaire.html:1218
+msgid "I will come alone"
+msgstr "سآتي وحدي"
+
+#: templates/recommendations/questionnaire.html:1233
+msgid "Please select accommodation type and valid treatment dates. Companions count is required when accommodation is needed."
+msgstr "يرجى اختيار نوع الإقامة وتواريخ علاج صالحة. عدد المرافقين مطلوب عند الحاجة إلى إقامة."
+
+#: templates/recommendations/questionnaire.html:1245
+msgid "Step 5 of 5"
+msgstr "الخطوة 5 من 5"
+
+#: templates/recommendations/questionnaire.html:1246
+msgid "What treatment or service do you need?"
+msgstr "ما العلاج أو الخدمة التي تحتاجها؟"
+
+#: templates/recommendations/questionnaire.html:1247
+msgid "Describe the treatment, procedure, or therapy you're looking for. Be as specific as you like — the more detail, the better the match."
+msgstr "صِف العلاج أو الإجراء أو التأهيل الذي تبحث عنه. كن دقيقًا بقدر ما تشاء — كلما زادت التفاصيل، كانت المطابقة أفضل."
+
+#: templates/recommendations/questionnaire.html:1250
+msgid "Quick picks"
+msgstr "اختيارات سريعة"
+
+#: templates/recommendations/questionnaire.html:1252
+msgid "Neuro rehab"
+msgstr "تأهيل عصبي"
+
+#: templates/recommendations/questionnaire.html:1253
+msgid "Orthopedic surgery"
+msgstr "جراحة عظام"
+
+#: templates/recommendations/questionnaire.html:1254
+msgid "Post-op recovery"
+msgstr "تعافٍ بعد الجراحة"
+
+#: templates/recommendations/questionnaire.html:1255
+msgid "Cardiac rehab"
+msgstr "تأهيل قلبي"
+
+#: templates/recommendations/questionnaire.html:1256
+msgid "Oncology"
+msgstr "الأورام"
+
+#: templates/recommendations/questionnaire.html:1257
+msgid "Physical therapy"
+msgstr "علاج طبيعي"
+
+#: templates/recommendations/questionnaire.html:1258
+msgid "Spinal treatment"
+msgstr "علاج العمود الفقري"
+
+#: templates/recommendations/questionnaire.html:1264
+msgid "e.g. knee replacement, stroke rehabilitation, IVF treatment…"
+msgstr "مثال: استبدال ركبة، تأهيل بعد جلطة، علاج أطفال الأنابيب…"
+
+#: templates/recommendations/questionnaire.html:1267
+msgid "Please describe the treatment or service you need."
+msgstr "يرجى وصف العلاج أو الخدمة التي تحتاجها."
+
+#: templates/recommendations/questionnaire.html:1272
+msgid "Find Matching Clinics"
+msgstr "البحث عن العيادات المطابقة"
+
+#: templates/recommendations/questionnaire.html:1290
+msgid "No clinic types available."
+msgstr "لا توجد أنواع عيادات متاحة."
+
+#: templates/recommendations/questionnaire.html:1291
+#, python-brace-format
+msgid "Clinics specializing in {name} care and treatments."
+msgstr "عيادات متخصصة في رعاية وعلاجات {name}."
+
+#: templates/recommendations/questionnaire.html:1292
+msgid "Medical record created and selected!"
+msgstr "تم إنشاء السجل الطبي واختياره!"
+
+#: templates/recommendations/questionnaire.html:1293
+msgid "All countries"
+msgstr "جميع الدول"
+
+#: templates/recommendations/questionnaire.html:1294
+#, python-brace-format
+msgid "{count} countries available — select any combination"
+msgstr "{count} دولة متاحة — اختر أي مجموعة"
+
+#: templates/recommendations/questionnaire.html:1295
+msgid "No countries available for this continent."
+msgstr "لا توجد دول متاحة لهذه القارة."
+
+#: templates/recommendations/questionnaire.html:1297
+#, python-brace-format
+msgid "No results for \"{query}\""
+msgstr "لا توجد نتائج لـ \"{query}\""
+
+#: templates/recommendations/questionnaire.html:1298
+msgid "Search failed."
+msgstr "فشل البحث."

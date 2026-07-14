@@ -96,6 +96,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -168,10 +169,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+# Internationalization: English + Arabic (RTL)
+LANGUAGES = [
+    ('en', 'English'),
+    ('ar', 'العربية'),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [

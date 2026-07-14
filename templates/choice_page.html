@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NERO — Patient or Clinic?</title>
+<title>{% trans "NERO — Patient or Clinic?" %}</title>
 <link rel="icon" type="image/png" href="{% static 'n.png' %}">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
@@ -75,54 +75,58 @@ img{max-width:100%;display:block}
 @keyframes rise{to{opacity:1;transform:none}}
 
 @media(max-width:820px){.cards{grid-template-columns:1fr}.card{height:520px}}
+[dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea{font-family:'Tajawal','Inter',sans-serif}
+[dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3,[dir="rtl"] .eyebrow{letter-spacing:0}
+[dir="rtl"] .badge{left:auto;right:18px}
+[dir="rtl"] .music-toggle{right:auto;left:26px}
 </style>
 </head>
 <body>
 {% include 'includes/site_nav.html' %}
 <div class="shell">
   <div class="head">
-    <span class="eyebrow">Welcome to Nero</span>
-    <h1>How would you like to <span class="serif">continue?</span></h1>
-    <p>Choose your path — you can always reach the other side later.</p>
+    <span class="eyebrow">{% trans "Welcome to Nero" %}</span>
+    <h1>{% trans "How would you like to" %} <span class="serif">{% trans "continue?" %}</span></h1>
+    <p>{% trans "Choose your path — you can always reach the other side later." %}</p>
   </div>
 
   <div class="cards">
     <!-- PATIENT -->
     <div class="card patient">
-      <img class="photo" src="{% static 'patient.jpeg' %}" alt="Patient receiving rehabilitation care">
+      <img class="photo" src="{% static 'patient.jpeg' %}" alt="{% trans 'Patient receiving rehabilitation care' %}">
       <div class="scrim"></div>
-      <span class="badge">PATIENT</span>
+      <span class="badge">{% trans "PATIENT" %}</span>
       <div class="content">
-        <h2>I'm a patient</h2>
-        <p class="desc">Find specialized clinics, share your records securely, and book the care that fits you.</p>
+        <h2>{% trans "I'm a patient" %}</h2>
+        <p class="desc">{% trans "Find specialized clinics, share your records securely, and book the care that fits you." %}</p>
         <ul>
-          <li><i class="fa-solid fa-check"></i> Match with clinics for your condition</li>
-          <li><i class="fa-solid fa-check"></i> Securely upload your medical records</li>
-          <li><i class="fa-solid fa-check"></i> Chat with clinics &amp; book appointments</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Match with clinics for your condition" %}</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Securely upload your medical records" %}</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Chat with clinics & book appointments" %}</li>
         </ul>
         <div class="actions">
-          <a href="{% url 'patient_signup' %}" class="btn btn-primary">Sign up as patient <i class="fa-solid fa-arrow-right"></i></a>
-          <a href="{% url 'login' %}" class="btn btn-secondary">Existing patient? Log in</a>
+          <a href="{% url 'patient_signup' %}" class="btn btn-primary">{% trans "Sign up as patient" %} <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'login' %}" class="btn btn-secondary">{% trans "Existing patient? Log in" %}</a>
         </div>
       </div>
     </div>
 
     <!-- CLINIC -->
     <div class="card clinic">
-      <img class="photo" src="{% static 'uvodka-1.jpg' %}" alt="Modern rehabilitation clinic">
+      <img class="photo" src="{% static 'uvodka-1.jpg' %}" alt="{% trans 'Modern rehabilitation clinic' %}">
       <div class="scrim"></div>
-      <span class="badge">CLINIC</span>
+      <span class="badge">{% trans "CLINIC" %}</span>
       <div class="content">
-        <h2>I'm a clinic</h2>
-        <p class="desc">Showcase your services, reach the right patients, and manage your practice end-to-end.</p>
+        <h2>{% trans "I'm a clinic" %}</h2>
+        <p class="desc">{% trans "Showcase your services, reach the right patients, and manage your practice end-to-end." %}</p>
         <ul>
-          <li><i class="fa-solid fa-check"></i> Build a profile with services, photos &amp; videos</li>
-          <li><i class="fa-solid fa-check"></i> Review patient records &amp; chat with prospects</li>
-          <li><i class="fa-solid fa-check"></i> Manage appointments from request to recovery</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Build a profile with services, photos & videos" %}</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Review patient records & chat with prospects" %}</li>
+          <li><i class="fa-solid fa-check"></i> {% trans "Manage appointments from request to recovery" %}</li>
         </ul>
         <div class="actions">
-          <a href="{% url 'clinic_signup' %}" class="btn btn-primary">Sign up as clinic <i class="fa-solid fa-arrow-right"></i></a>
-          <a href="{% url 'login' %}" class="btn btn-secondary">Existing clinic? Log in</a>
+          <a href="{% url 'clinic_signup' %}" class="btn btn-primary">{% trans "Sign up as clinic" %} <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'login' %}" class="btn btn-secondary">{% trans "Existing clinic? Log in" %}</a>
         </div>
       </div>
     </div>
@@ -133,7 +137,7 @@ img{max-width:100%;display:block}
 {% include 'includes/site_footer.html' %}
 
 <!-- Background music (persists across the site) -->
-<button class="music-toggle" id="musicToggle" aria-label="Toggle background music" aria-pressed="false"><span class="music-icon">🔇</span></button>
+<button class="music-toggle" id="musicToggle" aria-label="{% trans 'Toggle background music' %}" aria-pressed="false"><span class="music-icon">🔇</span></button>
 <audio id="bgMusic" loop preload="auto" style="display:none"><source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg"></audio>
 <script>
 (function(){

@@ -193,6 +193,7 @@ def nero_ai_chat_api(request):
         Clinic.objects.values('clinic_name', 'description').order_by('clinic_name')
     )
 
+    from django.utils.translation import get_language
     webhook_payload = {
         'message': message,
         'patient_id': patient_id,
@@ -200,6 +201,7 @@ def nero_ai_chat_api(request):
         'patient_name': patient_name,
         'clinics': clinics_context,
         'source': source,
+        'language': get_language() or 'en',  # Make scenario: reply in this language
         'sent_at': timezone.now().isoformat(),
     }
 

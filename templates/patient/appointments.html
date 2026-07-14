@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>My Appointments • NERO</title>
+    <title>{% trans "My Appointments" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles - Matching Dashboard */
@@ -1276,11 +1276,37 @@
             .search-bar { height: 36px; padding: 8px 12px 8px 38px; font-size: 13px; }
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* ===== RTL SUPPORT ===== */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar { padding: 10px 44px 10px 16px; }
+        [dir="rtl"] .search-icon { left: auto; right: 16px; }
+        [dir="rtl"] .notification-badge { right: auto; left: -2px; }
+        [dir="rtl"] .user-menu { padding-left: 0; padding-right: 12px; border-left: none; border-right: 1px solid #e5e7eb; }
+        [dir="rtl"] .avatar-dropdown { right: auto; left: 0; }
+        [dir="rtl"] .dropdown-list li a:hover { padding-left: 16px; padding-right: 20px; }
+        [dir="rtl"] .nav-item { border-left: none; border-right: 3px solid transparent; }
+        [dir="rtl"] .nav-item:hover { padding-left: 20px; padding-right: 24px; }
+        [dir="rtl"] .nav-item.active { border-right-color: #3b82f6; }
+        [dir="rtl"] .nav-badge { margin-left: 0; margin-right: auto; }
+        [dir="rtl"] .status-stripe { left: auto; right: 0; border-radius: 0 16px 16px 0; }
+        [dir="rtl"] .card-inner { padding: 20px 22px 20px 20px; }
+        [dir="rtl"] .note-block { border-left: none; border-right: 3px solid; border-radius: 8px 0 0 8px; }
+        @media (max-width: 768px) {
+            [dir="rtl"] .user-menu { padding-left: 0; padding-right: 8px; }
+        }
+        @media (max-width: 480px) {
+            [dir="rtl"] .user-menu { padding-left: 0; padding-right: 6px; }
+            [dir="rtl"] .card-inner { padding: 14px 16px 14px 14px; }
+            [dir="rtl"] .search-bar { padding: 8px 38px 8px 12px; }
+        }
     </style>
 </head>
 <body>
     <!-- Main Header -->
-    {% include 'includes/patient_nav.html' with active='appointments' search_placeholder='Search clinics, patients, or topics...' %}
+    {% trans "Search clinics, patients, or topics..." as search_ph %}
+    {% include 'includes/patient_nav.html' with active='appointments' search_placeholder=search_ph %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1290,7 +1316,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -1299,46 +1325,46 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"Manage your appointments and healthcare schedule." }}
+                    {% trans "Manage your appointments and healthcare schedule." as default_bio %}{{ patient.bio|default:default_bio }}
                 </div>
             </div>
 
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item active">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1361,14 +1387,14 @@
                     <div>
                         <h1 class="page-title">
                             <i class="fas fa-calendar-alt"></i>
-                            My Appointments
+                            {% trans "My Appointments" %}
                         </h1>
-                        <p class="page-subtitle">Manage your healthcare schedule and upcoming visits</p>
+                        <p class="page-subtitle">{% trans "Manage your healthcare schedule and upcoming visits" %}</p>
                         <div style="margin-top:12px; font-size:14px; color:#6b7280;">
                             {% if status_filter %}
-                                Showing <strong>{{ appointments|length }}</strong> appointment{{ appointments|length|pluralize }} for filter "<em>{{ status_filter }}</em>".
+                                {% blocktrans count counter=appointments|length %}Showing <strong>{{ counter }}</strong> appointment for filter "<em>{{ status_filter }}</em>".{% plural %}Showing <strong>{{ counter }}</strong> appointments for filter "<em>{{ status_filter }}</em>".{% endblocktrans %}
                             {% else %}
-                                Showing <strong>{{ appointments|length }}</strong> of <strong>{{ total_appointments }}</strong> total appointments.
+                                {% blocktrans with shown=appointments|length %}Showing <strong>{{ shown }}</strong> of <strong>{{ total_appointments }}</strong> total appointments.{% endblocktrans %}
                             {% endif %}
                         </div>
                     </div>
@@ -1379,10 +1405,10 @@
             <div class="filters-container">
                 <h3 class="filters-title">
                     <i class="fas fa-filter"></i>
-                    Filter by Status
+                    {% trans "Filter by Status" %}
                 </h3>
                 <div class="filters">
-                    <a href="{% url 'patient_appointments' %}" class="filter-btn {% if not status_filter %}active{% endif %}">All Appointments</a>
+                    <a href="{% url 'patient_appointments' %}" class="filter-btn {% if not status_filter %}active{% endif %}">{% trans "All Appointments" %}</a>
                     {% for filter in status_filters %}
                     <a href="{% url 'patient_appointments' %}?status={{ filter.value }}" class="filter-btn {% if status_filter == filter.value %}active{% endif %}">{{ filter.label }}</a>
                     {% endfor %}
@@ -1414,7 +1440,7 @@
                                     <div class="clinic-name">{{ appointment.clinic.clinic_name }}</div>
                                     <div class="clinic-date-sub">
                                         <i class="far fa-clock"></i>
-                                        Requested {{ appointment.created_at|date:"F d, Y" }}
+                                        {% blocktrans with requested_date=appointment.created_at|date:"F d, Y" %}Requested {{ requested_date }}{% endblocktrans %}
                                     </div>
                                 </div>
                             </div>
@@ -1433,7 +1459,7 @@
                             <!-- Medical record -->
                             {% if appointment.medical_record %}
                             <div class="meta-cell">
-                                <div class="meta-key"><i class="fas fa-file-medical"></i> Medical Record</div>
+                                <div class="meta-key"><i class="fas fa-file-medical"></i> {% trans "Medical Record" %}</div>
                                 <div class="meta-val">
                                     {{ appointment.medical_record.first_name }} {{ appointment.medical_record.last_name }}
 
@@ -1443,35 +1469,35 @@
 
                             <!-- Accommodation -->
                             <div class="meta-cell">
-                                <div class="meta-key"><i class="fas fa-hotel"></i> Accommodation</div>
+                                <div class="meta-key"><i class="fas fa-hotel"></i> {% trans "Accommodation" %}</div>
                                 <div class="meta-val">
                                     {% if appointment.accommodation_type %}
                                         {{ appointment.get_accommodation_type_display }}
-                                        <span class="sub">{{ appointment.companions_count|default:'0' }} companion(s)</span>
+                                        <span class="sub">{% blocktrans with companions=appointment.companions_count|default:'0' %}{{ companions }} companion(s){% endblocktrans %}</span>
                                     {% elif appointment.needs_accommodation %}
-                                        Requested (legacy)
+                                        {% trans "Requested (legacy)" %}
                                         <span class="sub">
-                                            {{ appointment.travelers_count|default:'N/A' }} traveler(s)
+                                            {% blocktrans with travelers=appointment.travelers_count|default:'N/A' %}{{ travelers }} traveler(s){% endblocktrans %}
                                             {% if appointment.preferred_room_type %}· {{ appointment.get_preferred_room_type_display }}{% endif %}
                                         </span>
                                     {% else %}
-                                        <span style="color:#9ca3af;">Not needed</span>
+                                        <span style="color:#9ca3af;">{% trans "Not needed" %}</span>
                                     {% endif %}
                                 </div>
                             </div>
 
                             <!-- Treatment dates -->
                             <div class="meta-cell">
-                                <div class="meta-key"><i class="fas fa-calendar-check"></i> Treatment Dates</div>
+                                <div class="meta-key"><i class="fas fa-calendar-check"></i> {% trans "Treatment Dates" %}</div>
                                 <div class="meta-val">
                                     {% if appointment.treatment_start_date and appointment.treatment_end_date %}
                                         {{ appointment.treatment_start_date }} – {{ appointment.treatment_end_date }}
                                     {% else %}
-                                        <span style="color:#9ca3af;">Not submitted yet</span>
+                                        <span style="color:#9ca3af;">{% trans "Not submitted yet" %}</span>
                                     {% endif %}
                                     {% if appointment.proposed_start_date and appointment.proposed_end_date %}
                                         <span class="sub" style="color:#f97316;">
-                                            Clinic proposal: {{ appointment.proposed_start_date }} – {{ appointment.proposed_end_date }}
+                                            {% blocktrans with proposed_start=appointment.proposed_start_date proposed_end=appointment.proposed_end_date %}Clinic proposal: {{ proposed_start }} – {{ proposed_end }}{% endblocktrans %}
                                         </span>
                                     {% endif %}
                                 </div>
@@ -1483,23 +1509,23 @@
                                 {% elif appointment.status == 'waiting_for_payment' or appointment.status == 'accepted_record_accepted_accommodation' %}
                                     {% if appointment.payment_due_at %}cell-warning{% endif %}
                                 {% endif %}">
-                                <div class="meta-key"><i class="fas fa-credit-card"></i> Payment</div>
+                                <div class="meta-key"><i class="fas fa-credit-card"></i> {% trans "Payment" %}</div>
                                 <div class="meta-val">
                                     {% if appointment.status == 'paid' or appointment.status == 'upcoming' %}
-                                        <i class="fas fa-check-circle"></i> Completed
+                                        <i class="fas fa-check-circle"></i> {% trans "Completed" %}
                                         {% if appointment.payment_amount %}
-                                            <span class="sub">Amount: {{ appointment.payment_amount }}</span>
+                                            <span class="sub">{% blocktrans with amount=appointment.payment_amount %}Amount: {{ amount }}{% endblocktrans %}</span>
                                         {% endif %}
                                     {% elif appointment.payment_due_at and appointment.status in 'waiting_for_payment,accepted_record_accepted_accommodation' %}
                                         {% if appointment.payment_amount %}
-                                            Amount due: {{ appointment.payment_amount }}
+                                            {% blocktrans with amount=appointment.payment_amount %}Amount due: {{ amount }}{% endblocktrans %}
                                         {% endif %}
-                                        Due by {{ appointment.payment_due_at|date:"M d, Y" }}
+                                        {% blocktrans with due_date=appointment.payment_due_at|date:"M d, Y" %}Due by {{ due_date }}{% endblocktrans %}
                                         <span class="sub">{{ appointment.payment_due_at|date:"H:i" }}</span>
                                     {% elif appointment.status == 'accepted_record_accepted_accommodation' %}
-                                        <span style="color:#9ca3af;">Waiting for clinic to set payment amount</span>
+                                        <span style="color:#9ca3af;">{% trans "Waiting for clinic to set payment amount" %}</span>
                                     {% else %}
-                                        <span style="color:#9ca3af;">Pending status</span>
+                                        <span style="color:#9ca3af;">{% trans "Pending status" %}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -1507,10 +1533,10 @@
                             <!-- Clinic contact -->
                             {% if appointment.clinic %}
                             <div class="meta-cell">
-                                <div class="meta-key"><i class="fas fa-phone"></i> Clinic Contact</div>
+                                <div class="meta-key"><i class="fas fa-phone"></i> {% trans "Clinic Contact" %}</div>
                                 <div class="meta-val">
-                                    {{ appointment.clinic.phone_number|default:"N/A" }}
-                                    <span class="sub">{{ appointment.clinic.contact_email|default:"N/A" }}</span>
+                                    {% trans "N/A" as na_label %}{{ appointment.clinic.phone_number|default:na_label }}
+                                    <span class="sub">{{ appointment.clinic.contact_email|default:na_label }}</span>
                                 </div>
                             </div>
                             {% endif %}
@@ -1521,21 +1547,21 @@
                         <!-- Notes -->
                         {% if appointment.notes %}
                         <div class="note-block note-yours">
-                            <div class="note-label"><i class="fas fa-sticky-note"></i> Your notes</div>
+                            <div class="note-label"><i class="fas fa-sticky-note"></i> {% trans "Your notes" %}</div>
                             {{ appointment.notes }}
                         </div>
                         {% endif %}
 
                         {% if appointment.clinic_proposal_note %}
                         <div class="note-block note-clinic">
-                            <div class="note-label"><i class="fas fa-comment-dots"></i> Clinic proposal note</div>
+                            <div class="note-label"><i class="fas fa-comment-dots"></i> {% trans "Clinic proposal note" %}</div>
                             {{ appointment.clinic_proposal_note }}
                         </div>
                         {% endif %}
 
                         {% if appointment.patient_response_note %}
                         <div class="note-block note-reply">
-                            <div class="note-label"><i class="fas fa-reply"></i> Your reply</div>
+                            <div class="note-label"><i class="fas fa-reply"></i> {% trans "Your reply" %}</div>
                             {{ appointment.patient_response_note }}
                         </div>
                         {% endif %}
@@ -1544,7 +1570,7 @@
                         {% if appointment.status == 'rejected_medical_record' and appointment.medical_rejection_reason %}
                         <div class="note-block" style="border-color: #ef4444; background: #fef2f2; color: #991b1b;">
                             <div class="note-label" style="color: #991b1b;">
-                                <i class="fas fa-times-circle"></i> Rejection Reason
+                                <i class="fas fa-times-circle"></i> {% trans "Rejection Reason" %}
                             </div>
                             <strong>{{ appointment.get_medical_rejection_reason_display }}</strong>
                         </div>
@@ -1557,40 +1583,40 @@
                         <div class="action-section section-warn">
                             <div class="action-section-title">
                                 <span class="action-badge action-badge-warn">!</span>
-                                Action required — submit accommodation &amp; treatment dates
+                                {% trans "Action required — submit accommodation &amp; treatment dates" %}
                             </div>
                             <form method="post" action="{% url 'submit_booking_details' appointment.id %}">
                                 {% csrf_token %}
                                 <div class="form-row-2">
                                     <div class="form-group">
-                                        <label class="form-label">Accommodation type</label>
+                                        <label class="form-label">{% trans "Accommodation type" %}</label>
                                         <select name="accommodation_type" required class="form-control">
-                                            <option value="">Select…</option>
-                                            <option value="no_accommodation">No accommodation (auto-confirm)</option>
-                                            <option value="single_room">Single room</option>
-                                            <option value="double_room">Double room</option>
-                                            <option value="double_suite">Double suite</option>
-                                            <option value="quad_suite">Quad suite</option>
+                                            <option value="">{% trans "Select…" %}</option>
+                                            <option value="no_accommodation">{% trans "No accommodation (auto-confirm)" %}</option>
+                                            <option value="single_room">{% trans "Single room" %}</option>
+                                            <option value="double_room">{% trans "Double room" %}</option>
+                                            <option value="double_suite">{% trans "Double suite" %}</option>
+                                            <option value="quad_suite">{% trans "Quad suite" %}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Number of companions</label>
+                                        <label class="form-label">{% trans "Number of companions" %}</label>
                                         <input type="number" name="companions_count" min="0" placeholder="0" class="form-control">
                                     </div>
                                 </div>
                                 <div class="form-row-2">
                                     <div class="form-group">
-                                        <label class="form-label">Treatment start date</label>
+                                        <label class="form-label">{% trans "Treatment start date" %}</label>
                                         <input type="date" name="treatment_start_date" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Treatment end date</label>
+                                        <label class="form-label">{% trans "Treatment end date" %}</label>
                                         <input type="date" name="treatment_end_date" class="form-control">
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-full">
                                     <i class="fas fa-paper-plane"></i>
-                                    Confirm &amp; Submit
+                                    {% trans "Confirm &amp; Submit" %}
                                 </button>
                             </form>
                         </div>
@@ -1601,29 +1627,29 @@
                         <div class="action-section section-change">
                             <div class="action-section-title">
                                 <span class="action-badge" style="background:#ffedd5;color:#9a3412;">?</span>
-                                Respond to clinic's proposed dates
+                                {% trans "Respond to clinic's proposed dates" %}
                             </div>
                             <div class="proposal-grid">
                                 <form method="post" action="{% url 'patient_accept_proposed_dates' appointment.id %}">
                                     {% csrf_token %}
                                     <div class="form-group" style="margin-bottom:8px;">
-                                        <label class="form-label">Optional note to clinic</label>
-                                        <input type="text" name="patient_response_note" placeholder="e.g. Confirmed, see you then" class="form-control">
+                                        <label class="form-label">{% trans "Optional note to clinic" %}</label>
+                                        <input type="text" name="patient_response_note" placeholder="{% trans 'e.g. Confirmed, see you then' %}" class="form-control">
                                     </div>
                                     <button type="submit" class="btn btn-success btn-full">
                                         <i class="fas fa-check"></i>
-                                        Accept &amp; Confirm
+                                        {% trans "Accept &amp; Confirm" %}
                                     </button>
                                 </form>
                                 <form method="post" action="{% url 'patient_choose_different_dates' appointment.id %}">
                                     {% csrf_token %}
                                     <div class="form-group" style="margin-bottom:8px;">
-                                        <label class="form-label">Tell the clinic what to change <span style="color:#ef4444;">*</span></label>
-                                        <input type="text" name="patient_response_note" required placeholder="e.g. Please try April instead" class="form-control">
+                                        <label class="form-label">{% trans "Tell the clinic what to change" %} <span style="color:#ef4444;">*</span></label>
+                                        <input type="text" name="patient_response_note" required placeholder="{% trans 'e.g. Please try April instead' %}" class="form-control">
                                     </div>
                                     <button type="submit" class="btn btn-secondary btn-full">
                                         <i class="fas fa-edit"></i>
-                                        Request Other Dates
+                                        {% trans "Request Other Dates" %}
                                     </button>
                                 </form>
                             </div>
@@ -1637,21 +1663,21 @@
                             {% if appointment.clinic %}
                             <a href="{% url 'clinic_detail' appointment.clinic.id %}" class="btn btn-primary">
                                 <i class="fas fa-eye"></i>
-                                View Clinic
+                                {% trans "View Clinic" %}
                             </a>
                             {% endif %}
 
                             {% if appointment.medical_record %}
                             <a href="{% url 'medical_record_update' appointment.medical_record.id %}" class="btn btn-secondary">
                                 <i class="fas fa-file-medical"></i>
-                                View Record
+                                {% trans "View Record" %}
                             </a>
                             {% endif %}
 
                             {% if appointment.medical_record and appointment.medical_record.medical_reports %}
                             <a href="{{ appointment.medical_record.medical_reports.url }}" class="btn btn-secondary" target="_blank">
                                 <i class="fas fa-file-pdf"></i>
-                                View Report
+                                {% trans "View Report" %}
                             </a>
                             {% endif %}
 
@@ -1659,9 +1685,9 @@
                             <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger"
-                                        onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                        onclick="return confirm('{% trans "Are you sure you want to cancel this appointment?" %}')">
                                     <i class="fas fa-times-circle"></i>
-                                    Cancel
+                                    {% trans "Cancel" %}
                                 </button>
                             </form>
                             {% endif %}
@@ -1670,12 +1696,12 @@
                             <form method="post" action="{% url 'patient_confirm_payment' appointment.id %}" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-success"
-                                        onclick="return confirm('Confirm payment for this clinic? Other pending offers for this case will be cancelled.')">
+                                        onclick="return confirm('{% trans "Confirm payment for this clinic? Other pending offers for this case will be cancelled." %}')">
                                     <i class="fas fa-credit-card"></i>
                                     {% if appointment.payment_amount %}
-                                    Pay {{ appointment.payment_amount }}
+                                    {% blocktrans with amount=appointment.payment_amount %}Pay {{ amount }}{% endblocktrans %}
                                     {% else %}
-                                    Confirm Payment
+                                    {% trans "Confirm Payment" %}
                                     {% endif %}
                                 </button>
                             </form>
@@ -1684,7 +1710,7 @@
                             {% if appointment.status == 'upcoming' %}
                             <a href="{% url 'patient_google_calendar_start' appointment.id %}" class="btn btn-secondary">
                                 <span class="google-calendar-badge" aria-hidden="true"></span>
-                                Add to Google Calendar
+                                {% trans "Add to Google Calendar" %}
                             </a>
                             {% endif %}
 
@@ -1692,9 +1718,9 @@
                             <form method="post" action="{% url 'delete_appointment' appointment.id %}" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger"
-                                        onclick="return confirm('Delete this appointment? This cannot be undone.')">
+                                        onclick="return confirm('{% trans "Delete this appointment? This cannot be undone." %}')">
                                     <i class="fas fa-trash-alt"></i>
-                                    Delete
+                                    {% trans "Delete" %}
                                 </button>
                             </form>
                             {% endif %}
@@ -1712,17 +1738,17 @@
                     <div class="no-appointments-icon">
                         <i class="fas fa-calendar-times"></i>
                     </div>
-                    <h3>No Appointments Found</h3>
+                    <h3>{% trans "No Appointments Found" %}</h3>
                     <p>
                         {% if status_filter %}
-                        You don't have any {{ status_filter }} appointments.
+                        {% blocktrans %}You don't have any {{ status_filter }} appointments.{% endblocktrans %}
                         {% else %}
-                        You haven't sent any clinic requests yet. Create a medical record and use the new request flow to send to multiple clinics.
+                        {% trans "You haven't sent any clinic requests yet. Create a medical record and use the new request flow to send to multiple clinics." %}
                         {% endif %}
                     </p>
                     <a href="{% url 'search_clinics' %}" class="btn btn-primary">
                         <i class="fas fa-search"></i>
-                        Find Clinics &amp; Book Appointment
+                        {% trans "Find Clinics &amp; Book Appointment" %}
                     </a>
                 </div>
                 {% endfor %}
@@ -1770,7 +1796,7 @@
             }
 
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 dashSearchResults.style.display = 'block';
 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, {
@@ -1804,7 +1830,7 @@
                     if (!results) {
                         results = `<div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                             <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                            <p>No results found for "${query}"</p></div>`;
+                            <p>{% trans "No results found for" %} "${query}"</p></div>`;
                     }
 
                     dashSearchResults.innerHTML = results;
@@ -1812,7 +1838,7 @@
                 })
                 .catch(() => {
                     dashSearchResults.innerHTML = `<div style="padding: 20px; text-align: center; color: #ef4444;">
-                        <i class="fas fa-exclamation-circle"></i><p>Search failed. Please try again.</p></div>`;
+                        <i class="fas fa-exclamation-circle"></i><p>{% trans "Search failed. Please try again." %}</p></div>`;
                     dashSearchResults.style.display = 'block';
                 });
             }, 300);
@@ -1835,7 +1861,7 @@
             form.addEventListener('submit', function() {
                 const btn = this.querySelector('button[type="submit"]');
                 if (btn) {
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…';
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Processing…" %}';
                     btn.disabled = true;
                 }
             });

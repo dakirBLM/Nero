@@ -17,6 +17,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('reviews/', include('reviews.urls')),
     path('api/nero-ai/', nero_ai_chat_api, name='nero_ai_chat_api'),
+    path('i18n/', include('django.conf.urls.i18n')),  # set_language view for the EN/AR switcher
 ]
 # Serve user-uploaded media (NON-PHI images: profile pics, clinic photos, posts).
 # Medical files are NOT served here — they go through an authenticated, encrypted

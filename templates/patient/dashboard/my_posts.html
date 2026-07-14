@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Posts • NERO</title>
+    <title>{% trans "My Posts" %} • NERO</title>
     <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base Styles - Matching Dashboard */
@@ -829,11 +829,25 @@
             pointer-events: none;
         }
         {% include 'includes/search_bar_styles.html' %}
+        /* RTL (Arabic) adjustments */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea,[dir="rtl"] select{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar { padding: 10px 44px 10px 16px; }
+        [dir="rtl"] .search-icon { left: auto; right: 16px; }
+        [dir="rtl"] .notification-badge { right: auto; left: -2px; }
+        [dir="rtl"] .user-menu { padding-left: 0; padding-right: 12px; border-left: none; border-right: 1px solid #e5e7eb; }
+        [dir="rtl"] .avatar-dropdown { right: auto; left: 0; }
+        [dir="rtl"] .dropdown-list li a:hover { padding-left: 16px; padding-right: 20px; }
+        [dir="rtl"] .nav-item { border-left: none; border-right: 3px solid transparent; }
+        [dir="rtl"] .nav-item:hover { padding-left: 20px; padding-right: 24px; }
+        [dir="rtl"] .nav-item.active { border-right-color: #3b82f6; }
+        [dir="rtl"] .nav-badge { margin-left: 0; margin-right: auto; }
     </style>
 </head>
 <body>
     <!-- Main Header - Exact Match with Dashboard -->
-    {% include 'includes/patient_nav.html' with active='' search_placeholder='Search clinics, patients, or topics...' %}
+    {% trans "Search clinics, patients, or topics..." as nav_search_placeholder %}
+    {% include 'includes/patient_nav.html' with active='' search_placeholder=nav_search_placeholder %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -844,7 +858,7 @@
                 <div class="profile-header">
                     <div class="avatar-wrap">
                     {% if patient.has_custom_avatar %}
-                        <img src="{{ patient.avatar_url }}" alt="Profile" class="profile-avatar">
+                        <img src="{{ patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
                         <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {{ patient.user.username|first|upper }}
@@ -853,12 +867,12 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
-                    {{ patient.bio|default:"View and manage all your posts." }}
+                    {% trans "View and manage all your posts." as bio_default %}{{ patient.bio|default:bio_default }}
                 </div>
             </div>
 
@@ -866,34 +880,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                     {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item active">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -902,8 +916,8 @@
         <div class="main-content">
             <!-- Page Header -->
             <div class="page-header">
-                <h1 class="page-title"><i class="fas fa-newspaper"></i> My Posts</h1>
-                <p class="page-subtitle">View and manage all your posts in one place</p>
+                <h1 class="page-title"><i class="fas fa-newspaper"></i> {% trans "My Posts" %}</h1>
+                <p class="page-subtitle">{% trans "View and manage all your posts in one place" %}</p>
             </div>
 
             <!-- Posts Container -->
@@ -932,11 +946,11 @@
                                 {% csrf_token %}
                                 <button type="button" class="delete-btn edit-description-toggle" data-post-id="{{ post.id }}" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); margin-right: 8px;">
                                     <i class="fas fa-pen"></i>
-                                    Edit Description
+                                    {% trans "Edit Description" %}
                                 </button>
                                 <button type="submit" class="delete-btn">
                                     <i class="fas fa-trash-alt"></i>
-                                    Delete Post
+                                    {% trans "Delete Post" %}
                                 </button>
                             </form>
                         </div>
@@ -950,17 +964,17 @@
                                 {% csrf_token %}
                                 <textarea name="description" required style="width: 100%; min-height: 110px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; font-family: 'Inter', sans-serif; font-size: 14px;">{{ post.description }}</textarea>
                                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
-                                    <button type="button" class="delete-btn edit-description-toggle" data-post-id="{{ post.id }}" style="background: #f3f4f6; color: #374151;">Cancel</button>
+                                    <button type="button" class="delete-btn edit-description-toggle" data-post-id="{{ post.id }}" style="background: #f3f4f6; color: #374151;">{% trans "Cancel" %}</button>
                                     <button type="submit" class="delete-btn" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
                                         <i class="fas fa-save"></i>
-                                        Save Description
+                                        {% trans "Save Description" %}
                                     </button>
                                 </div>
                             </form>
                             
                             {% if post.image %}
                                 <div class="post-media">
-                                    <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+                                    <img src="{{ post.image.url }}" alt="{% trans 'Post image' %}" class="post-image">
                                 </div>
                             {% endif %}
                             
@@ -968,7 +982,7 @@
                                 <div class="post-media">
                                     <video controls class="post-video">
                                         <source src="{{ post.video.url }}">
-                                        Your browser does not support the video tag.
+                                        {% trans "Your browser does not support the video tag." %}
                                     </video>
                                 </div>
                             {% endif %}
@@ -981,13 +995,13 @@
                         <div class="empty-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h3 class="empty-title">No Posts Found</h3>
+                        <h3 class="empty-title">{% trans "No Posts Found" %}</h3>
                         <p class="empty-description">
-                            You haven't created any posts yet. Share your health journey and experiences with the community.
+                            {% trans "You haven't created any posts yet. Share your health journey and experiences with the community." %}
                         </p>
                         <a href="{% url 'patient_dashboard' %}" class="btn-primary">
                             <i class="fas fa-plus-circle"></i>
-                            Create Your First Post
+                            {% trans "Create Your First Post" %}
                         </a>
                     </div>
                 {% endif %}
@@ -1034,7 +1048,7 @@
             }
             
             dashSearchTimeout = setTimeout(() => {
-                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                dashSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 dashSearchResults.style.display = 'block';
                 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1078,7 +1092,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1090,7 +1104,7 @@
                     dashSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     dashSearchResults.style.display = 'block';
@@ -1121,11 +1135,11 @@
 
         // Confirm delete function
         function confirmDelete(form) {
-            if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+            if (confirm('{% trans "Are you sure you want to delete this post? This action cannot be undone." %}')) {
                 // Show loading state on the delete button
                 const deleteBtn = form.querySelector('.delete-btn');
                 if (deleteBtn) {
-                    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {% trans "Deleting..." %}';
                     deleteBtn.disabled = true;
                     deleteBtn.classList.add('loading');
                 }

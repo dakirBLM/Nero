@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %}{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat • NERO</title>
+    <title>{% trans "Chat" %} • NERO</title>
       <link rel="icon" type="image/png"  href="{% static 'n.png' %}" >
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Reset & Base Styles - MATCHING NERO */
@@ -1108,11 +1108,29 @@
             }
         }
         {% include 'includes/search_bar_styles.html' %}
+        /* RTL support */
+        [dir="rtl"] body,[dir="rtl"] input,[dir="rtl"] button,[dir="rtl"] textarea{font-family:'Tajawal','Inter',sans-serif}
+        [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{letter-spacing:0}
+        [dir="rtl"] .search-bar{padding:10px 44px 10px 16px}
+        [dir="rtl"] .search-icon{left:auto;right:16px}
+        [dir="rtl"] .user-menu{padding-left:0;padding-right:12px;border-left:none;border-right:1px solid #e5e7eb}
+        [dir="rtl"] .avatar-dropdown{right:auto;left:0}
+        [dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+        [dir="rtl"] .nav-item:hover{padding-left:20px;padding-right:24px}
+        [dir="rtl"] .nav-item.active{border-right-color:#3b82f6}
+        [dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+        [dir="rtl"] .back-icon{margin-right:0;margin-left:8px}
+        [dir="rtl"] .back-icon:hover{transform:translateX(2px)}
+        [dir="rtl"] .back-icon i{transform:scaleX(-1)}
+        [dir="rtl"] .back-to-chats i{transform:scaleX(-1)}
+        [dir="rtl"] .message.sent .message-content{border-bottom-right-radius:18px;border-bottom-left-radius:4px}
+        [dir="rtl"] .message.received .message-content{border-bottom-left-radius:18px;border-bottom-right-radius:4px}
+        [dir="rtl"] .message.sent .message-time{text-align:left}
     </style>
 </head>
 <body>
     <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
-    {% include 'includes/patient_nav.html' with active='chat' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder='Search messages or users...' %}
+    {% include 'includes/patient_nav.html' with active='chat' search_id='header-search-bar' search_results_id='header-search-results' search_placeholder=_('Search messages or users...') %}
 
     <!-- Main Content -->
     <main class="main-layout">
@@ -1121,7 +1139,7 @@
             <!-- Quick Back Button for Mobile -->
             <a href="{% url 'chat_room_list_patient' %}" class="back-to-chats">
                 <i class="fas fa-arrow-left"></i>
-                Back to Chats
+                {% trans "Back to Chats" %}
             </a>
 
             <!-- Profile Card -->
@@ -1139,7 +1157,7 @@
                             </div>
                             <div class="profile-info">
                                 <h3>{{ patient.user.username }}</h3>
-                                <p><i class="fas fa-user-injured"></i> Patient{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                                <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
                             </div>
                         {% elif request.user.user_type == 'clinic' %}
                             <div class="avatar-wrap">
@@ -1153,16 +1171,16 @@
                             </div>
                             <div class="profile-info">
                                 <h3>{{ clinic.clinic_name }}</h3>
-                                <p><i class="fas fa-hospital"></i> Clinic{% if clinic.city %} • <i class="fas fa-map-marker-alt"></i> {{ clinic.city }}{% endif %}</p>
+                                <p><i class="fas fa-hospital"></i> {% trans "Clinic" %}{% if clinic.city %} • <i class="fas fa-map-marker-alt"></i> {{ clinic.city }}{% endif %}</p>
                             </div>
                         {% endif %}
                     </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
                     <i class="fas fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>
                     {% if request.user.user_type == 'patient' %}
-                        {{ patient.bio|default:"Stay connected with your healthcare providers." }}
+                        {{ patient.bio|default:_("Stay connected with your healthcare providers.") }}
                     {% elif request.user.user_type == 'clinic' %}
-                        {{ clinic.description|default:"Stay connected with your patients." }}
+                        {{ clinic.description|default:_("Stay connected with your patients.") }}
                     {% endif %}
                 </div>
             </div>
@@ -1171,34 +1189,34 @@
             <nav class="sidebar-nav">
                 <a href="{% url 'search_clinics' %}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    Find Clinics
+                    {% trans "Find Clinics" %}
                 </a>
                 <a href="{% url 'patient_medical_records' %}" class="nav-item">
                     <i class="fas fa-file-medical-alt"></i>
-                    Medical Records
+                    {% trans "Medical Records" %}
                 </a>
                 <a href="{% url 'patient_appointments' %}" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
-                    Appointments
+                    {% trans "Appointments" %}
                 </a>
                 <a href="{% url 'recommendations:questionnaire' %}" class="nav-item">
                     <i class="fas fa-brain"></i>
-                    Smart Recommendations
+                    {% trans "Smart Recommendations" %}
                 </a>
                 <a href="{% url 'search_patients' %}" class="nav-item">
                     <i class="fas fa-users"></i>
-                    Community
+                    {% trans "Community" %}
                 </a>
                 <a href="{% url 'chat_room_list_patient' %}" class="nav-item active">
                     <i class="fas fa-comments"></i>
-                    Messages
+                    {% trans "Messages" %}
                      {% if total_unread and total_unread > 0 %}
                         <div class="nav-badge">{{ total_unread }}</div>
                     {% endif %}
                 </a>
                 <a href="{% url 'patient_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
-                    My Posts
+                    {% trans "My Posts" %}
                 </a>
             </nav>
         </aside>
@@ -1208,7 +1226,7 @@
             <!-- Chat Header -->
             <div class="chat-header">
                 <div class="chat-user-info">
-                    <a href="{% url 'chat_room_list_patient' %}" class="back-icon" title="Back to chats"><i class="fas fa-arrow-left"></i></a>
+                    <a href="{% url 'chat_room_list_patient' %}" class="back-icon" title="{% trans 'Back to chats' %}"><i class="fas fa-arrow-left"></i></a>
                     {% if chat_room.user1 == request.user %}
                         {% with other=chat_room.user2 %}
                             {% if other.clinic and other.clinic.has_custom_avatar %}
@@ -1239,14 +1257,14 @@
                                 <div class="chat-user-status">
                                     <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
                                     {% if other.is_online %}
-                                        Online
+                                        {% trans "Online" %}
                                     {% else %}
                                         {% if other.patient and other.patient.last_seen %}
-                                            Last seen {{ other.patient.last_seen|timesince }} ago
+                                            {% blocktrans with time_since=other.patient.last_seen|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% elif other.clinic and other.clinic.last_seen %}
-                                            Last seen {{ other.clinic.last_seen|timesince }} ago
+                                            {% blocktrans with time_since=other.clinic.last_seen|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% else %}
-                                            Last seen {{ other.last_login|timesince }} ago
+                                            {% blocktrans with time_since=other.last_login|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -1278,14 +1296,14 @@
                                 <div class="chat-user-status">
                                     <span class="status-dot {% if other.is_online %}online{% else %}offline{% endif %}"></span>
                                     {% if other.is_online %}
-                                        Online
+                                        {% trans "Online" %}
                                     {% else %}
                                         {% if other.patient and other.patient.last_seen %}
-                                            Last seen {{ other.patient.last_seen|timesince }} ago
+                                            {% blocktrans with time_since=other.patient.last_seen|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% elif other.clinic and other.clinic.last_seen %}
-                                            Last seen {{ other.clinic.last_seen|timesince }} ago
+                                            {% blocktrans with time_since=other.clinic.last_seen|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% else %}
-                                            Last seen {{ other.last_login|timesince }} ago
+                                            {% blocktrans with time_since=other.last_login|timesince %}Last seen {{ time_since }} ago{% endblocktrans %}
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -1294,13 +1312,13 @@
                     {% endif %}
                 </div>
                 <div class="chat-actions">
-                    <button class="chat-action-btn" title="Call" onclick="startCall()">
+                    <button class="chat-action-btn" title="{% trans 'Call' %}" onclick="startCall()">
                         <i class="fas fa-phone"></i>
                     </button>
-                    <button class="chat-action-btn" title="Video Call" onclick="startVideoCall()">
+                    <button class="chat-action-btn" title="{% trans 'Video Call' %}" onclick="startVideoCall()">
                         <i class="fas fa-video"></i>
                     </button>
-                    <button class="chat-action-btn" title="More options" onclick="toggleChatOptions()">
+                    <button class="chat-action-btn" title="{% trans 'More options' %}" onclick="toggleChatOptions()">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
@@ -1315,9 +1333,9 @@
                         <div class="date-separator">
                             <span>
                                 {% if date_group.grouper == today %}
-                                    <i class="far fa-calendar-check" style="margin-right: 6px;"></i>Today
+                                    <i class="far fa-calendar-check" style="margin-right: 6px;"></i>{% trans "Today" %}
                                 {% elif date_group.grouper == yesterday %}
-                                    <i class="far fa-calendar" style="margin-right: 6px;"></i>Yesterday
+                                    <i class="far fa-calendar" style="margin-right: 6px;"></i>{% trans "Yesterday" %}
                                 {% else %}
                                     <i class="far fa-calendar-alt" style="margin-right: 6px;"></i>{{ date_group.grouper|date:"F j, Y" }}
                                 {% endif %}
@@ -1350,11 +1368,11 @@
                         <div class="empty-icon">
                             <i class="fas fa-comments"></i>
                         </div>
-                        <h3>No messages yet</h3>
-                        <p>Start the conversation by sending a message!</p>
+                        <h3>{% trans "No messages yet" %}</h3>
+                        <p>{% trans "Start the conversation by sending a message!" %}</p>
                         <p style="font-size: 13px; margin-top: 8px;">
                             <i class="fas fa-lightbulb" style="color: #f59e0b;"></i>
-                            You can discuss appointments, ask medical questions, or share updates.
+                            {% trans "You can discuss appointments, ask medical questions, or share updates." %}
                         </p>
                     </div>
                 {% endif %}
@@ -1364,7 +1382,7 @@
             {% if chat_room.is_messaging_blocked_effective %}
             <div class="chat-blocked-banner">
                 <i class="fas fa-lock" style="margin-right: 6px;"></i>
-                Messages are available only when there is a payed appointment between the patient and clinic. If you want to ask questions, please contact info@nero.com.
+                {% trans "Messages are available only when there is a payed appointment between the patient and clinic. If you want to ask questions, please contact info@nero.com." %}
             </div>
             {% endif %}
             <div class="input-area">
@@ -1374,7 +1392,7 @@
                         <textarea 
                             class="message-input" 
                             id="chatInput" 
-                            placeholder="{% if chat_room.is_messaging_blocked_effective %}Messaging unlocks when appointment status is payed{% else %}Type your message...{% endif %}" 
+                            placeholder="{% if chat_room.is_messaging_blocked_effective %}{% trans 'Messaging unlocks when appointment status is payed' %}{% else %}{% trans 'Type your message...' %}{% endif %}"
                             rows="1"
                             oninput="autoResize(this)"
                             {% if chat_room.is_messaging_blocked_effective %}disabled{% endif %}
@@ -1382,7 +1400,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary" id="sendButton" {% if chat_room.is_messaging_blocked_effective %}disabled{% endif %}>
                         <i class="fas fa-paper-plane"></i>
-                        Send
+                        {% trans "Send" %}
                     </button>
                 </form>
             </div>
@@ -1428,7 +1446,7 @@
             }
             
             headerSearchTimeout = setTimeout(() => {
-                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                headerSearchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: #6b7280;"><i class="fas fa-spinner fa-spin"></i> {% trans "Searching..." %}</div>';
                 headerSearchResults.style.display = 'block';
                 
                 fetch(`/patients/search-all/?q=${encodeURIComponent(query)}`, { 
@@ -1470,7 +1488,7 @@
                         results = `
                             <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
                                 <i class="fas fa-search" style="font-size: 24px; margin-bottom: 12px;"></i>
-                                <p>No results found for "${query}"</p>
+                                <p>{% trans "No results found for" %} "${query}"</p>
                             </div>
                         `;
                     }
@@ -1482,7 +1500,7 @@
                     headerSearchResults.innerHTML = `
                         <div style="padding: 20px; text-align: center; color: #ef4444;">
                             <i class="fas fa-exclamation-circle"></i>
-                            <p>Search failed. Please try again.</p>
+                            <p>{% trans "Search failed. Please try again." %}</p>
                         </div>
                     `;
                     headerSearchResults.style.display = 'block';
@@ -1589,7 +1607,7 @@
             event.preventDefault();
             const isChatBlocked = {{ chat_room.is_messaging_blocked_effective|yesno:"true,false" }};
             if (isChatBlocked) {
-                showNotification('This room is locked until there is a payed appointment. If you want to ask questions, please contact info@nero.com.', 'error');
+                showNotification('{% trans "This room is locked until there is a payed appointment. If you want to ask questions, please contact info@nero.com." %}', 'error');
                 return false;
             }
             
@@ -1623,19 +1641,19 @@
                     window.location.reload();
                 } else {
                     // Show error and re-enable input
-                    const errorMessage = data.message || 'Failed to send message';
+                    const errorMessage = data.message || '{% trans "Failed to send message" %}';
                     showNotification(errorMessage, 'error');
                     input.disabled = false;
                     sendButton.disabled = false;
-                    sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                    sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> {% trans "Send" %}';
                     tempMessage.remove();
                 }
             })
             .catch(error => {
-                showNotification('Network error. Please try again.', 'error');
+                showNotification('{% trans "Network error. Please try again." %}', 'error');
                 input.disabled = false;
                 sendButton.disabled = false;
-                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> {% trans "Send" %}';
                 tempMessage.remove();
             });
             
@@ -1657,7 +1675,7 @@
                 <div class="message-content">${content.replace(/\n/g, '<br>')}</div>
                 <div class="message-time">
                     <i class="far fa-clock" style="font-size: 10px;"></i>
-                    Sending...
+                    {% trans "Sending..." %}
                     <span class="message-status"><i class="fas fa-spinner fa-spin" style="font-size: 10px;"></i></span>
                 </div>
             `;
@@ -1766,17 +1784,17 @@
         
         // Chat action functions
         function startCall() {
-            showNotification('Starting call...', 'info');
+            showNotification('{% trans "Starting call..." %}', 'info');
             // In a real app, this would initiate a voice call
         }
-        
+
         function startVideoCall() {
-            showNotification('Starting video call...', 'info');
+            showNotification('{% trans "Starting video call..." %}', 'info');
             // In a real app, this would initiate a video call
         }
-        
+
         function toggleChatOptions() {
-            showNotification('Chat options', 'info');
+            showNotification('{% trans "Chat options" %}', 'info');
             // In a real app, this would show a dropdown menu
         }
         
