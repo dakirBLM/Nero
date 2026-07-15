@@ -122,3 +122,53 @@
   else init();
 })();
 </script>
+
+{# ===== Background music: continues across all patient pages (resume-from-position) ===== #}
+<style>
+.pnav-music{position:fixed;bottom:24px;right:24px;width:54px;height:54px;border-radius:50%;background:#fff;border:1px solid #e5e7eb;
+  box-shadow:0 10px 26px rgba(20,18,15,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:9000;transition:transform .25s,background .25s}
+.pnav-music:hover{transform:scale(1.08) translateY(-3px)}
+.pnav-music.playing{background:#141210}
+.pnav-music .pnav-music-icon{font-size:20px;line-height:1}
+.pnav-music.playing .pnav-music-icon{filter:grayscale(1) brightness(3)}
+[dir="rtl"] .pnav-music{right:auto;left:24px}
+@media (max-width:760px){.pnav-music{width:46px;height:46px;bottom:18px;right:16px}[dir="rtl"] .pnav-music{right:auto;left:16px}}
+</style>
+<button class="pnav-music" id="pnavMusicToggle" type="button" aria-label="{% trans 'Toggle background music' %}" aria-pressed="false"><span class="pnav-music-icon">🔇</span></button>
+<audio id="pnavMusic" loop preload="auto" style="display:none"><source src="{% static 'fantasy-music-mage-terrace-cu3ljg1jjhg.mp3' %}" type="audio/mpeg"></audio>
+<script>
+(function(){
+  var KEY_PLAYING='nero_music_playing', KEY_TIME='nero_music_time';
+  var toggle=document.getElementById('pnavMusicToggle'), audio=document.getElementById('pnavMusic');
+  if(!toggle||!audio) return;
+  var saver=null;
+  function setIcon(paused){var i=toggle.querySelector('.pnav-music-icon');toggle.classList.toggle('playing',!paused);toggle.setAttribute('aria-pressed',String(!paused));if(i)i.textContent=paused?'🔇':'🔊';}
+  function save(){try{localStorage.setItem(KEY_TIME,String(audio.currentTime));localStorage.setItem(KEY_PLAYING,audio.paused?'false':'true');}catch(e){}}
+  function startSaving(){if(saver)clearInterval(saver);saver=setInterval(save,400);}
+  function stopSaving(){if(saver){clearInterval(saver);saver=null;}save();}
+  // persist position right before any navigation
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(a){var h=a.getAttribute('href')||'';if(h&&h.charAt(0)!=='#'&&h.indexOf('mailto:')!==0&&h.indexOf('tel:')!==0)save();}},true);
+  window.addEventListener('beforeunload',save);
+  toggle.addEventListener('click',function(){
+    if(audio.paused){var p=audio.play();if(p&&p.then)p.then(function(){setIcon(false);try{localStorage.setItem(KEY_PLAYING,'true');}catch(e){}startSaving();}).catch(function(){});}
+    else{audio.pause();setIcon(true);try{localStorage.setItem(KEY_PLAYING,'false');}catch(e){}stopSaving();}
+  });
+  // resume where the previous page left off (if the user had music on)
+  (function(){
+    var wants=false,t=0;
+    try{wants=localStorage.getItem(KEY_PLAYING)==='true';t=parseFloat(localStorage.getItem(KEY_TIME)||'0');}catch(e){}
+    if(!wants){setIcon(true);return;}
+    function go(){
+      try{if(!isNaN(t)&&t>0)audio.currentTime=t;}catch(e){}
+      var p=audio.play();
+      if(p&&p.then)p.then(function(){setIcon(false);startSaving();}).catch(function(){
+        // autoplay blocked: show paused; first tap anywhere resumes
+        setIcon(true);
+        var once=function(){var pp=audio.play();if(pp&&pp.then)pp.then(function(){setIcon(false);startSaving();}).catch(function(){});document.removeEventListener('click',once,true);};
+        document.addEventListener('click',once,true);
+      });
+    }
+    if(audio.readyState>=1)go();else audio.addEventListener('canplay',go,{once:true});
+  })();
+})();
+</script>
