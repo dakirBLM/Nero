@@ -146,7 +146,7 @@ img{max-width:100%;display:block}
   if(!toggle||!audio) return;
   let saver=null;
   function setIcon(p){const i=toggle.querySelector('.music-icon');toggle.classList.toggle('playing',!p);toggle.setAttribute('aria-pressed',String(!p));if(i)i.textContent=p?'🔇':'🔊';}
-  function save(){try{localStorage.setItem(KEY_TIME,String(audio.currentTime));localStorage.setItem(KEY_PLAYING,audio.paused?'false':'true');}catch(e){}}
+  function save(){try{localStorage.setItem(KEY_TIME,String(audio.currentTime));if(!audio.paused)localStorage.setItem(KEY_PLAYING,'true');}catch(e){}}
   function startSaving(){if(saver)clearInterval(saver);saver=setInterval(save,400);}
   function stopSaving(){if(saver){clearInterval(saver);saver=null;}save();}
   document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a');if(a){const h=a.getAttribute('href')||'';if(h&&!h.startsWith('#')&&!h.startsWith('mailto:')&&!h.startsWith('tel:'))save();}},true);
