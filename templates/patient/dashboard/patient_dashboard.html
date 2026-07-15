@@ -1946,8 +1946,24 @@
   #onboardKG.ob-mobile img{width:92px;order:2}
   #onboardKG.ob-mobile .ob-bubble{order:1;margin-bottom:0;border-bottom-left-radius:18px;max-width:min(340px,calc(100vw - 32px))}
   #onboardKG.ob-mobile .ob-bubble::after{left:50%;bottom:-9px;transform:translateX(-50%);border:10px solid transparent;border-top-color:#fff;border-bottom:0;border-right-color:transparent}
+  /* mobile-first-visit notice: shown before the King George tour on small screens */
+  #onboardMobileNote{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10060;
+    width:min(360px,calc(100vw - 36px));background:#fff;border-radius:20px;padding:26px 22px;text-align:center;
+    font-family:'Inter',sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:obFade .4s ease}
+  #onboardMobileNote .emoji{font-size:38px;margin-bottom:10px}
+  #onboardMobileNote h3{font-size:18px;font-weight:800;color:#17150f;margin-bottom:8px}
+  #onboardMobileNote p{font-size:14px;line-height:1.6;color:#4a5568;margin-bottom:18px}
+  #onboardMobileNote button{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:999px;
+    padding:12px 30px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  [dir="rtl"] #onboardMobileNote{font-family:'Tajawal','Inter',sans-serif}
 </style>
 <div id="onboardOverlay" aria-hidden="true"></div>
+<div id="onboardMobileNote" role="dialog" aria-modal="true">
+  <div class="emoji">💻</div>
+  <h3>{% trans "Quick tip before you start" %}</h3>
+  <p>{% trans "You're on a phone — the dashboard holds a lot of information, so it's more comfortable to explore on a computer. You can absolutely continue here too!" %}</p>
+  <button type="button" id="onboardMobileNoteBtn">{% trans "Got it" %}</button>
+</div>
 <a id="onboardSpot" class="onboard-spot" href="{% url 'recommendations:questionnaire' %}">
   <i class="fas fa-brain"></i> {% trans "Smart Recommendations" %}
 </a>
@@ -1972,6 +1988,24 @@
   // lock the page while the tour is on (only the spotlight is clickable)
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
+
+  // On phones, show a one-time "more comfortable on a computer" note BEFORE the tour.
+  var note = document.getElementById('onboardMobileNote');
+  var noteBtn = document.getElementById('onboardMobileNoteBtn');
+  var seenNote = false;
+  try { seenNote = localStorage.getItem('nero_mobile_notice_seen') === '1'; } catch(e) {}
+  if (note && noteBtn && window.innerWidth <= 820 && !seenNote) {
+    spot.style.display = 'none';
+    kg.style.display = 'none';
+    note.style.display = 'block';
+    noteBtn.addEventListener('click', function(){
+      try { localStorage.setItem('nero_mobile_notice_seen', '1'); } catch(e) {}
+      note.style.display = 'none';
+      spot.style.display = '';
+      kg.style.display = '';
+      place();  // position the King George tour now that it's visible
+    });
+  }
 
   var target = document.querySelector('.sidebar-nav a[href*="questionnaire"], .sidebar-nav a[href*="recommendations"]');
 

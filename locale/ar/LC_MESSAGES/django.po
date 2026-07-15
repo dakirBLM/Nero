@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 11:13+0000\n"
+"POT-Creation-Date: 2026-07-15 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: accounts/emails.py:33
+#: accounts/emails.py:43
 msgid "Welcome to Nero! 🦫"
 msgstr "مرحبًا بك في نيرو! 🦫"
 
@@ -140,7 +140,7 @@ msgstr "المواعيد"
 #: templates/patient/appointments.html:1352
 #: templates/patient/dashboard/my_posts.html:895
 #: templates/patient/dashboard/patient_dashboard.html:1297
-#: templates/patient/dashboard/patient_dashboard.html:1952
+#: templates/patient/dashboard/patient_dashboard.html:1968
 #: templates/patient/medical_record_form.html:1253
 #: templates/patient/medical_record_success.html:1101
 #: templates/patient/medical_record_success.html:1215
@@ -733,7 +733,8 @@ msgstr "سجّل كعيادة"
 msgid "Existing clinic? Log in"
 msgstr "عيادة حالية؟ سجّل الدخول"
 
-#: templates/choice_page.html:140 templates/landing_page.html:300
+#: templates/choice_page.html:140 templates/includes/patient_nav.html:137
+#: templates/landing_page.html:300
 msgid "Toggle background music"
 msgstr "تشغيل/إيقاف الموسيقى الخلفية"
 
@@ -1579,7 +1580,7 @@ msgstr "للعيادات"
 
 #: templates/includes/site_nav.html:39 templates/landing_page.html:175
 #: templates/patient/dashboard/patient_dashboard.html:1533
-#: templates/patient/dashboard/patient_dashboard.html:1955
+#: templates/patient/dashboard/patient_dashboard.html:1971
 msgid "King George"
 msgstr "الملك جورج"
 
@@ -2127,11 +2128,23 @@ msgstr "اقرأ المزيد"
 msgid "NERO is thinking…"
 msgstr "نيرو يفكر…"
 
-#: templates/patient/dashboard/patient_dashboard.html:1957
+#: templates/patient/dashboard/patient_dashboard.html:1963
+msgid "Quick tip before you start"
+msgstr "نصيحة سريعة قبل أن تبدأ"
+
+#: templates/patient/dashboard/patient_dashboard.html:1964
+msgid "You're on a phone — the dashboard holds a lot of information, so it's more comfortable to explore on a computer. You can absolutely continue here too!"
+msgstr "أنت تستخدم الهاتف — لوحة التحكم تحتوي على الكثير من المعلومات، لذا سيكون استكشافها أكثر راحة على جهاز كمبيوتر. ويمكنك بالتأكيد المتابعة من هنا أيضًا!"
+
+#: templates/patient/dashboard/patient_dashboard.html:1965
+msgid "Got it"
+msgstr "فهمت"
+
+#: templates/patient/dashboard/patient_dashboard.html:1973
 msgid "👑 Welcome! I'm <strong>King George</strong>, your royal guide. Please start your journey by clicking <strong>here</strong> — I'll match you with the perfect clinic! 🦫"
 msgstr "👑 أهلاً بك! أنا <strong>الملك جورج</strong>، مرشدك الملكي. ابدأ رحلتك بالنقر <strong>هنا</strong> — سأطابقك مع العيادة المثالية! 🦫"
 
-#: templates/patient/dashboard/patient_dashboard.html:1962
+#: templates/patient/dashboard/patient_dashboard.html:1978
 msgid "Tap “Smart Recommendations” to begin →"
 msgstr "اضغط على «التوصيات الذكية» للبدء ←"
 
