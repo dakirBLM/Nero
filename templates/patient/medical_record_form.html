@@ -2079,23 +2079,31 @@
 
         // Initialize multi-step form
         document.addEventListener('DOMContentLoaded', function() {
+            {% trans "I don't have any" as no_text_i18n %}
+            // Canonical value stored in the DB stays English (clinics read it);
+            // the user sees it in their own language and it's swapped back on submit.
+            const noText = "I don't have any";
+            const noTextDisplay = "{{ no_text_i18n|escapejs }}";
+            function isNoText(v) {
+                v = (v || '').trim().toLowerCase();
+                return v === noText.toLowerCase() || v === noTextDisplay.toLowerCase();
+            }
+
             function initYesNoExplanation(textareaId, selectId) {
                 const textarea = document.getElementById(textareaId);
                 const select = document.getElementById(selectId);
                 if (!textarea || !select) return;
 
-                const noText = "I don't have any";
-
                 function syncFromSelect() {
                     if (select.value === 'yes') {
-                        if ((textarea.value || '').trim() === noText) {
+                        if (isNoText(textarea.value)) {
                             textarea.value = '';
                         }
                         textarea.readOnly = false;
                         textarea.required = true;
                         textarea.placeholder = '{% trans "Please explain the situation in detail" %}';
                     } else {
-                        textarea.value = noText;
+                        textarea.value = noTextDisplay;
                         textarea.readOnly = true;
                         textarea.required = false;
                         textarea.placeholder = '';
@@ -2105,10 +2113,20 @@
 
                 // Initialize based on existing data (important for edit mode)
                 const existing = (textarea.value || '').trim();
-                select.value = (existing && existing.toLowerCase() !== noText.toLowerCase()) ? 'yes' : 'no';
+                select.value = (existing && !isNoText(existing)) ? 'yes' : 'no';
                 syncFromSelect();
 
                 select.addEventListener('change', syncFromSelect);
+
+                // On submit, store the canonical English value.
+                if (textarea.form) {
+                    textarea.form.addEventListener('submit', function() {
+                        if (isNoText(textarea.value)) {
+                            textarea.readOnly = false;
+                            textarea.value = noText;
+                        }
+                    });
+                }
             }
 
             initYesNoExplanation('id_current_medications', 'id_current_medications_choice');

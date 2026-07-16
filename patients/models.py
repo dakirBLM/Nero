@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
 from accounts.models import User
@@ -25,9 +26,9 @@ def validate_file_size_50mb(file_obj):
 
 class Patient(models.Model):
     GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('M', _('Male')),
+        ('F', _('Female')),
+        ('O', _('Other')),
     )
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -84,10 +85,10 @@ class Patient(models.Model):
 
 class MedicalRecord(models.Model):
     MOVEMENT_ABILITY_CHOICES = (
-        ('independent', 'Independent'),
-        ('assisted', 'Requires Assistance'),
-        ('wheelchair', 'Wheelchair Bound'),
-        ('bedridden', 'Bedridden'),
+        ('independent', _('Independent')),
+        ('assisted', _('Requires Assistance')),
+        ('wheelchair', _('Wheelchair Bound')),
+        ('bedridden', _('Bedridden')),
     )
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='medical_records')

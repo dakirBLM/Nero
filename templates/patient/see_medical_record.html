@@ -949,7 +949,7 @@
                             {% trans "Current Medications" %}
                         </h3>
                         <div class="text-content {% if not medical_record.current_medications %}empty{% endif %}">
-                            {{ medical_record.current_medications|default:_("No medications recorded")|linebreaks }}
+                            {% if medical_record.current_medications == "I don't have any" %}{% trans "I don't have any" %}{% else %}{{ medical_record.current_medications|default:_("No medications recorded")|linebreaks }}{% endif %}
                         </div>
                     </div>
 
@@ -965,7 +965,7 @@
                             {% trans "Allergies" %}
                         </h3>
                         <div class="text-content {% if not medical_record.allergies %}empty{% endif %}">
-                            {{ medical_record.allergies|default:_("No allergies recorded")|linebreaks }}
+                            {% if medical_record.allergies == "I don't have any" %}{% trans "I don't have any" %}{% else %}{{ medical_record.allergies|default:_("No allergies recorded")|linebreaks }}{% endif %}
                         </div>
                     </div>
 
@@ -978,7 +978,7 @@
                             {% trans "Previous Surgeries" %}
                         </h3>
                         <div class="text-content {% if not medical_record.previous_surgeries %}empty{% endif %}">
-                            {{ medical_record.previous_surgeries|default:_("No previous surgeries recorded")|linebreaks }}
+                            {% if medical_record.previous_surgeries == "I don't have any" %}{% trans "I don't have any" %}{% else %}{{ medical_record.previous_surgeries|default:_("No previous surgeries recorded")|linebreaks }}{% endif %}
                         </div>
                     </div>
 

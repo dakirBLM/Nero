@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 08:55+0000\n"
+"POT-Creation-Date: 2026-07-16 10:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -396,6 +396,34 @@ msgstr "تم وضع علامة مقروء على جميع الرسائل"
 #: chat/templates/chat/chat_room_list.html:1449
 msgid "Start a new chat?"
 msgstr "بدء محادثة جديدة؟"
+
+#: patients/models.py:29 templates/patient/signup.html:764
+msgid "Male"
+msgstr "ذكر"
+
+#: patients/models.py:30 templates/patient/signup.html:765
+msgid "Female"
+msgstr "أنثى"
+
+#: patients/models.py:31 templates/patient/signup.html:766
+msgid "Other"
+msgstr "آخر"
+
+#: patients/models.py:88
+msgid "Independent"
+msgstr "مستقل الحركة"
+
+#: patients/models.py:89
+msgid "Requires Assistance"
+msgstr "يحتاج إلى مساعدة"
+
+#: patients/models.py:90
+msgid "Wheelchair Bound"
+msgstr "ملازم لكرسي متحرك"
+
+#: patients/models.py:91
+msgid "Bedridden"
+msgstr "طريح الفراش"
 
 #: patients/views.py:314
 msgid "Please accept the data consent to create an account."
@@ -1441,8 +1469,8 @@ msgid "This is a share link. Use the EMBED URL instead (from \"Embed a map\" tab
 msgstr "هذا رابط مشاركة. استخدم رابط التضمين بدلاً منه (من تبويب \"تضمين خريطة\")."
 
 #: templates/clinics/signup.html:1693
-#: templates/patient/medical_record_form.html:2302
-#: templates/patient/medical_record_form.html:2309
+#: templates/patient/medical_record_form.html:2320
+#: templates/patient/medical_record_form.html:2327
 #: templates/patient/signup.html:978
 msgid "This field is required"
 msgstr "هذا الحقل مطلوب"
@@ -1452,8 +1480,8 @@ msgid "Creating Account..."
 msgstr "جارٍ إنشاء الحساب..."
 
 #: templates/clinics/signup.html:1749
-#: templates/patient/medical_record_form.html:2219
-#: templates/patient/medical_record_form.html:2333
+#: templates/patient/medical_record_form.html:2237
+#: templates/patient/medical_record_form.html:2351
 #: templates/patient/signup.html:1052
 msgid "Please enter a valid email address"
 msgstr "يرجى إدخال بريد إلكتروني صالح"
@@ -2237,8 +2265,8 @@ msgid "Date of Birth"
 msgstr "تاريخ الميلاد"
 
 #: templates/patient/medical_record_form.html:1386
-#: templates/patient/medical_record_form.html:2206
-#: templates/patient/medical_record_form.html:2323
+#: templates/patient/medical_record_form.html:2224
+#: templates/patient/medical_record_form.html:2341
 msgid "Patient must be at least 13 years old"
 msgstr "يجب أن يكون عمر المريض 13 عامًا على الأقل"
 
@@ -2569,23 +2597,30 @@ msgstr "فيديو حركة إضافي"
 msgid "Submit Medical Record"
 msgstr "إرسال السجل الطبي"
 
-#: templates/patient/medical_record_form.html:2096
+#: templates/patient/medical_record_form.html:2082
+#: templates/patient/see_medical_record.html:952
+#: templates/patient/see_medical_record.html:968
+#: templates/patient/see_medical_record.html:981
+msgid "I don't have any"
+msgstr "لا يوجد لدي"
+
+#: templates/patient/medical_record_form.html:2104
 msgid "Please explain the situation in detail"
 msgstr "يرجى شرح الحالة بالتفصيل"
 
-#: templates/patient/medical_record_form.html:2180
+#: templates/patient/medical_record_form.html:2198
 msgid "Please fix all errors before submitting."
 msgstr "يرجى إصلاح جميع الأخطاء قبل الإرسال."
 
-#: templates/patient/medical_record_form.html:2186
+#: templates/patient/medical_record_form.html:2204
 msgid "Submitting..."
 msgstr "جارٍ الإرسال..."
 
-#: templates/patient/medical_record_form.html:2412
+#: templates/patient/medical_record_form.html:2430
 msgid "File size exceeds maximum allowed size"
 msgstr "حجم الملف يتجاوز الحد الأقصى المسموح"
 
-#: templates/patient/medical_record_form.html:2511
+#: templates/patient/medical_record_form.html:2529
 msgid "Are you sure you want to cancel? All unsaved changes will be lost."
 msgstr "هل أنت متأكد من الإلغاء؟ ستفقد جميع التغييرات غير المحفوظة."
 
@@ -3128,18 +3163,6 @@ msgstr "أدخل البريد الإلكتروني"
 #: templates/patient/signup.html:763
 msgid "Select gender"
 msgstr "اختر الجنس"
-
-#: templates/patient/signup.html:764
-msgid "Male"
-msgstr "ذكر"
-
-#: templates/patient/signup.html:765
-msgid "Female"
-msgstr "أنثى"
-
-#: templates/patient/signup.html:766
-msgid "Other"
-msgstr "آخر"
 
 #: templates/patient/signup.html:779
 msgid "Enter phone number"
