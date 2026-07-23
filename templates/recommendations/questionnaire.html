@@ -1763,5 +1763,109 @@
         });
     });
     </script>
+
+<!-- ===== King George step-by-step tutorial (first Smart Recommendations run) ===== -->
+<style>
+  #recTutOverlay{display:none;position:fixed;inset:0;background:rgba(8,10,14,.72);z-index:10050;backdrop-filter:blur(2px);animation:rtFade .35s ease}
+  @keyframes rtFade{from{opacity:0}to{opacity:1}}
+  #recTutCard{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10060;
+    width:min(400px,calc(100vw - 36px));background:#fff;border-radius:22px;padding:20px 22px 24px;text-align:center;
+    font-family:'Inter',sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:rtPop .35s ease}
+  @keyframes rtPop{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+  #recTutCard img{height:150px;width:auto;max-width:88%;object-fit:contain;margin:0 auto 8px;filter:drop-shadow(0 12px 18px rgba(20,18,15,.25))}
+  #recTutCard h3{font-size:18px;font-weight:800;color:#17150f;margin-bottom:8px}
+  #recTutCard p{font-size:14.5px;line-height:1.6;color:#4a5568;margin-bottom:18px}
+  #recTutCard .rt-btn{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border:none;border-radius:999px;padding:12px 32px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  #recTutCard .rt-skip{display:block;margin:12px auto 0;background:none;border:none;color:#9ca3af;font-size:12.5px;font-family:inherit;cursor:pointer;text-decoration:underline}
+  [dir="rtl"] #recTutCard{font-family:'Tajawal','Inter',sans-serif}
+</style>
+<div id="recTutOverlay" aria-hidden="true"></div>
+<div id="recTutCard" role="dialog" aria-modal="true">
+  <img id="recTutImg" src="" alt="King George">
+  <h3 id="recTutTitle"></h3>
+  <p id="recTutText"></p>
+  <button type="button" class="rt-btn" id="recTutNext">{% trans "Continue" %}</button>
+  <button type="button" class="rt-skip" id="recTutSkip">{% trans "Skip the tour" %}</button>
+</div>
+<script>
+(function(){
+  var KEY='nero_rec_tut';
+  var startFlag = {{ show_rec_tutorial|yesno:'true,false' }};
+  function getState(){ try{return localStorage.getItem(KEY)||'';}catch(e){return '';} }
+  function setState(v){ try{localStorage.setItem(KEY,v);}catch(e){} }
+
+  if (startFlag && !getState()) setState('step1');
+  var st = getState();
+  if (!st || st === 'done') return;
+
+  var IMG = {
+    s1: "{% static 'kg-tut-1.png' %}",
+    s2: "{% static 'kg-tut-2.png' %}",
+    s3: "{% static 'kg-tut-3.png' %}",
+    s4: "{% static 'kg-tut-4.png' %}",
+    s5: "{% static 'king-george.png' %}"
+  };
+  var TIPS = {
+    step1: {img:IMG.s1, title:"{% trans 'Step 1 — Clinic type'|escapejs %}",
+      text:"{% trans 'Choose what kind of clinic you need — you can pick more than one. When you are ready, press Continue below the cards!'|escapejs %}",
+      next:'step2'},
+    step2: {img:IMG.s2, title:"{% trans 'Step 2 — Your medical record'|escapejs %}",
+      text:"{% trans 'Clinics need your medical record to assess your case. Tap Create New Medical Record — when you finish, you will come back here automatically and we will continue together!'|escapejs %}",
+      next:'awaiting-record'},
+    'awaiting-record': {img:IMG.s3, title:"{% trans 'Step 3 — Where to be treated?'|escapejs %}",
+      text:"{% trans 'Wonderful — your record is ready and selected! ✅ Now pick a continent, then choose the countries you are open to.'|escapejs %}",
+      next:'step4'},
+    step4: {img:IMG.s4, title:"{% trans 'Step 4 — Accommodation'|escapejs %}",
+      text:"{% trans 'Bringing someone along? Tell us if you need accommodation, how many companions, and your treatment dates.'|escapejs %}",
+      next:'step5'},
+    step5: {img:IMG.s5, title:"{% trans 'Last step — Your treatment'|escapejs %}",
+      text:"{% trans 'Describe the treatment you need — the more detail, the better your match. Then press Find Matching Clinics and I will handle the rest!'|escapejs %}",
+      next:'final-pending'}
+  };
+
+  var overlay=document.getElementById('recTutOverlay'), card=document.getElementById('recTutCard');
+  var img=document.getElementById('recTutImg'), title=document.getElementById('recTutTitle'), text=document.getElementById('recTutText');
+  var btn=document.getElementById('recTutNext'), skip=document.getElementById('recTutSkip');
+  var current=null;
+
+  function show(key){
+    var tip=TIPS[key]; if(!tip) return;
+    current=key;
+    img.src=tip.img; title.textContent=tip.title; text.textContent=tip.text;
+    overlay.style.display='block'; card.style.display='block';
+    document.documentElement.style.overflow='hidden';
+  }
+  function hide(){
+    overlay.style.display='none'; card.style.display='none';
+    document.documentElement.style.overflow='';
+  }
+  btn.addEventListener('click',function(){
+    var tip=TIPS[current]; hide();
+    if(tip) setState(tip.next);
+  });
+  skip.addEventListener('click',function(){ hide(); setState('done'); });
+
+  // fire the right tip when its wizard screen becomes visible
+  function maybeTip(){
+    var s=getState(); if(!s||s==='done') return;
+    var active=document.querySelector('.step-screen.active');
+    var n=active? parseInt((active.id||'').replace('screen-',''),10) : 1;
+    if(s==='step1' && n===1) show('step1');
+    else if(s==='step2' && n===2) show('step2');
+    else if(s==='awaiting-record' && n===3) show('awaiting-record');
+    else if(s==='step4' && n===4) show('step4');
+    else if(s==='step5' && n===5) show('step5');
+  }
+  // watch screen switches
+  document.querySelectorAll('.step-screen').forEach(function(sc){
+    new MutationObserver(function(){ if(sc.classList.contains('active')) setTimeout(maybeTip,250); })
+      .observe(sc,{attributes:true,attributeFilter:['class']});
+  });
+  // results screen present -> requests are being dispatched -> final tip waits on Appointments
+  var auto=document.getElementById('auto-dispatch-form');
+  if(auto && auto.getAttribute('data-autosend')==='1'){ setState('final'); return; }
+  setTimeout(maybeTip,600);
+})();
+</script>
 </body>
 </html>

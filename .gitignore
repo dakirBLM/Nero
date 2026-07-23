@@ -56,3 +56,8 @@ nero_data.json
 dump.json
 *.dump
 When-I-Was-A-Boy*.mp3
+# raw tutorial image sources (cutouts kg-tut-*.png are the shipped versions)
+static/Hopper*
+static/Hoppers*
+static/Disney*
+static/ -*.jpg

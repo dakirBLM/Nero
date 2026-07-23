@@ -250,13 +250,17 @@ def questionnaire_view(request):
         messages.error(request, 'Only patients can submit clinic requests.')
         return redirect('login')
 
-    # Arriving here completes the first-run King George onboarding tour.
+    # Arriving here completes the first-run King George onboarding tour and
+    # kicks off the step-by-step recommendations tutorial (continued client-side).
+    first_run = False
     if not getattr(patient, 'onboarding_done', True):
+        first_run = True
         patient.onboarding_done = True
         patient.save(update_fields=['onboarding_done'])
 
     preselected_record_id = request.GET.get('medical_record_id', '')
     context = _base_filter_context(patient, preselected_record_id)
+    context['show_rec_tutorial'] = first_run
     return render(request, 'recommendations/questionnaire.html', context)
 
 

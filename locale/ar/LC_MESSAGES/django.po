@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 10:07+0000\n"
+"POT-Creation-Date: 2026-07-23 13:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2030,6 +2030,19 @@ msgstr "ابحث عن عيادات واحجز موعدًا"
 msgid "Processing…"
 msgstr "جارٍ المعالجة…"
 
+#: templates/patient/appointments.html:1902
+msgid "Your request is on its way! 🎉"
+msgstr "طلبك في طريقه! 🎉"
+
+#: templates/patient/appointments.html:1903
+msgid "The matching clinics received your case and will reply right here in Appointments. I will let you know the moment something arrives — good luck on your journey!"
+msgstr "استلمت العيادات المطابقة حالتك وسترد عليك هنا في «المواعيد». سأخبرك فور وصول أي رد — حظًا موفقًا في رحلتك!"
+
+#: templates/patient/appointments.html:1904
+#: templates/patient/dashboard/patient_dashboard.html:1965
+msgid "Got it"
+msgstr "فهمت"
+
 #: templates/patient/dashboard/my_posts.html:875
 msgid "View and manage all your posts."
 msgstr "اعرض وأدر جميع منشوراتك."
@@ -2163,10 +2176,6 @@ msgstr "نصيحة سريعة قبل أن تبدأ"
 #: templates/patient/dashboard/patient_dashboard.html:1964
 msgid "You're on a phone — the dashboard holds a lot of information, so it's more comfortable to explore on a computer. You can absolutely continue here too!"
 msgstr "أنت تستخدم الهاتف — لوحة التحكم تحتوي على الكثير من المعلومات، لذا سيكون استكشافها أكثر راحة على جهاز كمبيوتر. ويمكنك بالتأكيد المتابعة من هنا أيضًا!"
-
-#: templates/patient/dashboard/patient_dashboard.html:1965
-msgid "Got it"
-msgstr "فهمت"
 
 #: templates/patient/dashboard/patient_dashboard.html:1973
 msgid "👑 Welcome! I'm <strong>King George</strong>, your royal guide. Please start your journey by clicking <strong>here</strong> — I'll match you with the perfect clinic! 🦫"
@@ -3283,6 +3292,7 @@ msgstr "يرجى اختيار نوع عيادة واحد على الأقل."
 #: templates/recommendations/questionnaire.html:1109
 #: templates/recommendations/questionnaire.html:1149
 #: templates/recommendations/questionnaire.html:1201
+#: templates/recommendations/questionnaire.html:1787
 msgid "Continue"
 msgstr "متابعة"
 
@@ -3472,6 +3482,50 @@ msgstr "لا توجد نتائج لـ \"{query}\""
 #: templates/recommendations/questionnaire.html:1263
 msgid "Search failed."
 msgstr "فشل البحث."
+
+#: templates/recommendations/questionnaire.html:1788
+msgid "Skip the tour"
+msgstr "تخطي الجولة"
+
+#: templates/recommendations/questionnaire.html:1809
+msgid "Step 1 — Clinic type"
+msgstr "الخطوة 1 — نوع العيادة"
+
+#: templates/recommendations/questionnaire.html:1810
+msgid "Choose what kind of clinic you need — you can pick more than one. When you are ready, press Continue below the cards!"
+msgstr "اختر نوع العيادة التي تحتاجها — يمكنك اختيار أكثر من نوع. وعندما تكون جاهزًا، اضغط «متابعة» أسفل البطاقات!"
+
+#: templates/recommendations/questionnaire.html:1812
+msgid "Step 2 — Your medical record"
+msgstr "الخطوة 2 — سجلك الطبي"
+
+#: templates/recommendations/questionnaire.html:1813
+msgid "Clinics need your medical record to assess your case. Tap Create New Medical Record — when you finish, you will come back here automatically and we will continue together!"
+msgstr "تحتاج العيادات إلى سجلك الطبي لتقييم حالتك. اضغط «إنشاء سجل طبي جديد» — وعندما تنتهي ستعود إلى هنا تلقائيًا وسنكمل معًا!"
+
+#: templates/recommendations/questionnaire.html:1815
+msgid "Step 3 — Where to be treated?"
+msgstr "الخطوة 3 — أين تتلقى العلاج؟"
+
+#: templates/recommendations/questionnaire.html:1816
+msgid "Wonderful — your record is ready and selected! ✅ Now pick a continent, then choose the countries you are open to."
+msgstr "رائع — سجلك جاهز ومحدد! ✅ الآن اختر قارة، ثم حدد الدول التي تناسبك."
+
+#: templates/recommendations/questionnaire.html:1818
+msgid "Step 4 — Accommodation"
+msgstr "الخطوة 4 — الإقامة"
+
+#: templates/recommendations/questionnaire.html:1819
+msgid "Bringing someone along? Tell us if you need accommodation, how many companions, and your treatment dates."
+msgstr "هل سيرافقك أحد؟ أخبرنا إن كنت تحتاج إلى إقامة، وعدد المرافقين، وتواريخ علاجك."
+
+#: templates/recommendations/questionnaire.html:1821
+msgid "Last step — Your treatment"
+msgstr "الخطوة الأخيرة — علاجك"
+
+#: templates/recommendations/questionnaire.html:1822
+msgid "Describe the treatment you need — the more detail, the better your match. Then press Find Matching Clinics and I will handle the rest!"
+msgstr "صِف العلاج الذي تحتاجه — كلما زادت التفاصيل، كانت المطابقة أفضل. ثم اضغط «البحث عن العيادات المطابقة» وسأتولى الباقي!"
 
 #~ msgid "Call"
 #~ msgstr "اتصال"
