@@ -4,13 +4,18 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
 from accounts.models import User
-from .storage import EncryptedFileSystemStorage
+from .storage import EncryptedFileSystemStorage, get_medical_file_storage
 from core.avatars import DEFAULT_AVATAR
 
 
 def get_file_storage():
     """Return encrypted local file storage."""
     return EncryptedFileSystemStorage()
+
+
+def get_medical_storage():
+    """Return the private PHI storage backend when configured."""
+    return get_medical_file_storage()
 
 
 def validate_file_size_3mb(file_obj):
@@ -155,7 +160,7 @@ class MedicalRecord(models.Model):
             FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'png']),
             validate_file_size_3mb,
         ],
-        storage=get_file_storage(),
+        storage=get_medical_storage(),
     )
 
     patient_movement_video = models.FileField(
@@ -167,7 +172,7 @@ class MedicalRecord(models.Model):
             FileExtensionValidator(allowed_extensions=['mp4']),
             validate_file_size_50mb,
         ],
-        storage=get_file_storage(),
+        storage=get_medical_storage(),
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -184,7 +189,7 @@ class MedicalRecordReport(models.Model):
             FileExtensionValidator(allowed_extensions=['pdf', 'jpg', 'jpeg', 'png']),
             validate_file_size_3mb,
         ],
-        storage=get_file_storage(),
+        storage=get_medical_storage(),
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -200,7 +205,7 @@ class MedicalRecordVideo(models.Model):
             FileExtensionValidator(allowed_extensions=['mp4']),
             validate_file_size_50mb,
         ],
-        storage=get_file_storage(),
+        storage=get_medical_storage(),
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

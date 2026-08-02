@@ -42,6 +42,21 @@ services:
         value: "path"            # Supabase requires path-style (R2/S3 use virtual)
       - key: S3_CUSTOM_DOMAIN
         sync: false              # public bucket: <ref>.supabase.co/storage/v1/object/public/<bucket>
+      # Private PHI bucket for medical reports and movement videos.
+      # Set these to a separate private bucket so patient files are not mixed
+      # with public clinic media.
+      - key: PHI_S3_BUCKET
+        sync: false
+      - key: PHI_S3_ENDPOINT_URL
+        sync: false
+      - key: PHI_S3_ACCESS_KEY_ID
+        sync: false
+      - key: PHI_S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: PHI_S3_REGION
+        sync: false
+      - key: PHI_S3_ADDRESSING_STYLE
+        value: "path"
       - key: SENTRY_DSN
         sync: false             # optional error tracking
       # Google login (optional): set both to enable "Continue with Google"
