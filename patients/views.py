@@ -361,10 +361,15 @@ def medical_record_create_view(request):
         messages.error(request, 'Access denied.')
         return redirect('login')
     patient, _ = Patient.objects.get_or_create(user=request.user)
+    from core.location_choices import split_phone_number
+
+    mobile_country_code, mobile_number = split_phone_number(patient.phone)
     initial_contact_data = {
         'email': request.user.email or '',
-        'mobile_number': patient.phone or '',
-        'whatsapp_number': patient.phone or '',
+        'mobile_country_code': mobile_country_code or '+1',
+        'mobile_number': mobile_number or '',
+        'whatsapp_country_code': mobile_country_code or '+1',
+        'whatsapp_number': mobile_number or '',
     }
     if request.method == 'POST':
         medical_form = MedicalRecordForm(request.POST, request.FILES)
@@ -1060,14 +1065,14 @@ def patient_appointments_view(request):
         treatment_end_date__lte=upcoming_cleanup_date,
     ).delete()
 
-    all_appointments = Appointment.objects.filter(patient=patient).select_related('clinic', 'medical_record').order_by('-appointment_date', '-created_at')
+    all_appointments = Appointment.objects.filter(patient=patient).exclude(status='pending').select_related('clinic', 'medical_record').order_by('-appointment_date', '-created_at')
 
     status_filter = request.GET.get('status', '') or ''
     status_filter = status_filter.strip()
 
     # Build filters from real model statuses so all valid options are always visible.
     status_labels = dict(Appointment.STATUS_CHOICES)
-    choice_order = [choice[0] for choice in Appointment.STATUS_CHOICES]
+    choice_order = [choice[0] for choice in Appointment.STATUS_CHOICES if choice[0] != 'pending']
     status_filters = [
         {
             'value': value,
@@ -1087,7 +1092,6 @@ def patient_appointments_view(request):
         status_filter = ''
 
     total_appointments = all_appointments.count()
-    pending_appointments = all_appointments.filter(status='pending').count()
     accepted_appointments = all_appointments.filter(status__in=['accepted_record_accepted_accommodation', 'waiting_for_payment']).count()
     upcoming_appointments = all_appointments.filter(status__in=['paid', 'upcoming']).count()
 
@@ -1097,7 +1101,6 @@ def patient_appointments_view(request):
         'status_filter': status_filter,
         'status_filters': status_filters,
         'total_appointments': total_appointments,
-        'pending_appointments': pending_appointments,
         'accepted_appointments': accepted_appointments,
         'upcoming_appointments': upcoming_appointments,
     }

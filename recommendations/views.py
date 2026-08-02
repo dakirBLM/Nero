@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+from django.urls import reverse
+from django.utils.translation import gettext as _
 
 
 def _get_patient_for_request(request):
@@ -259,8 +261,13 @@ def questionnaire_view(request):
         patient.save(update_fields=['onboarding_done'])
 
     preselected_record_id = request.GET.get('medical_record_id', '')
+    dispatch_complete = bool(request.session.pop('recommendation_dispatch_complete', False))
+    dispatch_state = request.session.pop('recommendation_dispatch_state', 'sent') if dispatch_complete else 'sent'
     context = _base_filter_context(patient, preselected_record_id)
     context['show_rec_tutorial'] = first_run
+    context['dispatch_complete'] = dispatch_complete
+    context['dispatch_state'] = dispatch_state
+    context['home_url'] = reverse('patient_dashboard')
     return render(request, 'recommendations/questionnaire.html', context)
 
 
@@ -393,7 +400,7 @@ def send_appointment_requests_view(request):
     record_id = (request.POST.get('medical_record_id') or '').strip()
     selected_record = MedicalRecord.objects.filter(id=record_id, patient=patient).first()
     if not selected_record:
-        messages.error(request, 'Medical record is missing or invalid.')
+        messages.error(request, _('Medical record is missing or invalid.'))
         return redirect('recommendations:questionnaire')
 
     selected_ids = request.POST.getlist('all_result_clinics')
@@ -402,7 +409,7 @@ def send_appointment_requests_view(request):
         selected_ids = request.POST.getlist('selected_clinics')
     selected_ids = list(dict.fromkeys([str(v).strip() for v in selected_ids if str(v).strip()]))
     if not selected_ids:
-        messages.error(request, 'No matching clinics were found for dispatch.')
+        messages.error(request, _('No matching clinics were found for dispatch.'))
         return redirect('recommendations:questionnaire')
 
     selected_service = (request.POST.get('service') or '').strip()
@@ -466,11 +473,14 @@ def send_appointment_requests_view(request):
 
     created_count = 0
     skipped_count = 0
+    already_open_count = 0
+    incompatible_count = 0
 
     for clinic_id in selected_ids:
         clinic = compatible_map.get(str(clinic_id))
         if not clinic:
             skipped_count += 1
+            incompatible_count += 1
             continue
 
         already_open = Appointment.objects.filter(
@@ -481,6 +491,7 @@ def send_appointment_requests_view(request):
         ).exists()
         if already_open:
             skipped_count += 1
+            already_open_count += 1
             continue
 
         Appointment.objects.create(
@@ -508,8 +519,23 @@ def send_appointment_requests_view(request):
         created_count += 1
 
     if created_count:
-        messages.success(request, 'Your medical record has been sent to matching clinics.')
-    if skipped_count:
-        messages.warning(request, f'{skipped_count} clinic(s) were skipped (already requested or incompatible).')
+        request.session['recommendation_dispatch_complete'] = True
+        request.session['recommendation_dispatch_state'] = 'sent'
+        messages.success(
+            request,
+            _('Your data has been sent to the matched clinics. Please wait for their response.'),
+        )
+    elif selected_ids and already_open_count == len(selected_ids) and incompatible_count == 0:
+        request.session['recommendation_dispatch_complete'] = True
+        request.session['recommendation_dispatch_state'] = 'already_processed'
+        messages.info(
+            request,
+            _('Your data was already processed. Please wait for the clinics response.'),
+        )
+    else:
+        messages.warning(
+            request,
+            _('No matching clinics were available right now. Please try again later.'),
+        )
 
-    return redirect('patient_appointments')
+    return redirect(f"{reverse('recommendations:questionnaire')}?sent=1")

@@ -1430,14 +1430,27 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label required" for="id_phone_number">Phone Number</label>
-                                    {{ form.phone_number }}
-                                    {% if form.phone_number.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.phone_number.errors.0 }}
+                                    <label class="form-label required">Phone Number</label>
+                                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
+                                        <div>
+                                            {{ form.phone_country_code }}
+                                            {% if form.phone_country_code.errors %}
+                                                <div class="error-message">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    {{ form.phone_country_code.errors.0 }}
+                                                </div>
+                                            {% endif %}
                                         </div>
-                                    {% endif %}
+                                        <div>
+                                            {{ form.phone_number }}
+                                            {% if form.phone_number.errors %}
+                                                <div class="error-message">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    {{ form.phone_number.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">

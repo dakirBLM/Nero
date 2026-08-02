@@ -1,6 +1,7 @@
 from django import forms
 from .models import Patient, MedicalRecord
 from django.contrib.auth import get_user_model
+from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
 
 
 class UserForm(forms.ModelForm):
@@ -26,6 +27,22 @@ class PatientForm(forms.ModelForm):
 
 class MedicalRecordForm(forms.ModelForm):
     REQUIRED_TEXT_FIELDS = ('current_medications', 'allergies', 'previous_surgeries')
+
+    country = forms.ChoiceField(
+        choices=COUNTRY_CHOICES,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    mobile_country_code = forms.ChoiceField(
+        choices=PHONE_CODE_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    whatsapp_country_code = forms.ChoiceField(
+        choices=PHONE_CODE_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = MedicalRecord
@@ -63,6 +80,30 @@ class MedicalRecordForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name in self.REQUIRED_TEXT_FIELDS:
             self.fields[field_name].required = True
+
+        if self.instance and self.instance.mobile_number:
+            mobile_code, mobile_local = split_phone_number(self.instance.mobile_number)
+            self.fields['mobile_country_code'].initial = mobile_code or '+1'
+            self.fields['mobile_number'].initial = mobile_local
+
+        if self.instance and self.instance.whatsapp_number:
+            whatsapp_code, whatsapp_local = split_phone_number(self.instance.whatsapp_number)
+            self.fields['whatsapp_country_code'].initial = whatsapp_code or '+1'
+            self.fields['whatsapp_number'].initial = whatsapp_local
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.mobile_number = normalize_phone_number(
+            self.cleaned_data.get('mobile_country_code'),
+            self.cleaned_data.get('mobile_number'),
+        )
+        instance.whatsapp_number = normalize_phone_number(
+            self.cleaned_data.get('whatsapp_country_code'),
+            self.cleaned_data.get('whatsapp_number'),
+        )
+        if commit:
+            instance.save()
+        return instance
 
     def clean(self):
         cleaned_data = super().clean()

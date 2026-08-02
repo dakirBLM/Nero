@@ -642,6 +642,51 @@
         .btn-secondary { background: #f1f5f9; color: #374151; border: 1px solid #e5e7eb; }
         .btn-secondary:hover { background: #e5e7eb; }
 
+        .status-card {
+            max-width: 460px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px 32px 32px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .status-icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin: 0 auto 20px;
+        }
+        .status-card--success .status-icon { background: #ecfdf5; color: #10b981; }
+        .status-card--info    .status-icon { background: #eff6ff; color: #3b82f6; }
+        .status-title { font-size: 19px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+        .status-text  { font-size: 14px; color: #6b7280; line-height: 1.6; margin: 0 auto 28px; max-width: 360px; }
+
+        .status-countdown { position: relative; width: 56px; height: 56px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .countdown-ring { width: 56px; height: 56px; transform: rotate(-90deg); }
+        .countdown-track { fill: none; stroke: #f1f5f9; stroke-width: 2.5; }
+        .countdown-progress {
+            fill: none; stroke: #3b82f6; stroke-width: 2.5; stroke-linecap: round;
+            stroke-dasharray: 100.53; stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        .status-card--success .countdown-progress { stroke: #10b981; }
+        .status-countdown span { position: absolute; font-size: 14px; font-weight: 700; color: #1f2937; }
+
+        .match-summary { display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:12px; background:#f8fafc; border:1px solid #eef2f7; }
+        .match-summary-icon { width:40px; height:40px; border-radius:10px; background:#eff6ff; color:#3b82f6; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+        .match-summary-title { font-size:14px; font-weight:700; color:#0f172a; }
+        .match-summary-sub { font-size:13px; color:#64748b; margin-top:2px; }
+
+        .sending-bar { height:4px; border-radius:999px; background:#eef2f7; overflow:hidden; margin-top:18px; }
+        .sending-bar-fill { height:100%; width:35%; border-radius:999px; background:linear-gradient(90deg,#3b82f6,#60a5fa); animation:sendingSlide 1.3s ease-in-out infinite; }
+        @keyframes sendingSlide { 0%{transform:translateX(-120%)} 100%{transform:translateX(380%)} }
+
+        .sending-status { display:flex; align-items:center; gap:8px; font-size:13px; color:#64748b; margin-top:12px; }
+
+        [dir="rtl"] .countdown-ring { transform: rotate(90deg) scaleY(-1); }
+
         /* ===== ERROR MSG ===== */
         .step-error {
             display: none;
@@ -957,7 +1002,30 @@
                 <p class="page-subtitle">{% trans "Answer a few questions and we'll match you with the best clinics worldwide." %}</p>
             </div>
 
-            {% if has_searched %}
+            {% if dispatch_complete %}
+            <div class="status-card {% if dispatch_state == 'already_processed' %}status-card--info{% else %}status-card--success{% endif %}">
+                <div class="status-icon">
+                    <i class="fas {% if dispatch_state == 'already_processed' %}fa-clock-rotate-left{% else %}fa-check{% endif %}"></i>
+                </div>
+
+                {% if dispatch_state == 'already_processed' %}
+                    <h2 class="status-title">{% trans "Your data was already processed" %}</h2>
+                    <p class="status-text">{% trans "Please wait for the clinics' response — we'll take you back to the homepage automatically." %}</p>
+                {% else %}
+                    <h2 class="status-title">{% trans "Your request has been sent" %}</h2>
+                    <p class="status-text">{% trans "Matched clinics have received your data. We'll take you back to the homepage automatically." %}</p>
+                {% endif %}
+
+                <div class="status-countdown">
+                    <svg viewBox="0 0 36 36" class="countdown-ring">
+                        <circle cx="18" cy="18" r="16" class="countdown-track"></circle>
+                        <circle cx="18" cy="18" r="16" class="countdown-progress" id="countdown-ring-progress"></circle>
+                    </svg>
+                    <span id="dispatch-countdown">10</span>
+                </div>
+            </div>
+
+            {% elif has_searched %}
             <!-- ===== RESULTS VIEW ===== -->
             <div class="step-card" style="animation:fadeIn 0.3s ease-out;">
                 <div class="steps">
@@ -980,13 +1048,21 @@
                     {% for continent in form_data.continents %}<input type="hidden" name="continent" value="{{ continent }}">{% endfor %}
                     {% for clinic_type in form_data.clinic_types %}<input type="hidden" name="clinic_type" value="{{ clinic_type }}">{% endfor %}
 
-                    <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:20px;color:#475569;">
+                    <div class="match-summary">
+                        <div class="match-summary-icon"><i class="fas fa-layer-group"></i></div>
+                        <div>
                         {% if match_count %}
-                            <strong style="color:#0f172a;">{% blocktrans count count=match_count %}{{ count }} matching clinic{% plural %}{{ count }} matching clinics{% endblocktrans %}</strong> {% trans "will receive your request package." %}
+                            <div class="match-summary-title">{% blocktrans count count=match_count %}{{ count }} matching clinic{% plural %}{{ count }} matching clinics{% endblocktrans %}</div>
+                            <div class="match-summary-sub">{% trans "will receive your request package" %}</div>
                         {% else %}
-                            {% trans "No matching clinics found. Try adjusting your filters." %}
+                            <div class="match-summary-title">{% trans "No matching clinics found" %}</div>
+                            <div class="match-summary-sub">{% trans "Try adjusting your filters" %}</div>
                         {% endif %}
+                        </div>
                     </div>
+
+                    <div class="sending-bar"><div class="sending-bar-fill"></div></div>
+                    <div class="sending-status"><i class="fas fa-paper-plane"></i> {% trans "Sending automatically to matching clinics…" %}</div>
 
                     {% for clinic_id in matched_clinic_ids %}
                         <input type="hidden" name="all_result_clinics" value="{{ clinic_id }}">
@@ -1001,10 +1077,6 @@
                         <a href="{% url 'recommendations:questionnaire' %}?medical_record_id={{ form_data.medical_record_id }}" class="btn btn-ghost">
                             <i class="fas fa-rotate-left"></i> {% trans "Change Filters" %}
                         </a>
-                        <div style="font-size:13px;color:#64748b;display:flex;align-items:center;gap:8px;">
-                            <i class="fas fa-spinner fa-spin" style="color:#3b82f6;"></i>
-                            {% trans "Sending automatically to matching clinics..." %}
-                        </div>
                         <input type="hidden" name="send_all" value="1">
                     </div>
                 </form>
@@ -1754,6 +1826,26 @@
         }, 250);
     })();
 
+    // ===== DISPATCH COMPLETE COUNTDOWN =====
+    (function () {
+        const countdownEl = document.getElementById('dispatch-countdown');
+        const ring = document.getElementById('countdown-ring-progress');
+        if (!countdownEl) return;
+        const homeUrl = "{{ home_url|escapejs }}";
+        const CIRC = 100.53;
+        let remaining = 10;
+        countdownEl.textContent = String(remaining);
+        const timer = setInterval(function() {
+            remaining -= 1;
+            countdownEl.textContent = String(Math.max(remaining, 0));
+            if (ring) ring.style.strokeDashoffset = String(CIRC * (1 - remaining / 10));
+            if (remaining <= 0) {
+                clearInterval(timer);
+                window.location.href = homeUrl;
+            }
+        }, 1000);
+    })();
+
     // ===== CLICKABLE CLINIC CARDS =====
     document.querySelectorAll('.clinic-card[data-href]').forEach(card => {
         card.addEventListener('click', function(e) {
@@ -1861,9 +1953,9 @@
     new MutationObserver(function(){ if(sc.classList.contains('active')) setTimeout(maybeTip,250); })
       .observe(sc,{attributes:true,attributeFilter:['class']});
   });
-  // results screen present -> requests are being dispatched -> final tip waits on Appointments
+    // If the request is being dispatched, the flow now ends on the success screen.
   var auto=document.getElementById('auto-dispatch-form');
-  if(auto && auto.getAttribute('data-autosend')==='1'){ setState('final'); return; }
+    if(auto && auto.getAttribute('data-autosend')==='1'){ setState('done'); return; }
   setTimeout(maybeTip,600);
 })();
 </script>

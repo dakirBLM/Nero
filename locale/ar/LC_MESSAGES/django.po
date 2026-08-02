@@ -3233,7 +3233,27 @@ msgstr "اكتمل تحليل المطابقة"
 msgid "Clinic names and scores are hidden at this stage. Your request will be sent automatically to all matching clinics."
 msgstr "أسماء العيادات ونتائجها مخفية في هذه المرحلة. سيُرسل طلبك تلقائيًا إلى جميع العيادات المطابقة."
 
-#: templates/recommendations/questionnaire.html:985
+#: templates/recommendations/questionnaire.html:972
+msgid "Your data was already processed"
+msgstr "تمت معالجة بياناتك مسبقًا"
+
+#: templates/recommendations/questionnaire.html:973
+msgid "Please wait for the clinics' response — we'll take you back to the homepage automatically."
+msgstr "يرجى انتظار رد العيادات — سنعيدك إلى الصفحة الرئيسية تلقائيًا."
+
+#: templates/recommendations/questionnaire.html:975
+msgid "Your request has been sent"
+msgstr "تم إرسال طلبك"
+
+#: templates/recommendations/questionnaire.html:976
+msgid "Matched clinics have received your data. We'll take you back to the homepage automatically."
+msgstr "استلمت العيادات المطابقة بياناتك. سنعيدك إلى الصفحة الرئيسية تلقائيًا."
+
+#: templates/recommendations/questionnaire.html:983
+msgid "seconds until home"
+msgstr "ثوانٍ للعودة إلى الصفحة الرئيسية"
+
+#: templates/recommendations/questionnaire.html:1010
 #, python-format
 msgid "%(count)s matching clinic"
 msgid_plural "%(count)s matching clinics"
@@ -3244,29 +3264,29 @@ msgstr[3] "%(count)s عيادات مطابقة"
 msgstr[4] "%(count)s عيادة مطابقة"
 msgstr[5] "%(count)s عيادة مطابقة"
 
-#: templates/recommendations/questionnaire.html:985
-msgid "will receive your request package."
-msgstr "ستستلم حزمة طلبك."
+#: templates/recommendations/questionnaire.html:1010
+msgid "will receive your request package"
+msgstr "ستستلم حزمة طلبك"
 
-#: templates/recommendations/questionnaire.html:987
-msgid "No matching clinics found. Try adjusting your filters."
-msgstr "لم يتم العثور على عيادات مطابقة. جرّب تعديل الفلاتر."
+#: templates/recommendations/questionnaire.html:1012
+msgid "No matching clinics found"
+msgstr "لم يتم العثور على عيادات مطابقة"
 
-#: templates/recommendations/questionnaire.html:1002
-msgid "Change Filters"
-msgstr "تغيير الفلاتر"
+#: templates/recommendations/questionnaire.html:1013
+msgid "Try adjusting your filters"
+msgstr "جرّب تعديل الفلاتر"
 
-#: templates/recommendations/questionnaire.html:1006
-msgid "Sending automatically to matching clinics..."
-msgstr "جارٍ الإرسال تلقائيًا إلى العيادات المطابقة..."
+#: templates/recommendations/questionnaire.html:990
+msgid "No matching clinics were available right now. Please try again later."
+msgstr "لا توجد عيادات مطابقة متاحة الآن. يرجى المحاولة مرة أخرى لاحقًا."
 
-#: templates/recommendations/questionnaire.html:1021
-msgid "Clinic type"
-msgstr "نوع العيادة"
+#: templates/recommendations/questionnaire.html:1031
+msgid "Sending automatically to matching clinics…"
+msgstr "جارٍ الإرسال تلقائيًا إلى العيادات المطابقة…"
 
-#: templates/recommendations/questionnaire.html:1025
-msgid "Medical record"
-msgstr "السجل الطبي"
+#: templates/recommendations/questionnaire.html:411
+msgid "No matching clinics were found for dispatch."
+msgstr "لم يتم العثور على عيادات مطابقة للإرسال."
 
 #: templates/recommendations/questionnaire.html:1037
 msgid "Treatment"

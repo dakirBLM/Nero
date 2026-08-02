@@ -771,17 +771,27 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="id_phone" class="form-label">
+                    <label class="form-label">
                         {% trans "Phone Number" %} <span class="required">*</span>
                     </label>
-                    <input type="tel" id="id_phone" name="phone"
-                           class="form-control {% if form.phone.errors %}error{% endif %}"
-                           placeholder="{% trans 'Enter phone number' %}"
-                           value="{{ form.phone.value|default:'' }}"
-                           required>
-                    {% if form.phone.errors %}
-                        <div class="field-error">⚠ {{ form.phone.errors.0 }}</div>
-                    {% endif %}
+                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
+                        <div>
+                            {{ form.phone_country_code }}
+                            {% if form.phone_country_code.errors %}
+                                <div class="field-error">⚠ {{ form.phone_country_code.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <input type="tel" id="id_phone_number" name="phone_number"
+                                   class="form-control {% if form.phone_number.errors %}error{% endif %}"
+                                   placeholder="{% trans 'Enter phone number' %}"
+                                   value="{{ form.phone_number.value|default:'' }}"
+                                   required>
+                            {% if form.phone_number.errors %}
+                                <div class="field-error">⚠ {{ form.phone_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">

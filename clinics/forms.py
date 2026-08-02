@@ -2,6 +2,7 @@ from django import forms
 from patients.models import MedicalRecord
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from accounts.forms import ClinicSignUpForm
+from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
 
 class MedicalRecordChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -40,6 +41,16 @@ class MedicalRecordSelect(forms.Select):
         return option
 
 class ClinicUpdateForm(forms.ModelForm):
+    country = forms.ChoiceField(
+        choices=COUNTRY_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    phone_country_code = forms.ChoiceField(
+        choices=PHONE_CODE_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     clinic_type = forms.MultipleChoiceField(
         choices=Clinic.CLINIC_TYPE_CHOICES,
         required=False,
@@ -69,7 +80,6 @@ class ClinicUpdateForm(forms.ModelForm):
             'tagline': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
             'state': forms.TextInput(attrs={'class': 'form-control'}),
-            'country': forms.TextInput(attrs={'class': 'form-control'}),
             'continent': forms.TextInput(attrs={'class': 'form-control'}),
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
@@ -112,6 +122,14 @@ class ClinicUpdateForm(forms.ModelForm):
             selected_types = [t.strip() for t in self.instance.clinic_type.split(',') if t.strip()]
             self.fields['clinic_type'].initial = selected_types
 
+        if self.instance and self.instance.phone_number:
+            phone_code, local_number = split_phone_number(self.instance.phone_number)
+            self.fields['phone_country_code'].initial = phone_code or '+1'
+            self.fields['phone_number'].initial = local_number
+
+        if self.instance and self.instance.country:
+            self.fields['country'].initial = self.instance.country
+
         # Convert specialization field to MultipleChoiceField with CheckboxSelectMultiple widget
         self.fields['specialization'] = forms.MultipleChoiceField(
             choices=Clinic.SPECIALIZATION_CHOICES,
@@ -127,6 +145,10 @@ class ClinicUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         clinic_types = self.cleaned_data.get('clinic_type', [])
         self.instance.clinic_type = ', '.join(clinic_types) if isinstance(clinic_types, list) else (clinic_types or '')
+        self.instance.phone_number = normalize_phone_number(
+            self.cleaned_data.get('phone_country_code'),
+            self.cleaned_data.get('phone_number'),
+        )
 
         # Preserve existing specialization if the field is omitted from submitted template.
         if 'specialization' in self.data:
