@@ -1003,7 +1003,7 @@
             </div>
 
             {% if dispatch_complete %}
-            <div class="status-card {% if dispatch_state == 'already_processed' %}status-card--info{% else %}status-card--success{% endif %}">
+            <div class="status-card {% if dispatch_state == 'already_processed' %}status-card--info{% else %}status-card--success{% endif %}" role="status" aria-live="polite">
                 <div class="status-icon">
                     <i class="fas {% if dispatch_state == 'already_processed' %}fa-clock-rotate-left{% else %}fa-check{% endif %}"></i>
                 </div>
@@ -1953,7 +1953,7 @@
     new MutationObserver(function(){ if(sc.classList.contains('active')) setTimeout(maybeTip,250); })
       .observe(sc,{attributes:true,attributeFilter:['class']});
   });
-    // If the request is being dispatched, the flow now ends on the success screen.
+
   var auto=document.getElementById('auto-dispatch-form');
     if(auto && auto.getAttribute('data-autosend')==='1'){ setState('done'); return; }
   setTimeout(maybeTip,600);
