@@ -1,8 +1,11 @@
 # Render Blueprint — deploy with: Render dashboard → New → Blueprint → pick this repo.
 # Database + file storage are external (Supabase).
 # Set every `sync: false` value in the dashboard when prompted.
-# `plan` below is authoritative: a blueprint sync overwrites any plan change
-# made by hand in the dashboard, so edit it here rather than there.
+#
+# This file is authoritative. A blueprint sync overwrites `plan` and every env
+# var declared with a literal `value:`, so change those here, never in the
+# dashboard. `sync: false` vars keep whatever the dashboard holds — which is why
+# every secret is declared that way, including ones the blueprint doesn't need.
 services:
   - type: web
     name: nero
@@ -29,7 +32,7 @@ services:
         sync: false             # paste your Supabase POOLER connection string (URI)
       # Object storage for uploads (Cloudflare R2 / S3) — set when ready:
       - key: USE_S3_MEDIA
-        value: "0"              # flip to "1" once the bucket + keys below are set
+        value: "1"              # "0" serves media from local disk, which is wiped on redeploy
       - key: S3_BUCKET
         sync: false
       - key: S3_ENDPOINT_URL
@@ -78,5 +81,16 @@ services:
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false             # e.g. Nero <you@yourdomain.com>
+      - key: BREVO_API_KEY
+        sync: false             # set to send over the Brevo HTTPS API instead of SMTP
+      - key: SITE_BASE_URL
+        sync: false             # e.g. https://nero.onrender.com (email links/images)
+      # Google Calendar OAuth (separate client from the login one above).
+      - key: GOOGLE_CALENDAR_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CALENDAR_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALENDAR_REDIRECT_BASE
+        sync: false             # e.g. https://nero.onrender.com
 
 # No Render database — Postgres is hosted on Supabase (set DATABASE_URL above).
