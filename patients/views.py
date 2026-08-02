@@ -900,7 +900,7 @@ def secure_encrypted_media(request, blob_name):
     - The specific clinic user who has an appointment for that record.
     - Staff users.
     """
-    from .storage import EncryptedFileSystemStorage
+    from .storage import get_medical_file_storage
     from .models import MedicalRecord, MedicalRecordReport, MedicalRecordVideo
 
     # Find owning MedicalRecord
@@ -918,7 +918,7 @@ def secure_encrypted_media(request, blob_name):
         return HttpResponseForbidden('You do not have permission to access this file.')
 
     # Decrypt and stream
-    storage = EncryptedFileSystemStorage()
+    storage = get_medical_file_storage()
     try:
         f = storage.open(blob_name, 'rb')
         data = f.read()

@@ -51,7 +51,8 @@ class Command(BaseCommand):
             if opts["dry_run"]:
                 self.stdout.write(f"would upload  {name}")
             else:
-                remote._save(name, ContentFile(data))
+                # Goes through the PHI storage so the object is encrypted at rest.
+                storage._save(name, ContentFile(data))
                 self.stdout.write(f"uploaded      {name}")
             uploaded += 1
 

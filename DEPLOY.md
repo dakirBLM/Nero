@@ -35,7 +35,15 @@ git remote add origin <your-github-repo> && git push -u origin main
 2. Create an R2 API token (Object Read & Write) scoped to that bucket. Note Account ID, Access Key, Secret.
 3. Set env vars: `USE_S3_MEDIA=1`, `S3_BUCKET=nero-media`, `S3_ENDPOINT_URL=https://<ACCOUNT_ID>.r2.cloudflarestorage.com`,
    `S3_ACCESS_KEY_ID=...`, `S3_SECRET_ACCESS_KEY=...`, `S3_REGION=auto`.
-4. PHI is still served only through the existing ownership-checked views; signed URLs expire in 15 min.
+4. Medical reports and movement videos go to a **separate** private bucket via `PHI_S3_*`
+   (`PHI_S3_BUCKET`, `PHI_S3_ENDPOINT_URL`, `PHI_S3_ACCESS_KEY_ID`, `PHI_S3_SECRET_ACCESS_KEY`,
+   `PHI_S3_REGION`, `PHI_S3_ADDRESSING_STYLE`). Keep it out of the `S3_BUCKET` above, which is
+   public. If `PHI_S3_*` is unset the code falls back to `S3_*`, so always set it explicitly.
+5. PHI objects are Fernet-encrypted before upload (needs `ENCRYPTION_KEY`) and served only
+   through the ownership-checked proxy at `/patients/secure-media/<name>/` — never a signed
+   bucket URL, which would grant access without a login.
+6. Already have files on local disk? `python manage.py sync_medical_media_to_private_bucket --dry-run`
+   then run it for real.
 
 ## 3. App — Render (free web service)
 Either use the included **`render.yaml`** Blueprint (New → Blueprint → pick repo) or a manual Web Service with:

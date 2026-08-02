@@ -2,7 +2,7 @@ import base64
 import hashlib
 import os
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage, Storage
@@ -82,17 +82,23 @@ class EncryptedFileSystemStorage(FileSystemStorage):
 
 @deconstructible
 class PrivateMedicalObjectStorage(Storage):
-    """Store PHI in a private S3-compatible bucket with signed URLs.
+    """Store PHI in a private S3-compatible bucket, Fernet-encrypted at rest.
 
     New uploads go to object storage when PHI_S3_* credentials are configured.
     Existing encrypted local files keep working through the fallback storage so
     we can migrate records gradually without breaking old URLs.
+
+    Objects are encrypted before upload, so a leaked bucket key or an
+    accidentally-public bucket exposes ciphertext only. .url() deliberately
+    returns the ownership-checked proxy view rather than a signed bucket URL:
+    a signed URL needs no login and can be forwarded to anyone.
     """
 
     def __init__(self):
         self.local_storage = EncryptedFileSystemStorage()
         self._remote_storage = None
         self._remote_enabled = False
+        self._fernet = None
 
         bucket = os.environ.get('PHI_S3_BUCKET') or os.environ.get('S3_BUCKET')
         endpoint = os.environ.get('PHI_S3_ENDPOINT_URL') or os.environ.get('S3_ENDPOINT_URL')
@@ -109,6 +115,13 @@ class PrivateMedicalObjectStorage(Storage):
                 'region_name': os.environ.get('PHI_S3_REGION') or os.environ.get('S3_REGION', 'auto'),
                 'addressing_style': os.environ.get('PHI_S3_ADDRESSING_STYLE') or os.environ.get('S3_ADDRESSING_STYLE', 'path'),
             }
+
+    @property
+    def fernet(self):
+        # Lazy: migrations and collectstatic must not require ENCRYPTION_KEY.
+        if self._fernet is None:
+            self._fernet = _get_fernet()
+        return self._fernet
 
     def _get_remote_storage(self):
         if not self._remote_enabled:
@@ -154,16 +167,31 @@ class PrivateMedicalObjectStorage(Storage):
         remote = self._get_remote_storage()
         if remote:
             content.seek(0)
-            return remote._save(name, content)
+            data = content.read()
+            if not isinstance(data, bytes):
+                data = data.encode()
+            return remote._save(name, ContentFile(self.fernet.encrypt(data)))
         return self.local_storage._save(name, content)
 
     def open(self, name, mode='rb'):
-        storage = self._preferred_storage(name)
-        return storage.open(name, mode)
+        remote = self._get_remote_storage()
+        if remote and self._remote_exists(name):
+            f = remote.open(name, 'rb')
+            try:
+                blob = f.read()
+            finally:
+                f.close()
+            try:
+                return ContentFile(self.fernet.decrypt(blob))
+            except InvalidToken:
+                # Objects uploaded before at-rest encryption was added.
+                return ContentFile(blob)
+        return self.local_storage.open(name, mode)
 
     def url(self, name):
-        storage = self._preferred_storage(name)
-        return storage.url(name)
+        """Always the permission-checked proxy, never a signed bucket URL."""
+        from django.urls import reverse
+        return reverse('secure_encrypted_media', kwargs={'blob_name': name})
 
     def exists(self, name):
         remote = self._get_remote_storage()

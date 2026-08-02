@@ -1,11 +1,13 @@
 # Render Blueprint — deploy with: Render dashboard → New → Blueprint → pick this repo.
-# Free web service; database + file storage are external (Supabase).
+# Database + file storage are external (Supabase).
 # Set every `sync: false` value in the dashboard when prompted.
+# `plan` below is authoritative: a blueprint sync overwrites any plan change
+# made by hand in the dashboard, so edit it here rather than there.
 services:
   - type: web
     name: nero
     runtime: python
-    plan: free
+    plan: starter
     region: frankfurt          # change to the region nearest your users
     buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
     startCommand: "python manage.py migrate --noinput && gunicorn Nero_platform.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-1} --threads 4 --timeout 120 --access-logfile - --error-logfile -"
