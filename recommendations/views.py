@@ -21,8 +21,13 @@ def _get_patient_for_request(request):
         return None
 
 
-def _medical_compatible_clinics(medical_record, queryset=None):
-    """Return clinics compatible with key medical constraints from the record."""
+def _medical_compatible_clinics(medical_record, queryset=None, age_group=''):
+    """Return clinics compatible with key medical constraints from the record.
+
+    age_group is the EXPLICIT user choice from the recommendation flow:
+    '' (any) | 'adult' | 'child'. A child needs children_only/both, an adult
+    needs adults_only/both. Nothing is derived from dates of birth.
+    """
     from clinics.models import Clinic
 
     clinics_qs = queryset if queryset is not None else Clinic.objects.all()
@@ -38,6 +43,18 @@ def _medical_compatible_clinics(medical_record, queryset=None):
         if getattr(medical_record, 'uses_intermittent_catheter', False) and not clinic.accepts_intermittent_catheter:
             incompatible = True
         if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
+            incompatible = True
+        if getattr(medical_record, 'uses_tracheostomy_tube', False) and not clinic.accepts_tracheostomy_tube:
+            incompatible = True
+        if not getattr(medical_record, 'is_self_reliant', True) and not clinic.accepts_dependent_patients:
+            incompatible = True
+        if getattr(medical_record, 'movement_ability', '') == 'bedridden' and not clinic.accepts_bedridden_patients:
+            incompatible = True
+
+        clinic_age_range = getattr(clinic, 'age_range', 'both') or 'both'
+        if age_group == 'child' and clinic_age_range == 'adults_only':
+            incompatible = True
+        elif age_group == 'adult' and clinic_age_range == 'children_only':
             incompatible = True
 
         if getattr(medical_record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
@@ -293,6 +310,11 @@ def recommendation_result_view(request):
     selected_countries = [] if all_countries_selected else selected_countries_raw
     selected_clinic_types = [v.strip() for v in request.POST.getlist('clinic_type') if v and v.strip()]
 
+    # Explicit user choice (no date-of-birth derivation): '' | 'adult' | 'child'.
+    age_group = (request.POST.get('patient_age') or '').strip().lower()
+    if age_group not in ('adult', 'child'):
+        age_group = ''
+
     if not selected_clinic_types:
         selected_clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
 
@@ -302,7 +324,7 @@ def recommendation_result_view(request):
         return redirect('recommendations:questionnaire')
 
     # STEP 1: Filter by medical compatibility - only show clinics that accept ALL patient conditions
-    compatible = _medical_compatible_clinics(selected_record)
+    compatible = _medical_compatible_clinics(selected_record, age_group=age_group)
     compatible_ids = [clinic.id for clinic in compatible]
     clinics = Clinic.objects.filter(id__in=compatible_ids)
 
@@ -373,6 +395,7 @@ def recommendation_result_view(request):
                 'countries': (['all'] if all_countries_selected else selected_countries),
                 'continents': (['all'] if all_continents_selected else selected_continents),
                 'clinic_types': selected_clinic_types,
+                'patient_age': age_group,
                 'accommodation_type': accommodation_type,
                 'companions_count': companions_count,
                 'treatment_start_date': treatment_start_date,
@@ -415,6 +438,9 @@ def send_appointment_requests_view(request):
     selected_continents_raw = [v.strip() for v in request.POST.getlist('continent') if v and v.strip()]
     selected_clinic_types = [v.strip() for v in request.POST.getlist('clinic_type') if v and v.strip()]
     selected_clinic_type = ', '.join(selected_clinic_types)
+    age_group = (request.POST.get('patient_age') or '').strip().lower()
+    if age_group not in ('adult', 'child'):
+        age_group = ''
     selected_country = ', '.join(selected_countries_raw) if selected_countries_raw else ''
     selected_continent = ', '.join(selected_continents_raw) if selected_continents_raw else ''
 
@@ -455,7 +481,7 @@ def send_appointment_requests_view(request):
             treatment_start_date = None
             treatment_end_date = None
 
-    compatible = _medical_compatible_clinics(selected_record, Clinic.objects.filter(id__in=selected_ids).prefetch_related('services'))
+    compatible = _medical_compatible_clinics(selected_record, Clinic.objects.filter(id__in=selected_ids).prefetch_related('services'), age_group=age_group)
 
     # Enforce service matching at dispatch time too, to prevent booking a clinic
     # with zero service points via tampered form submissions.
