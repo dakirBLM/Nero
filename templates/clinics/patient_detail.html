@@ -835,20 +835,6 @@
                     <p>{{ clinic.contact_email }}</p>
                 </div>
             </div>
-            <div class="info-card">
-                <div class="info-icon">🕐</div>
-                <div class="info-content">
-                    <h3>Hours</h3>
-                    <pre>{{ clinic.hours_of_operation }}</pre>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-icon">👥</div>
-                <div class="info-content">
-                    <h3>Therapists</h3>
-                    <p>{{ clinic.number_of_therapists }} qualified professionals</p>
-                </div>
-            </div>
         </div>
 
         <!-- Two Column Layout -->
@@ -963,10 +949,6 @@
                             <div class="stat-label">Years Experience</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-number">{{ clinic.number_of_therapists }}+</div>
-                            <div class="stat-label">Qualified Therapists</div>
-                        </div>
-                        <div class="stat-item">
                             <div class="stat-number">500+</div>
                             <div class="stat-label">Patients Helped</div>
                         </div>
@@ -1056,33 +1038,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Social Links -->
-                {% if clinic.facebook_url or clinic.instagram_url or clinic.linkedin_url %}
-                <section class="sidebar-section">
-                    <h3>Connect With Us</h3>
-                    <div class="social-links">
-                        {% if clinic.facebook_url %}
-                        <a href="{{ clinic.facebook_url }}" target="_blank" class="social-link facebook">
-                            <span>📘</span>
-                            <span>Facebook</span>
-                        </a>
-                        {% endif %}
-                        {% if clinic.instagram_url %}
-                        <a href="{{ clinic.instagram_url }}" target="_blank" class="social-link instagram">
-                            <span>📷</span>
-                            <span>Instagram</span>
-                        </a>
-                        {% endif %}
-                        {% if clinic.linkedin_url %}
-                        <a href="{{ clinic.linkedin_url }}" target="_blank" class="social-link linkedin">
-                            <span>💼</span>
-                            <span>LinkedIn</span>
-                        </a>
-                        {% endif %}
-                    </div>
-                </section>
-                {% endif %}
             </div>
         </div>
     </main>
