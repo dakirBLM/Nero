@@ -1557,20 +1557,6 @@
                                         </div>
                                     {% endif %}
                                 </div>
-
-                                <div class="form-group full-width">
-                                    <label class="form-label" for="id_hours_of_operation">Hours of Operation</label>
-                                    {{ form.hours_of_operation }}
-                                    <div class="form-help">
-                                        <i class="fas fa-info-circle"></i> Example: Mon-Fri: 9AM-6PM, Sat: 10AM-2PM
-                                    </div>
-                                    {% if form.hours_of_operation.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.hours_of_operation.errors.0 }}
-                                        </div>
-                                    {% endif %}
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1590,7 +1576,7 @@
 
                             <div class="checkbox-grid">
                                 {% for field in form %}
-                                    {% if field.name|slice:"0:8" == "accepts_" %}
+                                    {% if field.name|slice:"0:8" == "accepts_" and field.name != "accepts_electric_wheelchair" %}
                                         <div class="checkbox-item">
                                             {{ field }}
                                             <label class="checkbox-label" for="{{ field.id_for_label }}">
@@ -1649,56 +1635,6 @@
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
                                             {{ form.cover_photo.errors.0 }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Social Tab -->
-                    <div id="social-tab" class="tab-content">
-                        <div class="settings-section">
-                            <div class="section-header">
-                                <div class="section-icon">
-                                    <i class="fas fa-share-alt"></i>
-                                </div>
-                                <div>
-                                    <h3 class="section-title">Social Media Links</h3>
-                                    <p class="section-description">Connect your clinic's social media profiles</p>
-                                </div>
-                            </div>
-
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label" for="id_facebook_url">Facebook URL</label>
-                                    {{ form.facebook_url }}
-                                    {% if form.facebook_url.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.facebook_url.errors.0 }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="id_instagram_url">Instagram URL</label>
-                                    {{ form.instagram_url }}
-                                    {% if form.instagram_url.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.instagram_url.errors.0 }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="id_linkedin_url">LinkedIn URL</label>
-                                    {{ form.linkedin_url }}
-                                    {% if form.linkedin_url.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.linkedin_url.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>

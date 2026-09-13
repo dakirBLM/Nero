@@ -236,15 +236,6 @@ class ClinicSignUpForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    hours_of_operation = forms.CharField(
-        required=True,
-        initial='Mon-Fri: 9:00 AM - 6:00 PM\nSat: 9:00 AM - 1:00 PM\nSun: Closed',
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'class': 'form-control'
-        })
-    )
-    
     # Images
     profile_picture = forms.ImageField(
         required=False,
@@ -261,29 +252,6 @@ class ClinicSignUpForm(UserCreationForm):
         })
     )
     
-    # Social Media
-    facebook_url = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={
-            'placeholder': 'Facebook page URL (optional)',
-            'class': 'form-control'
-        })
-    )
-    instagram_url = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={
-            'placeholder': 'Instagram profile URL (optional)',
-            'class': 'form-control'
-        })
-    )
-    linkedin_url = forms.URLField(
-        required=False,
-        widget=forms.URLInput(attrs={
-            'placeholder': 'LinkedIn page URL (optional)',
-            'class': 'form-control'
-        })
-    )
-
     # Acceptance flags (clinic capabilities)
     accepts_heart_problems = forms.BooleanField(
         required=False,
@@ -300,7 +268,6 @@ class ClinicSignUpForm(UserCreationForm):
     accepts_wheelchair = forms.BooleanField(required=False, initial=True, label='Accept patients using a wheelchair', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_walker = forms.BooleanField(required=False, initial=True, label='Accept patients using a walker', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_crutch = forms.BooleanField(required=False, initial=True, label='Accept patients using crutches', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_electric_wheelchair = forms.BooleanField(required=False, initial=True, label='Accept patients using an electric wheelchair', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_bowel_incontinence = forms.BooleanField(required=False, initial=True, label='Accept patients with bowel incontinence', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_urine_incontinence = forms.BooleanField(required=False, initial=True, label='Accept patients with urine incontinence', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_medical_condom = forms.BooleanField(required=False, initial=True, label='Accept patients using a medical condom', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
@@ -397,7 +364,6 @@ class ClinicSignUpForm(UserCreationForm):
             'established_date': self.cleaned_data['established_date'],
             'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
-            'hours_of_operation': self.cleaned_data.get('hours_of_operation', 'Mon-Fri: 9:00 AM - 6:00 PM'),
         }
         
         # Handle file uploads
@@ -406,19 +372,11 @@ class ClinicSignUpForm(UserCreationForm):
         if self.cleaned_data.get('cover_photo'):
             clinic_data['cover_photo'] = self.cleaned_data['cover_photo']
             
-        # Handle social media URLs
-        if self.cleaned_data.get('facebook_url'):
-            clinic_data['facebook_url'] = self.cleaned_data['facebook_url']
-        if self.cleaned_data.get('instagram_url'):
-            clinic_data['instagram_url'] = self.cleaned_data['instagram_url']
-        if self.cleaned_data.get('linkedin_url'):
-            clinic_data['linkedin_url'] = self.cleaned_data['linkedin_url']
-            
         # Create the clinic object
         # Acceptance fields
         for field in [
             'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
-            'accepts_electric_wheelchair', 'accepts_bowel_incontinence', 'accepts_urine_incontinence',
+            'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
             'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression']:

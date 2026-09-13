@@ -9,6 +9,15 @@ class ClinicAdmin(admin.ModelAdmin):
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
 	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_catheter")
+	exclude = (
+		"number_of_therapists",
+		"hours_of_operation",
+		"last_seen",
+		"facebook_url",
+		"instagram_url",
+		"linkedin_url",
+		"accepts_electric_wheelchair",
+	)
 
 @admin.register(ClinicService)
 class ClinicServiceAdmin(admin.ModelAdmin):
