@@ -9,7 +9,6 @@ class ClinicAdmin(admin.ModelAdmin):
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
 	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_catheter")
-	readonly_fields = ("last_seen",)
 
 @admin.register(ClinicService)
 class ClinicServiceAdmin(admin.ModelAdmin):
