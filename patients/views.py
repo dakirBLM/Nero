@@ -557,6 +557,9 @@ def patient_dashboard_view(request):
                 ('has_depression', 'accepts_depression'),
                 ('uses_permanent_catheter', 'accepts_permanent_catheter'),
                 ('uses_intermittent_catheter', 'accepts_intermittent_catheter'),
+                ('uses_tracheostomy_tube', 'accepts_tracheostomy_tube'),
+                ('is_dependent_patient', 'accepts_dependent_patients'),
+                ('is_bedridden_patient', 'accepts_bedridden_patients'),
                 ('uses_medical_condom', 'accepts_medical_condom'),
                 ('uses_diapers', 'accepts_diapers'),
             ]
@@ -946,13 +949,24 @@ def search_clinics_view(request):
     query = request.GET.get('q', '')
     specialization = request.GET.get('specialization', 'all')
     city = request.GET.get('city', '')
+    age_range = request.GET.get('age_range', 'all')
+    needs_tracheostomy = request.GET.get('needs_tracheostomy') == '1'
+    needs_dependent = request.GET.get('needs_dependent') == '1'
+    needs_bedridden = request.GET.get('needs_bedridden') == '1'
+    has_new_filters = (
+        age_range != 'all' or needs_tracheostomy or needs_dependent or needs_bedridden
+    )
     all_clinics = Clinic.objects.all()
     featured_clinics = None
     clinics_to_display = None
-    if not query and specialization == 'all' and not city:
+    if not query and specialization == 'all' and not city and not has_new_filters:
         clinic_list = list(all_clinics)
         if clinic_list:
             featured_clinics = random.sample(clinic_list, min(6, len(clinic_list)))
+            # The template's featured branch iterates `clinics` and reads
+            # `clinics.paginator.count`, so expose the sampled list as a
+            # single page (no pagination links render for one page).
+            clinics_to_display = Paginator(featured_clinics, 9).get_page(1)
     else:
         clinics = all_clinics
         if query:
@@ -974,6 +988,16 @@ def search_clinics_view(request):
         if city:
             clinics = clinics.filter(city__icontains=city)
 
+        if age_range and age_range != 'all':
+            clinics = clinics.filter(age_range=age_range)
+
+        if needs_tracheostomy:
+            clinics = clinics.filter(accepts_tracheostomy_tube=True)
+        if needs_dependent:
+            clinics = clinics.filter(accepts_dependent_patients=True)
+        if needs_bedridden:
+            clinics = clinics.filter(accepts_bedridden_patients=True)
+
         paginator = Paginator(clinics, 9)
         page_number = request.GET.get('page', 1)
         clinics_to_display = paginator.get_page(page_number)
@@ -994,6 +1018,11 @@ def search_clinics_view(request):
         'specialization': specialization,
         'city': city,
         'specialization_choices': specialization_choices,
+        'age_range': age_range,
+        'age_range_choices': list(Clinic.AgeRange.choices),
+        'needs_tracheostomy': needs_tracheostomy,
+        'needs_dependent': needs_dependent,
+        'needs_bedridden': needs_bedridden,
         'patient': patient,
     }
 

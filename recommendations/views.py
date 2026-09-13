@@ -39,6 +39,26 @@ def _medical_compatible_clinics(medical_record, queryset=None):
             incompatible = True
         if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
             incompatible = True
+        if getattr(medical_record, 'uses_tracheostomy_tube', False) and not clinic.accepts_tracheostomy_tube:
+            incompatible = True
+        if not getattr(medical_record, 'is_self_reliant', True) and not clinic.accepts_dependent_patients:
+            incompatible = True
+        if getattr(medical_record, 'movement_ability', '') == 'bedridden' and not clinic.accepts_bedridden_patients:
+            incompatible = True
+
+        # Age-range matching: a child needs children_only/both, an adult needs adults_only/both.
+        try:
+            from datetime import date as _date
+
+            dob = getattr(medical_record, 'date_of_birth', None)
+            is_child = dob and ((_date.today() - dob).days < 18 * 365.25)
+        except Exception:
+            is_child = False
+        age_range = getattr(clinic, 'age_range', 'both') or 'both'
+        if is_child and age_range == 'adults_only':
+            incompatible = True
+        elif not is_child and age_range == 'children_only':
+            incompatible = True
 
         if getattr(medical_record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
             incompatible = True

@@ -24,7 +24,7 @@ class ClinicAdmin(admin.ModelAdmin):
 		"accepts_intermittent_catheter", "is_verified"
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
-	list_filter = ("is_verified", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter", "clinic_types", "specializations")
+	list_filter = ("is_verified", "age_range", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter", "clinic_types", "specializations")
 	filter_horizontal = ("clinic_types", "specializations", "facilities")
 	exclude = (
 		"number_of_therapists",
