@@ -1576,7 +1576,7 @@
 
                             <div class="checkbox-grid">
                                 {% for field in form %}
-                                    {% if field.name|slice:"0:8" == "accepts_" and field.name != "accepts_electric_wheelchair" %}
+                                    {% if field.name|slice:"0:8" == "accepts_" %}
                                         <div class="checkbox-item">
                                             {{ field }}
                                             <label class="checkbox-label" for="{{ field.id_for_label }}">

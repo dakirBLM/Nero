@@ -223,8 +223,6 @@ class AppointmentForm(forms.ModelForm):
                 incompatible = True
             if getattr(rec, 'uses_crutch', False) and not self.clinic.accepts_crutch:
                 incompatible = True
-            if getattr(rec, 'uses_electric_wheelchair', False) and not self.clinic.accepts_electric_wheelchair:
-                incompatible = True
             if not getattr(rec, 'bowel_control', True) and not self.clinic.accepts_bowel_incontinence:
                 incompatible = True
             if not getattr(rec, 'urine_control', True) and not self.clinic.accepts_urine_incontinence:
@@ -284,8 +282,6 @@ class AppointmentForm(forms.ModelForm):
                 raise forms.ValidationError('Clinic does not accept patients using a walker.')
             if getattr(record, 'uses_crutch', False) and not clinic.accepts_crutch:
                 raise forms.ValidationError('Clinic does not accept patients using crutches.')
-            if getattr(record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
-                raise forms.ValidationError('Clinic does not accept patients using an electric wheelchair.')
             if not getattr(record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
                 raise forms.ValidationError('Clinic does not accept patients with bowel incontinence.')
             if not getattr(record, 'urine_control', True) and not clinic.accepts_urine_incontinence:

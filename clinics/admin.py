@@ -9,14 +9,11 @@ class ClinicAdmin(admin.ModelAdmin):
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
 	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_catheter")
+	# last_seen is auto-managed (middleware + clinic_ping), never user input.
+	# The other removed fields were dropped from the model entirely (see
+	# migration 0029), so there is nothing left to exclude for them.
 	exclude = (
-		"number_of_therapists",
-		"hours_of_operation",
 		"last_seen",
-		"facebook_url",
-		"instagram_url",
-		"linkedin_url",
-		"accepts_electric_wheelchair",
 	)
 
 @admin.register(ClinicService)

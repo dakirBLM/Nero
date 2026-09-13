@@ -1471,7 +1471,7 @@
                 <h2>{% trans "Clinic Capabilities" %}</h2>
                 <div class="checkbox-grid">
                     {% for field in form %}
-                        {% if field.name|slice:"0:8" == "accepts_" and field.name != "accepts_electric_wheelchair" %}
+                        {% if field.name|slice:"0:8" == "accepts_" %}
                             <div class="checkbox-group">
                                 <input type="checkbox"
                                        id="{{ field.id_for_label }}"
