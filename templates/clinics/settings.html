@@ -1517,7 +1517,7 @@
                                 <div class="form-group full-width">
                                     <label class="form-label required">Type of Clinic (Select one or more)</label>
                                     <div class="clinic-type-grid">
-                                        {% for option in form.clinic_types %}
+                                        {% for option in form.clinic_type %}
                                             <label class="clinic-type-option">
                                                 {{ option.tag }}
                                                 <span class="clinic-type-label">{{ option.choice_label }}</span>
@@ -1525,55 +1525,21 @@
                                             </label>
                                         {% endfor %}
                                     </div>
-                                    {% if form.clinic_types.errors %}
+                                    {% if form.clinic_type.errors %}
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.clinic_types.errors.0 }}
+                                            {{ form.clinic_type.errors.0 }}
                                         </div>
                                     {% endif %}
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label class="form-label">Specializations (Select one or more)</label>
-                                    <div class="checkbox-grid">
-                                        {% for option in form.specializations %}
-                                            <div class="checkbox-item">
-                                                {{ option.tag }}
-                                                <label class="checkbox-label" for="{{ option.id_for_label }}">
-                                                    {{ option.choice_label }}
-                                                </label>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                    {% if form.specializations.errors %}
-                                        <div class="error-message">
-                                            <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.specializations.errors.0 }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label class="form-label">Facilities & Equipment</label>
-                                    <div class="checkbox-grid">
-                                        {% for option in form.facilities %}
-                                            <div class="checkbox-item">
-                                                {{ option.tag }}
-                                                <label class="checkbox-label" for="{{ option.id_for_label }}">
-                                                    {{ option.choice_label }}
-                                                </label>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="id_established_year">Established Year</label>
-                                    {{ form.established_year }}
-                                    {% if form.established_year.errors %}
+                                    <label class="form-label" for="id_established_date">Established Date</label>
+                                    {{ form.established_date }}
+                                    {% if form.established_date.errors %}
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.established_year.errors.0 }}
+                                            {{ form.established_date.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>
@@ -1610,7 +1576,7 @@
 
                             <div class="checkbox-grid">
                                 {% for field in form %}
-                                    {% if field.name|slice:"0:8" == "accepts_" and field.name != "accepts_electric_wheelchair" %}
+                                    {% if field.name|slice:"0:8" == "accepts_" %}
                                         <div class="checkbox-item">
                                             {{ field }}
                                             <label class="checkbox-label" for="{{ field.id_for_label }}">

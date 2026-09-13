@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse, Http404, FileResponse, JsonResponse
 from django.conf import settings
 from django.urls import reverse
-from clinics.models import Appointment, Clinic, Specialization
+from clinics.models import Appointment
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import get_object_or_404
@@ -546,7 +546,6 @@ def patient_dashboard_view(request):
                 ('uses_wheelchair', 'accepts_wheelchair'),
                 ('uses_walker', 'accepts_walker'),
                 ('uses_crutch', 'accepts_crutch'),
-                ('uses_electric_wheelchair', 'accepts_electric_wheelchair'),
                 ('has_bedsores', 'accepts_bedsores'),
                 ('has_diabetes', 'accepts_diabetes'),
                 ('uses_insulin', 'accepts_insulin'),
@@ -555,8 +554,8 @@ def patient_dashboard_view(request):
                 ('has_infectious_diseases', 'accepts_infectious_diseases'),
                 ('has_vein_thrombosis', 'accepts_vein_thrombosis'),
                 ('has_depression', 'accepts_depression'),
-                ('uses_permanent_catheter', 'accepts_permanent_catheter'),
-                ('uses_intermittent_catheter', 'accepts_intermittent_catheter'),
+                ('uses_permanent_catheter', 'accepts_catheter'),
+                ('uses_intermittent_catheter', 'accepts_catheter'),
                 ('uses_medical_condom', 'accepts_medical_condom'),
                 ('uses_diapers', 'accepts_diapers'),
             ]
@@ -961,15 +960,11 @@ def search_clinics_view(request):
                 Q(description__icontains=query) |
                 Q(tagline__icontains=query) |
                 Q(specialization__icontains=query) |
-                Q(specializations__name__icontains=query) |
                 Q(city__icontains=query) |
                 Q(state__icontains=query)
             )
         if specialization and specialization != 'all':
-            clinics = clinics.filter(
-                Q(specializations__name__icontains=specialization) |
-                Q(specialization__icontains=specialization)
-            ).distinct()
+            clinics = clinics.filter(specialization__icontains=specialization)
 
         if city:
             clinics = clinics.filter(city__icontains=city)
@@ -980,20 +975,13 @@ def search_clinics_view(request):
 
     # Add patient to context for profile display
     patient = Patient.objects.get(user=request.user)
-    specialization_rows = list(
-        Specialization.objects.order_by('name').values_list('name', flat=True)
-    )
-    if specialization_rows:
-        specialization_choices = [(name, name) for name in specialization_rows]
-    else:
-        specialization_choices = list(Clinic.SPECIALIZATION_CHOICES)
     context = {
         'clinics': clinics_to_display,
         'featured_clinics': featured_clinics,
         'query': query,
         'specialization': specialization,
         'city': city,
-        'specialization_choices': specialization_choices,
+        'specialization_choices': Clinic.SPECIALIZATION_CHOICES,
         'patient': patient,
     }
 

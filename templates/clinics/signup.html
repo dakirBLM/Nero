@@ -1427,42 +1427,25 @@
                             {% trans "Type of Clinic" %} <span class="required">*</span>
                         </label>
                         <div class="checkbox-grid">
-                            {% for checkbox in form.clinic_types %}
+                            {% for value, label in form.specialization.field.choices %}
                                 <div class="checkbox-group">
-                                    {{ checkbox.tag }}
-                                    <label for="{{ checkbox.id_for_label }}" class="checkbox-label">{{ checkbox.choice_label }}</label>
+                                    <input type="checkbox" name="specialization" value="{{ value }}" id="id_specialization_{{ forloop.counter }}" class="form-check-input" {% if value in form.specialization.value %}checked{% endif %}>
+                                    <label for="id_specialization_{{ forloop.counter }}" class="checkbox-label">{{ label }}</label>
                                 </div>
                             {% endfor %}
                         </div>
-                        {% if form.clinic_types.errors %}
-                            <div class="field-error">⚠ {{ form.clinic_types.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label class="form-label">
-                            {% trans "Specializations" %} <span class="required">*</span>
-                        </label>
-                        <div class="checkbox-grid">
-                            {% for checkbox in form.specializations %}
-                                <div class="checkbox-group">
-                                    {{ checkbox.tag }}
-                                    <label for="{{ checkbox.id_for_label }}" class="checkbox-label">{{ checkbox.choice_label }}</label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        {% if form.specializations.errors %}
-                            <div class="field-error">⚠ {{ form.specializations.errors.0 }}</div>
+                        {% if form.specialization.errors %}
+                            <div class="field-error">⚠ {{ form.specialization.errors.0 }}</div>
                         {% endif %}
                     </div>
 
                     <div class="form-group">
-                        <label for="id_established_year" class="form-label">
-                            {% trans "Established Year" %} <span class="required">*</span>
+                        <label for="id_established_date" class="form-label">
+                            {% trans "Established Date" %} <span class="required">*</span>
                         </label>
-                        {{ form.established_year }}
-                        {% if form.established_year.errors %}
-                            <div class="field-error">⚠ {{ form.established_year.errors.0 }}</div>
+                        {{ form.established_date }}
+                        {% if form.established_date.errors %}
+                            <div class="field-error">⚠ {{ form.established_date.errors.0 }}</div>
                         {% endif %}
                     </div>
 
@@ -1474,18 +1457,11 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label class="form-label">
+                        <label for="id_facilities" class="form-label">
                             {% trans "Facilities & Equipment" %}
                         </label>
-                        <div class="checkbox-grid">
-                            {% for checkbox in form.facilities %}
-                                <div class="checkbox-group">
-                                    {{ checkbox.tag }}
-                                    <label for="{{ checkbox.id_for_label }}" class="checkbox-label">{{ checkbox.choice_label }}</label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="helper-text">{% trans "Select available facilities and equipment" %}</div>
+                        {{ form.facilities }}
+                        <div class="helper-text">{% trans "Available facilities and equipment (comma separated)" %}</div>
                     </div>
                 </div>
             </div>
@@ -1495,7 +1471,7 @@
                 <h2>{% trans "Clinic Capabilities" %}</h2>
                 <div class="checkbox-grid">
                     {% for field in form %}
-                        {% if field.name|slice:"0:8" == "accepts_" and field.name != "accepts_electric_wheelchair" %}
+                        {% if field.name|slice:"0:8" == "accepts_" %}
                             <div class="checkbox-group">
                                 <input type="checkbox"
                                        id="{{ field.id_for_label }}"

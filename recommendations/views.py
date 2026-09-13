@@ -33,11 +33,11 @@ def _medical_compatible_clinics(medical_record, queryset=None):
         if getattr(medical_record, 'has_heart_problems', False) and not clinic.accepts_heart_problems:
             incompatible = True
 
-        if getattr(medical_record, 'uses_permanent_catheter', False) and not clinic.accepts_permanent_catheter:
-            incompatible = True
-        if getattr(medical_record, 'uses_intermittent_catheter', False) and not clinic.accepts_intermittent_catheter:
-            incompatible = True
-        if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
+        if (
+            getattr(medical_record, 'uses_permanent_catheter', False)
+            or getattr(medical_record, 'uses_intermittent_catheter', False)
+            or getattr(medical_record, 'uses_urine_tube', False)
+        ) and not clinic.accepts_catheter:
             incompatible = True
 
         if getattr(medical_record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
@@ -45,8 +45,6 @@ def _medical_compatible_clinics(medical_record, queryset=None):
         if getattr(medical_record, 'uses_walker', False) and not clinic.accepts_walker:
             incompatible = True
         if getattr(medical_record, 'uses_crutch', False) and not clinic.accepts_crutch:
-            incompatible = True
-        if getattr(medical_record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
             incompatible = True
 
         if not getattr(medical_record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
@@ -154,19 +152,17 @@ def _normalized_clinic_continent(clinic):
 def _build_clinic_filter_data():
     from clinics.models import Clinic
 
-    clinics = Clinic.objects.prefetch_related('services', 'clinic_types').all()
+    clinics = Clinic.objects.prefetch_related('services').all()
     rows = []
     for clinic in clinics:
         continent = _normalized_clinic_continent(clinic)
         services = [s.service_name.strip() for s in clinic.services.all() if s.service_name and s.service_name.strip()]
-        type_names = [t.name for t in clinic.clinic_types.all()]
-        clinic_type_value = ', '.join(type_names) if type_names else (clinic.clinic_type or '').strip()
         rows.append(
             {
                 'id': clinic.id,
                 'continent': continent,
                 'country': (clinic.country or '').strip(),
-                'clinic_type': clinic_type_value,
+                'clinic_type': (clinic.clinic_type or '').strip(),
                 'services': sorted(set(services)),
             }
         )
@@ -222,15 +218,13 @@ def _compute_service_match(clinic, selected_service):
 
 def _base_filter_context(patient, preselected_record_id=''):
     from patients.models import MedicalRecord
-    from clinics.models import Clinic, ClinicType
+    from clinics.models import Clinic
 
     medical_records = MedicalRecord.objects.filter(patient=patient).order_by('-updated_at') if patient else []
     clinic_filter_data = _build_clinic_filter_data()
     continents = sorted({row['continent'] for row in clinic_filter_data if row['continent']})
 
-    clinic_types = list(ClinicType.objects.order_by('name').values_list('name', flat=True))
-    if not clinic_types:
-        clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
+    clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
     # Display labels (translated); submitted values stay the English choice keys.
     clinic_type_labels = [str(choice[1]) for choice in Clinic.CLINIC_TYPE_CHOICES]
 
@@ -326,15 +320,10 @@ def recommendation_result_view(request):
 
         type_query = Q()
         for t in selected_clinic_types:
-            type_query |= (
-                Q(clinic_types__name__icontains=t)
-                | Q(specializations__name__icontains=t)
-                | Q(clinic_type__icontains=t)
-                | Q(specialization__icontains=t)
-            )
+            type_query |= Q(clinic_type__icontains=t) | Q(specialization__icontains=t)
         clinics = clinics.filter(type_query)
 
-    clinics = clinics.distinct().prefetch_related('services', 'clinic_types').order_by('clinic_name')
+    clinics = clinics.distinct().prefetch_related('services').order_by('clinic_name')
 
     if selected_continents:
         selected_continent_l = {c.lower() for c in selected_continents}
