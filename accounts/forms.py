@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.utils.translation import gettext_lazy as _
 from patients.models import Patient
-from clinics.models import Clinic, ClinicType, Specialization, Facility
+from clinics.models import Clinic
 from .models import User
 from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
 
@@ -196,23 +196,20 @@ class ClinicSignUpForm(UserCreationForm):
         })
     )
     
-    # Professional Information — structured reference data (see clinics.models).
-    clinic_types = forms.ModelMultipleChoiceField(
-        queryset=None,
-        required=True,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        }),
-        help_text="Select one or more clinic types",
+    # Professional Information
+    SPECIALIZATION_CHOICES = (
+        ('Convalescence', _('Convalescence')),
+        ('Weight loss', _('Weight loss')),
+        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
+        ('Neurological treatment', _('Neurological treatment')),
     )
-
-    specializations = forms.ModelMultipleChoiceField(
-        queryset=None,
+    
+    specialization = forms.MultipleChoiceField(
+        choices=SPECIALIZATION_CHOICES,
         required=True,
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'form-check-input'
-        }),
-        help_text="Select one or more specializations",
+        })
     )
     established_year = forms.IntegerField(
         required=True,
@@ -221,17 +218,17 @@ class ClinicSignUpForm(UserCreationForm):
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': 'e.g. 2015',
-        }),
+        })
     )
-
+    
     # Clinic Details
-    facilities = forms.ModelMultipleChoiceField(
-        queryset=None,
+    facilities = forms.CharField(
+        max_length=500,
         required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input'
-        }),
-        help_text="Select available facilities and equipment",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'e.g., Therapy Pool, Modern Gym, Electrotherapy, Ultrasound',
+            'class': 'form-control'
+        })
     )
     languages_spoken = forms.CharField(
         max_length=200,
@@ -294,16 +291,6 @@ class ClinicSignUpForm(UserCreationForm):
     accepts_infectious_diseases = forms.BooleanField(required=False, initial=True, label='Accept patients with infectious diseases', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_vein_thrombosis = forms.BooleanField(required=False, initial=True, label='Accept patients with vein thrombosis', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_depression = forms.BooleanField(required=False, initial=True, label='Accept patients with depression', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_tracheostomy_tube = forms.BooleanField(required=False, initial=True, label='Accept patients using tracheostomy tube', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_dependent_patients = forms.BooleanField(required=False, initial=True, label='Accept Dependent patients', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_bedridden_patients = forms.BooleanField(required=False, initial=True, label='Accept Bedridden patients', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    age_range = forms.ChoiceField(
-        choices=Clinic.AgeRange.choices,
-        required=True,
-        initial=Clinic.AgeRange.BOTH,
-        label='Patient age group treated',
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-    )
 
     class Meta:
         model = User
@@ -312,11 +299,6 @@ class ClinicSignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         self.existing_user = kwargs.pop('existing_user', None)
         super().__init__(*args, **kwargs)
-
-        # Structured reference data (populated by data migration 0030).
-        self.fields['clinic_types'].queryset = ClinicType.objects.order_by('name')
-        self.fields['specializations'].queryset = Specialization.objects.order_by('name')
-        self.fields['facilities'].queryset = Facility.objects.order_by('name')
 
         if self.existing_user:
             self.fields['username'].required = False
@@ -362,13 +344,11 @@ class ClinicSignUpForm(UserCreationForm):
             user.save()
         
         # Now create the clinic profile
-        from datetime import date as _date
-
-        selected_types = list(self.cleaned_data.get('clinic_types') or [])
-        selected_specs = list(self.cleaned_data.get('specializations') or [])
-        selected_facilities = list(self.cleaned_data.get('facilities') or [])
-        established_year = self.cleaned_data['established_year']
-
+        # Convert list of specializations to comma-separated string
+        specializations = self.cleaned_data.get('specialization', [])
+        specialization_str = ', '.join(specializations) if isinstance(specializations, list) else specializations
+        clinic_type_value = specializations[0] if isinstance(specializations, list) and specializations else ''
+        
         clinic_data = {
             'user': user,
             'clinic_name': self.cleaned_data['clinic_name'],
@@ -387,11 +367,11 @@ class ClinicSignUpForm(UserCreationForm):
             'contact_email': self.cleaned_data['contact_email'],
             'website': self.cleaned_data.get('website', ''),
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
-            'established_year': established_year,
-            # Legacy columns are synced below via sync_legacy_fields().
-            'established_date': _date(established_year, 1, 1),
+            'clinic_type': clinic_type_value,
+            'specialization': specialization_str,
+            'established_year': self.cleaned_data['established_year'],
+            'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
-            'age_range': self.cleaned_data.get('age_range', Clinic.AgeRange.BOTH),
         }
         
         # Handle file uploads
@@ -403,19 +383,13 @@ class ClinicSignUpForm(UserCreationForm):
         # Create the clinic object
         # Acceptance fields
         for field in [
-            'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter',
-            'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
+            'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
-            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression',
-            'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients']:
+            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression']:
             clinic_data[field] = self.cleaned_data.get(field, True)
-        clinic = Clinic.objects.create(**clinic_data)
-        clinic.clinic_types.set(selected_types)
-        clinic.specializations.set(selected_specs)
-        clinic.facilities.set(selected_facilities)
-        clinic.sync_legacy_fields()
+        Clinic.objects.create(**clinic_data)
 
         return user
 

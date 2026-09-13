@@ -1563,13 +1563,6 @@
                             <p>{{ clinic.contact_email }}</p>
                         </div>
                     </div>
-                    <div class="info-card">
-                        <div class="info-icon"><i class="fas fa-clock"></i></div>
-                        <div class="info-content">
-                            <h3>Hours of Operation</h3>
-                            <p>{{ clinic.hours_of_operation|linebreaks }}</p>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="content-card">
@@ -1752,7 +1745,7 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Established:</span>
-                                <span class="detail-value">{{ clinic.established_date|date:"F Y" }}</span>
+                                <span class="detail-value">{{ clinic.established_year }}</span>
                             </div>
                         </div>
                     </div>
@@ -1785,7 +1778,7 @@
                     </div>
 
                     <div class="content-card">
-                        <h3 class="section-title"><i class="fas fa-link"></i> Social Media & Contact</h3>
+                        <h3 class="section-title"><i class="fas fa-link"></i> Links</h3>
                         <div class="detail-list">
                             {% if clinic.website %}
                             <div class="detail-item">
@@ -1793,36 +1786,6 @@
                                 <span class="detail-value">
                                     <a href="{{ clinic.website }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
                                         <i class="fas fa-globe"></i> {{ clinic.website|truncatechars:30 }}
-                                    </a>
-                                </span>
-                            </div>
-                            {% endif %}
-                            {% if clinic.facebook_url %}
-                            <div class="detail-item">
-                                <span class="detail-label">Facebook:</span>
-                                <span class="detail-value">
-                                    <a href="{{ clinic.facebook_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-facebook"></i> Facebook Page
-                                    </a>
-                                </span>
-                            </div>
-                            {% endif %}
-                            {% if clinic.instagram_url %}
-                            <div class="detail-item">
-                                <span class="detail-label">Instagram:</span>
-                                <span class="detail-value">
-                                    <a href="{{ clinic.instagram_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-instagram"></i> Instagram Profile
-                                    </a>
-                                </span>
-                            </div>
-                            {% endif %}
-                            {% if clinic.linkedin_url %}
-                            <div class="detail-item">
-                                <span class="detail-label">LinkedIn:</span>
-                                <span class="detail-value">
-                                    <a href="{{ clinic.linkedin_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
-                                        <i class="fab fa-linkedin"></i> LinkedIn Profile
                                     </a>
                                 </span>
                             </div>
@@ -1836,10 +1799,6 @@
                             <div class="detail-item">
                                 <span class="detail-label">Facilities:</span>
                                 <span class="detail-value">{{ clinic.facilities|default:"Not specified" }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Team Size:</span>
-                                <span class="detail-value">{{ clinic.number_of_therapists }} specialists</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Languages:</span>

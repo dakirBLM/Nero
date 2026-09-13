@@ -30,40 +30,6 @@ class Post(models.Model):
 
 
 
-class ClinicType(models.Model):
-    """Structured clinic-type reference (replaces free-text clinic_type)."""
-    name = models.CharField(max_length=100, unique=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class Specialization(models.Model):
-    """Structured specialization reference (replaces free-text specialization)."""
-    name = models.CharField(max_length=100, unique=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class Facility(models.Model):
-    """Structured facility reference (replaces free-text facilities)."""
-    name = models.CharField(max_length=100, unique=True)
-
-    class Meta:
-        ordering = ['name']
-        verbose_name_plural = 'facilities'
-
-    def __str__(self):
-        return self.name
-
-
 class Clinic(models.Model):
     SPECIALIZATION_CHOICES = (
         ('Convalescence', _('Convalescence')),
@@ -88,43 +54,33 @@ class Clinic(models.Model):
     state = models.CharField(max_length=100)
     country = models.CharField(max_length=100, blank=True, default='')
     continent = models.CharField(max_length=100, blank=True, default='')
-    clinic_type = models.CharField(max_length=255, blank=True, default='', help_text="LEGACY — synced from clinic_types. Do not edit directly.")
+    clinic_type = models.CharField(max_length=255, blank=True, default='', help_text="Selected clinic types (comma separated)")
     zip_code = models.CharField(max_length=20)
     phone_number = models.CharField(max_length=30)
     contact_email = models.EmailField()
     website = models.URLField(blank=True)
     google_maps_url = models.URLField(max_length=1000, blank=True, help_text="Google Maps embed URL (from Share → Embed a map → Copy src URL)")
-    specialization = models.TextField(help_text="LEGACY — synced from specializations. Do not edit directly.")
-    established_date = models.DateField(null=True, blank=True, help_text="LEGACY — synced from established_year. Do not edit directly.")
+    specialization = models.TextField(help_text="Primary specialization(s) (comma separated)")
     established_year = models.PositiveIntegerField(
         null=True, blank=True,
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="Year the clinic was established (e.g. 2015)",
     )
-    facilities_text = models.CharField(max_length=500, blank=True, default='', help_text="LEGACY — synced from facilities. Do not edit directly.")
-    clinic_types = models.ManyToManyField(ClinicType, blank=True, related_name='clinics')
-    specializations = models.ManyToManyField(Specialization, blank=True, related_name='clinics')
-    facilities = models.ManyToManyField(Facility, blank=True, related_name='clinics')
-    number_of_therapists = models.PositiveIntegerField(default=1)
+    facilities = models.CharField(max_length=500, blank=True, help_text="Available facilities (comma separated)")
     languages_spoken = models.CharField(max_length=200, default='English', help_text="Languages spoken (comma separated)")
-    hours_of_operation = models.TextField(default='Mon-Fri: 9:00 AM - 6:00 PM\nSat: 9:00 AM - 1:00 PM')
     profile_picture = models.ImageField(upload_to='clinic_profile_pics/', blank=True, null=True, help_text="Main profile picture of your clinic")
     cover_photo = models.ImageField(upload_to='clinic_cover_photos/', blank=True, null=True, help_text="Cover photo for your clinic page")
+    # Auto-managed presence timestamp (middleware + clinic_ping). Never user input —
+    # kept in the model but hidden from all forms.
     last_seen = models.DateTimeField(null=True, blank=True)
-    facebook_url = models.URLField(blank=True)
-    instagram_url = models.URLField(blank=True)
-    linkedin_url = models.URLField(blank=True)
     is_verified = models.BooleanField(default=False)
     # Acceptance flags: whether the clinic accepts certain patient conditions
     accepts_heart_problems = models.BooleanField(default=True, help_text="Accept patients with heart problems")
-    # LEGACY — replaced by accepts_permanent_catheter + accepts_intermittent_catheter. Kept until data is verified.
-    accepts_catheter = models.BooleanField(default=True, help_text="LEGACY — synced from permanent/intermittent catheter flags. Do not edit directly.")
     accepts_permanent_catheter = models.BooleanField(default=True, help_text="Accept patients using a permanent catheter")
     accepts_intermittent_catheter = models.BooleanField(default=True, help_text="Accept patients using an intermittent catheter")
     accepts_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use a wheelchair")
     accepts_walker = models.BooleanField(default=True, help_text="Accept patients who use a walker")
     accepts_crutch = models.BooleanField(default=True, help_text="Accept patients who use crutches")
-    accepts_electric_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use an electric wheelchair")
     accepts_bowel_incontinence = models.BooleanField(default=True, help_text="Accept patients with bowel incontinence")
     accepts_urine_incontinence = models.BooleanField(default=True, help_text="Accept patients with urine incontinence")
     accepts_medical_condom = models.BooleanField(default=True, help_text="Accept patients using a medical condom Catheter")
@@ -140,21 +96,6 @@ class Clinic(models.Model):
     accepts_infectious_diseases = models.BooleanField(default=True, help_text="Accept patients with infectious diseases")
     accepts_vein_thrombosis = models.BooleanField(default=True, help_text="Accept patients with vein thrombosis")
     accepts_depression = models.BooleanField(default=True, help_text="Accept patients with depression")
-    accepts_tracheostomy_tube = models.BooleanField(default=True, help_text="Accept patients using tracheostomy tube")
-    accepts_dependent_patients = models.BooleanField(default=True, help_text="Accept Dependent patients")
-    accepts_bedridden_patients = models.BooleanField(default=True, help_text="Accept Bedridden patients")
-
-    class AgeRange(models.TextChoices):
-        ADULTS_ONLY = 'adults_only', _('Adults only')
-        CHILDREN_ONLY = 'children_only', _('Children only')
-        BOTH = 'both', _('Both adults and children')
-
-    age_range = models.CharField(
-        max_length=20,
-        choices=AgeRange.choices,
-        default=AgeRange.BOTH,
-        help_text="Patient age group the clinic treats",
-    )
     
     def __str__(self):
         return self.clinic_name
@@ -194,27 +135,9 @@ class Clinic(models.Model):
     @property
     def years_in_operation(self):
         from datetime import date
-        year = self.established_year or (self.established_date.year if self.established_date else None)
-        if not year:
+        if not self.established_year:
             return 0
-        return max(date.today().year - year, 0)
-
-    def sync_legacy_fields(self, save=True):
-        """Copy structured data into legacy text/date columns so old display
-        code and filters keep working during the transition period."""
-        if self.pk:
-            self.clinic_type = ', '.join(self.clinic_types.values_list('name', flat=True))
-            self.specialization = ', '.join(self.specializations.values_list('name', flat=True))
-            self.facilities_text = ', '.join(self.facilities.values_list('name', flat=True))
-        if self.established_year and not self.established_date:
-            from datetime import date
-            self.established_date = date(self.established_year, 1, 1)
-        self.accepts_catheter = bool(self.accepts_permanent_catheter or self.accepts_intermittent_catheter)
-        if save:
-            self.save(update_fields=[
-                'clinic_type', 'specialization', 'facilities_text',
-                'established_date', 'accepts_catheter',
-            ])
+        return max(date.today().year - self.established_year, 0)
 
 class ClinicGallery(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery_images')
