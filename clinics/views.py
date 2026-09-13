@@ -423,7 +423,7 @@ def clinic_detail_view(request, clinic_id):
                 logger.warning("[DEBUG] Patient.DoesNotExist for user %s", request.user)
                 patient = None
 
-        facilities_list = [f.strip() for f in clinic.facilities.split(',')] if clinic.facilities else []
+        facilities_list = [f.name for f in clinic.facilities.all()] or [f.strip() for f in (clinic.facilities_text or '').split(',') if f.strip()]
         # Build acceptance fields list for the template: pairs (field_name, human_label)
         acceptance_fields = []
         try:
@@ -502,7 +502,7 @@ def clinic_detail_clinic_view(request, clinic_id):
                         connection_status = 'pending'
             except Patient.DoesNotExist:
                 patient = None
-        facilities_list = [f.strip() for f in clinic.facilities.split(',')] if clinic.facilities else []
+        facilities_list = [f.name for f in clinic.facilities.all()] or [f.strip() for f in (clinic.facilities_text or '').split(',') if f.strip()]
         acceptance_fields = []
         try:
             for field in clinic._meta.fields:
