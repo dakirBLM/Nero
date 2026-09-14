@@ -58,7 +58,7 @@ class MedicalRecordForm(forms.ModelForm):
             'bowel_control', 'urine_control', 'uses_permanent_catheter', 'uses_intermittent_catheter',
             'uses_medical_condom', 'uses_diapers', 'can_breathe_normally', 'can_eat_independently',
             'can_dress_independently', 'is_aware_and_cooperative', 'is_self_reliant',
-            'uses_feeding_tube', 'uses_stool_tube', 'uses_urine_tube',
+            'uses_feeding_tube', 'uses_stool_tube', 'uses_urine_tube', 'uses_tracheostomy_tube',
             # Medical conditions
             'has_bedsores', 'has_diabetes', 'uses_insulin', 'has_heart_problems',
             'has_high_blood_pressure', 'has_infectious_diseases', 'has_vein_thrombosis', 'has_depression',
