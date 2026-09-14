@@ -1625,12 +1625,8 @@
                                             {{ medical_form.uses_crutch }}
                                             <label for="id_uses_crutch">{% trans "Uses Crutch" %}</label>
                                         </div>
-                                        <div class="checkbox-item">
-                                            {{ medical_form.uses_electric_wheelchair }}
-                                            <label for="id_uses_electric_wheelchair">{% trans "Uses Electric Wheelchair" %}</label>
-                                        </div>
                                     </div>
-                                    {% if medical_form.uses_wheelchair.errors or medical_form.uses_walker.errors or medical_form.uses_crutch.errors or medical_form.uses_electric_wheelchair.errors %}
+                                    {% if medical_form.uses_wheelchair.errors or medical_form.uses_walker.errors or medical_form.uses_crutch.errors %}
                                     <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable assistive devices" %}</div>
                                     {% endif %}
                                 </div>
