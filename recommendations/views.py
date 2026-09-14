@@ -33,11 +33,11 @@ def _medical_compatible_clinics(medical_record, queryset=None):
         if getattr(medical_record, 'has_heart_problems', False) and not clinic.accepts_heart_problems:
             incompatible = True
 
-        if (
-            getattr(medical_record, 'uses_permanent_catheter', False)
-            or getattr(medical_record, 'uses_intermittent_catheter', False)
-            or getattr(medical_record, 'uses_urine_tube', False)
-        ) and not clinic.accepts_catheter:
+        if getattr(medical_record, 'uses_permanent_catheter', False) and not clinic.accepts_permanent_catheter:
+            incompatible = True
+        if getattr(medical_record, 'uses_intermittent_catheter', False) and not clinic.accepts_intermittent_catheter:
+            incompatible = True
+        if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
             incompatible = True
 
         if getattr(medical_record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
