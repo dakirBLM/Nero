@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from patients.models import MedicalRecord, Patient
@@ -60,7 +61,11 @@ class Clinic(models.Model):
     website = models.URLField(blank=True)
     google_maps_url = models.URLField(max_length=1000, blank=True, help_text="Google Maps embed URL (from Share → Embed a map → Copy src URL)")
     specialization = models.TextField(help_text="Primary specialization(s) (comma separated)")
-    established_date = models.DateField()
+    established_year = models.PositiveIntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
+        help_text="Year the clinic was established (e.g. 2015)",
+    )
     facilities = models.CharField(max_length=500, blank=True, help_text="Available facilities (comma separated)")
     languages_spoken = models.CharField(max_length=200, default='English', help_text="Languages spoken (comma separated)")
     profile_picture = models.ImageField(upload_to='clinic_profile_pics/', blank=True, null=True, help_text="Main profile picture of your clinic")
@@ -71,13 +76,14 @@ class Clinic(models.Model):
     is_verified = models.BooleanField(default=False)
     # Acceptance flags: whether the clinic accepts certain patient conditions
     accepts_heart_problems = models.BooleanField(default=True, help_text="Accept patients with heart problems")
-    accepts_catheter = models.BooleanField(default=True, help_text="Accept patients using a catheter (permanent or intermittent)")
+    accepts_permanent_catheter = models.BooleanField(default=True, help_text="Accept patients using a permanent catheter")
+    accepts_intermittent_catheter = models.BooleanField(default=True, help_text="Accept patients using an intermittent catheter")
     accepts_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use a wheelchair")
     accepts_walker = models.BooleanField(default=True, help_text="Accept patients who use a walker")
     accepts_crutch = models.BooleanField(default=True, help_text="Accept patients who use crutches")
     accepts_bowel_incontinence = models.BooleanField(default=True, help_text="Accept patients with bowel incontinence")
     accepts_urine_incontinence = models.BooleanField(default=True, help_text="Accept patients with urine incontinence")
-    accepts_medical_condom = models.BooleanField(default=True, help_text="Accept patients using a medical condom")
+    accepts_medical_condom = models.BooleanField(default=True, help_text="Accept patients using a medical condom Catheter")
     accepts_diapers = models.BooleanField(default=True, help_text="Accept patients using diapers")
     accepts_breathing_issues = models.BooleanField(default=True, help_text="Accept patients with breathing issues")
     accepts_feeding_tube = models.BooleanField(default=True, help_text="Accept patients using a feeding tube")
@@ -129,7 +135,9 @@ class Clinic(models.Model):
     @property
     def years_in_operation(self):
         from datetime import date
-        return date.today().year - self.established_date.year
+        if not self.established_year:
+            return 0
+        return max(date.today().year - self.established_year, 0)
 
 class ClinicGallery(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery_images')

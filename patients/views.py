@@ -554,8 +554,8 @@ def patient_dashboard_view(request):
                 ('has_infectious_diseases', 'accepts_infectious_diseases'),
                 ('has_vein_thrombosis', 'accepts_vein_thrombosis'),
                 ('has_depression', 'accepts_depression'),
-                ('uses_permanent_catheter', 'accepts_catheter'),
-                ('uses_intermittent_catheter', 'accepts_catheter'),
+                ('uses_permanent_catheter', 'accepts_permanent_catheter'),
+                ('uses_intermittent_catheter', 'accepts_intermittent_catheter'),
                 ('uses_medical_condom', 'accepts_medical_condom'),
                 ('uses_diapers', 'accepts_diapers'),
             ]

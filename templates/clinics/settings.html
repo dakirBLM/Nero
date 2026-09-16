@@ -1534,12 +1534,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="id_established_date">Established Date</label>
-                                    {{ form.established_date }}
-                                    {% if form.established_date.errors %}
+                                    <label class="form-label" for="id_established_year">Established Year</label>
+                                    {{ form.established_year }}
+                                    {% if form.established_year.errors %}
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.established_date.errors.0 }}
+                                            {{ form.established_year.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>

@@ -1021,7 +1021,7 @@
                                 <div class="clinic-header">
                                     <div>
                                         <h3 class="clinic-title">{{ clinic.clinic_name }}</h3>
-                                        <p class="clinic-meta">Established {{ clinic.established_date|date:"Y" }}</p>
+                                        <p class="clinic-meta">Established {{ clinic.established_year }}</p>
                                     </div>
                                     {% if clinic.id in assigned_clinic_ids %}
                                     <span class="badge badge-success">✅ Connected</span>
@@ -1104,8 +1104,8 @@
                                                 {{ clinic.phone_number }}
                                             </div>
                                             <div class="detail-item">
-                                                <strong>Established Date</strong>
-                                                {{ clinic.established_date|date:"F d, Y" }}
+                                                <strong>Established Year</strong>
+                                                {{ clinic.established_year }}
                                             </div>
                                             {% if clinic.description %}
                                             <div class="detail-item">

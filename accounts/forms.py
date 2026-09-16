@@ -211,11 +211,13 @@ class ClinicSignUpForm(UserCreationForm):
             'class': 'form-check-input'
         })
     )
-    established_date = forms.DateField(
+    established_year = forms.IntegerField(
         required=True,
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'form-control'
+        min_value=1900,
+        max_value=2100,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 2015',
         })
     )
     
@@ -259,10 +261,16 @@ class ClinicSignUpForm(UserCreationForm):
         label='Accept patients with heart problems',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
-    accepts_catheter = forms.BooleanField(
+    accepts_permanent_catheter = forms.BooleanField(
         required=False,
         initial=True,
-        label='Accept patients using a catheter',
+        label='Accept patients using a permanent catheter',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    accepts_intermittent_catheter = forms.BooleanField(
+        required=False,
+        initial=True,
+        label='Accept patients using an intermittent catheter',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
     accepts_wheelchair = forms.BooleanField(required=False, initial=True, label='Accept patients using a wheelchair', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
@@ -270,7 +278,7 @@ class ClinicSignUpForm(UserCreationForm):
     accepts_crutch = forms.BooleanField(required=False, initial=True, label='Accept patients using crutches', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_bowel_incontinence = forms.BooleanField(required=False, initial=True, label='Accept patients with bowel incontinence', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_urine_incontinence = forms.BooleanField(required=False, initial=True, label='Accept patients with urine incontinence', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_medical_condom = forms.BooleanField(required=False, initial=True, label='Accept patients using a medical condom', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    accepts_medical_condom = forms.BooleanField(required=False, initial=True, label='Accept patients using a medical condom Catheter', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_diapers = forms.BooleanField(required=False, initial=True, label='Accept patients using diapers', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_breathing_issues = forms.BooleanField(required=False, initial=True, label='Accept patients with breathing issues', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_feeding_tube = forms.BooleanField(required=False, initial=True, label='Accept patients using a feeding tube', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
@@ -361,7 +369,7 @@ class ClinicSignUpForm(UserCreationForm):
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
             'clinic_type': clinic_type_value,
             'specialization': specialization_str,
-            'established_date': self.cleaned_data['established_date'],
+            'established_year': self.cleaned_data['established_year'],
             'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
         }
@@ -375,7 +383,7 @@ class ClinicSignUpForm(UserCreationForm):
         # Create the clinic object
         # Acceptance fields
         for field in [
-            'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
+            'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
@@ -414,12 +422,12 @@ class ClinicSignUpForm(UserCreationForm):
             raise forms.ValidationError("Please enter a phone number.")
         return phone_number
     
-    def clean_established_date(self):
-        established_date = self.cleaned_data.get('established_date')
+    def clean_established_year(self):
+        established_year = self.cleaned_data.get('established_year')
         from datetime import date
-        if established_date > date.today():
-            raise forms.ValidationError("Established date cannot be in the future.")
-        return established_date
+        if established_year and established_year > date.today().year:
+            raise forms.ValidationError("Established year cannot be in the future.")
+        return established_year
     
     def clean(self):
         cleaned_data = super().clean()

@@ -5,10 +5,11 @@ from .models import Clinic, ClinicGallery, ClinicService, Appointment
 class ClinicAdmin(admin.ModelAdmin):
 	list_display = (
 		"clinic_name", "user", "city", "state", "specialization",
-		"accepts_heart_problems", "accepts_catheter", "is_verified"
+		"accepts_heart_problems", "accepts_permanent_catheter",
+		"accepts_intermittent_catheter", "is_verified"
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
-	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_catheter")
+	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter")
 
 @admin.register(ClinicService)
 class ClinicServiceAdmin(admin.ModelAdmin):
