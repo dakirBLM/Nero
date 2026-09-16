@@ -9,7 +9,7 @@ class ClinicAdmin(admin.ModelAdmin):
 		"accepts_intermittent_catheter", "is_verified"
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
-	list_filter = ("specialization", "is_verified", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter")
+	list_filter = ("specialization", "is_verified", "age_range", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter")
 
 @admin.register(ClinicService)
 class ClinicServiceAdmin(admin.ModelAdmin):

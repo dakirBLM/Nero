@@ -96,6 +96,21 @@ class Clinic(models.Model):
     accepts_infectious_diseases = models.BooleanField(default=True, help_text="Accept patients with infectious diseases")
     accepts_vein_thrombosis = models.BooleanField(default=True, help_text="Accept patients with vein thrombosis")
     accepts_depression = models.BooleanField(default=True, help_text="Accept patients with depression")
+    accepts_tracheostomy_tube = models.BooleanField(default=True, help_text="Accept patients using tracheostomy tube")
+    accepts_dependent_patients = models.BooleanField(default=True, help_text="Accept Dependent patients")
+    accepts_bedridden_patients = models.BooleanField(default=True, help_text="Accept Bedridden patients")
+
+    class AgeRange(models.TextChoices):
+        ADULTS_ONLY = 'adults_only', _('Adults only')
+        CHILDREN_ONLY = 'children_only', _('Children only')
+        BOTH = 'both', _('Both adults and children')
+
+    age_range = models.CharField(
+        max_length=20,
+        choices=AgeRange.choices,
+        default=AgeRange.BOTH,
+        help_text="Patient age group the clinic treats",
+    )
     
     def __str__(self):
         return self.clinic_name

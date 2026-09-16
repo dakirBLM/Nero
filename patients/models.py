@@ -134,6 +134,7 @@ class MedicalRecord(models.Model):
     uses_feeding_tube = models.BooleanField(default=False)
     uses_stool_tube = models.BooleanField(default=False)
     uses_urine_tube = models.BooleanField(default=False)
+    uses_tracheostomy_tube = models.BooleanField(default=False)
 
     # Medical conditions
     has_bedsores = models.BooleanField(default=False)
@@ -175,6 +176,15 @@ class MedicalRecord(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_dependent_patient(self):
+        """Inverse of is_self_reliant — used for clinic acceptance matching."""
+        return not self.is_self_reliant
+
+    @property
+    def is_bedridden_patient(self):
+        return (self.movement_ability or '') == 'bedridden'
 
     def __str__(self):
         return f"Medical Record - {self.first_name} {self.last_name} ({self.main_diagnosis})"
