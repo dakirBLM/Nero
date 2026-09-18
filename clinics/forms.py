@@ -21,12 +21,6 @@ class MedicalRecordChoiceField(forms.ModelChoiceField):
                 notes.append('clinic does not accept intermittent catheter')
             if getattr(obj, 'uses_urine_tube', False) and not self._clinic.accepts_permanent_catheter:
                 notes.append('clinic does not accept catheter')
-            if getattr(obj, 'uses_tracheostomy_tube', False) and not self._clinic.accepts_tracheostomy_tube:
-                notes.append('clinic does not accept tracheostomy tube')
-            if getattr(obj, 'is_dependent_patient', False) and not self._clinic.accepts_dependent_patients:
-                notes.append('clinic does not accept dependent patients')
-            if getattr(obj, 'is_bedridden_patient', False) and not self._clinic.accepts_bedridden_patients:
-                notes.append('clinic does not accept bedridden patients')
         if notes:
             return f"{base} — ({'; '.join(notes)})"
         return base
@@ -69,19 +63,17 @@ class ClinicUpdateForm(forms.ModelForm):
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state', 
             'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization', 
             'established_year', 'facilities', 
-            'languages_spoken', 'age_range',
+            'languages_spoken',
             'profile_picture', 'cover_photo',
             'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter',
             'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
-            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression',
-            'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients',
+            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression'
         ]
         widgets = {
             'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': 1900, 'max': 2100}),
-            'age_range': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'tagline': forms.TextInput(attrs={'class': 'form-control'}),
@@ -118,9 +110,6 @@ class ClinicUpdateForm(forms.ModelForm):
             'accepts_infectious_diseases': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_vein_thrombosis': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_depression': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'accepts_tracheostomy_tube': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'accepts_dependent_patients': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'accepts_bedridden_patients': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -229,12 +218,6 @@ class AppointmentForm(forms.ModelForm):
                 incompatible = True
             if getattr(rec, 'uses_urine_tube', False) and not self.clinic.accepts_permanent_catheter:
                 incompatible = True
-            if getattr(rec, 'uses_tracheostomy_tube', False) and not self.clinic.accepts_tracheostomy_tube:
-                incompatible = True
-            if getattr(rec, 'is_dependent_patient', False) and not self.clinic.accepts_dependent_patients:
-                incompatible = True
-            if getattr(rec, 'is_bedridden_patient', False) and not self.clinic.accepts_bedridden_patients:
-                incompatible = True
             if getattr(rec, 'uses_wheelchair', False) and not self.clinic.accepts_wheelchair:
                 incompatible = True
             if getattr(rec, 'uses_walker', False) and not self.clinic.accepts_walker:
@@ -294,12 +277,6 @@ class AppointmentForm(forms.ModelForm):
                 raise forms.ValidationError('Clinic does not accept patients using an intermittent catheter.')
             if getattr(record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
                 raise forms.ValidationError('Clinic does not accept patients using a catheter.')
-            if getattr(record, 'uses_tracheostomy_tube', False) and not clinic.accepts_tracheostomy_tube:
-                raise forms.ValidationError('Clinic does not accept patients using tracheostomy tube.')
-            if getattr(record, 'is_dependent_patient', False) and not clinic.accepts_dependent_patients:
-                raise forms.ValidationError('Clinic does not accept dependent patients.')
-            if getattr(record, 'is_bedridden_patient', False) and not clinic.accepts_bedridden_patients:
-                raise forms.ValidationError('Clinic does not accept bedridden patients.')
             if getattr(record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
                 raise forms.ValidationError('Clinic does not accept patients using a wheelchair.')
             if getattr(record, 'uses_walker', False) and not clinic.accepts_walker:

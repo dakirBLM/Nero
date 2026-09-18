@@ -1265,34 +1265,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="age_range" class="form-label">{% trans "Patient Age Group" %}</label>
-                            <select id="age_range" name="age_range" class="form-control">
-                                <option value="all">{% trans "All Ages" %}</option>
-                                {% for value, label in age_range_choices %}
-                                    <option value="{{ value }}" {% if age_range == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">{% trans "Accepts" %}</label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="needs_tracheostomy" value="1" {% if needs_tracheostomy %}checked{% endif %}>
-                                {% trans "Tracheostomy tube" %}
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="needs_dependent" value="1" {% if needs_dependent %}checked{% endif %}>
-                                {% trans "Dependent patients" %}
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="needs_bedridden" value="1" {% if needs_bedridden %}checked{% endif %}>
-                                {% trans "Bedridden patients" %}
-                            </label>
-                        </div>
-
-                        <div class="form-group">
                             <label class="form-label" style="visibility: hidden;">{% trans "Search" %}</label>
                             <button type="submit" class="btn btn-primary btn-block">
                                 <i class="fas fa-search"></i>
@@ -1307,7 +1279,7 @@
             <div class="results-header">
                 <h2 class="results-title">
                     <i class="fas fa-clinic-medical"></i>
-                    {% if query or specialization != 'all' or city or age_range != 'all' or needs_tracheostomy or needs_dependent or needs_bedridden %}
+                    {% if query or specialization != 'all' or city %}
                         {% trans "Search Results" %}
                     {% else %}
                         {% trans "Featured Clinics" %}
@@ -1321,7 +1293,7 @@
                 {% endif %}
             </div>
 
-            {% if query or specialization != 'all' or city or age_range != 'all' or needs_tracheostomy or needs_dependent or needs_bedridden %}
+            {% if query or specialization != 'all' or city %}
                 <!-- Search Results -->
                 {% if clinics %}
                     <div class="clinics-grid">
@@ -1403,7 +1375,7 @@
                     {% if clinics.has_other_pages %}
                     <div class="pagination">
                         {% if clinics.has_previous %}
-                            <a href="?page={{ clinics.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if age_range != 'all' %}&age_range={{ age_range }}{% endif %}{% if needs_tracheostomy %}&needs_tracheostomy=1{% endif %}{% if needs_dependent %}&needs_dependent=1{% endif %}{% if needs_bedridden %}&needs_bedridden=1{% endif %}" 
+                            <a href="?page={{ clinics.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}" 
                                class="pagination-link">
                                 <i class="fas fa-chevron-left"></i>
                                 {% trans "Previous" %}
@@ -1415,7 +1387,7 @@
                         </span>
                         
                         {% if clinics.has_next %}
-                            <a href="?page={{ clinics.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if age_range != 'all' %}&age_range={{ age_range }}{% endif %}{% if needs_tracheostomy %}&needs_tracheostomy=1{% endif %}{% if needs_dependent %}&needs_dependent=1{% endif %}{% if needs_bedridden %}&needs_bedridden=1{% endif %}" 
+                            <a href="?page={{ clinics.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if specialization != 'all' %}&specialization={{ specialization }}{% endif %}{% if city %}&city={{ city }}{% endif %}" 
                                class="pagination-link">
                                 {% trans "Next" %}
                                 <i class="fas fa-chevron-right"></i>
