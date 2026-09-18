@@ -1440,12 +1440,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="id_established_year" class="form-label">
-                            {% trans "Established Year" %} <span class="required">*</span>
+                        <label for="id_established_date" class="form-label">
+                            {% trans "Established Date" %} <span class="required">*</span>
                         </label>
-                        {{ form.established_year }}
-                        {% if form.established_year.errors %}
-                            <div class="field-error">⚠ {{ form.established_year.errors.0 }}</div>
+                        {{ form.established_date }}
+                        {% if form.established_date.errors %}
+                            <div class="field-error">⚠ {{ form.established_date.errors.0 }}</div>
                         {% endif %}
                     </div>
 

@@ -428,7 +428,7 @@ def clinic_detail_view(request, clinic_id):
         acceptance_fields = []
         try:
             for field in clinic._meta.fields:
-                if field.name.startswith('accepts_') and field.name != 'accepts_catheter':
+                if field.name.startswith('accepts_'):
                     try:
                         accepted = getattr(clinic, field.name)
                     except Exception:
@@ -506,7 +506,7 @@ def clinic_detail_clinic_view(request, clinic_id):
         acceptance_fields = []
         try:
             for field in clinic._meta.fields:
-                if field.name.startswith('accepts_') and field.name != 'accepts_catheter':
+                if field.name.startswith('accepts_'):
                     try:
                         accepted = getattr(clinic, field.name)
                     except Exception:
