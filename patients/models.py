@@ -118,6 +118,7 @@ class MedicalRecord(models.Model):
     uses_wheelchair = models.BooleanField(default=False)
     uses_walker = models.BooleanField(default=False)
     uses_crutch = models.BooleanField(default=False)
+    uses_electric_wheelchair = models.BooleanField(default=False)
 
     # General patient condition
     bowel_control = models.BooleanField(default=True)

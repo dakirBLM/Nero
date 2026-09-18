@@ -15,11 +15,12 @@ class MedicalRecordChoiceField(forms.ModelChoiceField):
         if self._clinic:
             if getattr(obj, 'has_heart_problems', False) and not self._clinic.accepts_heart_problems:
                 notes.append('clinic does not accept heart problems')
-            if getattr(obj, 'uses_permanent_catheter', False) and not self._clinic.accepts_permanent_catheter:
-                notes.append('clinic does not accept permanent catheter')
-            if getattr(obj, 'uses_intermittent_catheter', False) and not self._clinic.accepts_intermittent_catheter:
-                notes.append('clinic does not accept intermittent catheter')
-            if getattr(obj, 'uses_urine_tube', False) and not self._clinic.accepts_permanent_catheter:
+            has_catheter = (
+                getattr(obj, 'uses_permanent_catheter', False)
+                or getattr(obj, 'uses_intermittent_catheter', False)
+                or getattr(obj, 'uses_urine_tube', False)
+            )
+            if has_catheter and not self._clinic.accepts_catheter:
                 notes.append('clinic does not accept catheter')
         if notes:
             return f"{base} — ({'; '.join(notes)})"
@@ -62,18 +63,17 @@ class ClinicUpdateForm(forms.ModelForm):
         fields = [
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state', 
             'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization', 
-            'established_year', 'facilities', 
+            'established_date', 'facilities', 
             'languages_spoken',
             'profile_picture', 'cover_photo',
-            'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter',
-            'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
+            'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
             'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression'
         ]
         widgets = {
-            'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': 1900, 'max': 2100}),
+            'established_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'tagline': forms.TextInput(attrs={'class': 'form-control'}),
@@ -90,8 +90,7 @@ class ClinicUpdateForm(forms.ModelForm):
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'cover_photo': forms.FileInput(attrs={'class': 'form-control'}),
             'accepts_heart_problems': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'accepts_permanent_catheter': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'accepts_intermittent_catheter': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'accepts_catheter': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_wheelchair': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_walker': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_crutch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -212,11 +211,11 @@ class AppointmentForm(forms.ModelForm):
             incompatible = False
             if getattr(rec, 'has_heart_problems', False) and not self.clinic.accepts_heart_problems:
                 incompatible = True
-            if getattr(rec, 'uses_permanent_catheter', False) and not self.clinic.accepts_permanent_catheter:
-                incompatible = True
-            if getattr(rec, 'uses_intermittent_catheter', False) and not self.clinic.accepts_intermittent_catheter:
-                incompatible = True
-            if getattr(rec, 'uses_urine_tube', False) and not self.clinic.accepts_permanent_catheter:
+            if (
+                getattr(rec, 'uses_permanent_catheter', False)
+                or getattr(rec, 'uses_intermittent_catheter', False)
+                or getattr(rec, 'uses_urine_tube', False)
+            ) and not self.clinic.accepts_catheter:
                 incompatible = True
             if getattr(rec, 'uses_wheelchair', False) and not self.clinic.accepts_wheelchair:
                 incompatible = True
@@ -271,11 +270,11 @@ class AppointmentForm(forms.ModelForm):
             # Check all relevant fields for incompatibility
             if getattr(record, 'has_heart_problems', False) and not clinic.accepts_heart_problems:
                 raise forms.ValidationError('Clinic does not accept patients with heart problems.')
-            if getattr(record, 'uses_permanent_catheter', False) and not clinic.accepts_permanent_catheter:
-                raise forms.ValidationError('Clinic does not accept patients using a permanent catheter.')
-            if getattr(record, 'uses_intermittent_catheter', False) and not clinic.accepts_intermittent_catheter:
-                raise forms.ValidationError('Clinic does not accept patients using an intermittent catheter.')
-            if getattr(record, 'uses_urine_tube', False) and not clinic.accepts_permanent_catheter:
+            if (
+                getattr(record, 'uses_permanent_catheter', False)
+                or getattr(record, 'uses_intermittent_catheter', False)
+                or getattr(record, 'uses_urine_tube', False)
+            ) and not clinic.accepts_catheter:
                 raise forms.ValidationError('Clinic does not accept patients using a catheter.')
             if getattr(record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
                 raise forms.ValidationError('Clinic does not accept patients using a wheelchair.')
