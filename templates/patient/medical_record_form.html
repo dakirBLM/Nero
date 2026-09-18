@@ -1726,12 +1726,8 @@
                                             {{ medical_form.uses_urine_tube }}
                                             <label for="id_uses_urine_tube">{% trans "Uses Urine Tube" %}</label>
                                         </div>
-                                        <div class="checkbox-item">
-                                            {{ medical_form.uses_tracheostomy_tube }}
-                                            <label for="id_uses_tracheostomy_tube">{% trans "Uses Tracheostomy Tube" %}</label>
-                                        </div>
                                     </div>
-                                    {% if medical_form.uses_feeding_tube.errors or medical_form.uses_stool_tube.errors or medical_form.uses_urine_tube.errors or medical_form.uses_tracheostomy_tube.errors %}
+                                    {% if medical_form.uses_feeding_tube.errors or medical_form.uses_stool_tube.errors or medical_form.uses_urine_tube.errors %}
                                     <div class="error-message"><i class="fas fa-exclamation-circle"></i> {% trans "Please check all applicable medical tubes" %}</div>
                                     {% endif %}
                                 </div>

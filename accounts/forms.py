@@ -291,16 +291,6 @@ class ClinicSignUpForm(UserCreationForm):
     accepts_infectious_diseases = forms.BooleanField(required=False, initial=True, label='Accept patients with infectious diseases', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_vein_thrombosis = forms.BooleanField(required=False, initial=True, label='Accept patients with vein thrombosis', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     accepts_depression = forms.BooleanField(required=False, initial=True, label='Accept patients with depression', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_tracheostomy_tube = forms.BooleanField(required=False, initial=True, label='Accept patients using tracheostomy tube', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_dependent_patients = forms.BooleanField(required=False, initial=True, label='Accept Dependent patients', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    accepts_bedridden_patients = forms.BooleanField(required=False, initial=True, label='Accept Bedridden patients', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
-    age_range = forms.ChoiceField(
-        choices=Clinic.AgeRange.choices,
-        required=True,
-        initial=Clinic.AgeRange.BOTH,
-        label='Patient age group treated',
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
-    )
 
     class Meta:
         model = User
@@ -382,7 +372,6 @@ class ClinicSignUpForm(UserCreationForm):
             'established_year': self.cleaned_data['established_year'],
             'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
-            'age_range': self.cleaned_data.get('age_range', Clinic.AgeRange.BOTH),
         }
         
         # Handle file uploads
@@ -398,8 +387,7 @@ class ClinicSignUpForm(UserCreationForm):
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
-            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression',
-            'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients']:
+            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression']:
             clinic_data[field] = self.cleaned_data.get(field, True)
         Clinic.objects.create(**clinic_data)
 
