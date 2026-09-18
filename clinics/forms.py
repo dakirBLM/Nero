@@ -64,10 +64,10 @@ class ClinicUpdateForm(forms.ModelForm):
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state', 
             'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization', 
             'established_date', 'facilities', 
-            'languages_spoken',
-            'profile_picture', 'cover_photo',
+            'languages_spoken', 'hours_of_operation', 
+            'profile_picture', 'cover_photo', 'facebook_url', 'instagram_url', 'linkedin_url',
             'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
-            'accepts_bowel_incontinence', 'accepts_urine_incontinence',
+            'accepts_electric_wheelchair', 'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
             'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression'
@@ -75,6 +75,7 @@ class ClinicUpdateForm(forms.ModelForm):
         widgets = {
             'established_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'hours_of_operation': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'tagline': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
@@ -89,11 +90,15 @@ class ClinicUpdateForm(forms.ModelForm):
             'languages_spoken': forms.TextInput(attrs={'class': 'form-control'}),
             'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
             'cover_photo': forms.FileInput(attrs={'class': 'form-control'}),
+            'facebook_url': forms.URLInput(attrs={'class': 'form-control'}),
+            'instagram_url': forms.URLInput(attrs={'class': 'form-control'}),
+            'linkedin_url': forms.URLInput(attrs={'class': 'form-control'}),
             'accepts_heart_problems': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_catheter': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_wheelchair': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_walker': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_crutch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'accepts_electric_wheelchair': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_bowel_incontinence': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_urine_incontinence': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_medical_condom': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -223,6 +228,8 @@ class AppointmentForm(forms.ModelForm):
                 incompatible = True
             if getattr(rec, 'uses_crutch', False) and not self.clinic.accepts_crutch:
                 incompatible = True
+            if getattr(rec, 'uses_electric_wheelchair', False) and not self.clinic.accepts_electric_wheelchair:
+                incompatible = True
             if not getattr(rec, 'bowel_control', True) and not self.clinic.accepts_bowel_incontinence:
                 incompatible = True
             if not getattr(rec, 'urine_control', True) and not self.clinic.accepts_urine_incontinence:
@@ -282,6 +289,8 @@ class AppointmentForm(forms.ModelForm):
                 raise forms.ValidationError('Clinic does not accept patients using a walker.')
             if getattr(record, 'uses_crutch', False) and not clinic.accepts_crutch:
                 raise forms.ValidationError('Clinic does not accept patients using crutches.')
+            if getattr(record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
+                raise forms.ValidationError('Clinic does not accept patients using an electric wheelchair.')
             if not getattr(record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
                 raise forms.ValidationError('Clinic does not accept patients with bowel incontinence.')
             if not getattr(record, 'urine_control', True) and not clinic.accepts_urine_incontinence:

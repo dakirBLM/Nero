@@ -46,6 +46,8 @@ def _medical_compatible_clinics(medical_record, queryset=None):
             incompatible = True
         if getattr(medical_record, 'uses_crutch', False) and not clinic.accepts_crutch:
             incompatible = True
+        if getattr(medical_record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
+            incompatible = True
 
         if not getattr(medical_record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
             incompatible = True
