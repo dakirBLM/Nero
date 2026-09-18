@@ -1645,6 +1645,13 @@
                             <p>{{ clinic.contact_email }}</p>
                         </div>
                     </div>
+                    <div class="info-card">
+                        <div class="info-icon"><i class="fas fa-clock"></i></div>
+                        <div class="info-content">
+                            <h3>{% trans "Hours of Operation" %}</h3>
+                            <p>{{ clinic.hours_of_operation|linebreaks }}</p>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -1878,8 +1885,38 @@
                     </div>
 
                     <div class="content-card">
-                        <h3 class="section-title"><i class="fas fa-link"></i> {% trans "Links" %}</h3>
+                        <h3 class="section-title"><i class="fas fa-link"></i> {% trans "Social Media" %}</h3>
                         <div class="detail-list">
+                            {% if clinic.facebook_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">{% trans "Facebook:" %}</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.facebook_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-facebook"></i> {% trans "Visit Page" %}
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if clinic.instagram_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">{% trans "Instagram:" %}</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.instagram_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-instagram"></i> {% trans "Visit Page" %}
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if clinic.linkedin_url %}
+                            <div class="detail-item">
+                                <span class="detail-label">{% trans "LinkedIn:" %}</span>
+                                <span class="detail-value">
+                                    <a href="{{ clinic.linkedin_url }}" target="_blank" style="color:#3b82f6; text-decoration:none;">
+                                        <i class="fab fa-linkedin"></i> {% trans "Visit Page" %}
+                                    </a>
+                                </span>
+                            </div>
+                            {% endif %}
                             {% if clinic.website %}
                             <div class="detail-item">
                                 <span class="detail-label">{% trans "Website:" %}</span>

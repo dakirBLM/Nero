@@ -62,12 +62,15 @@ class Clinic(models.Model):
     specialization = models.TextField(help_text="Primary specialization(s) (comma separated)")
     established_date = models.DateField()
     facilities = models.CharField(max_length=500, blank=True, help_text="Available facilities (comma separated)")
+    number_of_therapists = models.PositiveIntegerField(default=1)
     languages_spoken = models.CharField(max_length=200, default='English', help_text="Languages spoken (comma separated)")
+    hours_of_operation = models.TextField(default='Mon-Fri: 9:00 AM - 6:00 PM\nSat: 9:00 AM - 1:00 PM')
     profile_picture = models.ImageField(upload_to='clinic_profile_pics/', blank=True, null=True, help_text="Main profile picture of your clinic")
     cover_photo = models.ImageField(upload_to='clinic_cover_photos/', blank=True, null=True, help_text="Cover photo for your clinic page")
-    # Auto-managed presence timestamp (middleware + clinic_ping). Never user input —
-    # kept in the model but hidden from all forms.
     last_seen = models.DateTimeField(null=True, blank=True)
+    facebook_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
+    linkedin_url = models.URLField(blank=True)
     is_verified = models.BooleanField(default=False)
     # Acceptance flags: whether the clinic accepts certain patient conditions
     accepts_heart_problems = models.BooleanField(default=True, help_text="Accept patients with heart problems")
@@ -75,6 +78,7 @@ class Clinic(models.Model):
     accepts_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use a wheelchair")
     accepts_walker = models.BooleanField(default=True, help_text="Accept patients who use a walker")
     accepts_crutch = models.BooleanField(default=True, help_text="Accept patients who use crutches")
+    accepts_electric_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use an electric wheelchair")
     accepts_bowel_incontinence = models.BooleanField(default=True, help_text="Accept patients with bowel incontinence")
     accepts_urine_incontinence = models.BooleanField(default=True, help_text="Accept patients with urine incontinence")
     accepts_medical_condom = models.BooleanField(default=True, help_text="Accept patients using a medical condom")

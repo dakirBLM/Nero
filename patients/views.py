@@ -546,6 +546,7 @@ def patient_dashboard_view(request):
                 ('uses_wheelchair', 'accepts_wheelchair'),
                 ('uses_walker', 'accepts_walker'),
                 ('uses_crutch', 'accepts_crutch'),
+                ('uses_electric_wheelchair', 'accepts_electric_wheelchair'),
                 ('has_bedsores', 'accepts_bedsores'),
                 ('has_diabetes', 'accepts_diabetes'),
                 ('uses_insulin', 'accepts_insulin'),
