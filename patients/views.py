@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse, Http404, FileResponse, JsonResponse
 from django.conf import settings
 from django.urls import reverse
-from clinics.compatibility import SPECIAL_CARE_REQUIREMENTS
+from clinics.compatibility import CONDITION_RULES
 from clinics.models import Appointment
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
@@ -542,29 +542,11 @@ def patient_dashboard_view(request):
                     service_score = 0.7
 
             # Acceptance score: ensure clinic accepts the patient's special conditions
-            # Map medical record boolean fields to clinic acceptance fields
             condition_map = [
-                ('uses_wheelchair', 'accepts_wheelchair'),
-                ('uses_walker', 'accepts_walker'),
-                ('uses_crutch', 'accepts_crutch'),
-                ('uses_electric_wheelchair', 'accepts_electric_wheelchair'),
-                ('has_bedsores', 'accepts_bedsores'),
-                ('has_diabetes', 'accepts_diabetes'),
-                ('uses_insulin', 'accepts_insulin'),
-                ('has_heart_problems', 'accepts_heart_problems'),
-                ('has_high_blood_pressure', 'accepts_high_blood_pressure'),
-                ('has_infectious_diseases', 'accepts_infectious_diseases'),
-                ('has_vein_thrombosis', 'accepts_vein_thrombosis'),
-                ('has_depression', 'accepts_depression'),
-                ('uses_permanent_catheter', 'accepts_catheter'),
-                ('uses_intermittent_catheter', 'accepts_catheter'),
-                ('uses_medical_condom', 'accepts_medical_condom'),
-                ('uses_diapers', 'accepts_diapers'),
-            ]
-            condition_map.extend(
                 (record_field, clinic_field)
-                for record_field, clinic_field in SPECIAL_CARE_REQUIREMENTS
-            )
+                for record_fields, clinic_field, _reason in CONDITION_RULES
+                for record_field in record_fields
+            ]
             required_conditions = 0
             accepts_ok = 0
             for mr_field, clinic_field in condition_map:

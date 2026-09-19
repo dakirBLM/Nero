@@ -14,7 +14,7 @@ class MedicalRecordChoiceField(forms.ModelChoiceField):
         base = str(obj)
         notes = clinic_compatibility_errors(obj, self._clinic) if self._clinic else []
         if notes:
-            return f"{base} — ({'; '.join(notes)})"
+            return f"{base} — ({'; '.join(str(note) for note in notes)})"
         return base
 
 class MedicalRecordSelect(forms.Select):
