@@ -1463,16 +1463,6 @@
                         {{ form.facilities }}
                         <div class="helper-text">{% trans "Available facilities and equipment (comma separated)" %}</div>
                     </div>
-
-                    <div class="form-group full-width">
-                        <label for="id_hours_of_operation" class="form-label">
-                            {% trans "Hours of Operation" %} <span class="required">*</span>
-                        </label>
-                        {{ form.hours_of_operation }}
-                        {% if form.hours_of_operation.errors %}
-                            <div class="field-error">⚠ {{ form.hours_of_operation.errors.0 }}</div>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
 
@@ -1496,9 +1486,9 @@
                 </div>
             </div>
 
-            <!-- Section 5: Media & Social -->
+            <!-- Section 5: Media -->
             <div class="form-section">
-                <h2>{% trans "Media & Social Links" %}</h2>
+                <h2>{% trans "Media" %}</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="id_profile_picture" class="form-label">
@@ -1514,27 +1504,6 @@
                         </label>
                         {{ form.cover_photo }}
                         <div class="helper-text">{% trans "Recommended: 1200x300px landscape image" %}</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_facebook_url" class="form-label">
-                            {% trans "Facebook URL" %}
-                        </label>
-                        {{ form.facebook_url }}
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_instagram_url" class="form-label">
-                            {% trans "Instagram URL" %}
-                        </label>
-                        {{ form.instagram_url }}
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_linkedin_url" class="form-label">
-                            {% trans "LinkedIn URL" %}
-                        </label>
-                        {{ form.linkedin_url }}
                     </div>
                 </div>
             </div>
