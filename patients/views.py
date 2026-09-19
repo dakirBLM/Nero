@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse, Http404, FileResponse, JsonResponse
 from django.conf import settings
 from django.urls import reverse
+from clinics.compatibility import CONDITION_RULES
 from clinics.models import Appointment
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
@@ -541,24 +542,10 @@ def patient_dashboard_view(request):
                     service_score = 0.7
 
             # Acceptance score: ensure clinic accepts the patient's special conditions
-            # Map medical record boolean fields to clinic acceptance fields
             condition_map = [
-                ('uses_wheelchair', 'accepts_wheelchair'),
-                ('uses_walker', 'accepts_walker'),
-                ('uses_crutch', 'accepts_crutch'),
-                ('uses_electric_wheelchair', 'accepts_electric_wheelchair'),
-                ('has_bedsores', 'accepts_bedsores'),
-                ('has_diabetes', 'accepts_diabetes'),
-                ('uses_insulin', 'accepts_insulin'),
-                ('has_heart_problems', 'accepts_heart_problems'),
-                ('has_high_blood_pressure', 'accepts_high_blood_pressure'),
-                ('has_infectious_diseases', 'accepts_infectious_diseases'),
-                ('has_vein_thrombosis', 'accepts_vein_thrombosis'),
-                ('has_depression', 'accepts_depression'),
-                ('uses_permanent_catheter', 'accepts_catheter'),
-                ('uses_intermittent_catheter', 'accepts_catheter'),
-                ('uses_medical_condom', 'accepts_medical_condom'),
-                ('uses_diapers', 'accepts_diapers'),
+                (record_field, clinic_field)
+                for record_fields, clinic_field, _reason in CONDITION_RULES
+                for record_field in record_fields
             ]
             required_conditions = 0
             accepts_ok = 0
@@ -942,14 +929,28 @@ def secure_encrypted_media(request, blob_name):
     response['Content-Disposition'] = f'{disposition}; filename="{filename}"'
     return response
 
+@login_required
 def search_clinics_view(request):
     query = request.GET.get('q', '')
     specialization = request.GET.get('specialization', 'all')
     city = request.GET.get('city', '')
+    age_range = request.GET.get('age_range', 'all')
+    needs_tracheostomy = request.GET.get('needs_tracheostomy') == '1'
+    needs_dependent = request.GET.get('needs_dependent') == '1'
+    needs_bedridden = request.GET.get('needs_bedridden') == '1'
+    has_search_filters = bool(
+        query
+        or (specialization and specialization != 'all')
+        or city
+        or (age_range and age_range != 'all')
+        or needs_tracheostomy
+        or needs_dependent
+        or needs_bedridden
+    )
     all_clinics = Clinic.objects.all()
     featured_clinics = None
     clinics_to_display = None
-    if not query and specialization == 'all' and not city:
+    if not has_search_filters:
         clinic_list = list(all_clinics)
         if clinic_list:
             featured_clinics = random.sample(clinic_list, min(6, len(clinic_list)))
@@ -970,6 +971,24 @@ def search_clinics_view(request):
         if city:
             clinics = clinics.filter(city__icontains=city)
 
+        if age_range == Clinic.AgeRange.ADULTS_ONLY:
+            clinics = clinics.filter(
+                age_range__in=[Clinic.AgeRange.ADULTS_ONLY, Clinic.AgeRange.BOTH]
+            )
+        elif age_range == Clinic.AgeRange.CHILDREN_ONLY:
+            clinics = clinics.filter(
+                age_range__in=[Clinic.AgeRange.CHILDREN_ONLY, Clinic.AgeRange.BOTH]
+            )
+        elif age_range == Clinic.AgeRange.BOTH:
+            clinics = clinics.filter(age_range=Clinic.AgeRange.BOTH)
+
+        if needs_tracheostomy:
+            clinics = clinics.filter(accepts_tracheostomy_tube=True)
+        if needs_dependent:
+            clinics = clinics.filter(accepts_dependent_patients=True)
+        if needs_bedridden:
+            clinics = clinics.filter(accepts_bedridden_patients=True)
+
         paginator = Paginator(clinics, 9)
         page_number = request.GET.get('page', 1)
         clinics_to_display = paginator.get_page(page_number)
@@ -982,6 +1001,12 @@ def search_clinics_view(request):
         'query': query,
         'specialization': specialization,
         'city': city,
+        'age_range': age_range,
+        'needs_tracheostomy': needs_tracheostomy,
+        'needs_dependent': needs_dependent,
+        'needs_bedridden': needs_bedridden,
+        'has_search_filters': has_search_filters,
+        'age_range_choices': Clinic.AgeRange.choices,
         'specialization_choices': Clinic.SPECIALIZATION_CHOICES,
         'patient': patient,
     }

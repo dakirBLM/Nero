@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from clinics.compatibility import is_clinic_compatible
+
 
 def _get_patient_for_request(request):
     from patients.models import Patient
@@ -26,68 +28,11 @@ def _medical_compatible_clinics(medical_record, queryset=None):
     from clinics.models import Clinic
 
     clinics_qs = queryset if queryset is not None else Clinic.objects.all()
-    compatible = []
-    for clinic in clinics_qs:
-        incompatible = False
-
-        if getattr(medical_record, 'has_heart_problems', False) and not clinic.accepts_heart_problems:
-            incompatible = True
-
-        if (
-            getattr(medical_record, 'uses_permanent_catheter', False)
-            or getattr(medical_record, 'uses_intermittent_catheter', False)
-            or getattr(medical_record, 'uses_urine_tube', False)
-        ) and not clinic.accepts_catheter:
-            incompatible = True
-
-        if getattr(medical_record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
-            incompatible = True
-        if getattr(medical_record, 'uses_walker', False) and not clinic.accepts_walker:
-            incompatible = True
-        if getattr(medical_record, 'uses_crutch', False) and not clinic.accepts_crutch:
-            incompatible = True
-        if getattr(medical_record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
-            incompatible = True
-
-        if not getattr(medical_record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
-            incompatible = True
-        if not getattr(medical_record, 'urine_control', True) and not clinic.accepts_urine_incontinence:
-            incompatible = True
-
-        if getattr(medical_record, 'uses_medical_condom', False) and not clinic.accepts_medical_condom:
-            incompatible = True
-        if getattr(medical_record, 'uses_diapers', False) and not clinic.accepts_diapers:
-            incompatible = True
-
-        if not getattr(medical_record, 'can_breathe_normally', True) and not clinic.accepts_breathing_issues:
-            incompatible = True
-
-        if getattr(medical_record, 'uses_feeding_tube', False) and not clinic.accepts_feeding_tube:
-            incompatible = True
-        if getattr(medical_record, 'uses_stool_tube', False) and not clinic.accepts_stool_tube:
-            incompatible = True
-        if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_urine_tube:
-            incompatible = True
-
-        if getattr(medical_record, 'has_bedsores', False) and not clinic.accepts_bedsores:
-            incompatible = True
-        if getattr(medical_record, 'has_diabetes', False) and not clinic.accepts_diabetes:
-            incompatible = True
-        if getattr(medical_record, 'uses_insulin', False) and not clinic.accepts_insulin:
-            incompatible = True
-        if getattr(medical_record, 'has_high_blood_pressure', False) and not clinic.accepts_high_blood_pressure:
-            incompatible = True
-        if getattr(medical_record, 'has_infectious_diseases', False) and not clinic.accepts_infectious_diseases:
-            incompatible = True
-        if getattr(medical_record, 'has_vein_thrombosis', False) and not clinic.accepts_vein_thrombosis:
-            incompatible = True
-        if getattr(medical_record, 'has_depression', False) and not clinic.accepts_depression:
-            incompatible = True
-
-        if not incompatible:
-            compatible.append(clinic)
-
-    return compatible
+    return [
+        clinic
+        for clinic in clinics_qs
+        if is_clinic_compatible(medical_record, clinic)
+    ]
 
 
 COUNTRY_TO_CONTINENT = {

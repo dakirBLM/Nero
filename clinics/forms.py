@@ -1,5 +1,6 @@
 from django import forms
 from patients.models import MedicalRecord
+from .compatibility import clinic_compatibility_errors, is_clinic_compatible
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from accounts.forms import ClinicSignUpForm
 from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
@@ -11,19 +12,9 @@ class MedicalRecordChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         base = str(obj)
-        notes = []
-        if self._clinic:
-            if getattr(obj, 'has_heart_problems', False) and not self._clinic.accepts_heart_problems:
-                notes.append('clinic does not accept heart problems')
-            has_catheter = (
-                getattr(obj, 'uses_permanent_catheter', False)
-                or getattr(obj, 'uses_intermittent_catheter', False)
-                or getattr(obj, 'uses_urine_tube', False)
-            )
-            if has_catheter and not self._clinic.accepts_catheter:
-                notes.append('clinic does not accept catheter')
+        notes = clinic_compatibility_errors(obj, self._clinic) if self._clinic else []
         if notes:
-            return f"{base} — ({'; '.join(notes)})"
+            return f"{base} — ({'; '.join(str(note) for note in notes)})"
         return base
 
 class MedicalRecordSelect(forms.Select):
@@ -64,16 +55,18 @@ class ClinicUpdateForm(forms.ModelForm):
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state', 
             'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization', 
             'established_date', 'facilities', 
-            'languages_spoken', 'hours_of_operation', 
+            'languages_spoken', 'hours_of_operation', 'age_range',
             'profile_picture', 'cover_photo', 'facebook_url', 'instagram_url', 'linkedin_url',
             'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_electric_wheelchair', 'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
-            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression'
+            'accepts_high_blood_pressure', 'accepts_infectious_diseases', 'accepts_vein_thrombosis', 'accepts_depression',
+            'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients',
         ]
         widgets = {
             'established_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'age_range': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'hours_of_operation': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
@@ -114,6 +107,9 @@ class ClinicUpdateForm(forms.ModelForm):
             'accepts_infectious_diseases': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_vein_thrombosis': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'accepts_depression': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'accepts_tracheostomy_tube': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'accepts_dependent_patients': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'accepts_bedridden_patients': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -210,58 +206,9 @@ class AppointmentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         qs = MedicalRecord.objects.filter(patient=self.patient) if self.patient else MedicalRecord.objects.none()
         # Determine which records are incompatible for disabling in the select options
-        disabled_ids = []
-        for rec in qs:
-            # Check all relevant fields
-            incompatible = False
-            if getattr(rec, 'has_heart_problems', False) and not self.clinic.accepts_heart_problems:
-                incompatible = True
-            if (
-                getattr(rec, 'uses_permanent_catheter', False)
-                or getattr(rec, 'uses_intermittent_catheter', False)
-                or getattr(rec, 'uses_urine_tube', False)
-            ) and not self.clinic.accepts_catheter:
-                incompatible = True
-            if getattr(rec, 'uses_wheelchair', False) and not self.clinic.accepts_wheelchair:
-                incompatible = True
-            if getattr(rec, 'uses_walker', False) and not self.clinic.accepts_walker:
-                incompatible = True
-            if getattr(rec, 'uses_crutch', False) and not self.clinic.accepts_crutch:
-                incompatible = True
-            if getattr(rec, 'uses_electric_wheelchair', False) and not self.clinic.accepts_electric_wheelchair:
-                incompatible = True
-            if not getattr(rec, 'bowel_control', True) and not self.clinic.accepts_bowel_incontinence:
-                incompatible = True
-            if not getattr(rec, 'urine_control', True) and not self.clinic.accepts_urine_incontinence:
-                incompatible = True
-            if getattr(rec, 'uses_medical_condom', False) and not self.clinic.accepts_medical_condom:
-                incompatible = True
-            if getattr(rec, 'uses_diapers', False) and not self.clinic.accepts_diapers:
-                incompatible = True
-            if not getattr(rec, 'can_breathe_normally', True) and not self.clinic.accepts_breathing_issues:
-                incompatible = True
-            if getattr(rec, 'uses_feeding_tube', False) and not self.clinic.accepts_feeding_tube:
-                incompatible = True
-            if getattr(rec, 'uses_stool_tube', False) and not self.clinic.accepts_stool_tube:
-                incompatible = True
-            if getattr(rec, 'uses_urine_tube', False) and not self.clinic.accepts_urine_tube:
-                incompatible = True
-            if getattr(rec, 'has_bedsores', False) and not self.clinic.accepts_bedsores:
-                incompatible = True
-            if getattr(rec, 'has_diabetes', False) and not self.clinic.accepts_diabetes:
-                incompatible = True
-            if getattr(rec, 'uses_insulin', False) and not self.clinic.accepts_insulin:
-                incompatible = True
-            if getattr(rec, 'has_high_blood_pressure', False) and not self.clinic.accepts_high_blood_pressure:
-                incompatible = True
-            if getattr(rec, 'has_infectious_diseases', False) and not self.clinic.accepts_infectious_diseases:
-                incompatible = True
-            if getattr(rec, 'has_vein_thrombosis', False) and not self.clinic.accepts_vein_thrombosis:
-                incompatible = True
-            if getattr(rec, 'has_depression', False) and not self.clinic.accepts_depression:
-                incompatible = True
-            if incompatible:
-                disabled_ids.append(rec.pk)
+        disabled_ids = [
+            rec.pk for rec in qs if not is_clinic_compatible(rec, self.clinic)
+        ]
 
         # Show all records; label indicates incompatibility; disable incompatible options
         self.fields['medical_record'] = MedicalRecordChoiceField(
@@ -272,53 +219,8 @@ class AppointmentForm(forms.ModelForm):
 
     def clean_medical_record(self):
         record = self.cleaned_data.get('medical_record')
-        clinic = self.clinic
-        if record and clinic:
-            # Check all relevant fields for incompatibility
-            if getattr(record, 'has_heart_problems', False) and not clinic.accepts_heart_problems:
-                raise forms.ValidationError('Clinic does not accept patients with heart problems.')
-            if (
-                getattr(record, 'uses_permanent_catheter', False)
-                or getattr(record, 'uses_intermittent_catheter', False)
-                or getattr(record, 'uses_urine_tube', False)
-            ) and not clinic.accepts_catheter:
-                raise forms.ValidationError('Clinic does not accept patients using a catheter.')
-            if getattr(record, 'uses_wheelchair', False) and not clinic.accepts_wheelchair:
-                raise forms.ValidationError('Clinic does not accept patients using a wheelchair.')
-            if getattr(record, 'uses_walker', False) and not clinic.accepts_walker:
-                raise forms.ValidationError('Clinic does not accept patients using a walker.')
-            if getattr(record, 'uses_crutch', False) and not clinic.accepts_crutch:
-                raise forms.ValidationError('Clinic does not accept patients using crutches.')
-            if getattr(record, 'uses_electric_wheelchair', False) and not clinic.accepts_electric_wheelchair:
-                raise forms.ValidationError('Clinic does not accept patients using an electric wheelchair.')
-            if not getattr(record, 'bowel_control', True) and not clinic.accepts_bowel_incontinence:
-                raise forms.ValidationError('Clinic does not accept patients with bowel incontinence.')
-            if not getattr(record, 'urine_control', True) and not clinic.accepts_urine_incontinence:
-                raise forms.ValidationError('Clinic does not accept patients with urine incontinence.')
-            if getattr(record, 'uses_medical_condom', False) and not clinic.accepts_medical_condom:
-                raise forms.ValidationError('Clinic does not accept patients using a medical condom.')
-            if getattr(record, 'uses_diapers', False) and not clinic.accepts_diapers:
-                raise forms.ValidationError('Clinic does not accept patients using diapers.')
-            if not getattr(record, 'can_breathe_normally', True) and not clinic.accepts_breathing_issues:
-                raise forms.ValidationError('Clinic does not accept patients with breathing issues.')
-            if getattr(record, 'uses_feeding_tube', False) and not clinic.accepts_feeding_tube:
-                raise forms.ValidationError('Clinic does not accept patients using a feeding tube.')
-            if getattr(record, 'uses_stool_tube', False) and not clinic.accepts_stool_tube:
-                raise forms.ValidationError('Clinic does not accept patients using a stool tube.')
-            if getattr(record, 'uses_urine_tube', False) and not clinic.accepts_urine_tube:
-                raise forms.ValidationError('Clinic does not accept patients using a urine tube.')
-            if getattr(record, 'has_bedsores', False) and not clinic.accepts_bedsores:
-                raise forms.ValidationError('Clinic does not accept patients with bedsores.')
-            if getattr(record, 'has_diabetes', False) and not clinic.accepts_diabetes:
-                raise forms.ValidationError('Clinic does not accept patients with diabetes.')
-            if getattr(record, 'uses_insulin', False) and not clinic.accepts_insulin:
-                raise forms.ValidationError('Clinic does not accept patients using insulin.')
-            if getattr(record, 'has_high_blood_pressure', False) and not clinic.accepts_high_blood_pressure:
-                raise forms.ValidationError('Clinic does not accept patients with high blood pressure.')
-            if getattr(record, 'has_infectious_diseases', False) and not clinic.accepts_infectious_diseases:
-                raise forms.ValidationError('Clinic does not accept patients with infectious diseases.')
-            if getattr(record, 'has_vein_thrombosis', False) and not clinic.accepts_vein_thrombosis:
-                raise forms.ValidationError('Clinic does not accept patients with vein thrombosis.')
-            if getattr(record, 'has_depression', False) and not clinic.accepts_depression:
-                raise forms.ValidationError('Clinic does not accept patients with depression.')
+        if record and self.clinic:
+            errors = clinic_compatibility_errors(record, self.clinic)
+            if errors:
+                raise forms.ValidationError(errors[0])
         return record

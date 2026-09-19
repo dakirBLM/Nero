@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -1049,6 +1050,10 @@
                         <div class="info-item">
                             <strong>Languages Spoken:</strong>
                             <span>{{ clinic.languages_spoken }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>{% trans "Age group treated:" %}</strong>
+                            <span>{{ clinic.get_age_range_display }}</span>
                         </div>
                         <div class="info-item">
                             <strong>Established:</strong>
