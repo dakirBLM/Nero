@@ -1457,6 +1457,23 @@
                     </div>
 
                     <div class="form-group full-width">
+                        <label class="form-label">
+                            {% trans "Patient Age Group Treated" %} <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-grid">
+                            {% for radio in form.age_range %}
+                                <div class="checkbox-group">
+                                    {{ radio.tag }}
+                                    <label for="{{ radio.id_for_label }}" class="checkbox-label">{{ radio.choice_label }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if form.age_range.errors %}
+                            <div class="field-error">⚠ {{ form.age_range.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group full-width">
                         <label for="id_facilities" class="form-label">
                             {% trans "Facilities & Equipment" %}
                         </label>

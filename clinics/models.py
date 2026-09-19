@@ -30,6 +30,11 @@ class Post(models.Model):
 
 
 class Clinic(models.Model):
+    class AgeRange(models.TextChoices):
+        ADULTS_ONLY = 'adults_only', _('Adults only')
+        CHILDREN_ONLY = 'children_only', _('Children only')
+        BOTH = 'both', _('Both adults and children')
+
     SPECIALIZATION_CHOICES = (
         ('Convalescence', _('Convalescence')),
         ('Weight loss', _('Weight loss')),
@@ -67,6 +72,12 @@ class Clinic(models.Model):
     cover_photo = models.ImageField(upload_to='clinic_cover_photos/', blank=True, null=True, help_text="Cover photo for your clinic page")
     last_seen = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+    age_range = models.CharField(
+        max_length=20,
+        choices=AgeRange.choices,
+        default=AgeRange.BOTH,
+        help_text="Patient age group treated by the clinic",
+    )
     # Acceptance flags: whether the clinic accepts certain patient conditions
     accepts_heart_problems = models.BooleanField(default=True, help_text="Accept patients with heart problems")
     accepts_catheter = models.BooleanField(default=True, help_text="Accept patients using a catheter (permanent or intermittent)")
@@ -88,6 +99,18 @@ class Clinic(models.Model):
     accepts_infectious_diseases = models.BooleanField(default=True, help_text="Accept patients with infectious diseases")
     accepts_vein_thrombosis = models.BooleanField(default=True, help_text="Accept patients with vein thrombosis")
     accepts_depression = models.BooleanField(default=True, help_text="Accept patients with depression")
+    accepts_tracheostomy_tube = models.BooleanField(
+        default=True,
+        help_text=_("Accept patients using a tracheostomy tube"),
+    )
+    accepts_dependent_patients = models.BooleanField(
+        default=True,
+        help_text=_("Accept dependent patients"),
+    )
+    accepts_bedridden_patients = models.BooleanField(
+        default=True,
+        help_text=_("Accept bedridden patients"),
+    )
     
     def __str__(self):
         return self.clinic_name

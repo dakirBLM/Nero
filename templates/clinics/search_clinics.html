@@ -1,3 +1,4 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1036,6 +1037,10 @@
                                         <span class="info-value specialization">{{ clinic.specialization }}</span>
                                     </div>
                                     <div class="info-item">
+                                        <span class="info-label">{% trans "Age group treated" %}</span>
+                                        <span class="info-value">{{ clinic.get_age_range_display }}</span>
+                                    </div>
+                                    <div class="info-item">
                                         <span class="info-label">Location</span>
                                         <span class="info-value">{{ clinic.address|truncatewords:8 }}</span>
                                     </div>
@@ -1090,6 +1095,10 @@
                                             <div class="detail-item">
                                                 <strong>Specialization</strong>
                                                 {{ clinic.specialization }}
+                                            </div>
+                                            <div class="detail-item">
+                                                <strong>{% trans "Age group treated" %}</strong>
+                                                {{ clinic.get_age_range_display }}
                                             </div>
                                             <div class="detail-item">
                                                 <strong>Address</strong>

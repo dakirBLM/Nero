@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('clinics', '0029_restore_clinic_columns'),
+        ('clinics', '0030_clinic_accepts_bedridden_patients_and_more'),
     ]
 
     operations = [
