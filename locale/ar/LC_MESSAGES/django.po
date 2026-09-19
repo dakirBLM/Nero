@@ -33,15 +33,6 @@ msgstr "علاج الجهاز العضلي الهيكلي"
 msgid "Neurological treatment"
 msgstr "العلاج العصبي"
 
-msgid "Accept patients using tracheostomy tube"
-msgstr "قبول المرضى الذين يستخدمون أنبوب فغر الرغامى"
-
-msgid "Accept Dependent patients"
-msgstr "قبول المرضى المعتمدين على الغير"
-
-msgid "Accept Bedridden patients"
-msgstr "قبول المرضى طريحي الفراش"
-
 msgid "Patient age group treated"
 msgstr "الفئة العمرية للمرضى التي تعالجها العيادة"
 

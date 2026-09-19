@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse, Http404, FileResponse, JsonResponse
 from django.conf import settings
 from django.urls import reverse
+from clinics.compatibility import SPECIAL_CARE_REQUIREMENTS
 from clinics.models import Appointment
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
@@ -559,10 +560,11 @@ def patient_dashboard_view(request):
                 ('uses_intermittent_catheter', 'accepts_catheter'),
                 ('uses_medical_condom', 'accepts_medical_condom'),
                 ('uses_diapers', 'accepts_diapers'),
-                ('uses_tracheostomy_tube', 'accepts_tracheostomy_tube'),
-                ('is_dependent_patient', 'accepts_dependent_patients'),
-                ('is_bedridden_patient', 'accepts_bedridden_patients'),
             ]
+            condition_map.extend(
+                (record_field, clinic_field)
+                for record_field, clinic_field in SPECIAL_CARE_REQUIREMENTS
+            )
             required_conditions = 0
             accepts_ok = 0
             for mr_field, clinic_field in condition_map:
@@ -945,6 +947,7 @@ def secure_encrypted_media(request, blob_name):
     response['Content-Disposition'] = f'{disposition}; filename="{filename}"'
     return response
 
+@login_required
 def search_clinics_view(request):
     query = request.GET.get('q', '')
     specialization = request.GET.get('specialization', 'all')

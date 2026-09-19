@@ -319,19 +319,19 @@ class ClinicSignUpForm(UserCreationForm):
     accepts_tracheostomy_tube = forms.BooleanField(
         required=False,
         initial=True,
-        label=_('Accept patients using tracheostomy tube'),
+        label=_('Accept patients using a tracheostomy tube'),
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
     accepts_dependent_patients = forms.BooleanField(
         required=False,
         initial=True,
-        label=_('Accept Dependent patients'),
+        label=_('Accept dependent patients'),
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
     accepts_bedridden_patients = forms.BooleanField(
         required=False,
         initial=True,
-        label=_('Accept Bedridden patients'),
+        label=_('Accept bedridden patients'),
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
     )
     age_range = forms.ChoiceField(

@@ -1,8 +1,11 @@
 from datetime import date
 
 from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
 
 from accounts.models import User
+from clinics.forms import AppointmentForm
 from clinics.models import Clinic
 from patients.models import Patient, MedicalRecord
 from recommendations.views import _medical_compatible_clinics
@@ -117,3 +120,37 @@ class SmartRecommendationCompatibilityTests(TestCase):
         self.assertNotIn(self.reject_trach.id, matched)
         self.assertNotIn(self.reject_dependent.id, matched)
         self.assertNotIn(self.reject_bedridden.id, matched)
+
+    def test_age_range_is_enforced_in_recommendations_and_booking(self):
+        today = timezone.localdate()
+        child_record = _make_record(
+            'child',
+            date_of_birth=date(today.year - 10, 1, 1),
+        )
+        adults_only = _make_clinic(
+            'adultsonly',
+            age_range=Clinic.AgeRange.ADULTS_ONLY,
+        )
+
+        self.assertNotIn(adults_only.id, self._ids(child_record))
+
+        form = AppointmentForm(
+            data={
+                'medical_record': child_record.id,
+                'appointment_date': today,
+                'appointment_time': '10:00',
+                'notes': '',
+            },
+            patient=child_record.patient,
+            clinic=adults_only,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn('Clinic only treats adults.', form.errors['medical_record'])
+
+
+class ClinicSearchAuthenticationTests(TestCase):
+    def test_anonymous_user_is_redirected_to_login(self):
+        response = self.client.get(reverse('search_clinics'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('login'), response.url)
