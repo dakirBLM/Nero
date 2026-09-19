@@ -68,6 +68,12 @@ def _medical_compatible_clinics(medical_record, queryset=None):
             incompatible = True
         if getattr(medical_record, 'uses_urine_tube', False) and not clinic.accepts_urine_tube:
             incompatible = True
+        if getattr(medical_record, 'uses_tracheostomy_tube', False) and not clinic.accepts_tracheostomy_tube:
+            incompatible = True
+        if getattr(medical_record, 'is_dependent_patient', False) and not clinic.accepts_dependent_patients:
+            incompatible = True
+        if getattr(medical_record, 'is_bedridden_patient', False) and not clinic.accepts_bedridden_patients:
+            incompatible = True
 
         if getattr(medical_record, 'has_bedsores', False) and not clinic.accepts_bedsores:
             incompatible = True

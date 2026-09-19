@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1751,6 +1751,10 @@
                                 <span class="detail-value">{{ clinic.languages_spoken }}</span>
                             </div>
                             <div class="detail-item">
+                                <span class="detail-label">{% trans "Age group treated:" %}</span>
+                                <span class="detail-value">{{ clinic.get_age_range_display }}</span>
+                            </div>
+                            <div class="detail-item">
                                 <span class="detail-label">Established:</span>
                                 <span class="detail-value">{{ clinic.established_date|date:"F Y" }}</span>
                             </div>
@@ -1844,6 +1848,10 @@
                             <div class="detail-item">
                                 <span class="detail-label">Languages:</span>
                                 <span class="detail-value">{{ clinic.languages_spoken }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{% trans "Age group treated:" %}</span>
+                                <span class="detail-value">{{ clinic.get_age_range_display }}</span>
                             </div>
                         </div>
                     </div>

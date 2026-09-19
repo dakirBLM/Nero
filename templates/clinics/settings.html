@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1554,6 +1554,26 @@
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
                                             {{ form.languages_spoken.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label">{% trans "Patient Age Group Treated" %}</label>
+                                    <div class="checkbox-grid">
+                                        {% for option in form.age_range %}
+                                            <div class="checkbox-item">
+                                                {{ option.tag }}
+                                                <label class="checkbox-label" for="{{ option.id_for_label }}">
+                                                    {{ option.choice_label }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.age_range.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.age_range.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>

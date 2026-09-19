@@ -135,6 +135,17 @@ class MedicalRecord(models.Model):
     uses_feeding_tube = models.BooleanField(default=False)
     uses_stool_tube = models.BooleanField(default=False)
     uses_urine_tube = models.BooleanField(default=False)
+    uses_tracheostomy_tube = models.BooleanField(default=False)
+
+    @property
+    def is_dependent_patient(self):
+        """Use the existing self-reliance answer for clinic compatibility."""
+        return not self.is_self_reliant
+
+    @property
+    def is_bedridden_patient(self):
+        """Use the existing movement assessment for clinic compatibility."""
+        return self.movement_ability == 'bedridden'
 
     # Medical conditions
     has_bedsores = models.BooleanField(default=False)

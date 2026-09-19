@@ -1847,6 +1847,10 @@
                                 <span class="detail-value">{{ clinic.specialization }}</span>
                             </div>
                             <div class="detail-item">
+                                <span class="detail-label">{% trans "Age group treated:" %}</span>
+                                <span class="detail-value">{{ clinic.get_age_range_display }}</span>
+                            </div>
+                            <div class="detail-item">
                                 <span class="detail-label">{% trans "Languages:" %}</span>
                                 <span class="detail-value">{{ clinic.languages_spoken }}</span>
                             </div>
