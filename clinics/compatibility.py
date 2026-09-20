@@ -13,7 +13,6 @@ CONDITION_RULES = (
     (('uses_wheelchair',), 'accepts_wheelchair', _('Clinic does not accept patients using a wheelchair.')),
     (('uses_walker',), 'accepts_walker', _('Clinic does not accept patients using a walker.')),
     (('uses_crutch',), 'accepts_crutch', _('Clinic does not accept patients using crutches.')),
-    (('uses_electric_wheelchair',), 'accepts_electric_wheelchair', _('Clinic does not accept patients using an electric wheelchair.')),
     (('uses_medical_condom',), 'accepts_medical_condom', _('Clinic does not accept patients using a medical condom.')),
     (('uses_diapers',), 'accepts_diapers', _('Clinic does not accept patients using diapers.')),
     (('uses_feeding_tube',), 'accepts_feeding_tube', _('Clinic does not accept patients using a feeding tube.')),

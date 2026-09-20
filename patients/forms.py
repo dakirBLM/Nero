@@ -53,7 +53,7 @@ class MedicalRecordForm(forms.ModelForm):
             'main_diagnosis', 'injury_date', 'movement_ability',
             'current_medications', 'allergies', 'previous_surgeries',
             # Mobility aids
-            'uses_wheelchair', 'uses_walker', 'uses_crutch', 'uses_electric_wheelchair',
+            'uses_wheelchair', 'uses_walker', 'uses_crutch',
             # General patient condition
             'bowel_control', 'urine_control', 'uses_permanent_catheter', 'uses_intermittent_catheter',
             'uses_medical_condom', 'uses_diapers', 'can_breathe_normally', 'can_eat_independently',
