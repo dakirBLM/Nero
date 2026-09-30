@@ -89,8 +89,12 @@ INSTALLED_APPS = [
     'chat',
     'posts',
     'reviews',
+    'agency',
     'django_extensions',
 ]
+
+# Shared password that unlocks /agency/ (central appointments dashboard).
+AGENCY_DASHBOARD_PASSWORD = os.environ.get('AGENCY_DASHBOARD_PASSWORD', 'dakir123')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Dashboard • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #111827; color: #1f2937; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .card { background: #fff; border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 25px 60px rgba(0,0,0,.35); }
+        .logo { display: block; height: 32px; margin: 0 auto 24px; }
+        .tag { display: inline-block; background: #111827; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; padding: 5px 12px; border-radius: 999px; margin-bottom: 14px; }
+        h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        p.sub { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        input { width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 15px; font-family: inherit; }
+        input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+        button { width: 100%; margin-top: 16px; padding: 13px; border: none; border-radius: 10px; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+        button:hover { filter: brightness(1.05); }
+        .error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 14px; font-size: 13px; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="{% static 'logo1.png' %}" alt="NERO" class="logo">
+        <span class="tag">AGENCY</span>
+        <h1>Central appointments</h1>
+        <p class="sub">Enter the agency password to manage every clinic's appointments from one place.</p>
+        {% if error %}<div class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>{% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autofocus autocomplete="current-password">
+            <button type="submit"><i class="fas fa-unlock-alt"></i> Unlock dashboard</button>
+        </form>
+    </div>
+</body>
+</html>

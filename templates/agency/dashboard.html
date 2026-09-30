@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Dashboard • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8f9fa; color: #1a1a1a; line-height: 1.5; }
+        a { color: inherit; text-decoration: none; }
+
+        .topbar { background: #fff; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 10; }
+        .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+        .topbar img { height: 28px; }
+        .tag { background: #111827; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; padding: 4px 10px; border-radius: 999px; }
+        .topbar .spacer { flex: 1; }
+        .lock-btn { border: 1px solid #e5e7eb; background: #fff; color: #ef4444; padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; }
+        .lock-btn:hover { background: #fef2f2; }
+
+        .page { max-width: 1280px; margin: 0 auto; padding: 28px 24px 60px; }
+        h1 { font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        h1 i { color: #3b82f6; }
+        .subtitle { color: #6b7280; font-size: 14px; margin-top: 4px; margin-bottom: 24px; }
+        h2 { font-size: 17px; font-weight: 700; margin: 32px 0 14px; display: flex; align-items: center; gap: 8px; }
+
+        .flash { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; border: 1px solid; }
+        .flash.success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+        .flash.error { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+        .flash.info, .flash.warning { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+
+        .status-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+        .status-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #fff; border: 1px solid #e5e7eb; font-size: 13px; font-weight: 500; color: #374151; transition: .15s; }
+        .status-chip:hover { border-color: #3b82f6; }
+        .status-chip.active { background: #111827; color: #fff; border-color: #111827; }
+        .status-chip .n { background: rgba(0,0,0,.06); border-radius: 999px; padding: 1px 8px; font-weight: 700; font-size: 12px; }
+        .status-chip.active .n { background: rgba(255,255,255,.18); }
+
+        .clinic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .clinic-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; transition: .15s; }
+        .clinic-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-2px); }
+        .clinic-head { display: flex; align-items: center; gap: 12px; }
+        .clinic-avatar { width: 46px; height: 46px; border-radius: 12px; object-fit: cover; background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+        .clinic-name { font-weight: 700; font-size: 15px; }
+        .clinic-meta { font-size: 12px; color: #6b7280; }
+        .counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .count { background: #f9fafb; border-radius: 10px; padding: 8px 4px; text-align: center; }
+        .count b { display: block; font-size: 18px; }
+        .count span { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; }
+        .count.pending b { color: #d97706; } .count.accepted b { color: #059669; } .count.upcoming b { color: #2563eb; }
+        .open-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #111827; color: #fff; border-radius: 10px; padding: 10px; font-weight: 600; font-size: 13px; }
+        .open-btn:hover { background: #1f2937; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; font-size: 13px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+        th { background: #f9fafb; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #f3f4f6; color: #374151; white-space: nowrap; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-accepted_record_accepted_accommodation, .badge-paid, .badge-upcoming { background: #d1fae5; color: #065f46; }
+        .badge-accepted_record_accommodation_change_requested, .badge-waiting_for_payment { background: #dbeafe; color: #1e40af; }
+        .badge-rejected_medical_record, .badge-cancelled { background: #fee2e2; color: #991b1b; }
+        .row-link { color: #3b82f6; font-weight: 600; white-space: nowrap; }
+        .muted { color: #6b7280; }
+        .empty { text-align: center; padding: 40px; color: #6b7280; background: #fff; border: 1px dashed #e5e7eb; border-radius: 16px; }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <img src="{% static 'logo1.png' %}" alt="NERO">
+            <span class="tag">AGENCY</span>
+            <span class="spacer"></span>
+            <form method="post" action="{% url 'agency_logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="lock-btn"><i class="fas fa-lock"></i> Lock</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="page">
+        {% for message in messages %}
+        <div class="flash {{ message.tags|default:'info' }}">{{ message }}</div>
+        {% endfor %}
+
+        <h1><i class="fas fa-hospital"></i> All clinics</h1>
+        <p class="subtitle">{{ clinics|length }} clinic{{ clinics|length|pluralize }} · {{ total_appointments }} appointment{{ total_appointments|pluralize }} in total. Open a clinic to act on its appointments exactly as the clinic would.</p>
+
+        <div class="status-strip">
+            <a href="{% url 'agency_dashboard' %}" class="status-chip {% if not status_filter %}active{% endif %}">All <span class="n">{{ total_appointments }}</span></a>
+            {% for value, label, count in status_summary %}
+            <a href="?status={{ value }}" class="status-chip {% if status_filter == value %}active{% endif %}">{{ label }} <span class="n">{{ count }}</span></a>
+            {% endfor %}
+        </div>
+
+        <h2><i class="fas fa-clinic-medical" style="color:#8b5cf6;"></i> Clinics</h2>
+        <div class="clinic-grid">
+            {% for clinic in clinics %}
+            <div class="clinic-card">
+                <div class="clinic-head">
+                    {% if clinic.has_custom_avatar %}
+                        <img src="{{ clinic.avatar_url }}" alt="" class="clinic-avatar">
+                    {% else %}
+                        <div class="clinic-avatar">{{ clinic.clinic_name|first|upper }}</div>
+                    {% endif %}
+                    <div style="min-width:0;">
+                        <div class="clinic-name">{{ clinic.clinic_name }}</div>
+                        <div class="clinic-meta">{{ clinic.city }}{% if clinic.country %}, {{ clinic.country }}{% endif %} · {{ clinic.contact_email }}</div>
+                    </div>
+                </div>
+                <div class="counts">
+                    <div class="count"><b>{{ clinic.total_count }}</b><span>Total</span></div>
+                    <div class="count pending"><b>{{ clinic.pending_count }}</b><span>Pending</span></div>
+                    <div class="count accepted"><b>{{ clinic.accepted_count }}</b><span>Accepted</span></div>
+                    <div class="count upcoming"><b>{{ clinic.upcoming_count }}</b><span>Upcoming</span></div>
+                </div>
+                <a href="{% url 'agency_clinic_appointments' clinic.id %}" class="open-btn">
+                    <i class="fas fa-calendar-check"></i> Open appointments
+                </a>
+            </div>
+            {% empty %}
+            <div class="empty">No clinics registered yet.</div>
+            {% endfor %}
+        </div>
+
+        <h2><i class="fas fa-stream" style="color:#3b82f6;"></i>
+            {% if status_filter %}Appointments · {{ status_filter }}{% else %}Latest activity across all clinics{% endif %}
+        </h2>
+        {% if appointments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Clinic</th>
+                    <th>Status</th>
+                    <th>Treatment dates</th>
+                    <th>Updated</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>
+                        <strong>{{ appointment.patient.full_name }}</strong><br>
+                        <span class="muted">{{ appointment.medical_record.main_diagnosis }}</span>
+                    </td>
+                    <td>{{ appointment.clinic.clinic_name }}</td>
+                    <td><span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span></td>
+                    <td>
+                        {% if appointment.treatment_start_date %}{{ appointment.treatment_start_date }} – {{ appointment.treatment_end_date }}
+                        {% else %}<span class="muted">Not set</span>{% endif %}
+                    </td>
+                    <td class="muted">{{ appointment.updated_at|date:"M d, Y H:i" }}</td>
+                    <td><a href="{% url 'agency_clinic_appointments' appointment.clinic.id %}?status={{ appointment.status }}" class="row-link">Open <i class="fas fa-arrow-right"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No appointments{% if status_filter %} with this status{% endif %}.</div>
+        {% endif %}
+    </main>
+</body>
+</html>

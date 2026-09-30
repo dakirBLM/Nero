@@ -1,10 +1,10 @@
-{% load static %}
+{% load static appointment_actions %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Appointments • {{ clinic.clinic_name }} • NERO</title>
+    <title>{% if agency_mode %}Agency • {% endif %}Appointments • {{ clinic.clinic_name }} • NERO</title>
     <link rel="icon" type="image/png" href="{% static 'n.png' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1153,9 +1153,44 @@
             .stat-number { font-size: 20px; }
         }
         {% include 'includes/search_bar_styles.html' %}
+
+        /* agency-only controls under each card */
+        .agency-controls { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e5e7eb; }
+        .agency-inline-form { display: flex; align-items: center; gap: 8px; flex: 1 1 320px; min-width: 0; }
+        .agency-inline-form .form-control { flex: 1; min-width: 0; }
+        .agency-inline-form .btn { white-space: nowrap; }
     </style>
 </head>
 <body>
+    {% if agency_mode %}
+    <!-- ═══ AGENCY HEADER ═══ -->
+    <header class="main-header" id="mainHeader">
+        <div class="header-container">
+            <div class="logo-container">
+                <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
+                <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
+            </div>
+            <div style="flex:1;display:flex;align-items:center;gap:12px;min-width:0;">
+                <span style="background:#111827;color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:999px;">AGENCY</span>
+                <span style="font-weight:600;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ clinic.clinic_name }}</span>
+            </div>
+            <div class="nav-icons">
+                <a href="{% url 'agency_dashboard' %}" class="nav-icon" title="All clinics">
+                    <i class="fas fa-hospital"></i>
+                </a>
+                <a href="{% url 'clinic_detail' clinic.id %}" class="nav-icon" title="Public clinic page" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+                <form method="post" action="{% url 'agency_logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-icon" title="Lock agency dashboard" style="border:none;cursor:pointer;">
+                        <i class="fas fa-lock"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+    {% else %}
     <!-- ═══ HEADER ═══ -->
     <header class="main-header" id="mainHeader">
         <div class="header-container">
@@ -1220,6 +1255,7 @@
             </div>
         </div>
     </header>
+    {% endif %}
 
     <!-- ═══ MAIN ═══ -->
     <main class="main-layout">
@@ -1240,10 +1276,33 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ clinic.clinic_name }}</h3>
+                        {% if agency_mode %}
+                        <p style="font-size:12px;color:#6b7280;margin-top:4px;">{{ clinic.city }}{% if clinic.country %}, {{ clinic.country }}{% endif %}</p>
+                        <p style="font-size:12px;color:#6b7280;word-break:break-all;">{{ clinic.contact_email }}</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
+            {% if agency_mode %}
+            <nav class="sidebar-nav">
+                <a href="{% url 'agency_dashboard' %}" class="nav-item">
+                    <i class="fas fa-hospital"></i> All Clinics
+                </a>
+                <a href="{% url 'agency_clinic_appointments' clinic.id %}" class="nav-item active">
+                    <i class="fas fa-calendar-check"></i> Appointments
+                </a>
+                <a href="{% url 'clinic_detail' clinic.id %}" class="nav-item" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Public Page
+                </a>
+                <form method="post" action="{% url 'agency_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-item" style="width:100%;border:none;background:none;cursor:pointer;color:#ef4444;text-align:left;">
+                        <i class="fas fa-lock"></i> Lock Dashboard
+                    </button>
+                </form>
+            </nav>
+            {% else %}
             <nav class="sidebar-nav">
                 <a href="{% url 'clinic_dashboard' %}" class="nav-item">
                     <i class="fas fa-home"></i> Dashboard
@@ -1264,6 +1323,7 @@
                     <i class="fas fa-newspaper"></i> My Posts
                 </a>
             </nav>
+            {% endif %}
         </aside>
 
         <!-- Main Content -->
@@ -1285,7 +1345,10 @@
                     <i class="fas fa-calendar-alt"></i>
                     Appointment Management
                 </h1>
-                <p class="page-subtitle">Manage and track all patient appointments</p>
+                <p class="page-subtitle">
+                    {% if agency_mode %}Acting on behalf of <strong>{{ clinic.clinic_name }}</strong> — every clinic action is available here.
+                    {% else %}Manage and track all patient appointments{% endif %}
+                </p>
 
                 <div class="quick-actions">
                     <a href="?status=" class="action-btn {% if not status_filter %}active{% endif %}">
@@ -1500,13 +1563,13 @@
                                         Medical record review required
                                     </div>
                                     <div class="form-row-2" style="margin-bottom:0; align-items:flex-end;">
-                                        <form method="post" action="{% url 'accept_medical_record' appointment.id %}">
+                                        <form method="post" action="{% action_url 'accept_medical_record' appointment.id %}">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-success btn-full">
                                                 <i class="fas fa-check"></i> Accept Medical Record
                                             </button>
                                         </form>
-                                        <form method="post" action="{% url 'reject_medical_record' appointment.id %}">
+                                        <form method="post" action="{% action_url 'reject_medical_record' appointment.id %}">
                                             {% csrf_token %}
                                             <div class="form-group" style="margin-bottom:8px;">
                                                 <label class="form-label">Refusal reason <span style="color:#ef4444;">*</span></label>
@@ -1561,7 +1624,7 @@
                                     </div>
 
                                     <!-- Accept requested dates -->
-                                    <form method="post" action="{% url 'facility_accept_requested_dates' appointment.id %}" style="margin-bottom:10px;">
+                                    <form method="post" action="{% action_url 'facility_accept_requested_dates' appointment.id %}" style="margin-bottom:10px;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-success btn-full">
                                             <i class="fas fa-check-circle"></i> Accept Requested Dates
@@ -1569,7 +1632,7 @@
                                     </form>
 
                                     <!-- Propose alternative dates -->
-                                    <form method="post" action="{% url 'facility_propose_dates' appointment.id %}">
+                                    <form method="post" action="{% action_url 'facility_propose_dates' appointment.id %}">
                                         {% csrf_token %}
                                         <div class="form-row-2">
                                             <div class="form-group">
@@ -1612,7 +1675,7 @@
                                             <button type="submit" class="btn btn-secondary btn-full">
                                                 <i class="fas fa-exchange-alt"></i> Propose Changes
                                             </button>
-                                            <form method="post" action="{% url 'facility_reject_booking' appointment.id %}" style="display:contents;">
+                                            <form method="post" action="{% action_url 'facility_reject_booking' appointment.id %}" style="display:contents;">
                                                 {% csrf_token %}
                                                 <button type="submit" class="btn btn-danger btn-full"
                                                         onclick="return confirm('Reject this booking?')">
@@ -1623,6 +1686,33 @@
                                     </form>
                                 </div>
 
+                                <!-- 5a. Accepted (agency): email the patient file to the clinic instead of payment -->
+                                {% elif appointment.status == 'accepted_record_accepted_accommodation' and agency_mode %}
+                                <div class="action-section" style="background:#ecfeff;border-color:#67e8f9;">
+                                    <div class="action-section-title" style="color:#155e75;">
+                                        <span class="action-badge" style="background:#cffafe;color:#155e75;"><i class="fas fa-paper-plane" style="font-size:10px;"></i></span>
+                                        Dates &amp; patient accepted — send this patient's details to
+                                    </div>
+                                    <form method="post" action="{% action_url 'send_patient_details' appointment.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-row-2" style="margin-bottom:10px;">
+                                            <div class="form-group">
+                                                <label class="form-label">Recipient email</label>
+                                                <input type="email" name="email" required class="form-control"
+                                                       value="{{ clinic.contact_email }}" placeholder="clinic@example.com">
+                                            </div>
+                                            <div class="form-group" style="display:flex;align-items:flex-end;">
+                                                <button type="submit" class="btn btn-primary btn-full">
+                                                    <i class="fas fa-paper-plane"></i> Send Patient Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p style="font-size:12px;color:#155e75;margin:0;">
+                                            Sends everything the clinic can see: medical record, conditions, booking request and the attached reports/videos.
+                                        </p>
+                                    </form>
+                                </div>
+
                                 <!-- 5. Accepted: clinic sets payment amount -->
                                 {% elif appointment.status == 'accepted_record_accepted_accommodation' %}
                                 <div class="action-section" style="background:#fffbeb;border-color:#fcd34d;">
@@ -1630,7 +1720,7 @@
                                         <span class="action-badge action-badge-warn">$</span>
                                         Set amount patient needs to pay
                                     </div>
-                                    <form method="post" action="{% url 'set_payment_amount' appointment.id %}">
+                                    <form method="post" action="{% action_url 'set_payment_amount' appointment.id %}">
                                         {% csrf_token %}
                                         <div class="form-row-2" style="margin-bottom:10px;">
                                             <div class="form-group">
@@ -1651,11 +1741,15 @@
                                 <hr class="card-divider">
                                 <div class="appointment-actions">
 
-                                    <a href="{% url 'see_medical_record_view' appointment.medical_record.id %}" class="btn btn-secondary">
+                                    <a href="{% url 'see_medical_record_view' appointment.medical_record.id %}{% if agency_mode %}?clinic_id={{ clinic.id }}{% endif %}" class="btn btn-secondary">
                                         <i class="fas fa-file-medical-alt"></i> Medical Record
                                     </a>
 
-                                    {% if appointment.patient and appointment.patient.user %}
+                                    {% if agency_mode %}
+                                        <a href="mailto:{{ appointment.medical_record.email|default:appointment.patient.user.email }}" class="btn btn-secondary">
+                                            <i class="fas fa-envelope"></i> {{ appointment.medical_record.email|default:appointment.patient.user.email|default:'No patient email' }}
+                                        </a>
+                                    {% elif appointment.patient and appointment.patient.user %}
                                         <a href="{% url 'start_chat_with_patient_clinic' %}?patient_id={{ appointment.patient.id }}"
                                            class="btn btn-primary">
                                             <i class="fas fa-comments"></i> Message Patient
@@ -1667,7 +1761,7 @@
                                     {% endif %}
 
                                     {% if appointment.status == 'paid' %}
-                                    <form method="post" action="{% url 'mark_appointment_upcoming' appointment.id %}" style="display:inline;">
+                                    <form method="post" action="{% action_url 'mark_appointment_upcoming' appointment.id %}" style="display:inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-success"
                                                 onclick="return confirm('Mark this paid appointment as upcoming?')">
@@ -1676,7 +1770,7 @@
                                     </form>
                                     {% endif %}
 
-                                    {% if appointment.status == 'upcoming' %}
+                                    {% if appointment.status == 'upcoming' and not agency_mode %}
                                     <a href="{% url 'clinic_google_calendar_start' appointment.id %}" class="btn btn-secondary">
                                         <span class="google-calendar-badge" aria-hidden="true"></span> Add to Google Calendar
                                     </a>
@@ -1684,6 +1778,30 @@
 
                                 </div>
                                 <!-- /appointment-actions -->
+
+                                {% if agency_mode %}
+                                <!-- Agency controls: force a status + one-click email to the clinic -->
+                                <div class="agency-controls">
+                                    <form method="post" action="{% action_url 'update_appointment_status' appointment.id %}" class="agency-inline-form">
+                                        {% csrf_token %}
+                                        <label class="form-label" style="margin:0;white-space:nowrap;"><i class="fas fa-random"></i> Status</label>
+                                        <select name="status" class="form-control">
+                                            {% for value, label in status_choices %}
+                                            <option value="{{ value }}" {% if value == appointment.status %}selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-secondary" onclick="return confirm('Change this appointment status?')">Update</button>
+                                    </form>
+                                    {% if appointment.status != 'accepted_record_accepted_accommodation' %}
+                                    <form method="post" action="{% action_url 'send_patient_details' appointment.id %}" class="agency-inline-form">
+                                        {% csrf_token %}
+                                        <label class="form-label" style="margin:0;white-space:nowrap;"><i class="fas fa-paper-plane"></i> Email details to</label>
+                                        <input type="email" name="email" required class="form-control" value="{{ clinic.contact_email }}">
+                                        <button type="submit" class="btn btn-primary">Send</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
 
                             </div>
                             <!-- /card-inner -->
@@ -1700,9 +1818,15 @@
                                 {% if status_filter %}No {{ status_filter }} appointments.
                                 {% else %}No appointment requests yet.{% endif %}
                             </p>
+                            {% if agency_mode %}
+                            <a href="{% url 'agency_dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-hospital"></i> Back to all clinics
+                            </a>
+                            {% else %}
                             <a href="{% url 'search_patients' %}" class="btn btn-secondary">
                                 <i class="fas fa-search"></i> Find Patients
                             </a>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>

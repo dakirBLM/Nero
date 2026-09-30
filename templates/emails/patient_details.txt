@@ -1,0 +1,19 @@
+{% autoescape off %}NERO — Patient details for {{ clinic.clinic_name }}
+Patient: {{ record.first_name }} {{ record.last_name }} ({{ record.main_diagnosis }})
+Booking status: {{ appointment.get_status_display }}
+{% for title, rows in sections %}
+== {{ title }} ==
+{% for label, value in rows %}{{ label }}: {{ value }}
+{% endfor %}{% endfor %}
+== Medical files =={% if attached %}
+Attached ({{ attached|length }}):
+{% for name in attached %}- {{ name }}
+{% endfor %}{% else %}
+No files attached.{% endif %}{% if skipped %}
+Not attached:
+{% for label, name, reason in skipped %}- {{ name }} ({{ reason }})
+{% endfor %}{% endif %}
+
+This message contains confidential medical information intended only for {{ clinic.clinic_name }}.
+{% if base_url %}Sent from NERO: {{ base_url }}{% endif %}
+{% endautoescape %}

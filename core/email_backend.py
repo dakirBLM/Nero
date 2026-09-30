@@ -4,8 +4,10 @@ Sends via https://api.brevo.com — plain HTTPS on port 443 — so it works from
 hosts where outbound SMTP ports are blocked or flaky (e.g. some PaaS networks).
 Activated automatically when BREVO_API_KEY is set (see settings.py).
 """
+import base64
 import json
 import logging
+from email.mime.base import MIMEBase
 from email.utils import parseaddr
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -16,6 +18,20 @@ from django.core.mail.backends.base import BaseEmailBackend
 logger = logging.getLogger(__name__)
 
 API_URL = 'https://api.brevo.com/v3/smtp/email'
+
+
+def _attachment_payload(message):
+    items = []
+    for attachment in getattr(message, 'attachments', []):
+        if isinstance(attachment, MIMEBase):
+            name = attachment.get_filename() or 'attachment'
+            content = attachment.get_payload(decode=True) or b''
+        else:
+            name, content, _mimetype = attachment
+            if isinstance(content, str):
+                content = content.encode('utf-8')
+        items.append({'name': name, 'content': base64.b64encode(content).decode('ascii')})
+    return items
 
 
 class BrevoAPIBackend(BaseEmailBackend):
@@ -41,6 +57,9 @@ class BrevoAPIBackend(BaseEmailBackend):
                 for alt, mimetype in getattr(message, 'alternatives', []):
                     if mimetype == 'text/html':
                         payload['htmlContent'] = alt
+                attachments = _attachment_payload(message)
+                if attachments:
+                    payload['attachment'] = attachments
                 req = Request(
                     API_URL,
                     data=json.dumps(payload).encode('utf-8'),
