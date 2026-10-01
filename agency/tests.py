@@ -187,11 +187,22 @@ class AgencyDashboardTests(TestCase):
         record = self.accepted.medical_record
         record.medical_reports.save('huge.bin', ContentFile(b'x' * 64), save=True)
         url = reverse('agency_send_patient_details', args=[self.clinic_b.id, self.accepted.id])
-        with mock.patch('agency.emails.ATTACHMENT_BUDGET', 10):
+        with mock.patch('agency.emails.ATTACHMENT_BUDGET', 10), \
+                mock.patch('agency.emails._read_decrypted', side_effect=AssertionError('file was read')):
             response = self.client.post(url, {'email': 'doctor@example.com'}, follow=True)
         self.assertContains(response, 'huge.bin (too large to attach)')
         self.assertEqual(mail.outbox[0].attachments, [])
         self.assertIn('huge.bin', mail.outbox[0].body)
+
+    def test_decoded_size_skips_when_storage_under_reports(self):
+        record = self.accepted.medical_record
+        record.medical_reports.save('border.bin', ContentFile(b'x' * 64), save=True)
+        url = reverse('agency_send_patient_details', args=[self.clinic_b.id, self.accepted.id])
+        with mock.patch('agency.emails.ATTACHMENT_BUDGET', 10), \
+                mock.patch('agency.emails._stored_size', return_value=1):
+            response = self.client.post(url, {'email': 'doctor@example.com'}, follow=True)
+        self.assertContains(response, 'border.bin (too large to attach)')
+        self.assertEqual(mail.outbox[0].attachments, [])
 
 
 class BrevoAttachmentPayloadTests(TestCase):

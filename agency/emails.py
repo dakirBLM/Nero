@@ -16,8 +16,10 @@ from patients.models import MedicalRecord
 
 logger = logging.getLogger(__name__)
 
-# Brevo rejects messages above ~10 MB in total, so keep a margin for the body.
-ATTACHMENT_BUDGET = 9 * 1024 * 1024
+# Brevo's transactional API rejects the whole message (body + attachments) above
+# 20 MB. Attachments are base64-encoded in that payload (~4/3), so this budget
+# is the encoded size we will send and leaves room for the HTML and text bodies.
+ATTACHMENT_BUDGET = 16 * 1024 * 1024
 
 MOBILITY_AID_FIELDS = ('uses_wheelchair', 'uses_walker', 'uses_crutch')
 GENERAL_CONDITION_FIELDS = (
@@ -109,6 +111,15 @@ def _record_files(record):
     return files
 
 
+def _encoded_size(nbytes):
+    """Bytes this payload occupies once base64-encoded into the JSON body."""
+    return (nbytes + 2) // 3 * 4
+
+
+def _stored_size(field_file):
+    return field_file.size
+
+
 def _read_decrypted(field_file):
     handle = field_file.open('rb')
     try:
@@ -118,21 +129,38 @@ def _read_decrypted(field_file):
 
 
 def collect_attachments(record):
-    """Return (attachments, skipped): decrypted files that fit the size budget."""
+    """Return (attachments, skipped): decrypted files that fit the size budget.
+
+    Size is checked before reading. storage.size() does not load the file; for
+    PHI storage it is the ciphertext, which is at least as big as the decrypted
+    bytes, so a file that is already over the budget is skipped unread. The
+    check on the decrypted length stays, because a size at or under the budget
+    can still encode to more than the budget.
+    """
     attachments, skipped = [], []
     budget = ATTACHMENT_BUDGET
     for label, field_file in _record_files(record):
         name = os.path.basename(field_file.name)
+        try:
+            stored_size = _stored_size(field_file)
+        except Exception:
+            logger.exception('Could not stat medical file %s for record %s', name, record.pk)
+            skipped.append((label, name, 'could not be read'))
+            continue
+        if stored_size > budget:
+            skipped.append((label, name, 'too large to attach'))
+            continue
         try:
             data = _read_decrypted(field_file)
         except Exception:
             logger.exception('Could not read medical file %s for record %s', name, record.pk)
             skipped.append((label, name, 'could not be read'))
             continue
-        if len(data) > budget:
+        encoded = _encoded_size(len(data))
+        if encoded > budget:
             skipped.append((label, name, 'too large to attach'))
             continue
-        budget -= len(data)
+        budget -= encoded
         mimetype = mimetypes.guess_type(name)[0] or 'application/octet-stream'
         attachments.append((name, data, mimetype))
     return attachments, skipped
