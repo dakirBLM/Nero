@@ -1515,9 +1515,9 @@
 
                             <div class="form-grid">
                                 <div class="form-group full-width">
-                                    <label class="form-label required">Type of Clinic (Select one or more)</label>
+                                    <label class="form-label required">Specialization (Select one or more)</label>
                                     <div class="clinic-type-grid">
-                                        {% for option in form.clinic_type %}
+                                        {% for option in form.specialization %}
                                             <label class="clinic-type-option">
                                                 {{ option.tag }}
                                                 <span class="clinic-type-label">{{ option.choice_label }}</span>
@@ -1525,10 +1525,10 @@
                                             </label>
                                         {% endfor %}
                                     </div>
-                                    {% if form.clinic_type.errors %}
+                                    {% if form.specialization.errors %}
                                         <div class="error-message">
                                             <i class="fas fa-exclamation-circle"></i>
-                                            {{ form.clinic_type.errors.0 }}
+                                            {{ form.specialization.errors.0 }}
                                         </div>
                                     {% endif %}
                                 </div>

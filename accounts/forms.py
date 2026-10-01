@@ -364,8 +364,7 @@ class ClinicSignUpForm(UserCreationForm):
         # Convert list of specializations to comma-separated string
         specializations = self.cleaned_data.get('specialization', [])
         specialization_str = ', '.join(specializations) if isinstance(specializations, list) else specializations
-        clinic_type_value = specializations[0] if isinstance(specializations, list) and specializations else ''
-        
+
         clinic_data = {
             'user': user,
             'clinic_name': self.cleaned_data['clinic_name'],
@@ -384,7 +383,6 @@ class ClinicSignUpForm(UserCreationForm):
             'contact_email': self.cleaned_data['contact_email'],
             'website': self.cleaned_data.get('website', ''),
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
-            'clinic_type': clinic_type_value,
             'specialization': specialization_str,
             'established_date': self.cleaned_data['established_date'],
             'facilities': self.cleaned_data.get('facilities', ''),
