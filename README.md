@@ -1,295 +1,449 @@
 
 # Nero
 
-> A medical tourism platform connecting patients with clinics through medical-record management, clinic discovery, recommendations, appointments, messaging, and integrated services.
+Nero is a Django-based medical tourism platform that connects patients with clinics and healthcare providers. It provides patient and clinic accounts, medical-record management, clinic discovery, appointment management, recommendations, messaging, reviews, Google integrations, and an AI assistant.
 
 ---
 
-## Overview
+## Table of Contents
 
-**Nero** is a Django-based medical tourism platform designed to connect **patients** with **clinics**.
+* [Overview](#overview)
+* [Features](#features)
 
-Patients can create and manage medical records, discover clinics based on their medical needs and treatment preferences, request appointments, communicate with clinics, and manage appointment-related information.
-
-Clinics can create detailed profiles, publish services and content, manage patient requests and appointments, and communicate with patients.
-
-The platform also includes clinic recommendation and matching logic, Google Calendar integration, medical-file storage, internationalization, and a Nero AI chat integration.
+  * [Patient Features](#patient-features)
+  * [Clinic Features](#clinic-features)
+  * [Recommendations](#recommendations)
+  * [Chat and Messaging](#chat-and-messaging)
+  * [Nero AI](#nero-ai)
+  * [Authentication and Account Management](#authentication-and-account-management)
+  * [Internationalization](#internationalization)
+  * [Security and Storage](#security-and-storage)
+* [Technology Stack](#technology-stack)
+* [Project Structure](#project-structure)
+* [Prerequisites](#prerequisites)
+* [Local Installation](#local-installation)
+* [Environment Configuration](#environment-configuration)
+* [First Run](#first-run)
+* [Running the Development Server](#running-the-development-server)
+* [Docker](#docker)
+* [Important Routes](#important-routes)
+* [Appointment Statuses](#appointment-statuses)
+* [File Upload Limits](#file-upload-limits)
+* [Google Integration](#google-integration)
+* [Media Storage](#media-storage)
+* [Management Commands](#management-commands)
+* [Health Checks](#health-checks)
+* [Testing](#testing)
+* [Troubleshooting](#troubleshooting)
+* [Deployment](#deployment)
+* [Frontend Prototype](#frontend-prototype)
+* [Security Notes](#security-notes)
+* [Contributing](#contributing)
+* [License](#license)
 
 ---
 
-## Features
+# Overview
 
-### Patient Features
+Nero is a web application built with Django 4.2 and Django REST Framework.
 
-* Create and manage a patient profile
-* Create and update structured medical records
-* Upload medical reports and movement videos
+The platform supports two main user types:
+
+* **Patients** — manage medical information, search for clinics, request appointments, communicate with clinics, and receive clinic recommendations.
+* **Clinics** — manage clinic profiles, services, appointments, patients, posts, and communication.
+
+The project also includes:
+
+* Google authentication
+* Google Calendar integration
+* multilingual support
+* Arabic RTL support
+* password reset
+* encrypted/private medical media handling
+* clinic recommendations
+* real-time-style presence/last-seen information
+* unread message counts
+* Nero AI assistant
+* health/readiness endpoints
+* automated database backup workflow
+
+---
+
+# Features
+
+## Patient Features
+
+Patients can:
+
+* Create a patient account
+* Log in and log out
+* Reset their password
+* Create and manage medical records
+* Upload medical reports
+* Upload movement videos
+* Securely view/download medical media
 * Search for clinics
-* Find clinics based on:
-
-  * Medical compatibility
-  * Country
-  * Continent
-  * Clinic type
-  * Requested service
-* View clinic profiles, services, facilities, and reviews
-* Submit clinic and appointment requests
-* Manage appointment information and treatment dates
-* Handle accommodation requirements
-* Track payment and appointment status
+* Filter clinics by location and clinic type
+* Submit medical-tourism requests
+* Receive clinic recommendations
+* View clinic profiles
+* View clinic services
+* View clinic posts
+* Request appointments
+* Manage appointment information
+* Confirm payments
 * Add appointments to Google Calendar
-* Communicate with clinics through chat
-* Create and manage posts
+* Respond to proposed appointment/date changes
+* Cancel appointments
+* Chat with clinics
+* View unread messages
+* See online/last-seen information
 * Submit clinic reviews
+* Create and manage patient posts
 * Use the Nero AI assistant
-* Manage account and Google connection settings
+* Switch between supported languages, including Arabic
 
-### Clinic Features
+Useful patient routes:
 
-* Create and manage a clinic profile
-* Configure:
+* [`/patients/signup/`](patients/urls.py)
+* [`/patients/dashboard/`](patients/urls.py)
+* [`/patients/medical-records/`](patients/urls.py)
+* [`/patients/appointments/`](patients/urls.py)
+* [`/patients/search-clinics/`](patients/urls.py)
+* [`/recommendations/questionnaire/`](recommendations/urls.py)
 
-  * Specializations
-  * Clinic type
-  * Facilities
-  * Languages
-  * Patient age range
-  * Patient-condition acceptance criteria
-* Add clinic services and price ranges
-* Manage a clinic image gallery
-* Publish posts with images or videos
-* Search and manage patient information
-* Review patient medical records
-* Accept or reject medical requests
-* Propose alternative treatment dates
-* Manage accommodation requests
-* Set appointment/payment information
-* Track appointment status
-* Communicate with patients
+---
+
+## Clinic Features
+
+Clinics can:
+
+* Create a clinic account
+* Manage their clinic profile
+* Define clinic type and specialization
+* Add clinic services
+* Upload profile and cover images
+* Manage gallery images
+* Define accepted patient conditions
+* Manage appointments
+* Review patient medical information
+* Accept or reject appointment requests
+* Propose alternative dates
+* Manage accommodation information
+* Set payment amounts
+* Mark appointments as upcoming
 * Add appointments to Google Calendar
+* Search for patients
+* Communicate with patients
+* View unread messages
+* Track patient/clinic presence
+* Create clinic posts
+* Edit and delete posts
+* Upload post images and videos
 
-### Clinic Recommendation
+Clinic profile information can include:
 
-Nero provides a rule-based clinic matching flow.
-
-The recommendation process:
-
-1. The patient selects a medical record.
-2. Clinics are filtered according to medical compatibility.
-3. The patient can filter by continent, country, and clinic type.
-4. The requested service is matched against clinic services and descriptions.
-5. Clinics receive service-match points.
-6. Matching clinics are displayed according to their match score.
-7. Clinic ratings are also displayed with the results.
-
-Medical compatibility is applied **before** service matching, so clinics that do not meet the relevant patient-condition requirements are filtered out first.
-
-### Appointment Management
-
-Appointments support a multi-stage workflow including:
-
-* Pending
-* Medical-record acceptance or rejection
-* Accommodation decisions
-* Proposed date changes
-* Waiting for payment
-* Paid
-* Upcoming
-* Cancelled
-
-Appointments can contain treatment dates, requested services, accommodation information, payment information, and notes.
-
-### Messaging
-
-Nero provides two-user chat rooms between:
-
-* Patient ↔ Patient
-* Patient ↔ Clinic
-* Clinic ↔ Clinic
-
-Patient–clinic messaging is associated with appointment status. Conversations can become available when the relevant appointment is **paid or upcoming**.
-
-Messages contain:
-
-* Sender
-* Content
-* Timestamp
-* Read/unread status
-
-### Clinic Content
-
-Clinics can publish posts containing:
-
-* Text descriptions
-* Images
-* Videos
-
-Clinics can also maintain:
-
-* Profile pictures
-* Cover photos
-* Gallery images
-* Services
-* Service descriptions
-* Service price ranges
-
-### Medical Records & Files
-
-Medical records contain structured information covering areas such as:
-
-* Personal information
-* Physical information
-* Medical conditions
-* Medications
-* Allergies
-* Previous surgeries
-* Mobility
-* Medical equipment
-* General condition
+* Clinic name
+* Tagline
+* Description
+* Address
+* City/state/country
 * Contact information
-
-Medical reports and movement videos have file-type and size restrictions and use dedicated medical-file storage.
-
-> **Development note:** local development can use encrypted local storage for medical files. Production deployments can be configured to use private object storage.
-
-### Google Calendar
-
-Nero supports Google Calendar integration for appointments.
-
-The application provides separate OAuth callback routes for patients and clinics:
-
-```text
-/clinics/google-calendar/callback/
-/patients/google-calendar/callback/
-```
-
-Google Calendar credentials are optional for basic local development but are required for the Calendar integration.
-
-### Nero AI
-
-Nero includes an AI chat endpoint:
-
-```text
-/api/nero-ai/
-```
-
-The Django application sends AI requests to the configured `NERO_AI_WEBHOOK_URL`.
-
-This means the AI functionality currently depends on an external webhook integration rather than a locally hosted AI model.
+* Website
+* Google Maps location
+* Specializations
+* Clinic type
+* Facilities
+* Languages spoken
+* Profile picture
+* Cover photo
+* Age range
+* Patient-condition acceptance information
 
 ---
 
-## User Roles
+## Recommendations
 
-Nero currently defines two application-level user types:
+Nero provides a clinic recommendation workflow for patients.
 
-| User type | Description                                                                                         |
-| --------- | --------------------------------------------------------------------------------------------------- |
-| `patient` | Creates medical records, searches for clinics, requests appointments, and communicates with clinics |
-| `clinic`  | Manages clinic information, services, patient requests, appointments, and communication             |
+The recommendation process includes:
 
-The project also uses Django's built-in authentication and administration capabilities.
+1. Selecting a medical record.
+2. Selecting the requested service.
+3. Selecting geographic preferences.
+4. Selecting clinic types.
+5. Filtering clinics according to medical compatibility.
+6. Calculating service relevance.
+7. Displaying matching clinics.
+
+Medical compatibility is applied before service matching.
+
+Clinics that do not satisfy the patient's required medical compatibility criteria are filtered out before the service-match calculation.
+
+The service matching logic considers the clinic's services and descriptions.
+
+Related implementation:
+
+* [`recommendations/`](recommendations/)
+* [`recommendations/urls.py`](recommendations/urls.py)
 
 ---
 
-## Tech Stack
+# Chat and Messaging
 
-### Backend
+Nero includes messaging between users.
+
+Supported chat functionality includes:
+
+* Patient-clinic conversations
+* User-to-user chat functionality
+* Clinic-facing chat
+* Patient-facing chat
+* Message sending
+* Marking messages as read
+* Unread message counts
+* Online/last-seen information
+
+### Main chat routes
+
+Patient chat:
+
+* [`/chat/rooms/patient/`](chat/urls.py)
+* `/chat/room/patient/<room_id>/`
+
+Clinic chat:
+
+* [`/chat/rooms/clinic/`](chat/urls.py)
+* `/chat/room/clinic/<room_id>/`
+
+General chat room:
+
+* [`/chat/rooms/`](chat/urls.py)
+
+> `/chat/` itself is not the main chat entry point. Use `/chat/rooms/` or the patient/clinic-specific routes.
+
+---
+
+# Nero AI
+
+Nero includes an AI assistant that is available from the public landing page and can therefore be accessed by visitors without requiring a patient dashboard session.
+
+The AI integration uses an external webhook rather than a locally hosted AI model.
+
+## AI API endpoint
+
+The Nero AI endpoint is:
+
+```text
+POST /api/nero-ai/
+```
+
+It expects JSON similar to:
+
+```json
+{
+  "message": "What services does Nero provide?"
+}
+```
+
+The endpoint is POST-only and protected by Django's CSRF mechanism.
+
+The external AI service is configured through:
+
+```text
+NERO_AI_WEBHOOK_URL
+```
+
+The application should be configured with the appropriate webhook URL before relying on the AI functionality.
+
+---
+
+# Authentication and Account Management
+
+Nero uses Django authentication with two main account types:
+
+* `patient`
+* `clinic`
+
+Authentication functionality includes:
+
+* Login
+* Logout
+* Patient registration
+* Clinic registration
+* Google authentication
+* Password reset
+* Dashboard redirection
+* Google account connection
+
+Authentication routes are defined in:
+
+* [`accounts/urls.py`](accounts/urls.py)
+* [`patients/urls.py`](patients/urls.py)
+* [`clinics/urls.py`](clinics/urls.py)
+
+Login:
+
+```text
+/accounts/login/
+```
+
+Password reset:
+
+```text
+/accounts/password-reset/
+```
+
+---
+
+# Internationalization
+
+Nero supports multiple languages and includes Arabic RTL support.
+
+The project includes:
+
+* Django internationalization
+* English/Arabic language switching
+* Arabic locale files
+* RTL support
+* Django's language-selection mechanism
+
+Relevant project locations include:
+
+* [`locale/`](locale/)
+* [`core/`](core/)
+* Django internationalization configuration in [`Nero_platform/settings.py`](Nero_platform/settings.py)
+
+---
+
+# Security and Storage
+
+The application includes several security-related mechanisms.
+
+These include:
+
+* Django authentication
+* CSRF protection
+* Login-required views
+* Role-based access restrictions
+* Protected medical-record access
+* Secure medical-media download/view endpoints
+* Encrypted medical media handling
+* Private media storage support
+* IP-blocking middleware
+* Security-related middleware
+* Sentry integration support
+* Environment-based secret configuration
+
+Medical files should not be treated as ordinary public static files.
+
+The application supports private media storage and encrypted medical media handling.
+
+---
+
+# Technology Stack
+
+## Backend
 
 * Python
 * Django 4.2
+* Django REST Framework
 * Django Allauth
-* Django Extensions
-* Django ORM
+* SQLite for local development
+* PostgreSQL support for deployment
 * Gunicorn
 
-### Database
+## Frontend
 
-* SQLite for local development by default
-* PostgreSQL supported for production deployments
+The Django application uses:
 
-### Security & Storage
+* Django templates
+* HTML
+* CSS
+* JavaScript
 
-* Argon2
-* Cryptography / Fernet
-* PyJWT
-* Encrypted medical-file storage
-* Django security features
+The repository also contains a separate React-based UI prototype under [`frontend/`](frontend/).
 
-### Frontend
+## Infrastructure
 
-The project uses Django templates alongside static frontend assets.
-
-### Production Infrastructure
-
-The repository includes configuration for:
+The project includes:
 
 * Docker
 * Docker Compose
-* Render
-* PostgreSQL
-* S3-compatible object storage
-* WhiteNoise
-* Sentry
+* Render deployment configuration
+* PostgreSQL support
+* S3-compatible object storage support
+* Sentry integration
+* GitHub Actions workflows
 
 ---
 
-## Project Structure
+# Project Structure
+
+A simplified structure of the project is:
 
 ```text
 Nero/
-├── accounts/             # Authentication and user accounts
-├── chat/                 # Chat rooms and messages
-├── clinics/              # Clinic profiles, services and appointments
-├── core/                 # Shared/core functionality
-├── patients/             # Patient profiles and medical records
-├── posts/                # Post-related functionality
-├── recommendations/      # Clinic recommendation and matching
-├── reviews/              # Clinic reviews
-├── Nero_platform/        # Django project configuration
-├── templates/            # HTML templates
-├── static/               # Static assets
-├── frontend/             # Frontend assets/components
-├── scripts/              # Utility scripts
-├── manage.py              # Django management entry point
-├── requirements.txt       # Python dependencies
-├── .env.example          # Environment configuration template
-├── Dockerfile             # Production/container image
-├── docker-compose.yml     # Local Docker development
-├── render.yaml            # Render deployment configuration
-├── DEPLOY.md              # Deployment documentation
-└── db.sqlite3             # Local SQLite database
+├── accounts/                 # Authentication and user accounts
+├── chat/                    # Messaging and chat functionality
+├── clinics/                 # Clinic profiles, services and appointments
+├── core/                    # Shared utilities, validators and security
+├── patients/                # Patient profiles, records and appointments
+├── posts/                   # Post-related functionality
+├── recommendations/         # Clinic recommendation system
+├── reviews/                 # Clinic reviews
+├── Nero_platform/           # Django project configuration
+├── frontend/                # Standalone React/UI prototype
+├── locale/                  # Translation files
+├── scripts/                 # Utility scripts
+├── templates/               # Django templates
+├── static/                  # Static assets
+├── media/                   # Local uploaded media
+├── .github/
+│   └── workflows/           # GitHub Actions workflows
+├── .dockerignore
+├── Dockerfile
+├── docker-compose.yml
+├── Procfile
+├── index.html
+├── manage.py
+├── requirements.txt
+├── .env.example
+├── DEPLOY.md
+└── README.md
 ```
+
+### Important
+
+`db.sqlite3` is generated locally after migrations and is not required to be present in a fresh clone.
+
+The local database should not be committed to the repository.
 
 ---
 
-# Local Development
+# Prerequisites
 
-## Prerequisites
-
-For the standard local setup, you need:
+For local development, install:
 
 * Python 3.11+
 * Git
 * pip
-* A terminal
+* virtual environment support
 
-The Docker setup uses **Python 3.11**.
-
-The application has also been tested locally with Python 3.12.3.
+Docker is optional if you prefer containerized development.
 
 ---
 
-## 1. Clone the Repository
+# Local Installation
+
+## 1. Clone the repository
 
 ```bash
-git clone https://github.com/dakirBLM/Nero.git
+git clone <repository-url>
 cd Nero
 ```
 
----
-
-## 2. Create a Virtual Environment
+## 2. Create a virtual environment
 
 Linux/macOS:
 
@@ -298,461 +452,840 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Windows:
+Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\Activate.ps1
 ```
 
-After activation, your terminal should show the virtual environment name, for example:
+Windows Command Prompt:
 
-```text
-(.venv)
+```cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
 ```
+
+If PowerShell blocks script execution, use an appropriate Python environment activation method permitted by your Windows configuration.
 
 ---
 
-## 3. Install Dependencies
+## 3. Install dependencies
 
 ```bash
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-The dependencies include Django, authentication packages, security libraries, database drivers, image processing, production server support, and storage integrations.
-
 ---
 
-## 4. Configure Environment Variables
+## 4. Configure environment variables
 
-Create a local `.env` file from the provided example:
+Copy the example environment file:
+
+Linux/macOS:
 
 ```bash
 cp .env.example .env
 ```
 
-For basic local development, keep:
+Windows PowerShell:
 
-```env
-DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
+```powershell
+Copy-Item .env.example .env
 ```
 
-The development configuration can use built-in development fallbacks for `SECRET_KEY` and `ENCRYPTION_KEY`.
+Windows Command Prompt:
 
-**Do not commit `.env` or production secrets to Git.**
+```cmd
+copy .env.example .env
+```
+
+Then edit `.env` and provide the required values.
+
+> `.env` should be considered required for local development. Django defaults `DEBUG` to `False` when the variable is not explicitly configured, and the application requires a production secret key when running with `DEBUG=False`.
 
 ---
 
-## Environment Variables
-
-### Django
-
-```env
-DEBUG=True
-SECRET_KEY=
-ENCRYPTION_KEY=
-ALLOWED_HOSTS=127.0.0.1,localhost
-CSRF_TRUSTED_ORIGINS=
-SITE_ID=1
-```
-
-### Database
-
-If `DATABASE_URL` is not configured, local development uses SQLite.
-
-```env
-DATABASE_URL=
-```
-
-For production, configure a PostgreSQL connection through `DATABASE_URL`.
-
-### Private Medical Storage
-
-Medical reports and movement videos can use local encrypted storage during development.
-
-Production object storage can be configured using:
-
-```env
-PHI_S3_BUCKET=
-PHI_S3_ENDPOINT_URL=
-PHI_S3_ACCESS_KEY_ID=
-PHI_S3_SECRET_ACCESS_KEY=
-PHI_S3_REGION=
-PHI_S3_ADDRESSING_STYLE=path
-```
-
-### Google OAuth
-
-Used for optional social login:
-
-```env
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-```
-
-### Google Calendar
-
-Used by the appointment Calendar integration:
-
-```env
-GOOGLE_CALENDAR_CLIENT_ID=
-GOOGLE_CALENDAR_CLIENT_SECRET=
-GOOGLE_CALENDAR_ID=primary
-GOOGLE_CALENDAR_REDIRECT_BASE=
-```
-
-For local development, the Google Cloud OAuth application should include:
-
-```text
-http://localhost:8000/clinics/google-calendar/callback/
-http://localhost:8000/patients/google-calendar/callback/
-```
-
-### Nero AI
-
-The AI endpoint uses the `NERO_AI_WEBHOOK_URL` environment variable.
-
-If the variable is not configured, the current application code contains a default webhook URL. For production deployments, configure the integration explicitly through the environment.
-
----
-
-## 5. Run Database Migrations
+## 5. Run migrations
 
 ```bash
 python manage.py migrate
 ```
 
-This creates/updates the database schema required by the Django applications.
-
-For a fresh local installation using the default configuration, SQLite will be used.
+This creates the local SQLite database when no external database URL is configured.
 
 ---
 
-## 6. Check the Project
-
-Run Django's system checks:
+## 6. Check the Django project
 
 ```bash
-DEBUG=True python manage.py check
+python manage.py check
 ```
-
-A successful check should finish without errors.
 
 ---
 
-## 7. Start the Development Server
+# Environment Configuration
 
-```bash
-DEBUG=True python manage.py runserver
+The complete example configuration is available in:
+
+[` .env.example`](.env.example)
+
+Remove the extra space inside the link if your Markdown renderer does not accept it:
+
+[`.env.example`](.env.example)
+
+Important environment variables include:
+
+## Django
+
+```text
+DEBUG
+SECRET_KEY
+ENCRYPTION_KEY
+DATABASE_URL
 ```
 
-The application will normally be available at:
+When `DEBUG=True`, the project provides development fallbacks for some secrets.
+
+Do not rely on development fallbacks in production.
+
+---
+
+## Nero AI
+
+```text
+NERO_AI_WEBHOOK_URL
+```
+
+This configures the external Nero AI webhook.
+
+---
+
+## Google Authentication
+
+```text
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+```
+
+---
+
+## Google Calendar
+
+```text
+GOOGLE_CALENDAR_CLIENT_ID
+GOOGLE_CALENDAR_CLIENT_SECRET
+GOOGLE_CALENDAR_REDIRECT_URI
+```
+
+---
+
+## S3 / Object Storage
+
+Depending on the storage configuration, the application can use:
+
+```text
+USE_S3_MEDIA
+S3_BUCKET
+S3_ENDPOINT_URL
+S3_ACCESS_KEY_ID
+S3_SECRET_ACCESS_KEY
+S3_REGION
+S3_ADDRESSING_STYLE
+S3_CUSTOM_DOMAIN
+```
+
+Private medical media can also use:
+
+```text
+PHI_S3_BUCKET
+PHI_S3_ENDPOINT_URL
+PHI_S3_ACCESS_KEY_ID
+PHI_S3_SECRET_ACCESS_KEY
+PHI_S3_REGION
+PHI_S3_ADDRESSING_STYLE
+PHI_S3_CUSTOM_DOMAIN
+```
+
+The PHI-specific storage configuration can fall back to the corresponding general S3 settings when appropriate.
+
+---
+
+## Email
+
+Email-related configuration includes:
+
+```text
+EMAIL_HOST
+EMAIL_PORT
+EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS
+EMAIL_USE_SSL
+DEFAULT_FROM_EMAIL
+BREVO_API_KEY
+SITE_BASE_URL
+```
+
+For local development, email functionality may use Django's console email behavior, allowing password-reset/verification messages to be viewed in the terminal rather than sent externally.
+
+---
+
+## Monitoring
+
+Optional Sentry configuration:
+
+```text
+SENTRY_DSN
+```
+
+---
+
+## Other settings
+
+The application also supports configuration such as:
+
+```text
+LOG_LEVEL
+SERVE_MEDIA
+SERVE_STATIC
+```
+
+Refer to [`Nero_platform/settings.py`](Nero_platform/settings.py) and [`.env.example`](.env.example) for the current configuration.
+
+---
+
+# First Run
+
+After completing the installation steps, create an administrator account if administrative access is required:
+
+```bash
+python manage.py createsuperuser
+```
+
+Follow the prompts to create the account.
+
+Then start the development server:
+
+```bash
+python manage.py runserver
+```
+
+Open:
 
 ```text
 http://127.0.0.1:8000/
 ```
 
-Open that address in your browser.
+## Django Admin
 
-To stop the server:
+The administration interface is available at:
 
 ```text
-Ctrl+C
+http://127.0.0.1:8000/admin/
+```
+
+Use the superuser account created with:
+
+```bash
+python manage.py createsuperuser
+```
+
+to access the Django admin.
+
+---
+
+## Creating a Patient Account
+
+Patients can register through:
+
+```text
+/patients/signup/
+```
+
+After registration, the account can access the patient dashboard:
+
+```text
+/patients/dashboard/
 ```
 
 ---
 
-# Running with Docker
+## Creating a Clinic Account
 
-Docker provides an alternative local development environment.
+Clinics can register through the clinic signup flow:
 
-## Prerequisites
-
-Install:
-
-* Docker
-* Docker Compose
-
-Create your local environment file:
-
-```bash
-cp .env.example .env
+```text
+/clinics/signup/
 ```
 
-Then build and start Nero:
+The application also provides a role-selection flow through:
+
+```text
+/choice_page
+```
+
+The exact UI flow may depend on the current authentication configuration.
+
+---
+
+# Running the Development Server
+
+Start Django with:
+
+```bash
+python manage.py runserver
+```
+
+The application is normally available at:
+
+```text
+http://127.0.0.1:8000/
+```
+
+The `.env` file controls the development environment.
+
+There is no need to prefix the command with:
+
+```text
+DEBUG=True
+```
+
+when `.env` already provides the development configuration.
+
+This also makes the documented command compatible with Windows.
+
+---
+
+# Docker
+
+The project includes both:
+
+* [`Dockerfile`](Dockerfile)
+* [`docker-compose.yml`](docker-compose.yml)
+
+## Build and start the containers
 
 ```bash
 docker compose up --build
 ```
 
-The Django development server will be available at:
+The development Compose configuration runs Django on:
 
 ```text
 http://127.0.0.1:8000/
 ```
 
-The Compose configuration:
+## Important: run migrations
 
-* builds the application from the `Dockerfile`
-* mounts the project for development
-* persists the `media/` directory using a Docker volume
-* exposes port `8000`
-* loads `.env`
-* runs Django with `DEBUG=True`
+The Compose configuration overrides the image command with Django's development server, so migrations are not automatically executed by Compose.
 
-Stop the containers with:
+After starting the containers, run:
 
 ```bash
-docker compose down
+docker compose exec web python manage.py migrate
+```
+
+If an administrator account is required:
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
+
+Then access:
+
+```text
+http://127.0.0.1:8000/
+```
+
+and:
+
+```text
+http://127.0.0.1:8000/admin/
 ```
 
 ---
 
-# Testing
+# Important Routes
 
-Run the Django test suite with:
+## General
 
-```bash
-DEBUG=True python manage.py test
-```
+| Purpose            | Route                       |
+| ------------------ | --------------------------- |
+| Landing page       | `/`                         |
+| Login              | `/accounts/login/`          |
+| Dashboard redirect | `/accounts/dashboard/`      |
+| Password reset     | `/accounts/password-reset/` |
+| Admin              | `/admin/`                   |
+| Role selection     | `/choice_page`              |
 
-A successful run should report all tests passing.
+## Patient
 
-For example:
+| Purpose         | Route                             |
+| --------------- | --------------------------------- |
+| Signup          | `/patients/signup/`               |
+| Dashboard       | `/patients/dashboard/`            |
+| Medical records | `/patients/medical-records/`      |
+| Clinic search   | `/patients/search-clinics/`       |
+| Appointments    | `/patients/appointments/`         |
+| Recommendations | `/recommendations/questionnaire/` |
+
+## Clinic
+
+| Purpose        | Route                       |
+| -------------- | --------------------------- |
+| Signup         | `/clinics/signup/`          |
+| Dashboard      | `/clinics/dashboard/`       |
+| Appointments   | `/clinics/appointments/`    |
+| Patient search | `/clinics/search-patients/` |
+| Clinic posts   | `/clinics/my-posts/`        |
+
+## Chat
+
+| Purpose       | Route                  |
+| ------------- | ---------------------- |
+| Chat rooms    | `/chat/rooms/`         |
+| Patient rooms | `/chat/rooms/patient/` |
+| Clinic rooms  | `/chat/rooms/clinic/`  |
+
+## Reviews
+
+Clinic reviews are handled through the review application.
+
+See:
+
+[`reviews/urls.py`](reviews/urls.py)
+
+## Health
 
 ```text
-Ran 18 tests
-OK
+/healthz
+/readyz
 ```
 
-The exact number of tests may change as the project evolves.
+---
+
+# Appointment Statuses
+
+Appointments use the following status lifecycle:
+
+```text
+pending
+accepted_record_accepted_accommodation
+accepted_record_accommodation_change_requested
+rejected_medical_record
+cancelled
+waiting_for_payment
+paid
+upcoming
+```
+
+### Meaning
+
+* `pending` — appointment request has been submitted.
+* `accepted_record_accepted_accommodation` — clinic accepted the medical record and requested accommodation arrangement.
+* `accepted_record_accommodation_change_requested` — accommodation/date changes have been proposed.
+* `rejected_medical_record` — clinic rejected the medical record.
+* `cancelled` — appointment has been cancelled.
+* `waiting_for_payment` — appointment is awaiting payment.
+* `paid` — payment has been confirmed.
+* `upcoming` — appointment is scheduled/upcoming.
+
+Proposed dates are stored as appointment fields; they are not a separate appointment status.
+
+---
+
+# File Upload Limits
+
+The application validates uploaded files according to their type.
+
+## Medical reports
+
+Supported formats include:
+
+```text
+PDF
+JPG
+PNG
+```
+
+Maximum size:
+
+```text
+3 MB
+```
+
+## Movement videos
+
+Supported format:
+
+```text
+MP4
+```
+
+Maximum size:
+
+```text
+50 MB
+```
+
+## Clinic post videos
+
+The video validator supports:
+
+```text
+mp4
+webm
+mov
+m4v
+```
+
+The exact validation rules are implemented in:
+
+[`core/validators.py`](core/validators.py)
+
+---
+
+# Google Integration
+
+Nero supports Google authentication and Google Calendar integration.
+
+## Google Authentication
+
+The Google authentication flow uses Django Allauth.
+
+The social authentication URL is mounted under:
+
+```text
+/accounts/social/
+```
+
+The Google OAuth callback is:
+
+```text
+http://localhost:8000/accounts/social/google/login/callback/
+```
+
+When configuring Google OAuth credentials for local development, make sure the redirect URI matches the callback path used by the application.
+
+> Note: if [`DEPLOY.md`](DEPLOY.md) contains an older `/accounts/google/login/callback/` example, use the `/accounts/social/google/login/callback/` path used by the current application.
+
+---
+
+## Google Calendar
+
+Patients and clinics can connect Google Calendar and add relevant appointments to their calendars.
+
+Calendar callback routes are defined in:
+
+* [`patients/urls.py`](patients/urls.py)
+* [`clinics/urls.py`](clinics/urls.py)
+
+Required Google Calendar credentials must be configured in `.env`.
+
+---
+
+# Media Storage
+
+For local development, SQLite and local media storage can be used.
+
+For deployment, Nero supports S3-compatible object storage.
+
+General S3 settings include:
+
+```text
+USE_S3_MEDIA
+S3_BUCKET
+S3_ENDPOINT_URL
+S3_ACCESS_KEY_ID
+S3_SECRET_ACCESS_KEY
+S3_REGION
+S3_ADDRESSING_STYLE
+S3_CUSTOM_DOMAIN
+```
+
+Private/PHI media can use the `PHI_S3_*` settings.
+
+Relevant implementation:
+
+* [`patients/storage.py`](patients/storage.py)
+* [`Nero_platform/settings.py`](Nero_platform/settings.py)
+
+---
+
+# Management Commands
+
+The project includes management commands for media synchronization and uploads.
+
+Examples include:
+
+```bash
+python manage.py sync_medical_media_to_private_bucket
+```
+
+and:
+
+```bash
+python manage.py upload_media
+```
+
+Run:
+
+```bash
+python manage.py help
+```
+
+to see the management commands available in the current installation.
 
 ---
 
 # Health Checks
 
-Nero provides health endpoints through the core application.
+Nero exposes two health-related endpoints.
 
-### Liveness
+## Health
 
 ```text
 /healthz
 ```
 
-### Readiness
+This endpoint can be used to check whether the application is responding.
+
+## Readiness
 
 ```text
 /readyz
 ```
 
-These endpoints can be used by deployment platforms and monitoring systems to verify application availability.
+This endpoint checks application readiness.
 
-The Docker image also uses `/healthz` for its container health check.
-
----
-
-# Useful Routes
-
-Some of the main application routes include:
-
-| Area                    | Route                             |
-| ----------------------- | --------------------------------- |
-| Admin                   | `/admin/`                         |
-| Login                   | `/accounts/login/`                |
-| Patient dashboard       | `/patients/dashboard/`            |
-| Patient medical records | `/patients/medical-records/`      |
-| Patient appointments    | `/patients/appointments/`         |
-| Clinic dashboard        | `/clinics/dashboard/`             |
-| Clinic appointments     | `/clinics/appointments/`          |
-| Chat                    | `/chat/`                          |
-| Recommendations         | `/recommendations/questionnaire/` |
-| Reviews                 | `/reviews/submit/<clinic_id>/`    |
-| Nero AI                 | `/api/nero-ai/`                   |
-| Health                  | `/healthz`                        |
-| Readiness               | `/readyz`                         |
-
-Routes may require authentication and/or a specific user type.
+These endpoints are also useful for deployment/container health checks.
 
 ---
 
-# Production & Deployment
+# Testing
 
-The repository includes production-oriented configuration for containerized deployment.
-
-The Docker image:
-
-1. Installs Python dependencies.
-2. Copies the application.
-3. Collects static files.
-4. Exposes port `8000`.
-5. Provides a container health check.
-6. Runs database migrations at startup.
-7. Starts the application with Gunicorn.
-
-The container uses:
-
-```text
-Nero_platform.wsgi:application
-```
-
-as the WSGI application.
-
-Production configuration should provide environment variables through the hosting platform rather than committing secrets to the repository.
-
-For detailed deployment information, see:
-
-```text
-DEPLOY.md
-```
-
----
-
-# Security Notes
-
-Nero handles medical information and therefore requires particular care when configuring deployments.
-
-### Development
-
-Use:
-
-```env
-DEBUG=True
-```
-
-for local development only.
-
-Development fallbacks for secrets are not intended for production.
-
-### Production
-
-Production deployments should:
-
-* Set `DEBUG=False`.
-* Provide a strong `SECRET_KEY`.
-* Provide an appropriate `ENCRYPTION_KEY`.
-* Configure production `ALLOWED_HOSTS`.
-* Configure CSRF trusted origins where required.
-* Use a production database.
-* Configure private storage for medical/PHI files.
-* Keep secrets in environment variables or the hosting platform's secret-management system.
-* Avoid using real sensitive medical data during development or testing.
-
-The repository's deployment documentation contains additional production and infrastructure guidance.
-
----
-
-# Development Workflow
-
-A typical development workflow is:
+Run Django's test suite with:
 
 ```bash
-# Activate environment
-source .venv/bin/activate
-
-# Install/update dependencies
-pip install -r requirements.txt
-
-# Apply database changes
-python manage.py migrate
-
-# Run checks
-DEBUG=True python manage.py check
-
-# Run tests
-DEBUG=True python manage.py test
-
-# Start development server
-DEBUG=True python manage.py runserver
+python manage.py test
 ```
 
-When modifying the database models, create and apply migrations as appropriate:
+The current repository audit verified:
+
+```text
+18 tests
+18 passed
+```
+
+You should rerun the test suite after making changes:
 
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+python manage.py test
 ```
+
+Also run:
+
+```bash
+python manage.py check
+```
+
+before committing.
 
 ---
 
 # Troubleshooting
 
-### `SECRET_KEY environment variable is required`
+## `SECRET_KEY environment variable is required`
 
-If Django is running with:
+Make sure `.env` exists and contains the required configuration.
 
-```env
-DEBUG=False
+```bash
+cp .env.example .env
 ```
 
-provide a production `SECRET_KEY`.
-
-For local development, use:
-
-```env
-DEBUG=True
-```
+Then configure the required values.
 
 ---
 
-### Database errors
+## Database errors after cloning
 
-Make sure migrations have been applied:
+The local SQLite database is generated through migrations.
+
+Run:
 
 ```bash
 python manage.py migrate
 ```
 
-If using the default local configuration, Django uses SQLite.
+For Docker:
 
----
-
-### Google Calendar does not work
-
-Verify that:
-
-1. Google Calendar credentials are configured.
-2. The OAuth redirect URI is registered in Google Cloud.
-3. The callback URL matches the configured application URL.
-
-For local development, use:
-
-```text
-http://localhost:8000/clinics/google-calendar/callback/
-http://localhost:8000/patients/google-calendar/callback/
+```bash
+docker compose exec web python manage.py migrate
 ```
 
 ---
 
-### Nero AI does not respond
+## No admin account
 
-The AI endpoint depends on the configured external webhook integration.
+Create one with:
 
-Check that the `NERO_AI_WEBHOOK_URL` configuration is available and that the external service is reachable.
+```bash
+python manage.py createsuperuser
+```
 
-The AI service is not a locally hosted model inside this repository.
+Then open:
+
+```text
+/admin/
+```
 
 ---
 
-# Repository Documentation
+## Google OAuth redirect error
 
-Additional deployment documentation is available in:
-
-```text
-DEPLOY.md
-```
-
-The repository also contains:
+Verify that the Google OAuth redirect URI matches the application's current callback:
 
 ```text
-render.yaml
-Dockerfile
-docker-compose.yml
-.env.example
+/accounts/social/google/login/callback/
 ```
 
-which provide deployment, container, and environment configuration.
+Do not use an older `/accounts/google/login/callback/` path.
+
+---
+
+## AI assistant does not respond
+
+Verify:
+
+```text
+NERO_AI_WEBHOOK_URL
+```
+
+is configured correctly.
+
+The AI functionality depends on an external webhook and is not a local AI model.
+
+---
+
+## Docker database is empty
+
+Run:
+
+```bash
+docker compose exec web python manage.py migrate
+```
+
+Then create an administrator if necessary:
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
+
+---
+
+# Deployment
+
+Deployment-specific information is available in:
+
+[`DEPLOY.md`](DEPLOY.md)
+
+The deployment configuration includes support for production-oriented services such as:
+
+* PostgreSQL
+* S3-compatible object storage
+* Gunicorn
+* Render
+* Sentry
+
+Review the deployment documentation and environment configuration before deploying.
+
+---
+
+# Frontend Prototype
+
+The repository contains a [`frontend/`](frontend/) directory containing a standalone React/UI prototype.
+
+This frontend is **not the build pipeline for the Django runtime application**.
+
+The current Django application primarily renders:
+
+* Django templates
+* static CSS
+* JavaScript
+
+The React directory should therefore be treated as a separate UI/prototype area unless the project architecture is changed.
+
+There is currently no required `npm install` / React build step for running the main Django application locally.
+
+---
+
+# GitHub Actions
+
+The repository includes GitHub Actions workflows under:
+
+[` .github/workflows/`](.github/workflows/)
+
+These workflows include automated project tasks such as database backup operations.
+
+Check the workflow files directly for the current triggers and configuration.
+
+---
+
+# Security Notes
+
+## Environment secrets
+
+Never commit:
+
+```text
+.env
+```
+
+or other files containing:
+
+* secret keys
+* passwords
+* API keys
+* OAuth secrets
+* database credentials
+* S3 credentials
+
+Use `.env.example` as the configuration template.
+
+---
+
+## Database
+
+`db.sqlite3` is a local development database and should not be committed.
+
+It is generated after:
+
+```bash
+python manage.py migrate
+```
+
+---
+
+## Medical data
+
+Medical records and related media may contain sensitive information.
+
+Use appropriate private storage and production security configuration when handling real patient data.
+
+Do not upload real patient information to development environments or third-party services unless the required privacy, security, and compliance requirements have been reviewed.
+
+---
+
+## External AI service
+
+The Nero AI assistant communicates with an external webhook configured through:
+
+```text
+NERO_AI_WEBHOOK_URL
+```
+
+Review the webhook provider's data-handling and privacy requirements before sending real patient information through the service.
 
 ---
 
@@ -760,23 +1293,39 @@ which provide deployment, container, and environment configuration.
 
 Before opening a pull request:
 
-1. Run the Django system checks.
-2. Run the test suite.
-3. Verify the application locally.
-4. Keep secrets and `.env` files out of commits.
-5. Document significant configuration or behavior changes.
-6. Keep the README updated when setup requirements change.
+1. Make sure the intended files are the only files changed.
+2. Run Django checks:
+
+```bash
+python manage.py check
+```
+
+3. Run the tests:
+
+```bash
+python manage.py test
+```
+
+4. Check the Git diff:
+
+```bash
+git diff --check
+```
+
+5. Do not commit:
+
+```text
+.env
+.venv/
+db.sqlite3
+```
+
+6. Update documentation when application behavior or setup instructions change.
 
 ---
 
-## License
+# License
 
-No project license is currently documented in the repository. Add the appropriate license information here when one is selected.
+No license is currently declared in the repository.
 
----
-
-## Status
-
-Nero is under active development.
-
-The available functionality, configuration, and deployment requirements may evolve as the platform continues to be developed.
+If a license is added, update this section and include the corresponding license file in the repository.
