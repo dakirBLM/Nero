@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, HttpResponse, Http404, FileResponse, JsonResponse
 from django.conf import settings
 from django.urls import reverse
+from agency.auth import is_agency_authenticated, login_or_agency_required
 from clinics.compatibility import CONDITION_RULES
 from clinics.models import Appointment
 from django.views.decorators.http import require_POST
@@ -306,6 +307,11 @@ def _can_access_medical_record(user, medical_record):
     if user == medical_record.patient.user:
         return True
     return _clinic_has_record_appointment(user, medical_record)
+
+
+def _request_can_access_medical_record(request, medical_record):
+    """The agency dashboard sees every record; everyone else follows the user rules."""
+    return is_agency_authenticated(request) or _can_access_medical_record(request.user, medical_record)
 
 def patient_signup_view(request):
     if request.method == 'POST':
@@ -756,19 +762,27 @@ def patient_medical_records_view(request):
     }
     return render(request, 'patient/medical_records.html', context)
 
-@login_required
+@login_or_agency_required
 def see_medical_record_view(request, record_id=None):
-
-
+    # The agency opens records from a clinic's appointment page and passes that
+    # clinic along so the booking section matches what it was looking at.
+    agency_clinic_id = request.GET.get('clinic_id') if is_agency_authenticated(request) else None
 
     if record_id:
         medical_record = get_object_or_404(MedicalRecord, id=record_id)
 
-        if not _can_access_medical_record(request.user, medical_record):
+        if not _request_can_access_medical_record(request, medical_record):
             return HttpResponseForbidden('You do not have permission to access this medical record.')
 
         appointment = None
-        if hasattr(request.user, 'user_type') and request.user.user_type == 'clinic':
+        if agency_clinic_id:
+            appointment = (
+                Appointment.objects.filter(medical_record=medical_record, clinic_id=agency_clinic_id)
+                .select_related('clinic', 'patient')
+                .order_by('-created_at')
+                .first()
+            )
+        elif hasattr(request.user, 'user_type') and request.user.user_type == 'clinic':
             appointment = (
                 Appointment.objects.filter(
                     medical_record=medical_record,
@@ -781,9 +795,10 @@ def see_medical_record_view(request, record_id=None):
         context = {
             'medical_record': medical_record,
             'appointment': appointment,
-            'single_record': True
+            'single_record': True,
+            'agency_clinic_id': agency_clinic_id,
         }
-        if hasattr(request.user, 'user_type') and request.user.user_type == 'clinic':
+        if agency_clinic_id or (hasattr(request.user, 'user_type') and request.user.user_type == 'clinic'):
             return render(request, 'clinics/see_medical_record_clinic.html', context)
         else:
             return render(request, 'patient/see_medical_record.html', context)
@@ -797,12 +812,12 @@ def see_medical_record_view(request, record_id=None):
             return render(request, 'patient/see_medical_record.html', context)
 
 
-@login_required
+@login_or_agency_required
 def secure_medical_report_download(request, record_id):
     """Return decrypted medical report using storage.open()."""
     medical_record = get_object_or_404(MedicalRecord, id=record_id)
 
-    if not _can_access_medical_record(request.user, medical_record):
+    if not _request_can_access_medical_record(request, medical_record):
         return HttpResponseForbidden('You do not have permission to access this file.')
 
     if not medical_record.medical_reports:
@@ -836,12 +851,12 @@ def secure_medical_report_download(request, record_id):
     return response
 
 
-@login_required
+@login_or_agency_required
 def secure_movement_video_view(request, record_id):
     """Return decrypted movement video (inline) using storage.open()."""
     medical_record = get_object_or_404(MedicalRecord, id=record_id)
 
-    if not _can_access_medical_record(request.user, medical_record):
+    if not _request_can_access_medical_record(request, medical_record):
         return HttpResponseForbidden('You do not have permission to access this file.')
 
     if not medical_record.patient_movement_video:
@@ -874,7 +889,7 @@ def secure_movement_video_view(request, record_id):
     return response
 
 
-@login_required
+@login_or_agency_required
 def secure_encrypted_media(request, blob_name):
     """Generic decrypt-and-stream proxy for EncryptedFileSystemStorage files.
 
@@ -901,7 +916,7 @@ def secure_encrypted_media(request, blob_name):
         raise Http404('File not found.')
 
     # Authorization
-    if not _can_access_medical_record(request.user, record):
+    if not _request_can_access_medical_record(request, record):
         return HttpResponseForbidden('You do not have permission to access this file.')
 
     # Decrypt and stream

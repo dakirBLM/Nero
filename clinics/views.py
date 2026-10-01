@@ -21,6 +21,7 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from accounts.forms import UserCreationForm
 from patients.models import Patient, MedicalRecord
+from .access import appointments_redirect, clinic_or_agency_required
 from .forms import AppointmentForm, ClinicSignUpForm, ClinicGalleryForm, ClinicServiceForm, ClinicUpdateForm
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from posts.models import Post
@@ -871,13 +872,8 @@ def patient_appointments_view(request):
     }
     return render(request, 'patient/appointments.html', context)
 
-@login_required
-def clinic_appointments_view(request):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-    
-    clinic = get_object_or_404(Clinic, user=request.user)
+@clinic_or_agency_required
+def clinic_appointments_view(request, clinic):
     # Auto-clean stale terminal appointments only; never delete active lifecycle records.
     cutoff_date = date.today() - timedelta(days=1)
     Appointment.objects.filter(
@@ -913,16 +909,13 @@ def clinic_appointments_view(request):
         'pending_appointments': pending_appointments,
         'accepted_appointments': accepted_appointments,
         'upcoming_appointments': upcoming_appointments,
+        'agency_mode': request.agency_mode,
+        'status_choices': Appointment.STATUS_CHOICES,
     }
     return render(request, 'clinics/clinic_appointments.html', context)
 
-@login_required
-def update_appointment_status_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-    
-    clinic = get_object_or_404(Clinic, user=request.user)
+@clinic_or_agency_required
+def update_appointment_status_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
     
     if request.method == 'POST':
@@ -934,49 +927,39 @@ def update_appointment_status_view(request, appointment_id):
         else:
             messages.error(request, 'Invalid status.')
     
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def accept_medical_record_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def accept_medical_record_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending':
         messages.error(request, 'Medical record already reviewed.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.medical_record_accepted = True
     appointment.medical_rejection_reason = ''
     appointment.save(update_fields=['medical_record_accepted', 'medical_rejection_reason', 'updated_at'])
 
     messages.success(request, 'Medical record accepted. Waiting for patient booking details.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def reject_medical_record_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def reject_medical_record_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending':
         messages.error(request, 'Medical record already reviewed.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     rejection_reason = (request.POST.get('medical_rejection_reason') or '').strip()
     if rejection_reason not in dict(Appointment.MEDICAL_REJECTION_REASON_CHOICES):
         messages.error(request, 'Please select a valid refusal reason.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'rejected_medical_record'
     appointment.medical_record_accepted = False
@@ -984,26 +967,21 @@ def reject_medical_record_view(request, appointment_id):
     appointment.save(update_fields=['status', 'medical_record_accepted', 'medical_rejection_reason', 'updated_at'])
 
     messages.success(request, 'Medical record rejected and appointment cancelled.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def facility_accept_requested_dates_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def facility_accept_requested_dates_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending':
         messages.error(request, 'Booking cannot be processed after review.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if not appointment.treatment_start_date or not appointment.treatment_end_date:
         messages.error(request, 'Patient booking details are still missing.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'accepted_record_accepted_accommodation'
     appointment.proposed_start_date = None
@@ -1026,37 +1004,32 @@ def facility_accept_requested_dates_view(request, appointment_id):
     )
 
     messages.success(request, 'Booking accepted. Please set the payment amount to request patient payment.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def set_payment_amount_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def set_payment_amount_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'accepted_record_accepted_accommodation':
         messages.error(request, 'You can only set payment amount after booking acceptance.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     payment_amount_raw = (request.POST.get('payment_amount') or '').strip()
     if not payment_amount_raw:
         messages.error(request, 'Please enter the amount to request from the patient.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     try:
         payment_amount = Decimal(payment_amount_raw)
     except InvalidOperation:
         messages.error(request, 'Please enter a valid payment amount.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if payment_amount <= 0:
         messages.error(request, 'Payment amount must be greater than 0.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.payment_amount = payment_amount
     appointment.payment_due_at = timezone.now() + timedelta(hours=48)
@@ -1064,28 +1037,23 @@ def set_payment_amount_view(request, appointment_id):
     appointment.save(update_fields=['payment_amount', 'payment_due_at', 'status', 'updated_at'])
 
     messages.success(request, 'Payment request sent to patient.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def mark_appointment_upcoming_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def mark_appointment_upcoming_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'paid':
         messages.error(request, 'Only paid appointments can be marked as upcoming.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'upcoming'
     appointment.save(update_fields=['status', 'updated_at'])
 
     messages.success(request, 'Appointment marked as upcoming.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
 @login_required
@@ -1224,23 +1192,18 @@ def clinic_google_calendar_callback_view(request):
     return redirect('clinic_appointments')
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def facility_accept_propose_dates_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def facility_accept_propose_dates_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending':
         messages.error(request, 'Booking cannot be processed after review.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if not appointment.treatment_start_date or not appointment.treatment_end_date:
         messages.error(request, 'Patient booking details are still missing.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     proposed_start_date = (request.POST.get('proposed_start_date') or '').strip()
     proposed_end_date = (request.POST.get('proposed_end_date') or '').strip()
@@ -1252,19 +1215,19 @@ def facility_accept_propose_dates_view(request, appointment_id):
     has_accommodation_change = bool(proposed_accommodation_type or proposed_companions_raw)
     if not has_date_change and not has_accommodation_change:
         messages.error(request, 'Please propose at least one change (dates or accommodation details).')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if has_date_change and (not proposed_start_date or not proposed_end_date):
         messages.error(request, 'Please provide both proposed start and end dates.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if proposed_accommodation_type and proposed_accommodation_type not in dict(Appointment.ACCOMMODATION_TYPE_CHOICES):
         messages.error(request, 'Please select a valid accommodation type.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if not clinic_proposal_note:
         messages.error(request, 'Please add a note explaining the proposed change.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     proposed_start = None
     proposed_end = None
@@ -1274,15 +1237,15 @@ def facility_accept_propose_dates_view(request, appointment_id):
             proposed_end = datetime.strptime(proposed_end_date, '%Y-%m-%d').date()
         except ValueError:
             messages.error(request, 'Invalid proposed date format.')
-            return redirect('clinic_appointments')
+            return appointments_redirect(request, clinic)
 
         if proposed_end < proposed_start:
             messages.error(request, 'Proposed end date must be after the proposed start date.')
-            return redirect('clinic_appointments')
+            return appointments_redirect(request, clinic)
 
         if proposed_start < date.today() or proposed_end < date.today():
             messages.error(request, 'Proposed dates must be today or later.')
-            return redirect('clinic_appointments')
+            return appointments_redirect(request, clinic)
 
     room_type_map = {
         'single_room': 'single',
@@ -1297,7 +1260,7 @@ def facility_accept_propose_dates_view(request, appointment_id):
 
     if proposed_companions_raw and (not proposed_companions_raw.isdigit() or int(proposed_companions_raw) < 0):
         messages.error(request, 'Please provide a valid companions count.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     if proposed_companions_raw:
         next_companions_count = int(proposed_companions_raw)
@@ -1318,7 +1281,7 @@ def facility_accept_propose_dates_view(request, appointment_id):
 
     if not has_real_change:
         messages.error(request, 'The proposal must change at least one value.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'accepted_record_accommodation_change_requested'
     appointment.proposed_start_date = proposed_start
@@ -1347,43 +1310,33 @@ def facility_accept_propose_dates_view(request, appointment_id):
     )
 
     messages.success(request, 'Proposal sent to patient. Waiting for patient response.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def facility_reject_booking_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def facility_reject_booking_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status not in ['pending', 'accepted_record_accommodation_change_requested']:
         messages.error(request, 'Booking cannot be rejected at this stage.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'cancelled'
     appointment.save(update_fields=['status', 'updated_at'])
 
     messages.success(request, 'Booking cancelled.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def accept_with_accommodation_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def accept_with_accommodation_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending' or not appointment.needs_accommodation:
         messages.error(request, 'Accommodation decision is not available for this request.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'accepted_record_accepted_accommodation'
     appointment.appointment_date = appointment.treatment_start_date
@@ -1392,22 +1345,17 @@ def accept_with_accommodation_view(request, appointment_id):
     appointment.save(update_fields=['status', 'appointment_date', 'payment_amount', 'payment_due_at', 'updated_at'])
 
     messages.success(request, 'Request accepted with accommodation. Set payment amount to request payment.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
-@login_required
+@clinic_or_agency_required
 @require_POST
-def accept_without_accommodation_view(request, appointment_id):
-    if request.user.user_type != 'clinic':
-        messages.error(request, 'Access denied.')
-        return redirect('login')
-
-    clinic = get_object_or_404(Clinic, user=request.user)
+def accept_without_accommodation_view(request, clinic, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'pending' or not appointment.needs_accommodation:
         messages.error(request, 'Accommodation decision is not available for this request.')
-        return redirect('clinic_appointments')
+        return appointments_redirect(request, clinic)
 
     appointment.status = 'accepted_record_accepted_accommodation'
     appointment.appointment_date = appointment.treatment_start_date
@@ -1416,7 +1364,7 @@ def accept_without_accommodation_view(request, appointment_id):
     appointment.save(update_fields=['status', 'appointment_date', 'payment_amount', 'payment_due_at', 'updated_at'])
 
     messages.success(request, 'Request accepted without accommodation. Set payment amount to request payment.')
-    return redirect('clinic_appointments')
+    return appointments_redirect(request, clinic)
 
 
 @login_required

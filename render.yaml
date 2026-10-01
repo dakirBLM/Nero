@@ -92,5 +92,7 @@ services:
         sync: false
       - key: GOOGLE_CALENDAR_REDIRECT_BASE
         sync: false             # e.g. https://nero.onrender.com
+      - key: AGENCY_DASHBOARD_PASSWORD
+        sync: false             # unlocks /agency/; code falls back to a dev default
 
 # No Render database — Postgres is hosted on Supabase (set DATABASE_URL above).
