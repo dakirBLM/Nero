@@ -259,10 +259,16 @@ class ClinicSignUpForm(UserCreationForm):
         label='Accept patients with heart problems',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
-    accepts_catheter = forms.BooleanField(
+    accepts_permanent_catheter = forms.BooleanField(
         required=False,
         initial=True,
-        label='Accept patients using a catheter',
+        label='Accept patients using a permanent catheter',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    accepts_intermittent_catheter = forms.BooleanField(
+        required=False,
+        initial=True,
+        label='Accept patients using an intermittent catheter',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
     accepts_wheelchair = forms.BooleanField(required=False, initial=True, label='Accept patients using a wheelchair', widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
@@ -401,7 +407,7 @@ class ClinicSignUpForm(UserCreationForm):
         # Create the clinic object
         # Acceptance fields
         for field in [
-            'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
+            'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
             'accepts_bowel_incontinence', 'accepts_urine_incontinence',
             'accepts_medical_condom', 'accepts_diapers', 'accepts_breathing_issues', 'accepts_feeding_tube',
             'accepts_stool_tube', 'accepts_urine_tube', 'accepts_bedsores', 'accepts_diabetes', 'accepts_insulin',
