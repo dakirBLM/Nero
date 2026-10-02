@@ -1384,21 +1384,6 @@
                                         {% blocktrans count counter=clinic.years_in_operation %}{{ counter }} year{% plural %}{{ counter }} years{% endblocktrans %}
                                     </span>
                                 </div>
-                                {% if clinic.accepts_permanent_catheter or clinic.accepts_intermittent_catheter %}
-                                <div class="info-item">
-                                    <span class="info-label">{% trans "Catheter acceptance" %}</span>
-                                    <span class="info-value">
-                                        <i class="fas fa-procedures" style="color: #6366f1;"></i>
-                                        {% if clinic.accepts_permanent_catheter and clinic.accepts_intermittent_catheter %}
-                                            {% trans "Permanent and intermittent" %}
-                                        {% elif clinic.accepts_permanent_catheter %}
-                                            {% trans "Permanent catheter" %}
-                                        {% else %}
-                                            {% trans "Intermittent catheter" %}
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                {% endif %}
                             </div>
 
                             {% if clinic.description %}
@@ -1524,21 +1509,6 @@
                                         {% blocktrans count counter=clinic.years_in_operation %}{{ counter }} year{% plural %}{{ counter }} years{% endblocktrans %}
                                     </span>
                                 </div>
-                                {% if clinic.accepts_permanent_catheter or clinic.accepts_intermittent_catheter %}
-                                <div class="info-item">
-                                    <span class="info-label">{% trans "Catheter acceptance" %}</span>
-                                    <span class="info-value">
-                                        <i class="fas fa-procedures" style="color: #6366f1;"></i>
-                                        {% if clinic.accepts_permanent_catheter and clinic.accepts_intermittent_catheter %}
-                                            {% trans "Permanent and intermittent" %}
-                                        {% elif clinic.accepts_permanent_catheter %}
-                                            {% trans "Permanent catheter" %}
-                                        {% else %}
-                                            {% trans "Intermittent catheter" %}
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                {% endif %}
                             </div>
 
                             {% if clinic.description %}

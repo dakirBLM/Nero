@@ -218,6 +218,38 @@ class SmartRecommendationCompatibilityTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('Clinic only treats adults.', form.errors['medical_record'])
 
+    def test_permanent_catheter_is_rejected_during_booking(self):
+        today = timezone.localdate()
+        record = _make_record(
+            'permanentcatheterbooking',
+            uses_permanent_catheter=True,
+            uses_intermittent_catheter=False,
+        )
+        clinic = _make_clinic(
+            'nopermanentcatheterbooking',
+            accepts_permanent_catheter=False,
+            accepts_intermittent_catheter=True,
+        )
+
+        self.assertNotIn(clinic.id, self._ids(record))
+
+        form = AppointmentForm(
+            data={
+                'medical_record': record.id,
+                'appointment_date': today,
+                'appointment_time': '10:00',
+                'notes': '',
+            },
+            patient=record.patient,
+            clinic=clinic,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            'Clinic does not accept patients using a permanent catheter.',
+            form.errors['medical_record'],
+        )
+
 
 class ClinicSearchAuthenticationTests(TestCase):
     def test_anonymous_user_is_redirected_to_login(self):
