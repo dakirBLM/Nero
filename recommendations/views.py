@@ -109,7 +109,7 @@ def _build_clinic_filter_data():
                 'id': clinic.id,
                 'continent': continent,
                 'country': (clinic.country or '').strip(),
-                'clinic_type': (clinic.clinic_type or '').strip(),
+                'specialization': (clinic.specialization or '').strip(),
                 'services': sorted(set(services)),
             }
         )
@@ -171,9 +171,9 @@ def _base_filter_context(patient, preselected_record_id=''):
     clinic_filter_data = _build_clinic_filter_data()
     continents = sorted({row['continent'] for row in clinic_filter_data if row['continent']})
 
-    clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
+    clinic_types = [choice[0] for choice in Clinic.SPECIALIZATION_CHOICES]
     # Display labels (translated); submitted values stay the English choice keys.
-    clinic_type_labels = [str(choice[1]) for choice in Clinic.CLINIC_TYPE_CHOICES]
+    clinic_type_labels = [str(choice[1]) for choice in Clinic.SPECIALIZATION_CHOICES]
 
     return {
         'patient': patient,
@@ -241,7 +241,7 @@ def recommendation_result_view(request):
     selected_clinic_types = [v.strip() for v in request.POST.getlist('clinic_type') if v and v.strip()]
 
     if not selected_clinic_types:
-        selected_clinic_types = [choice[0] for choice in Clinic.CLINIC_TYPE_CHOICES]
+        selected_clinic_types = [choice[0] for choice in Clinic.SPECIALIZATION_CHOICES]
 
     selected_record = MedicalRecord.objects.filter(id=record_id, patient=patient).first()
     if not selected_record:
@@ -267,7 +267,7 @@ def recommendation_result_view(request):
 
         type_query = Q()
         for t in selected_clinic_types:
-            type_query |= Q(clinic_type__icontains=t) | Q(specialization__icontains=t)
+            type_query |= Q(specialization__icontains=t)
         clinics = clinics.filter(type_query)
 
     clinics = clinics.distinct().prefetch_related('services').order_by('clinic_name')

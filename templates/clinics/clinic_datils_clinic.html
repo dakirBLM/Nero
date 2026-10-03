@@ -1439,10 +1439,10 @@
                 {% endif %}
                 <div class="clinic-meta">
 
-                    {% if clinic.clinic_type %}
+                    {% if clinic.specialization %}
                     <span class="meta-tag">
                         <i class="fas fa-stethoscope"></i>
-                        {{ clinic.clinic_type }}
+                        {{ clinic.specialization }}
                     </span>
                     {% endif %}
                     <span class="meta-tag">
@@ -1733,10 +1733,10 @@
                         <h3 class="section-title"><i class="fas fa-file-medical-alt"></i> Clinic Information</h3>
                         <div class="detail-list">
 
-                            {% if clinic.clinic_type %}
+                            {% if clinic.specialization %}
                             <div class="detail-item">
-                                <span class="detail-label">Clinic Type:</span>
-                                <span class="detail-value">{{ clinic.clinic_type }}</span>
+                                <span class="detail-label">Specialization:</span>
+                                <span class="detail-value">{{ clinic.specialization }}</span>
                             </div>
                             {% endif %}
                             <div class="detail-item">

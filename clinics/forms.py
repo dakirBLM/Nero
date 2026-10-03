@@ -42,18 +42,11 @@ class ClinicUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    clinic_type = forms.MultipleChoiceField(
-        choices=Clinic.CLINIC_TYPE_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'clinic-type-checkbox'}),
-        help_text="Select one or more clinic types"
-    )
-
     class Meta:
         model = Clinic
         fields = [
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state',
-            'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization',
+            'country', 'continent', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization',
             'established_date', 'facilities',
             'languages_spoken', 'age_range',
             'profile_picture', 'cover_photo',
@@ -109,10 +102,6 @@ class ClinicUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.clinic_type:
-            selected_types = [t.strip() for t in self.instance.clinic_type.split(',') if t.strip()]
-            self.fields['clinic_type'].initial = selected_types
-
         if self.instance and self.instance.phone_number:
             phone_code, local_number = split_phone_number(self.instance.phone_number)
             self.fields['phone_country_code'].initial = phone_code or '+1'
@@ -134,17 +123,13 @@ class ClinicUpdateForm(forms.ModelForm):
             self.fields['specialization'].initial = specializations
     
     def save(self, commit=True):
-        clinic_types = self.cleaned_data.get('clinic_type', [])
-        self.instance.clinic_type = ', '.join(clinic_types) if isinstance(clinic_types, list) else (clinic_types or '')
         self.instance.phone_number = normalize_phone_number(
             self.cleaned_data.get('phone_country_code'),
             self.cleaned_data.get('phone_number'),
         )
 
-        # Preserve existing specialization if the field is omitted from submitted template.
-        if 'specialization' in self.data:
-            specializations = self.cleaned_data.get('specialization', [])
-            self.instance.specialization = ', '.join(specializations) if isinstance(specializations, list) else specializations
+        specializations = self.cleaned_data.get('specialization', [])
+        self.instance.specialization = ', '.join(specializations) if isinstance(specializations, list) else (specializations or '')
         return super().save(commit=commit)
 
 class ClinicGalleryForm(forms.ModelForm):

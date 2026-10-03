@@ -42,13 +42,6 @@ class Clinic(models.Model):
         ('Neurological treatment', _('Neurological treatment')),
     )
 
-    CLINIC_TYPE_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
-    )
-    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     clinic_name = models.CharField(max_length=200)
     tagline = models.CharField(max_length=300, blank=True, help_text="Brief tagline for your clinic")
@@ -58,7 +51,6 @@ class Clinic(models.Model):
     state = models.CharField(max_length=100)
     country = models.CharField(max_length=100, blank=True, default='')
     continent = models.CharField(max_length=100, blank=True, default='')
-    clinic_type = models.CharField(max_length=255, blank=True, default='', help_text="Selected clinic types (comma separated)")
     zip_code = models.CharField(max_length=20)
     phone_number = models.CharField(max_length=30)
     contact_email = models.EmailField()
