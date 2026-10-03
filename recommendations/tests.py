@@ -121,6 +121,77 @@ class SmartRecommendationCompatibilityTests(TestCase):
         self.assertNotIn(self.reject_dependent.id, matched)
         self.assertNotIn(self.reject_bedridden.id, matched)
 
+    def test_permanent_catheter_patient_requires_permanent_catheter_acceptance(self):
+        permanent_only = _make_clinic(
+            'permanent',
+            accepts_permanent_catheter=True,
+            accepts_intermittent_catheter=False,
+        )
+        intermittent_only = _make_clinic(
+            'intermittent',
+            accepts_permanent_catheter=False,
+            accepts_intermittent_catheter=True,
+        )
+        record = _make_record(
+            'permanentcatheter',
+            uses_permanent_catheter=True,
+        )
+
+        matched = self._ids(record)
+
+        self.assertIn(permanent_only.id, matched)
+        self.assertNotIn(intermittent_only.id, matched)
+
+    def test_intermittent_catheter_patient_requires_intermittent_catheter_acceptance(self):
+        permanent_only = _make_clinic(
+            'permanentonly',
+            accepts_permanent_catheter=True,
+            accepts_intermittent_catheter=False,
+        )
+        intermittent_only = _make_clinic(
+            'intermittentonly',
+            accepts_permanent_catheter=False,
+            accepts_intermittent_catheter=True,
+        )
+        record = _make_record(
+            'intermittentcatheter',
+            uses_permanent_catheter=False,
+            uses_intermittent_catheter=True,
+        )
+
+        matched = self._ids(record)
+
+        self.assertNotIn(permanent_only.id, matched)
+        self.assertIn(intermittent_only.id, matched)
+
+    def test_patient_using_both_catheter_types_requires_both_acceptances(self):
+        both = _make_clinic(
+            'bothcatheters',
+            accepts_permanent_catheter=True,
+            accepts_intermittent_catheter=True,
+        )
+        permanent_only = _make_clinic(
+            'permanentonlyboth',
+            accepts_permanent_catheter=True,
+            accepts_intermittent_catheter=False,
+        )
+        intermittent_only = _make_clinic(
+            'intermittentonlyboth',
+            accepts_permanent_catheter=False,
+            accepts_intermittent_catheter=True,
+        )
+        record = _make_record(
+            'bothcatheter',
+            uses_permanent_catheter=True,
+            uses_intermittent_catheter=True,
+        )
+
+        matched = self._ids(record)
+
+        self.assertIn(both.id, matched)
+        self.assertNotIn(permanent_only.id, matched)
+        self.assertNotIn(intermittent_only.id, matched)
+
     def test_age_range_is_enforced_in_recommendations_and_booking(self):
         today = timezone.localdate()
         child_record = _make_record(
@@ -146,6 +217,38 @@ class SmartRecommendationCompatibilityTests(TestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn('Clinic only treats adults.', form.errors['medical_record'])
+
+    def test_permanent_catheter_is_rejected_during_booking(self):
+        today = timezone.localdate()
+        record = _make_record(
+            'permanentcatheterbooking',
+            uses_permanent_catheter=True,
+            uses_intermittent_catheter=False,
+        )
+        clinic = _make_clinic(
+            'nopermanentcatheterbooking',
+            accepts_permanent_catheter=False,
+            accepts_intermittent_catheter=True,
+        )
+
+        self.assertNotIn(clinic.id, self._ids(record))
+
+        form = AppointmentForm(
+            data={
+                'medical_record': record.id,
+                'appointment_date': today,
+                'appointment_time': '10:00',
+                'notes': '',
+            },
+            patient=record.patient,
+            clinic=clinic,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            'Clinic does not accept patients using a permanent catheter.',
+            form.errors['medical_record'],
+        )
 
 
 class ClinicSearchAuthenticationTests(TestCase):
