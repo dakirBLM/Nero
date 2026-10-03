@@ -80,8 +80,8 @@ class Clinic(models.Model):
     )
     # Acceptance flags: whether the clinic accepts certain patient conditions
     accepts_heart_problems = models.BooleanField(default=True, help_text="Accept patients with heart problems")
-    accepts_permanent_catheter = models.BooleanField(default=True,help_text="Accept patients using a permanent catheter",)
-    accepts_intermittent_catheter = models.BooleanField(default=True,help_text="Accept patients using an intermittent catheter",)
+    accepts_permanent_catheter = models.BooleanField(default=True, help_text="Accept patients using a permanent catheter")
+    accepts_intermittent_catheter = models.BooleanField(default=True, help_text="Accept patients using an intermittent catheter")
     accepts_wheelchair = models.BooleanField(default=True, help_text="Accept patients who use a wheelchair")
     accepts_walker = models.BooleanField(default=True, help_text="Accept patients who use a walker")
     accepts_crutch = models.BooleanField(default=True, help_text="Accept patients who use crutches")

@@ -3,76 +3,22 @@ from .models import Clinic, ClinicGallery, ClinicService, Appointment
 
 @admin.register(Clinic)
 class ClinicAdmin(admin.ModelAdmin):
-    list_display = (
-        "clinic_name",
-        "user",
-        "city",
-        "state",
-        "specialization",
-        "age_range",
-        "accepts_heart_problems",
-        "accepts_permanent_catheter",
-        "accepts_intermittent_catheter",
-        "accepts_wheelchair",
-        "accepts_walker",
-        "accepts_crutch",
-        "accepts_bowel_incontinence",
-        "accepts_urine_incontinence",
-        "accepts_medical_condom",
-        "accepts_diapers",
-        "accepts_breathing_issues",
-        "accepts_feeding_tube",
-        "accepts_stool_tube",
-        "accepts_urine_tube",
-        "accepts_bedsores",
-        "accepts_diabetes",
-        "accepts_insulin",
-        "accepts_high_blood_pressure",
-        "accepts_infectious_diseases",
-        "accepts_vein_thrombosis",
-        "accepts_depression",
-        "accepts_tracheostomy_tube",
-        "accepts_dependent_patients",
-        "accepts_bedridden_patients",
-        "is_verified",
-    )
-    search_fields = (
-        "clinic_name",
-        "city",
-        "state",
-        "user__username",
-        "contact_email",
-    )
-    list_filter = (
-        "specialization",
-        "is_verified",
-        "age_range",
-        "accepts_heart_problems",
-        "accepts_permanent_catheter",
-        "accepts_intermittent_catheter",
-        "accepts_wheelchair",
-        "accepts_walker",
-        "accepts_crutch",
-        "accepts_bowel_incontinence",
-        "accepts_urine_incontinence",
-        "accepts_medical_condom",
-        "accepts_diapers",
-        "accepts_breathing_issues",
-        "accepts_feeding_tube",
-        "accepts_stool_tube",
-        "accepts_urine_tube",
-        "accepts_bedsores",
-        "accepts_diabetes",
-        "accepts_insulin",
-        "accepts_high_blood_pressure",
-        "accepts_infectious_diseases",
-        "accepts_vein_thrombosis",
-        "accepts_depression",
-        "accepts_tracheostomy_tube",
-        "accepts_dependent_patients",
-        "accepts_bedridden_patients",
-    )
-
+	list_display = (
+		"clinic_name", "user", "city", "state", "specialization",
+		"age_range", "accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter", "is_verified"
+	)
+	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
+	list_filter = (
+		"specialization",
+		"is_verified",
+		"age_range",
+		"accepts_heart_problems",
+		"accepts_permanent_catheter",
+		"accepts_intermittent_catheter",
+		"accepts_tracheostomy_tube",
+		"accepts_dependent_patients",
+		"accepts_bedridden_patients",
+	)
 
 @admin.register(ClinicService)
 class ClinicServiceAdmin(admin.ModelAdmin):
