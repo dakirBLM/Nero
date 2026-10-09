@@ -1,0 +1,76 @@
+/* International phone input (intl-tel-input) adapted to the site's form-control look. */
+
+.iti {
+    display: block;
+    width: 100%;
+}
+
+.iti__country-container {
+    padding: 2px;
+}
+
+.iti__selected-country {
+    border-radius: 10px 0 0 10px;
+}
+
+.iti__selected-country:hover,
+.iti__selected-country:focus-visible {
+    background-color: rgba(15, 23, 42, 0.05);
+}
+
+.iti__dropdown-content {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+    overflow: hidden;
+    z-index: 1050;
+}
+
+.iti__search-input {
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 14px;
+    border: 0;
+    border-bottom: 1px solid #e2e8f0;
+    outline: none;
+}
+
+.iti__country {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.iti__country.iti__highlight {
+    background-color: #f1f5f9;
+}
+
+.iti__dial-code {
+    color: #64748b;
+}
+
+/* Phone numbers always read left-to-right, also on RTL (Arabic) pages. */
+[dir="rtl"] .iti {
+    direction: ltr;
+}
+
+input.intl-phone-invalid {
+    border-color: #ef4444 !important;
+}
+
+.intl-phone-feedback {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.intl-phone-feedback.is-error {
+    color: #dc2626;
+}
+
+.intl-phone-feedback.is-ok {
+    color: #059669;
+}
+
+[dir="rtl"] .intl-phone-feedback {
+    text-align: right;
+}

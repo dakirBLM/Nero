@@ -1128,6 +1128,7 @@
         [dir="rtl"] .error-list ul{padding-left:0;padding-right:20px}
         [dir="rtl"] input[type="file"]::file-selector-button{margin-right:0;margin-left:10px}
     </style>
+    {% include 'includes/intl_phone_assets.html' %}
 </head>
 <body>
     <!-- Navigation Header -->
@@ -1368,23 +1369,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">
+                        <label for="{{ form.phone_number.id_for_label }}" class="form-label">
                             {% trans "Phone Number" %} <span class="required">*</span>
                         </label>
-                        <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
-                            <div>
-                                {{ form.phone_country_code }}
-                                {% if form.phone_country_code.errors %}
-                                    <div class="field-error">⚠ {{ form.phone_country_code.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {{ form.phone_number }}
-                                {% if form.phone_number.errors %}
-                                    <div class="field-error">⚠ {{ form.phone_number.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="field-error">⚠ {{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="form-group">

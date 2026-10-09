@@ -23,3 +23,6 @@ sentry-sdk[django]>=2
 # Imaging / HTTP
 pillow>=12.2,<13
 requests>=2.32.4,<3
+
+# Phone numbers (libphonenumber: international parsing/validation)
+phonenumbers>=9.0,<10

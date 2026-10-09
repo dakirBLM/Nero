@@ -635,6 +635,7 @@
     .music-toggle.playing .music-icon{ color:white; animation:musicBounce 0.6s ease-in-out infinite; }
     @keyframes musicBounce{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.2);} }
     </style>
+    {% include 'includes/intl_phone_assets.html' %}
 </head>
 <body>
     <!-- Navigation Header -->
@@ -771,27 +772,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">
                         {% trans "Phone Number" %} <span class="required">*</span>
                     </label>
-                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
-                        <div>
-                            {{ form.phone_country_code }}
-                            {% if form.phone_country_code.errors %}
-                                <div class="field-error">⚠ {{ form.phone_country_code.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <input type="tel" id="id_phone_number" name="phone_number"
-                                   class="form-control {% if form.phone_number.errors %}error{% endif %}"
-                                   placeholder="{% trans 'Enter phone number' %}"
-                                   value="{{ form.phone_number.value|default:'' }}"
-                                   required>
-                            {% if form.phone_number.errors %}
-                                <div class="field-error">⚠ {{ form.phone_number.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="field-error">⚠ {{ form.phone_number.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="form-group">

@@ -4,7 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from patients.models import Patient
 from clinics.models import Clinic
 from .models import User
-from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
+from core.location_choices import COUNTRY_CHOICES
+from core.phone import InternationalPhoneField, InternationalPhoneInput
 
 class PatientSignUpForm(UserCreationForm):
     profile_picture = forms.ImageField(required=False)
@@ -28,22 +29,10 @@ class PatientSignUpForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    phone_number = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your phone number'
-        })
-    )
+    phone_number = InternationalPhoneField(required=True)
     class Meta:
         model = User
-        fields = ['username', 'email', 'full_name', 'date_of_birth', 'gender', 'phone_country_code', 'phone_number', 'profile_picture', 'password1', 'password2']
+        fields = ['username', 'email', 'full_name', 'date_of_birth', 'gender', 'phone_number', 'profile_picture', 'password1', 'password2']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose a username'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'}),
@@ -55,10 +44,6 @@ class PatientSignUpForm(UserCreationForm):
             if field_name not in ['password1', 'password2']:
                 field.widget.attrs.update({'class': 'form-control'})
 
-        if 'phone_country_code' in self.fields and not self.initial.get('phone_country_code'):
-            self.fields['phone_country_code'].initial = '+1'
-                
-            
     
     def save(self, commit=True): 
         user = super().save(commit=False)
@@ -72,10 +57,7 @@ class PatientSignUpForm(UserCreationForm):
             full_name=self.cleaned_data['full_name'],
             date_of_birth=self.cleaned_data['date_of_birth'],
             gender=self.cleaned_data.get('gender'),
-            phone=normalize_phone_number(
-                self.cleaned_data.get('phone_country_code'),
-                self.cleaned_data.get('phone_number'),
-            ),
+            phone=self.cleaned_data['phone_number'],
             profile_picture=self.cleaned_data.get('profile_picture')
         )
         return user
@@ -160,18 +142,9 @@ class ClinicSignUpForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
+    phone_number = InternationalPhoneField(
         required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    phone_number = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Phone number',
-            'class': 'form-control'
-        })
+        widget=InternationalPhoneInput(attrs={'class': 'form-control'}),
     )
     contact_email = forms.EmailField(
         required=True,
@@ -334,14 +307,6 @@ class ClinicSignUpForm(UserCreationForm):
             if not self.initial.get('contact_email'):
                 self.initial['contact_email'] = self.existing_user.email
 
-        if self.initial.get('phone_number'):
-            phone_country_code, phone_local_number = split_phone_number(self.initial.get('phone_number'))
-            self.fields['phone_country_code'].initial = phone_country_code or '+1'
-            self.fields['phone_number'].initial = phone_local_number
-
-        if 'phone_country_code' in self.fields and not self.initial.get('phone_country_code'):
-            self.fields['phone_country_code'].initial = '+1'
-
         # Add Bootstrap classes to default fields
         for field_name in ['username', 'email', 'password1', 'password2']:
             self.fields[field_name].widget.attrs.update({'class': 'form-control'})
@@ -376,10 +341,7 @@ class ClinicSignUpForm(UserCreationForm):
             'country': self.cleaned_data['country'],
             'continent': self.cleaned_data['continent'],
             'zip_code': self.cleaned_data['zip_code'],
-            'phone_number': normalize_phone_number(
-                self.cleaned_data.get('phone_country_code'),
-                self.cleaned_data.get('phone_number'),
-            ),
+            'phone_number': self.cleaned_data['phone_number'],
             'contact_email': self.cleaned_data['contact_email'],
             'website': self.cleaned_data.get('website', ''),
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
@@ -432,12 +394,6 @@ class ClinicSignUpForm(UserCreationForm):
         if Clinic.objects.filter(contact_email=contact_email).exists():
             raise forms.ValidationError("A clinic with this contact email already exists.")
         return contact_email
-    
-    def clean_phone_number(self):
-        phone_number = (self.cleaned_data.get('phone_number') or '').strip()
-        if not phone_number:
-            raise forms.ValidationError("Please enter a phone number.")
-        return phone_number
     
     def clean_established_date(self):
         established_date = self.cleaned_data.get('established_date')

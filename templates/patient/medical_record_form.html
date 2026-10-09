@@ -1202,6 +1202,7 @@
         [dir="rtl"] .form-label .required{margin-left:0;margin-right:4px}
         [dir="rtl"] .error-list ul{padding-left:0;padding-right:20px}
     </style>
+    {% include 'includes/intl_phone_assets.html' %}
 </head>
 <body>
     <!-- Main Header - Exact Match with Dashboard -->
@@ -1417,43 +1418,23 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label class="form-label">
+                                    <label class="form-label" for="{{ medical_form.mobile_number.id_for_label }}">
                                         <i class="fas fa-phone"></i> {% trans "Mobile Number" %}
                                     </label>
-                                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
-                                        <div>
-                                            {{ medical_form.mobile_country_code }}
-                                            {% if medical_form.mobile_country_code.errors %}
-                                                <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.mobile_country_code.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {{ medical_form.mobile_number }}
-                                            {% if medical_form.mobile_number.errors %}
-                                                <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.mobile_number.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+                                    {{ medical_form.mobile_number }}
+                                    {% if medical_form.mobile_number.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.mobile_number.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">
+                                    <label class="form-label" for="{{ medical_form.whatsapp_number.id_for_label }}">
                                         <i class="fab fa-whatsapp"></i> {% trans "WhatsApp Number" %}
                                     </label>
-                                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
-                                        <div>
-                                            {{ medical_form.whatsapp_country_code }}
-                                            {% if medical_form.whatsapp_country_code.errors %}
-                                                <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.whatsapp_country_code.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {{ medical_form.whatsapp_number }}
-                                            {% if medical_form.whatsapp_number.errors %}
-                                                <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.whatsapp_number.errors.0 }}</div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+                                    {{ medical_form.whatsapp_number }}
+                                    {% if medical_form.whatsapp_number.errors %}
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.whatsapp_number.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             
@@ -2328,6 +2309,11 @@
             const currentStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
             
             if (!currentStep) return true;
+
+            // Phone numbers must be valid for their country before leaving the step
+            if (window.IntlPhone && !window.IntlPhone.validateWithin(currentStep)) {
+                isValid = false;
+            }
             
             // Check required fields in current step
             currentStep.querySelectorAll('[required]').forEach(field => {

@@ -21,6 +21,7 @@ from urllib.parse import urlencode, quote
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from cryptography.fernet import InvalidToken
+from core.phone import to_e164
 
 logger = logging.getLogger(__name__)
 
@@ -368,15 +369,12 @@ def medical_record_create_view(request):
         messages.error(request, 'Access denied.')
         return redirect('login')
     patient, _ = Patient.objects.get_or_create(user=request.user)
-    from core.location_choices import split_phone_number
-
-    mobile_country_code, mobile_number = split_phone_number(patient.phone)
+    # Pre-fill contact numbers from the profile, skipping placeholders such as '0000000000'.
+    profile_phone = to_e164(patient.phone)
     initial_contact_data = {
         'email': request.user.email or '',
-        'mobile_country_code': mobile_country_code or '+1',
-        'mobile_number': mobile_number or '',
-        'whatsapp_country_code': mobile_country_code or '+1',
-        'whatsapp_number': mobile_number or '',
+        'mobile_number': profile_phone,
+        'whatsapp_number': profile_phone,
     }
     if request.method == 'POST':
         medical_form = MedicalRecordForm(request.POST, request.FILES)

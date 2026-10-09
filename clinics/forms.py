@@ -3,7 +3,8 @@ from patients.models import MedicalRecord
 from .compatibility import clinic_compatibility_errors, is_clinic_compatible
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from accounts.forms import ClinicSignUpForm
-from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
+from core.location_choices import COUNTRY_CHOICES
+from core.phone import InternationalPhoneField, InternationalPhoneInput
 
 class MedicalRecordChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -37,10 +38,8 @@ class ClinicUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    phone_number = InternationalPhoneField(
+        widget=InternationalPhoneInput(attrs={'class': 'form-control'}),
     )
     class Meta:
         model = Clinic
@@ -67,7 +66,6 @@ class ClinicUpdateForm(forms.ModelForm):
             'state': forms.TextInput(attrs={'class': 'form-control'}),
             'continent': forms.TextInput(attrs={'class': 'form-control'}),
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'website': forms.URLInput(attrs={'class': 'form-control'}),
             'google_maps_url': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'https://www.google.com/maps/embed?pb=...'}),
@@ -102,11 +100,6 @@ class ClinicUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.phone_number:
-            phone_code, local_number = split_phone_number(self.instance.phone_number)
-            self.fields['phone_country_code'].initial = phone_code or '+1'
-            self.fields['phone_number'].initial = local_number
-
         if self.instance and self.instance.country:
             self.fields['country'].initial = self.instance.country
 
@@ -123,11 +116,6 @@ class ClinicUpdateForm(forms.ModelForm):
             self.fields['specialization'].initial = specializations
     
     def save(self, commit=True):
-        self.instance.phone_number = normalize_phone_number(
-            self.cleaned_data.get('phone_country_code'),
-            self.cleaned_data.get('phone_number'),
-        )
-
         specializations = self.cleaned_data.get('specialization', [])
         self.instance.specialization = ', '.join(specializations) if isinstance(specializations, list) else (specializations or '')
         return super().save(commit=commit)
