@@ -1,6 +1,16 @@
 from django.db import models
 from accounts.models import User
 
+
+def _user_has_clinic(user):
+    from clinics.models import Clinic
+    return Clinic.objects.filter(user=user).exists()
+
+
+def _user_clinic_ids(user):
+    from clinics.models import Clinic
+    return Clinic.objects.filter(user=user).values('id')
+
 class ChatRoom(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_rooms_user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_rooms_user2')
@@ -19,13 +29,13 @@ class ChatRoom(models.Model):
     def is_patient_to_clinic(self):
         user1_is_patient = hasattr(self.user1, 'patient')
         user2_is_patient = hasattr(self.user2, 'patient')
-        user1_is_clinic = hasattr(self.user1, 'clinic')
-        user2_is_clinic = hasattr(self.user2, 'clinic')
+        user1_is_clinic = _user_has_clinic(self.user1)
+        user2_is_clinic = _user_has_clinic(self.user2)
         return (user1_is_patient and user2_is_clinic) or (user2_is_patient and user1_is_clinic)
 
     @property
     def is_clinic_to_clinic(self):
-        return hasattr(self.user1, 'clinic') and hasattr(self.user2, 'clinic')
+        return _user_has_clinic(self.user1) and _user_has_clinic(self.user2)
 
     def has_payed_appointment(self):
         """Return True when this room links a patient and clinic with at least one payed appointment."""
@@ -35,8 +45,8 @@ class ChatRoom(models.Model):
         from clinics.models import Appointment
 
         patient_obj = self.user1.patient if hasattr(self.user1, 'patient') else self.user2.patient
-        clinic_obj = self.user1.clinic if hasattr(self.user1, 'clinic') else self.user2.clinic
-        return Appointment.objects.filter(patient=patient_obj, clinic=clinic_obj, status='payed').exists()
+        clinic_user = self.user1 if _user_has_clinic(self.user1) else self.user2
+        return Appointment.objects.filter(patient=patient_obj, clinic_id__in=_user_clinic_ids(clinic_user), status='payed').exists()
 
     def has_upcoming_or_active_appointment(self):
         """Return True when this room links a patient and clinic with at least one upcoming or active appointment."""
@@ -46,13 +56,13 @@ class ChatRoom(models.Model):
         from clinics.models import Appointment
 
         patient_obj = self.user1.patient if hasattr(self.user1, 'patient') else self.user2.patient
-        clinic_obj = self.user1.clinic if hasattr(self.user1, 'clinic') else self.user2.clinic
+        clinic_user = self.user1 if _user_has_clinic(self.user1) else self.user2
 
         # Allow chat for paid or upcoming appointments
         active_statuses = ['paid', 'upcoming']
         return Appointment.objects.filter(
             patient=patient_obj,
-            clinic=clinic_obj,
+            clinic_id__in=_user_clinic_ids(clinic_user),
             status__in=active_statuses
         ).exists()
 

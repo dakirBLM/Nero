@@ -46,16 +46,8 @@ def chat_room_view_patient(request, room_id):
 
     # Presence: consider patient/clinic last_seen within 5 minutes as online
     try:
-        is_online = False
-        if hasattr(other, 'patient') and other.patient and other.patient.last_seen:
-            from django.utils import timezone
-            from datetime import timedelta
-            is_online = (timezone.now() - other.patient.last_seen) <= timedelta(minutes=5)
-        elif hasattr(other, 'clinic') and other.clinic and other.clinic.last_seen:
-            from django.utils import timezone
-            from datetime import timedelta
-            is_online = (timezone.now() - other.clinic.last_seen) <= timedelta(minutes=5)
-        other.is_online = is_online
+        from clinics.active import contact_is_online
+        other.is_online = contact_is_online(other)
     except Exception:
         other.is_online = False
 
