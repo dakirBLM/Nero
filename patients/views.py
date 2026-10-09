@@ -950,17 +950,11 @@ def search_clinics_view(request):
     specialization = request.GET.get('specialization', 'all')
     city = request.GET.get('city', '')
     age_range = request.GET.get('age_range', 'all')
-    needs_tracheostomy = request.GET.get('needs_tracheostomy') == '1'
-    needs_dependent = request.GET.get('needs_dependent') == '1'
-    needs_bedridden = request.GET.get('needs_bedridden') == '1'
     has_search_filters = bool(
         query
         or (specialization and specialization != 'all')
         or city
         or (age_range and age_range != 'all')
-        or needs_tracheostomy
-        or needs_dependent
-        or needs_bedridden
     )
     all_clinics = Clinic.objects.all()
     featured_clinics = None
@@ -997,13 +991,6 @@ def search_clinics_view(request):
         elif age_range == Clinic.AgeRange.BOTH:
             clinics = clinics.filter(age_range=Clinic.AgeRange.BOTH)
 
-        if needs_tracheostomy:
-            clinics = clinics.filter(accepts_tracheostomy_tube=True)
-        if needs_dependent:
-            clinics = clinics.filter(accepts_dependent_patients=True)
-        if needs_bedridden:
-            clinics = clinics.filter(accepts_bedridden_patients=True)
-
         paginator = Paginator(clinics, 9)
         page_number = request.GET.get('page', 1)
         clinics_to_display = paginator.get_page(page_number)
@@ -1017,9 +1004,6 @@ def search_clinics_view(request):
         'specialization': specialization,
         'city': city,
         'age_range': age_range,
-        'needs_tracheostomy': needs_tracheostomy,
-        'needs_dependent': needs_dependent,
-        'needs_bedridden': needs_bedridden,
         'has_search_filters': has_search_filters,
         'age_range_choices': Clinic.AgeRange.choices,
         'specialization_choices': Clinic.SPECIALIZATION_CHOICES,
