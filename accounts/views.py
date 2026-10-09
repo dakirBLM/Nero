@@ -167,6 +167,10 @@ class CustomLoginView(LoginView):
             if not has_clinic_profile:
                 messages.info(self.request, 'Please complete your clinic profile to finish registration.')
                 return '/clinics/signup/?from_google=1'
+            from clinics.models import Clinic
+            if Clinic.objects.filter(user=user).count() > 1:
+                # Multi-clinic account: pick which clinic this session manages.
+                return reverse('clinic_select')
             return '/clinics/dashboard/'
         # Fallback to concrete profile if user_type is empty/unknown.
         if has_clinic_profile:

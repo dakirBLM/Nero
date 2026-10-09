@@ -13,6 +13,7 @@ from django.urls import reverse
 from agency.auth import is_agency_authenticated
 
 from .models import Clinic
+from .active import active_clinic_or_redirect
 
 
 def clinic_or_agency_required(view):
@@ -29,7 +30,9 @@ def clinic_or_agency_required(view):
             if request.user.user_type != 'clinic':
                 messages.error(request, 'Access denied.')
                 return redirect('login')
-            clinic = get_object_or_404(Clinic, user=request.user)
+            clinic, _clinic_redirect = active_clinic_or_redirect(request)
+            if _clinic_redirect is not None:
+                return _clinic_redirect
             request.agency_mode = False
         return view(request, clinic, *args, **kwargs)
     return wrapper

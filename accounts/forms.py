@@ -317,6 +317,11 @@ class ClinicSignUpForm(UserCreationForm):
         self.existing_user = kwargs.pop('existing_user', None)
         super().__init__(*args, **kwargs)
 
+        if self.existing_user is not None:
+            # Validate against the existing account so the username/email
+            # uniqueness checks exclude it instead of always failing.
+            self.instance = self.existing_user
+
         if self.existing_user:
             self.fields['username'].required = False
             self.fields['email'].required = False
@@ -429,7 +434,11 @@ class ClinicSignUpForm(UserCreationForm):
     
     def clean_contact_email(self):
         contact_email = self.cleaned_data.get('contact_email')
-        if Clinic.objects.filter(contact_email=contact_email).exists():
+        qs = Clinic.objects.filter(contact_email=contact_email)
+        if self.existing_user:
+            # Same owner may reuse their contact email across their own clinics.
+            qs = qs.exclude(user=self.existing_user)
+        if qs.exists():
             raise forms.ValidationError("A clinic with this contact email already exists.")
         return contact_email
     

@@ -9,6 +9,7 @@ from clinics.models import Clinic
 from django.http import JsonResponse
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+from clinics.active import contact_is_online, get_active_clinic, latest_seen_clinic, user_has_clinic
 
 # AJAX endpoint to mark all unread messages in a chat room as read for the current user
 @login_required
@@ -71,7 +72,7 @@ def start_chat_with_user(request):
 
     # Only allow opening rooms with patient/clinic accounts — never with staff,
     # superusers, or role-less accounts.
-    if not (hasattr(other_user, 'patient') or hasattr(other_user, 'clinic')):
+    if not (hasattr(other_user, 'patient') or user_has_clinic(other_user)):
         return redirect('chat_room_list')
 
     chat_room = ChatRoom.objects.filter(
@@ -98,14 +99,7 @@ def chat_room_list(request):
         other = room.user2 if room.user1 == request.user else room.user1
         # Presence: mark patient users as online if last_seen within 5 minutes
         try:
-            is_online = False
-            from django.utils import timezone
-            from datetime import timedelta
-            if hasattr(other, 'patient') and getattr(other, 'patient') and other.patient.last_seen:
-                is_online = (timezone.now() - other.patient.last_seen) <= timedelta(minutes=5)
-            elif hasattr(other, 'clinic') and getattr(other, 'clinic') and other.clinic.last_seen:
-                is_online = (timezone.now() - other.clinic.last_seen) <= timedelta(minutes=5)
-            other.is_online = is_online
+            other.is_online = contact_is_online(other)
         except Exception:
             other.is_online = False
         rooms.append({'room': room, 'other': other, 'unread_count': unread_count})
@@ -113,8 +107,8 @@ def chat_room_list(request):
     # Add patient or clinic context for sidebar/header
     if hasattr(request.user, 'patient'):
         context['patient'] = request.user.patient
-    if hasattr(request.user, 'clinic'):
-        context['clinic'] = request.user.clinic
+    if user_has_clinic(request.user):
+        context['clinic'] = get_active_clinic(request) or latest_seen_clinic(request.user)
     return render(request, 'chat/chat_room_list.html', context)
 
 @login_required
@@ -130,22 +124,15 @@ def chat_room_view(request, room_id):
 
     other = chat_room.user2 if chat_room.user1 == request.user else chat_room.user1
     try:
-        is_online = False
-        from django.utils import timezone
-        from datetime import timedelta
-        if hasattr(other, 'patient') and getattr(other, 'patient') and other.patient.last_seen:
-            is_online = (timezone.now() - other.patient.last_seen) <= timedelta(minutes=5)
-        elif hasattr(other, 'clinic') and getattr(other, 'clinic') and other.clinic.last_seen:
-            is_online = (timezone.now() - other.clinic.last_seen) <= timedelta(minutes=5)
-        other.is_online = is_online
+        other.is_online = contact_is_online(other)
     except Exception:
         other.is_online = False
     context = {'chat_room': chat_room, 'messages': messages, 'other': other}
     # Add patient or clinic context for sidebar/header
     if hasattr(request.user, 'patient'):
         context['patient'] = request.user.patient
-    if hasattr(request.user, 'clinic'):
-        context['clinic'] = request.user.clinic
+    if user_has_clinic(request.user):
+        context['clinic'] = get_active_clinic(request) or latest_seen_clinic(request.user)
     return render(request, 'chat/chat_room.html', context)
 
 @login_required

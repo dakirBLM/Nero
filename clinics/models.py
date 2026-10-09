@@ -42,7 +42,12 @@ class Clinic(models.Model):
         ('Neurological treatment', _('Neurological treatment')),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='clinics',
+        help_text="Account that owns/manages this clinic. One account may own multiple clinics.",
+    )
     clinic_name = models.CharField(max_length=200)
     tagline = models.CharField(max_length=300, blank=True, help_text="Brief tagline for your clinic")
     description = models.TextField(help_text="Detailed description of your clinic services and approach")

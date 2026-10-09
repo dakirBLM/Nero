@@ -22,6 +22,7 @@ from django.urls import reverse
 from accounts.forms import UserCreationForm
 from patients.models import Patient, MedicalRecord
 from .access import appointments_redirect, clinic_or_agency_required
+from .active import active_clinic_or_redirect, get_active_clinic, set_active_clinic
 from .forms import AppointmentForm, ClinicSignUpForm, ClinicGalleryForm, ClinicServiceForm, ClinicUpdateForm
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from posts.models import Post
@@ -169,10 +170,9 @@ def clinic_dashboard_view(request):
     if request.user.user_type != 'clinic':
         messages.error(request, 'Access denied.')
         return redirect('login')
-    clinic = Clinic.objects.filter(user=request.user).first()
-    if clinic is None:
-        messages.info(request, 'Please complete your clinic profile to continue.')
-        return redirect('clinic_signup')
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     assigned_patients = Appointment.objects.filter(clinic=clinic).select_related('patient')
     # Build a deduplicated list of assignments keyed by patient so each patient appears once
     ordered_assignments = assigned_patients.order_by('-created_at')
@@ -314,22 +314,36 @@ def clinic_signup_view(request):
         and not Clinic.objects.filter(user=request.user).exists()
     )
 
+    # Logged-in clinic owner adding another clinic under the same account.
+    add_clinic_mode = (
+        request.user.is_authenticated
+        and request.user.user_type == 'clinic'
+        and Clinic.objects.filter(user=request.user).exists()
+        and not google_clinic_completion
+    )
+
     if google_clinic_completion and request.user.user_type != 'clinic':
         request.user.user_type = 'clinic'
         request.user.save(update_fields=['user_type'])
 
     if request.method == 'POST':
-        if google_clinic_completion:
+        if google_clinic_completion or add_clinic_mode:
             form = ClinicSignUpForm(request.POST, request.FILES, existing_user=request.user)
         else:
             form = ClinicSignUpForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 user = form.save()
+                if add_clinic_mode:
+                    new_clinic = Clinic.objects.filter(user=user).order_by('-id').first()
+                    if new_clinic is not None:
+                        set_active_clinic(request, new_clinic)
+                    messages.success(request, 'Another clinic was added to your account!')
+                else:
+                    messages.success(request, 'Clinic account created successfully! Your profile is now live.')
                 if not request.user.is_authenticated:
                     user.backend = 'django.contrib.auth.backends.ModelBackend'
                     login(request, user)
-                messages.success(request, 'Clinic account created successfully! Your profile is now live.')
                 return redirect('clinic_dashboard')
             except Exception as e:
                 messages.error(request, f'An error occurred during registration: {str(e)}')
@@ -342,14 +356,17 @@ def clinic_signup_view(request):
                         field_label = form.fields[field_name].label if field_name in form.fields else field_name
                         messages.error(request, f"{field_label}: {error}")
     else:
-        if google_clinic_completion:
+        if google_clinic_completion or add_clinic_mode:
             initial = {
                 'username': request.user.username,
                 'email': request.user.email,
                 'contact_email': request.user.email,
             }
             form = ClinicSignUpForm(existing_user=request.user, initial=initial)
-            messages.info(request, 'Complete your clinic details to finish registration.')
+            if add_clinic_mode:
+                messages.info(request, 'You are adding another clinic to your account.')
+            else:
+                messages.info(request, 'Complete your clinic details to finish registration.')
         else:
             form = ClinicSignUpForm()
 
@@ -357,13 +374,51 @@ def clinic_signup_view(request):
     google_login_url = _get_google_login_url(request)
     context = {
         'form': form,
-        'title': 'Clinic Registration',
+        'title': 'Add another clinic' if add_clinic_mode else 'Clinic Registration',
         'google_prefill_mode': google_clinic_completion,
+        'add_clinic_mode': add_clinic_mode,
         'google_login_url': google_login_url,
     }
     context['google_clinic_start_url'] = reverse('google_start', kwargs={'role': 'clinic'})
     
     return render(request, 'clinics/signup.html', context)
+
+
+@login_required
+def clinic_select_view(request):
+    """Choose which owned clinic this session manages.
+
+    Single-clinic accounts skip this page (redirected to the dashboard).
+    Switching is a POST with the owned clinic id; ids outside the account
+    are rejected, so one owner can never jump into another owner's clinic.
+    """
+    if request.user.user_type != 'clinic':
+        messages.error(request, 'Access denied.')
+        return redirect('login')
+    clinics = list(Clinic.objects.filter(user=request.user).order_by('id'))
+    if not clinics:
+        messages.info(request, 'Please complete your clinic profile to continue.')
+        return redirect('clinic_signup')
+    if len(clinics) == 1:
+        set_active_clinic(request, clinics[0])
+        return redirect('clinic_dashboard')
+    if request.method == 'POST':
+        try:
+            wanted_id = int((request.POST.get('clinic_id') or '').strip())
+        except (TypeError, ValueError):
+            wanted_id = None
+        selected = next((c for c in clinics if c.id == wanted_id), None)
+        if selected is None:
+            messages.error(request, 'You do not own this clinic.')
+            return redirect('clinic_select')
+        set_active_clinic(request, selected)
+        messages.success(request, f'Now managing {selected.clinic_name}.')
+        return redirect('clinic_dashboard')
+    context = {
+        'clinics': clinics,
+        'active_clinic': get_active_clinic(request),
+    }
+    return render(request, 'clinics/select_clinic.html', context)
 from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -544,8 +599,8 @@ def clinic_detail_clinic_view(request, clinic_id):
     total_unread = 0
     if request.user.is_authenticated and getattr(request.user, 'user_type', None) == 'clinic':
         try:
-            current_clinic = Clinic.objects.get(user=request.user)
-        except Clinic.DoesNotExist:
+            current_clinic = get_active_clinic(request) or Clinic.objects.filter(user=request.user).first()
+        except Exception:
             current_clinic = None
         # compute unread messages for header badge
         try:
@@ -567,10 +622,11 @@ def clinic_detail_clinic_view(request, clinic_id):
 def clinic_ping(request):
     """Simple endpoint for clinics to refresh their `last_seen` timestamp."""
     try:
-        if hasattr(request.user, 'clinic'):
+        clinic = get_active_clinic(request)
+        if clinic is not None:
             from django.utils import timezone
-            request.user.clinic.last_seen = timezone.now()
-            request.user.clinic.save(update_fields=['last_seen'])
+            clinic.last_seen = timezone.now()
+            clinic.save(update_fields=['last_seen'])
             return JsonResponse({'ok': True})
     except Exception:
         pass
@@ -583,7 +639,9 @@ def clinic_settings_view(request):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
 
     if request.method == 'POST':
         form = ClinicUpdateForm(request.POST, request.FILES, instance=clinic)
@@ -609,7 +667,9 @@ def manage_gallery_view(request):
         messages.error(request, 'Access denied.')
         return redirect('login')
     
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     
     if request.method == 'POST':
         form = ClinicGalleryForm(request.POST, request.FILES)
@@ -637,7 +697,9 @@ def delete_gallery_image_view(request, image_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
     
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     image = get_object_or_404(ClinicGallery, id=image_id, clinic=clinic)
     
     if request.method == 'POST':
@@ -654,7 +716,9 @@ def delete_clinic_service_view(request, service_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     service = get_object_or_404(ClinicService, id=service_id, clinic=clinic)
 
     # Best-effort cleanup of the uploaded file, if any.
@@ -675,7 +739,9 @@ def patient_detail_view(request, patient_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
     
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     patient = get_object_or_404(Patient, id=patient_id)
 
     assignment = get_object_or_404(Appointment, clinic=clinic, patient=patient)
@@ -712,7 +778,9 @@ def search_patients_view(request):
 
     clinic = None
     if request.user.user_type == 'clinic':
-        clinic = get_object_or_404(Clinic, user=request.user)
+        clinic, _clinic_redirect = active_clinic_or_redirect(request)
+        if _clinic_redirect is not None:
+            return _clinic_redirect
 
     query = request.GET.get('q', '') or ''
     query = query.strip()
@@ -760,7 +828,11 @@ def search_patient_clinic_page(request):
     """
     if request.user.user_type not in ('clinic', 'patient'):
         return redirect('login')
-    clinic = get_object_or_404(Clinic, user=request.user) if request.user.user_type == 'clinic' else None
+    clinic = None
+    if request.user.user_type == 'clinic':
+        clinic, _clinic_redirect = active_clinic_or_redirect(request)
+        if _clinic_redirect is not None:
+            return _clinic_redirect
     context = {'clinic': clinic}
     return render(request, 'clinics/search_patient_clinic.html', context)
 
@@ -770,7 +842,9 @@ def assign_patient_view(request, patient_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
     
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     patient = get_object_or_404(Patient, id=patient_id)
     
     if Appointment.objects.filter(clinic=clinic, patient=patient).exists():
@@ -1062,7 +1136,9 @@ def clinic_google_calendar_start_view(request, appointment_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
 
     if appointment.status != 'upcoming':
@@ -1128,7 +1204,9 @@ def clinic_google_calendar_callback_view(request):
         messages.error(request, 'Missing Google authorization code or appointment context.')
         return redirect('clinic_appointments')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     appointment = Appointment.objects.filter(id=appointment_id, clinic=clinic).select_related('patient').first()
     if not appointment:
         messages.error(request, 'Appointment not found for Google Calendar sync.')
@@ -1373,7 +1451,9 @@ def update_appointment_view(request, appointment_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
     
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     appointment = get_object_or_404(Appointment, id=appointment_id, clinic=clinic)
     
     if request.method == 'POST':
@@ -1399,7 +1479,9 @@ def clinic_my_posts_view(request):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     # posts authored by this clinic user
     my_posts = Post.objects.filter(clinic=clinic, author=request.user).order_by('-created_at')
 
@@ -1418,7 +1500,9 @@ def delete_post_view(request, post_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     post = get_object_or_404(Post, id=post_id, clinic=clinic)
 
     # Only allow deletion if the requesting user is the author
@@ -1439,7 +1523,9 @@ def edit_post_view(request, post_id):
         messages.error(request, 'Access denied.')
         return redirect('login')
 
-    clinic = get_object_or_404(Clinic, user=request.user)
+    clinic, _clinic_redirect = active_clinic_or_redirect(request)
+    if _clinic_redirect is not None:
+        return _clinic_redirect
     post = get_object_or_404(Post, id=post_id, clinic=clinic)
 
     if post.author != request.user:
