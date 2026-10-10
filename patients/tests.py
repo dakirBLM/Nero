@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from accounts.models import User
@@ -64,3 +65,34 @@ class MedicalRecordAccessTests(TestCase):
 
     def test_anonymous_cannot_access(self):
         self.assertFalse(_can_access_medical_record(AnonymousUser(), self.record))
+
+
+class SearchClinicsPageTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('seeker', 'seeker@example.com', 'pw-test-12345', user_type='patient')
+        Patient.objects.create(user=self.user, full_name='Seeker', gender='F', phone='1')
+        self.client.force_login(self.user)
+        _, self.accepting = _make_clinic('accepting')
+        _, self.declining = _make_clinic('declining')
+        self.declining.accepts_tracheostomy_tube = False
+        self.declining.save()
+
+    def test_accepts_section_is_not_shown(self):
+        response = self.client.get(reverse('search_clinics'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'name="needs_tracheostomy"')
+        self.assertNotContains(response, 'name="needs_dependent"')
+        self.assertNotContains(response, 'name="needs_bedridden"')
+
+    def test_search_still_filters_by_remaining_fields(self):
+        response = self.client.get(reverse('search_clinics'), {'q': 'Accepting'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([c.pk for c in response.context['clinics']], [self.accepting.pk])
+
+    def test_legacy_accepts_parameters_are_ignored(self):
+        response = self.client.get(reverse('search_clinics'), {'city': 'c', 'needs_tracheostomy': '1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            sorted(c.pk for c in response.context['clinics']),
+            sorted([self.accepting.pk, self.declining.pk]),
+        )
