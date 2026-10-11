@@ -58,6 +58,7 @@ class RoleRouteGuardMiddleware:
 
             clinic_private_prefixes = (
                 '/clinics/dashboard/',
+                '/clinics/select/',
                 '/clinics/settings/',
                 '/clinics/manage-gallery/',
                 '/clinics/delete-gallery-image/',
@@ -93,10 +94,13 @@ class LastSeenMiddleware:
                         user.patient.save(update_fields=['last_seen'])
                     except Exception:
                         pass
-                if hasattr(user, 'clinic'):
+                if getattr(user, 'user_type', None) == 'clinic':
                     try:
-                        user.clinic.last_seen = timezone.now()
-                        user.clinic.save(update_fields=['last_seen'])
+                        from clinics.active import get_active_clinic, latest_seen_clinic
+                        clinic = get_active_clinic(request) or latest_seen_clinic(user)
+                        if clinic is not None:
+                            clinic.last_seen = timezone.now()
+                            clinic.save(update_fields=['last_seen'])
                     except Exception:
                         pass
         except Exception:

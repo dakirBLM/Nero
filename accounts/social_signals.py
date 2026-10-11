@@ -192,7 +192,8 @@ def _apply_selected_google_role(user, request):
         has_patient_profile = False
 
     try:
-        has_clinic_profile = hasattr(user, 'clinic')
+        from clinics.models import Clinic
+        has_clinic_profile = Clinic.objects.filter(user=user).exists()
     except Exception:
         has_clinic_profile = False
 

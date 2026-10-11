@@ -1539,6 +1539,16 @@
                     <i class="fas fa-newspaper"></i>
                     My Posts
                 </a>
+                {% if request.user.clinics.count > 1 %}
+                <a href="{% url 'clinic_select' %}" class="nav-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    Switch clinic
+                </a>
+                {% endif %}
+                <a href="{% url 'clinic_signup' %}" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    Add clinic
+                </a>
             </nav>
         </aside>
 
