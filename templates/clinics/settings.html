@@ -1166,6 +1166,7 @@
         }
         {% include 'includes/search_bar_styles.html' %}
     </style>
+    {% include 'includes/intl_phone_assets.html' %}
 </head>
 <body>
     <!-- Main Header - EXACT SAME AS CLINIC DASHBOARD -->
@@ -1430,27 +1431,14 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label required">Phone Number</label>
-                                    <div style="display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start;">
-                                        <div>
-                                            {{ form.phone_country_code }}
-                                            {% if form.phone_country_code.errors %}
-                                                <div class="error-message">
-                                                    <i class="fas fa-exclamation-circle"></i>
-                                                    {{ form.phone_country_code.errors.0 }}
-                                                </div>
-                                            {% endif %}
+                                    <label class="form-label required" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                    {{ form.phone_number }}
+                                    {% if form.phone_number.errors %}
+                                        <div class="error-message">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            {{ form.phone_number.errors.0 }}
                                         </div>
-                                        <div>
-                                            {{ form.phone_number }}
-                                            {% if form.phone_number.errors %}
-                                                <div class="error-message">
-                                                    <i class="fas fa-exclamation-circle"></i>
-                                                    {{ form.phone_number.errors.0 }}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
 
                                 <div class="form-group">
