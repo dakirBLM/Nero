@@ -17,11 +17,11 @@ def validate_video_size(file_obj, max_mb=50):
         raise ValidationError(f'Video too large. Maximum size is {max_mb} MB.')
 
 
-MIN_ESTABLISHED_YEAR = 1900
+MIN_ESTABLISHED_YEAR = 1000
 
 
 def validate_established_year(value):
-    """Accept a 4-digit establishment year between 1900 and the current year."""
+    """Accept an establishment year between 1000 and the current year."""
     current_year = date.today().year
     if isinstance(value, bool) or not isinstance(value, int):
         raise ValidationError(_('Enter a valid year (e.g. 2015).'))

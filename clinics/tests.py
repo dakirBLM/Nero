@@ -208,15 +208,16 @@ class MultiClinicAccountTests(TestCase):
 
 
 class EstablishedYearTests(TestCase):
-    """Clinics store an establishment *year* (int), validated to 1900..today."""
+    """Clinics store an establishment *year* (int), validated to 1000..today."""
 
     def test_validator_accepts_reasonable_year(self):
-        validate_established_year(1900)
+        validate_established_year(1000)
+        validate_established_year(1750)
         validate_established_year(2000)
         validate_established_year(date.today().year)
 
     def test_validator_rejects_out_of_range(self):
-        for bad in (1899, 0, -5, date.today().year + 1, date.today().year + 50):
+        for bad in (999, 0, -5, date.today().year + 1, date.today().year + 50):
             with self.subTest(year=bad):
                 with self.assertRaises(ValidationError):
                     validate_established_year(bad)
@@ -236,7 +237,7 @@ class EstablishedYearTests(TestCase):
         user = _make_user('yearowner2')
         _make_clinic(user, name='First', contact_email='y1@example.com')
         self.client.force_login(user)
-        for bad in (1899, date.today().year + 1):
+        for bad in (999, date.today().year + 1):
             with self.subTest(year=bad):
                 payload = _signup_payload(
                     name=f'Bad {bad}', contact_email=f'bad{bad}@example.com'
