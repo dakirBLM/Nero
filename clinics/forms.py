@@ -1,7 +1,7 @@
 from django import forms
 from patients.models import MedicalRecord
 from .compatibility import clinic_compatibility_errors, is_clinic_compatible
-from .models import Appointment, Clinic, ClinicGallery, ClinicService
+from .models import Appointment, Clinic, ClinicGallery, ClinicService, get_specialization_choices, parse_specialization_names
 from accounts.forms import ClinicSignUpForm
 from core.location_choices import COUNTRY_CHOICES
 from core.phone import InternationalPhoneField, InternationalPhoneInput
@@ -103,17 +103,18 @@ class ClinicUpdateForm(forms.ModelForm):
         if self.instance and self.instance.country:
             self.fields['country'].initial = self.instance.country
 
-        # Convert specialization field to MultipleChoiceField with CheckboxSelectMultiple widget
+        # Dynamic choices from the DB; keep any legacy values the clinic
+        # already has so saving settings never drops them silently.
+        existing = parse_specialization_names(getattr(self.instance, 'specialization', '') or '')
         self.fields['specialization'] = forms.MultipleChoiceField(
-            choices=Clinic.SPECIALIZATION_CHOICES,
+            choices=get_specialization_choices(extra=existing),
             required=False,
             widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
             help_text="Select one or more specializations"
         )
         # Parse comma-separated specializations into a list for the form
-        if self.instance and self.instance.specialization:
-            specializations = [s.strip() for s in self.instance.specialization.split(',')]
-            self.fields['specialization'].initial = specializations
+        if existing:
+            self.fields['specialization'].initial = existing
     
     def save(self, commit=True):
         specializations = self.cleaned_data.get('specialization', [])

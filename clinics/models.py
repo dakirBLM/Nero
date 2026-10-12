@@ -29,18 +29,65 @@ class Post(models.Model):
 
 
 
+class Specialization(models.Model):
+    """Admin-managed clinic specialization types.
+
+    ``Clinic.specialization`` stays free comma-separated text; the rows
+    here only drive the choice lists shown across the platform (signup,
+    settings, search filters, admin, recommendations). Edits apply
+    immediately — no redeploy or restart needed.
+    """
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+DEFAULT_SPECIALIZATIONS = (
+    'Convalescence',
+    'Weight loss',
+    'Musculoskeletal treatment',
+    'Neurological treatment',
+)
+
+
+def get_specialization_choices(extra=()):
+    """(value, label) choices from the DB, plus any legacy `extra` names.
+
+    `extra` keeps values already stored on a clinic selectable so saving
+    settings never drops them silently when they are not in the DB list.
+    """
+    names = [s.name for s in Specialization.objects.order_by('name')]
+    for name in extra:
+        if name and name not in names:
+            names.append(name)
+    return [(name, name) for name in names]
+
+
+def parse_specialization_names(value):
+    """Split a comma-separated specialization string into clean names."""
+    return [part.strip() for part in (value or '').split(',') if part.strip()]
+
+
+def specialization_in_use(name):
+    """True when any clinic currently stores `name` in its specialization."""
+    target = (name or '').strip().lower()
+    if not target:
+        return False
+    for value in Clinic.objects.exclude(specialization='').values_list('specialization', flat=True):
+        if target in [part.lower() for part in parse_specialization_names(value)]:
+            return True
+    return False
+
+
 class Clinic(models.Model):
     class AgeRange(models.TextChoices):
         ADULTS_ONLY = 'adults_only', _('Adults only')
         CHILDREN_ONLY = 'children_only', _('Children only')
         BOTH = 'both', _('Both adults and children')
-
-    SPECIALIZATION_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
-    )
 
     user = models.ForeignKey(
         User,

@@ -1,14 +1,24 @@
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.shortcuts import redirect
 
-from .models import Clinic, ClinicGallery, ClinicService, Appointment
+from .models import (
+	Clinic,
+	ClinicGallery,
+	ClinicService,
+	Appointment,
+	Specialization,
+	get_specialization_choices,
+	parse_specialization_names,
+	specialization_in_use,
+)
 
 
 class ClinicAdminForm(forms.ModelForm):
-	"""Same four specialization checkboxes the clinic settings page uses."""
+	"""Specialization checkboxes driven by the Specialization table."""
 
 	specialization = forms.MultipleChoiceField(
-		choices=Clinic.SPECIALIZATION_CHOICES,
+		choices=(),
 		required=False,
 		widget=forms.CheckboxSelectMultiple,
 	)
@@ -20,7 +30,9 @@ class ClinicAdminForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		raw = (self.instance.specialization or '') if self.instance and self.instance.pk else ''
-		self.initial['specialization'] = [part.strip() for part in raw.split(',') if part.strip()]
+		existing = parse_specialization_names(raw)
+		self.fields['specialization'].choices = get_specialization_choices(extra=existing)
+		self.initial['specialization'] = existing
 
 	def clean_specialization(self):
 		selected = self.cleaned_data.get('specialization') or []
@@ -32,12 +44,41 @@ class SpecializationListFilter(admin.SimpleListFilter):
 	parameter_name = 'specialization'
 
 	def lookups(self, request, model_admin):
-		return Clinic.SPECIALIZATION_CHOICES
+		return get_specialization_choices()
 
 	def queryset(self, request, queryset):
 		if self.value():
 			return queryset.filter(specialization__icontains=self.value())
 		return queryset
+
+
+@admin.register(Specialization)
+class SpecializationAdmin(admin.ModelAdmin):
+	list_display = ("name", "clinics_using_it")
+	search_fields = ("name",)
+
+	def clinics_using_it(self, obj):
+		target = obj.name.strip().lower()
+		count = 0
+		for value in Clinic.objects.exclude(specialization='').values_list('specialization', flat=True):
+			if target in [part.lower() for part in parse_specialization_names(value)]:
+				count += 1
+		return count
+	clinics_using_it.short_description = "Clinics using it"
+
+	def delete_view(self, request, object_id, extra_context=None):
+		obj = self.get_object(request, object_id)
+		if obj is not None and specialization_in_use(obj.name):
+			messages.error(request, f'Cannot delete "{obj.name}" because clinics still use it.')
+			return redirect("admin:clinics_specialization_changelist")
+		return super().delete_view(request, object_id, extra_context)
+
+	def delete_queryset(self, request, queryset):
+		blocked = [s.name for s in queryset if specialization_in_use(s.name)]
+		if blocked:
+			messages.error(request, f'Cannot delete in-use specializations: {", ".join(blocked)}.')
+			queryset = queryset.exclude(name__in=blocked)
+		return super().delete_queryset(request, queryset)
 
 
 @admin.register(Clinic)
