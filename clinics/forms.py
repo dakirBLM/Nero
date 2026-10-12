@@ -4,6 +4,7 @@ from .compatibility import clinic_compatibility_errors, is_clinic_compatible
 from .models import Appointment, Clinic, ClinicGallery, ClinicService
 from accounts.forms import ClinicSignUpForm
 from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
+from core.validators import MIN_ESTABLISHED_YEAR
 
 class MedicalRecordChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -58,7 +59,7 @@ class ClinicUpdateForm(forms.ModelForm):
             'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients',
         ]
         widgets = {
-            'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': 1900, 'placeholder': 'e.g. 2015'}),
+            'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': MIN_ESTABLISHED_YEAR, 'placeholder': 'e.g. 2015'}),
             'age_range': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
