@@ -47,7 +47,7 @@ class ClinicUpdateForm(forms.ModelForm):
         fields = [
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state',
             'country', 'continent', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization',
-            'established_date', 'facilities',
+            'established_year', 'facilities',
             'languages_spoken', 'age_range',
             'profile_picture', 'cover_photo',
             'accepts_heart_problems', 'accepts_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
@@ -58,7 +58,7 @@ class ClinicUpdateForm(forms.ModelForm):
             'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients',
         ]
         widgets = {
-            'established_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': 1900, 'placeholder': 'e.g. 2015'}),
             'age_range': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),

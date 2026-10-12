@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from patients.models import MedicalRecord, Patient
-from core.validators import validate_video_extension, validate_video_size
+from core.validators import validate_video_extension, validate_video_size, validate_established_year
 from core.avatars import DEFAULT_AVATAR
 
 
@@ -62,7 +62,10 @@ class Clinic(models.Model):
     website = models.URLField(blank=True)
     google_maps_url = models.URLField(max_length=1000, blank=True, help_text="Google Maps embed URL (from Share → Embed a map → Copy src URL)")
     specialization = models.TextField(help_text="Primary specialization(s) (comma separated)")
-    established_date = models.DateField()
+    established_year = models.PositiveIntegerField(
+        validators=[validate_established_year],
+        help_text="Year the clinic was established (e.g. 2015)",
+    )
     facilities = models.CharField(max_length=500, blank=True, help_text="Available facilities (comma separated)")
     languages_spoken = models.CharField(max_length=200, default='English', help_text="Languages spoken (comma separated)")
     profile_picture = models.ImageField(upload_to='clinic_profile_pics/', blank=True, null=True, help_text="Main profile picture of your clinic")
@@ -147,7 +150,7 @@ class Clinic(models.Model):
     @property
     def years_in_operation(self):
         from datetime import date
-        return date.today().year - self.established_date.year
+        return date.today().year - self.established_year
 
 class ClinicGallery(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery_images')

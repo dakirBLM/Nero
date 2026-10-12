@@ -1,8 +1,12 @@
+from datetime import date
+
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import User
 from clinics.models import Clinic
+from core.validators import validate_established_year
 
 
 class PatientDetailAuthTests(TestCase):
@@ -35,7 +39,7 @@ _CLINIC_DEFAULTS = dict(
     zip_code='10115',
     phone_number='+491234567',
     specialization='Convalescence',
-    established_date='2020-01-01',
+    established_year=2020,
 )
 
 
@@ -67,7 +71,7 @@ def _signup_payload(name='Second Clinic', contact_email='second@example.com'):
         'website': '',
         'google_maps_url': '',
         'specialization': ['Convalescence'],
-        'established_date': '2021-05-01',
+        'established_year': 2021,
         'facilities': '',
         'languages_spoken': 'English',
         'age_range': 'both',
@@ -201,3 +205,56 @@ class MultiClinicAccountTests(TestCase):
         resp = self.client.post(reverse('clinic_signup'), payload)
         self.assertEqual(resp.status_code, 200)  # form re-rendered with error
         self.assertEqual(Clinic.objects.filter(user=rival).count(), 0)
+
+
+class EstablishedYearTests(TestCase):
+    """Clinics store an establishment *year* (int), validated to 1900..today."""
+
+    def test_validator_accepts_reasonable_year(self):
+        validate_established_year(1900)
+        validate_established_year(2000)
+        validate_established_year(date.today().year)
+
+    def test_validator_rejects_out_of_range(self):
+        for bad in (1899, 0, -5, date.today().year + 1, date.today().year + 50):
+            with self.subTest(year=bad):
+                with self.assertRaises(ValidationError):
+                    validate_established_year(bad)
+
+    def test_validator_rejects_non_integers(self):
+        for bad in ('2015', 2015.0, None, True):
+            with self.subTest(year=bad):
+                with self.assertRaises(ValidationError):
+                    validate_established_year(bad)
+
+    def test_years_in_operation_derives_from_year(self):
+        user = _make_user('yearowner')
+        clinic = _make_clinic(user, name='Old Clinic', established_year=2000)
+        self.assertEqual(clinic.years_in_operation, date.today().year - 2000)
+
+    def test_signup_rejects_bad_year(self):
+        user = _make_user('yearowner2')
+        _make_clinic(user, name='First', contact_email='y1@example.com')
+        self.client.force_login(user)
+        for bad in (1899, date.today().year + 1):
+            with self.subTest(year=bad):
+                payload = _signup_payload(
+                    name=f'Bad {bad}', contact_email=f'bad{bad}@example.com'
+                )
+                payload['established_year'] = bad
+                resp = self.client.post(reverse('clinic_signup'), payload)
+                self.assertEqual(resp.status_code, 200)  # re-rendered with error
+        self.assertEqual(Clinic.objects.filter(user=user).count(), 1)
+
+    def test_signup_accepts_year(self):
+        user = _make_user('yearowner3')
+        _make_clinic(user, name='First', contact_email='y3@example.com')
+        self.client.force_login(user)
+        payload = _signup_payload(name='Year Clinic', contact_email='yc@example.com')
+        payload['established_year'] = 2015
+        resp = self.client.post(reverse('clinic_signup'), payload)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(
+            Clinic.objects.get(user=user, clinic_name='Year Clinic').established_year,
+            2015,
+        )
