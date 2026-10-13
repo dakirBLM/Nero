@@ -96,3 +96,37 @@ class SearchClinicsPageTests(TestCase):
             sorted(c.pk for c in response.context['clinics']),
             sorted([self.accepting.pk, self.declining.pk]),
         )
+
+
+class PatientPendingAppointmentsTests(TestCase):
+    """Fresh (pending) requests must be visible on the patient appointments
+    page — otherwise the patient can never submit booking details while the
+    clinic side says 'Awaiting patient response'."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('booker', 'booker@example.com', 'pw-test-12345', user_type='patient')
+        self.patient = Patient.objects.create(user=self.user, full_name='Booker', gender='M', phone='1')
+        _, self.clinic = _make_clinic('bookable')
+        self.record = MedicalRecord.objects.create(
+            patient=self.patient, first_name='Book', last_name='Er', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        self.appointment = Appointment.objects.create(
+            patient=self.patient, clinic=self.clinic, medical_record=self.record,
+        )
+        self.client.force_login(self.user)
+
+    def test_pending_appointment_is_listed(self):
+        response = self.client.get(reverse('patient_appointments'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.appointment, list(response.context['appointments']))
+        self.assertContains(response, 'submit-booking-details')
+
+    def test_pending_status_filter_option_exists(self):
+        response = self.client.get(reverse('patient_appointments'))
+        values = [f['value'] for f in response.context['status_filters']]
+        self.assertIn('pending', values)
+        filtered = self.client.get(reverse('patient_appointments'), {'status': 'pending'})
+        self.assertIn(self.appointment, list(filtered.context['appointments']))
