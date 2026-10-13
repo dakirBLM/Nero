@@ -1592,7 +1592,7 @@
                                 </div>
 
                                 <!-- 2. Accepted, waiting for patient booking details -->
-                                {% elif appointment.medical_review_status == 'accepted' and not appointment.treatment_start_date %}
+                                {% elif appointment.status == 'pending' and appointment.medical_review_status == 'accepted' and not appointment.treatment_start_date %}
                                 <div class="action-section" style="background:#faf5ff;border-color:#e9d5ff;">
                                     <div class="action-section-title" style="color:#6b21a8;">
                                         <span class="action-badge" style="background:#ede9fe;color:#6b21a8;">…</span>

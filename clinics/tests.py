@@ -1,11 +1,13 @@
+from datetime import date
+
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.forms import ClinicSignUpForm
 from accounts.models import User
 from clinics.forms import ClinicUpdateForm
-from clinics.models import Clinic, Specialization, get_specialization_choices
-from patients.models import Patient
+from clinics.models import Clinic, Specialization, Appointment, get_specialization_choices
+from patients.models import Patient, MedicalRecord
 
 
 class PatientDetailAuthTests(TestCase):
@@ -295,3 +297,50 @@ class DynamicSpecializationTests(TestCase):
         context = _base_filter_context(user.patient)
         self.assertIn('Cardiac Rehabilitation', context['clinic_types'])
         self.assertIn('Convalescence', context['clinic_types'])
+
+
+class ClinicWaitingBoxTests(TestCase):
+    """The 'waiting for patient booking details' box must only render while
+    the patient still owes details (pending), not after they submitted."""
+
+    def _appointment(self, username, status, **overrides):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record,
+            status=status, **overrides,
+        )
+        return user, appointment
+
+    def _page(self, user):
+        self.client.force_login(user)
+        return self.client.get(reverse('clinic_appointments'))
+
+    def test_waiting_box_shown_while_pending(self):
+        user, _ = self._appointment('waiter', 'pending', medical_record_accepted=True)
+        resp = self._page(user)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Waiting for patient to submit booking details')
+
+    def test_waiting_box_hidden_after_no_accommodation_submit(self):
+        # The exact reported case: submitted with no accommodation (dates stay
+        # None by design) yet the stale box kept rendering.
+        user, _ = self._appointment(
+            'submitted', 'accepted_record_accepted_accommodation',
+            medical_record_accepted=True, accommodation_type='no_accommodation',
+            needs_accommodation=False,
+        )
+        resp = self._page(user)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, 'Waiting for patient to submit booking details')
+        self.assertNotContains(resp, 'Awaiting patient response')
