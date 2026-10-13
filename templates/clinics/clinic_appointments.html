@@ -1569,11 +1569,12 @@
                                                 <i class="fas fa-check"></i> Accept Medical Record
                                             </button>
                                         </form>
-                                        <form method="post" action="{% action_url 'reject_medical_record' appointment.id %}">
+                                        <form method="post" action="{% action_url 'reject_medical_record' appointment.id %}" id="reject-form-{{ appointment.id }}">
                                             {% csrf_token %}
                                             <div class="form-group" style="margin-bottom:8px;">
-                                                <label class="form-label">Refusal reason <span style="color:#ef4444;">*</span></label>
-                                                <select name="medical_rejection_reason" required class="form-control">
+                                                <label class="form-label" for="reject-reason-{{ appointment.id }}">Refusal reason <span style="color:#ef4444;">*</span></label>
+                                                <select name="medical_rejection_reason" id="reject-reason-{{ appointment.id }}" required class="form-control"
+                                                        onchange="document.getElementById('reject-error-{{ appointment.id }}').style.display='none';this.style.borderColor=''">
                                                     <option value="">Select reason...</option>
                                                     <option value="not_a_match">Not aligned with clinic specialization</option>
                                                     <option value="capacity_unavailable">No clinical capacity in requested timeline</option>
@@ -1582,12 +1583,26 @@
                                                     <option value="safety_concerns">Patient safety concerns</option>
                                                     <option value="other">Other</option>
                                                 </select>
+                                                <div class="field-error" id="reject-error-{{ appointment.id }}" style="display:none;">⚠ Please select a refusal reason first.</div>
                                             </div>
-                                            <button type="submit" class="btn btn-danger btn-full"
-                                                    onclick="return confirm('Reject this medical request?')">
+                                            <button type="button" class="btn btn-danger btn-full" onclick="openRejectModal({{ appointment.id }})">
                                                 <i class="fas fa-times"></i> Reject Medical Record
                                             </button>
                                         </form>
+                                        <div id="reject-modal-{{ appointment.id }}" class="modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+                                            <div style="background:#fff;border-radius:16px;max-width:440px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+                                                <div style="width:52px;height:52px;border-radius:50%;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </div>
+                                                <h3 style="margin:0 0 8px;font-size:1.15rem;">Reject medical request?</h3>
+                                                <p style="margin:0 0 4px;color:#4b5563;font-size:14px;">Patient: <strong>{{ appointment.patient.full_name }}</strong></p>
+                                                <p style="margin:0 0 20px;color:#4b5563;font-size:14px;">Reason: <strong id="reject-modal-reason-{{ appointment.id }}"></strong></p>
+                                                <div style="display:flex;gap:10px;">
+                                                    <button type="button" class="btn btn-secondary btn-full" onclick="closeRejectModal({{ appointment.id }})">Cancel</button>
+                                                    <button type="button" class="btn btn-danger btn-full" onclick="confirmReject({{ appointment.id }})">Yes, Reject</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -2266,6 +2281,44 @@
             msg.classList.add('is-hiding');
             window.setTimeout(() => msg.remove(), 380);
         }, 4500);
+    });
+
+    /* ── Reject-medical-request confirmation modal (replaces native confirm()) ── */
+    function openRejectModal(appointmentId) {
+        var select = document.getElementById('reject-reason-' + appointmentId);
+        var error = document.getElementById('reject-error-' + appointmentId);
+        if (!select || !select.value) {
+            if (error) error.style.display = '';
+            if (select) { select.style.borderColor = '#ef4444'; select.focus(); }
+            return;
+        }
+        if (error) error.style.display = 'none';
+        select.style.borderColor = '';
+        var reasonText = select.options[select.selectedIndex].text;
+        var target = document.getElementById('reject-modal-reason-' + appointmentId);
+        if (target) target.textContent = reasonText;
+        var modal = document.getElementById('reject-modal-' + appointmentId);
+        if (modal) modal.style.display = 'flex';
+    }
+    function closeRejectModal(appointmentId) {
+        var modal = document.getElementById('reject-modal-' + appointmentId);
+        if (modal) modal.style.display = 'none';
+    }
+    function confirmReject(appointmentId) {
+        var form = document.getElementById('reject-form-' + appointmentId);
+        if (form) form.submit();
+    }
+    document.querySelectorAll('[id^="reject-modal-"]').forEach(function (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id^="reject-modal-"]').forEach(function (modal) {
+                modal.style.display = 'none';
+            });
+        }
     });
     </script>
 </body>

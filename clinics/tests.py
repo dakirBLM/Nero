@@ -344,3 +344,48 @@ class ClinicWaitingBoxTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(resp, 'Waiting for patient to submit booking details')
         self.assertNotContains(resp, 'Awaiting patient response')
+
+
+class RejectModalTests(TestCase):
+    """Reject-medical uses a styled in-page modal (no native confirm()),
+    requires a reason first, and the form still rejects properly."""
+
+    def _pending(self, username):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record, status='pending',
+        )
+        return user, appointment
+
+    def test_no_native_confirm_and_modal_present(self):
+        user, appointment = self._pending('rejector')
+        self.client.force_login(user)
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "confirm('Reject this medical request?')")
+        self.assertContains(resp, f'reject-modal-{appointment.id}')
+        self.assertContains(resp, f'reject-form-{appointment.id}')
+        self.assertContains(resp, 'openRejectModal')
+
+    def test_reject_with_reason_still_works(self):
+        user, appointment = self._pending('rejector2')
+        self.client.force_login(user)
+        resp = self.client.post(
+            reverse('reject_medical_record', args=[appointment.id]),
+            {'medical_rejection_reason': 'capacity_unavailable'},
+        )
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'rejected_medical_record')
+        self.assertEqual(appointment.medical_rejection_reason, 'capacity_unavailable')
