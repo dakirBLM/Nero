@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.utils.translation import gettext_lazy as _
 from datetime import date
 from patients.models import Patient
+from clinics.models import Clinic, get_specialization_choices
 from clinics.models import Clinic
 from core.validators import MIN_ESTABLISHED_YEAR, validate_established_year
 from .models import User
@@ -171,16 +172,10 @@ class ClinicSignUpForm(UserCreationForm):
         })
     )
     
-    # Professional Information
-    SPECIALIZATION_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
-    )
-    
+    # Professional Information (choices come from the Specialization table,
+    # populated at runtime so admin-added types appear without a restart)
     specialization = forms.MultipleChoiceField(
-        choices=SPECIALIZATION_CHOICES,
+        choices=(),
         required=True,
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'form-check-input'
@@ -294,6 +289,7 @@ class ClinicSignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         self.existing_user = kwargs.pop('existing_user', None)
         super().__init__(*args, **kwargs)
+        self.fields['specialization'].choices = get_specialization_choices()
 
         if self.existing_user is not None:
             # Validate against the existing account so the username/email

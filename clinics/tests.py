@@ -4,7 +4,11 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
+from accounts.forms import ClinicSignUpForm
 from accounts.models import User
+from clinics.forms import ClinicUpdateForm
+from clinics.models import Clinic, Specialization, get_specialization_choices
+from patients.models import Patient
 from clinics.models import Clinic
 from core.validators import validate_established_year
 
@@ -206,6 +210,95 @@ class MultiClinicAccountTests(TestCase):
         self.assertEqual(Clinic.objects.filter(user=rival).count(), 0)
 
 
+def _make_staff():
+    return User.objects.create_superuser(
+        username='specboss', email='specboss@example.com', password='Testpass123!'
+    )
+
+
+def _make_patient_user(username):
+    user = _make_user(username, user_type='patient')
+    Patient.objects.create(user=user, full_name=username.title(), gender='M', phone='1')
+    return user
+
+
+class DynamicSpecializationTests(TestCase):
+    """Specializations are admin-managed rows, not hardcoded choices."""
+
+    def test_default_four_are_seeded(self):
+        self.assertEqual(
+            set(Specialization.objects.values_list('name', flat=True)),
+            {'Convalescence', 'Weight loss', 'Musculoskeletal treatment', 'Neurological treatment'},
+        )
+
+    def test_admin_add_appears_in_signup_choices(self):
+        self.client.force_login(_make_staff())
+        resp = self.client.post(
+            reverse('admin:clinics_specialization_add'), {'name': 'Cardiac Rehabilitation'}
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertTrue(Specialization.objects.filter(name='Cardiac Rehabilitation').exists())
+        choices = dict(ClinicSignUpForm().fields['specialization'].choices)
+        self.assertIn('Cardiac Rehabilitation', choices)
+        self.assertIn('Convalescence', choices)
+
+    def test_admin_delete_blocked_when_in_use(self):
+        owner = _make_user('specowner')
+        _make_clinic(owner, name='Heart Clinic', specialization='Convalescence')
+        spec = Specialization.objects.get(name='Convalescence')
+        self.client.force_login(_make_staff())
+        resp = self.client.post(
+            reverse('admin:clinics_specialization_delete', args=[spec.pk]), {'post': 'yes'}
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], reverse('admin:clinics_specialization_changelist'))
+        self.assertTrue(Specialization.objects.filter(name='Convalescence').exists())
+
+    def test_admin_delete_allowed_when_unused(self):
+        spec = Specialization.objects.create(name='Temporary Type')
+        self.client.force_login(_make_staff())
+        resp = self.client.post(
+            reverse('admin:clinics_specialization_delete', args=[spec.pk]), {'post': 'yes'}
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(Specialization.objects.filter(name='Temporary Type').exists())
+
+    def test_settings_form_keeps_legacy_value(self):
+        owner = _make_user('legacyowner')
+        clinic = _make_clinic(owner, name='Legacy Clinic', specialization='Legacy Care, Convalescence')
+        form = ClinicUpdateForm(instance=clinic)
+        self.assertIn('Legacy Care', dict(form.fields['specialization'].choices))
+        self.assertEqual(
+            sorted(form.fields['specialization'].initial), ['Convalescence', 'Legacy Care']
+        )
+        # Submitting the legacy value back validates fine (no silent drop).
+        bound = ClinicUpdateForm(
+            data={'specialization': ['Legacy Care', 'Convalescence']}, instance=clinic
+        )
+        self.assertNotIn('specialization', bound.errors)
+        self.assertEqual(
+            sorted(bound.cleaned_data['specialization']), ['Convalescence', 'Legacy Care']
+        )
+
+    def test_patient_search_filter_with_new_type(self):
+        user = _make_user('searchpatient', user_type='patient')
+        Patient.objects.create(user=user, full_name='Searcher', gender='M', phone='1')
+        owner = _make_user('heartowner')
+        _make_clinic(owner, name='Heart Clinic', specialization='Cardiac Rehabilitation')
+        Specialization.objects.create(name='Cardiac Rehabilitation')
+        self.client.force_login(user)
+        resp = self.client.get(reverse('search_clinics'), {'specialization': 'Cardiac Rehabilitation'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Heart Clinic')
+
+    def test_recommendation_filter_lists_new_type(self):
+        from recommendations.views import _base_filter_context
+
+        user = _make_patient_user('recpatient')
+        Specialization.objects.create(name='Cardiac Rehabilitation')
+        context = _base_filter_context(user.patient)
+        self.assertIn('Cardiac Rehabilitation', context['clinic_types'])
+        self.assertIn('Convalescence', context['clinic_types'])
 class EstablishedYearTests(TestCase):
     """Clinics store an establishment *year* (int), validated to 1000..today."""
 

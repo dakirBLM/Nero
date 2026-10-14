@@ -279,7 +279,7 @@ from accounts.forms import PatientSignUpForm
 from .forms import PatientForm, MedicalRecordForm
 from .models import Patient, MedicalRecord, MedicalRecordReport, MedicalRecordVideo
 from django.db.models import Q, Avg
-from clinics.models import Appointment, Clinic, ClinicService
+from clinics.models import Appointment, Clinic, ClinicService, get_specialization_choices
 from django.core.paginator import Paginator
 import random
 from datetime import datetime, timedelta
@@ -1004,7 +1004,7 @@ def search_clinics_view(request):
         'age_range': age_range,
         'has_search_filters': has_search_filters,
         'age_range_choices': Clinic.AgeRange.choices,
-        'specialization_choices': Clinic.SPECIALIZATION_CHOICES,
+        'specialization_choices': get_specialization_choices(),
         'patient': patient,
     }
 
