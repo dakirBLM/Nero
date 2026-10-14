@@ -164,3 +164,16 @@ class AppointmentActionModalTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.appointment.refresh_from_db()
         self.assertEqual(self.appointment.status, 'cancelled')
+
+    def test_action_modal_fully_arabic(self):
+        Appointment.objects.create(
+            patient=self.patient, clinic=self.appointment.clinic,
+            medical_record=self.record, status='waiting_for_payment',
+        )
+        response = self.client.get(reverse('patient_appointments'), HTTP_ACCEPT_LANGUAGE='ar')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        for arabic in ['إلغاء هذا الموعد؟', 'نعم، إلغاء', 'تأكيد الدفع؟', 'نعم، ادفع']:
+            self.assertIn(arabic, content)
+        for english in ['Cancel this appointment?', 'Yes, Cancel', 'Confirm payment?', 'Yes, Pay']:
+            self.assertNotIn(english, content)

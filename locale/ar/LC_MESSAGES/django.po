@@ -1473,6 +1473,12 @@ msgstr "عرض التقرير"
 msgid "Are you sure you want to cancel this appointment?"
 msgstr "هل أنت متأكد من إلغاء هذا الموعد؟"
 
+msgid "Cancel this appointment?"
+msgstr "إلغاء هذا الموعد؟"
+
+msgid "Yes, Cancel"
+msgstr "نعم، إلغاء"
+
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -1489,11 +1495,26 @@ msgstr "دفع %(amount)s"
 msgid "Confirm Payment"
 msgstr "تأكيد الدفع"
 
+msgid "Confirm payment?"
+msgstr "تأكيد الدفع؟"
+
+msgid "Yes, Pay"
+msgstr "نعم، ادفع"
+
+msgid "Confirm"
+msgstr "تأكيد"
+
 msgid "Add to Google Calendar"
 msgstr "إضافة إلى تقويم جوجل"
 
 msgid "Delete this appointment? This cannot be undone."
 msgstr "حذف هذا الموعد؟ لا يمكن التراجع عن هذا الإجراء."
+
+msgid "Delete this appointment?"
+msgstr "حذف هذا الموعد؟"
+
+msgid "Yes, Delete"
+msgstr "نعم، احذف"
 
 msgid "Delete"
 msgstr "حذف"
