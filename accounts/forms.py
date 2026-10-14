@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.utils.translation import gettext_lazy as _
+from datetime import date
 from patients.models import Patient
 from clinics.models import Clinic
+from core.validators import MIN_ESTABLISHED_YEAR, validate_established_year
 from .models import User
 from core.location_choices import COUNTRY_CHOICES
 from core.phone import InternationalPhoneField, InternationalPhoneInput
@@ -184,11 +186,14 @@ class ClinicSignUpForm(UserCreationForm):
             'class': 'form-check-input'
         })
     )
-    established_date = forms.DateField(
+    established_year = forms.IntegerField(
         required=True,
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'form-control'
+        validators=[validate_established_year],
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 2015',
+            'min': MIN_ESTABLISHED_YEAR,
+            'max': date.today().year,
         })
     )
     
@@ -351,7 +356,7 @@ class ClinicSignUpForm(UserCreationForm):
             'website': self.cleaned_data.get('website', ''),
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
             'specialization': specialization_str,
-            'established_date': self.cleaned_data['established_date'],
+            'established_year': self.cleaned_data['established_year'],
             'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
             'age_range': self.cleaned_data.get('age_range', Clinic.AgeRange.BOTH),
@@ -403,13 +408,6 @@ class ClinicSignUpForm(UserCreationForm):
         if qs.exists():
             raise forms.ValidationError("A clinic with this contact email already exists.")
         return contact_email
-    
-    def clean_established_date(self):
-        established_date = self.cleaned_data.get('established_date')
-        from datetime import date
-        if established_date > date.today():
-            raise forms.ValidationError("Established date cannot be in the future.")
-        return established_date
     
     def clean(self):
         cleaned_data = super().clean()
