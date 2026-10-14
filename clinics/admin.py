@@ -86,7 +86,7 @@ class ClinicAdmin(admin.ModelAdmin):
 	form = ClinicAdminForm
 	list_display = (
 		"clinic_name", "user", "city", "state", "specialization",
-		"age_range", "accepts_heart_problems", "accepts_catheter", "is_verified"
+		"established_year", "age_range", "accepts_heart_problems", "accepts_catheter", "is_verified"
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
 	list_filter = (
