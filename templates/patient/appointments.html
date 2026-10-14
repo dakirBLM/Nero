@@ -1682,10 +1682,14 @@
                             {% endif %}
 
                             {% if appointment.status in 'pending,accepted_record_accepted_accommodation,accepted_record_accommodation_change_requested,waiting_for_payment' %}
-                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'cancel_appointment' appointment.id %}" id="cancel-form-{{ appointment.id }}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger"
-                                        onclick="return confirm('{% trans "Are you sure you want to cancel this appointment?" %}')">
+                                <button type="button" class="btn btn-danger"
+                                        data-title="{% trans 'Cancel this appointment?' %}"
+                                        data-text="{% trans 'Are you sure you want to cancel this appointment?' %}"
+                                        data-confirm="{% trans 'Yes, Cancel' %}" data-variant="danger"
+                                        data-form="cancel-form-{{ appointment.id }}"
+                                        onclick="openActionModal(this)">
                                     <i class="fas fa-times-circle"></i>
                                     {% trans "Cancel" %}
                                 </button>
@@ -1693,10 +1697,14 @@
                             {% endif %}
 
                             {% if appointment.status == 'waiting_for_payment' %}
-                            <form method="post" action="{% url 'patient_confirm_payment' appointment.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'patient_confirm_payment' appointment.id %}" id="pay-form-{{ appointment.id }}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-success"
-                                        onclick="return confirm('{% trans "Confirm payment for this clinic? Other pending offers for this case will be cancelled." %}')">
+                                <button type="button" class="btn btn-success"
+                                        data-title="{% trans 'Confirm payment?' %}"
+                                        data-text="{% trans 'Confirm payment for this clinic? Other pending offers for this case will be cancelled.' %}"
+                                        data-confirm="{% trans 'Yes, Pay' %}" data-variant="success"
+                                        data-form="pay-form-{{ appointment.id }}"
+                                        onclick="openActionModal(this)">
                                     <i class="fas fa-credit-card"></i>
                                     {% if appointment.payment_amount %}
                                     {% blocktrans with amount=appointment.payment_amount %}Pay {{ amount }}{% endblocktrans %}
@@ -1715,10 +1723,14 @@
                             {% endif %}
 
                             {% if appointment.status == 'completed' or appointment.status == 'cancelled' or appointment.status == 'rejected' or appointment.status == 'rejected_medical_record' %}
-                            <form method="post" action="{% url 'delete_appointment' appointment.id %}" style="display:inline;">
+                            <form method="post" action="{% url 'delete_appointment' appointment.id %}" id="delete-form-{{ appointment.id }}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger"
-                                        onclick="return confirm('{% trans "Delete this appointment? This cannot be undone." %}')">
+                                <button type="button" class="btn btn-danger"
+                                        data-title="{% trans 'Delete this appointment?' %}"
+                                        data-text="{% trans 'Delete this appointment? This cannot be undone.' %}"
+                                        data-confirm="{% trans 'Yes, Delete' %}" data-variant="danger"
+                                        data-form="delete-form-{{ appointment.id }}"
+                                        onclick="openActionModal(this)">
                                     <i class="fas fa-trash-alt"></i>
                                     {% trans "Delete" %}
                                 </button>
@@ -1916,6 +1928,62 @@
     document.documentElement.style.overflow='';
     try{localStorage.setItem(KEY,'done');}catch(e){}
   });
+})();
+</script>
+
+<!-- ===== Shared action-confirmation modal (replaces native confirm()) ===== -->
+<div id="action-modal" class="modal-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:16px;max-width:440px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+        <div id="action-modal-icon" style="width:52px;height:52px;border-radius:50%;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 id="action-modal-title" style="margin:0 0 8px;font-size:1.15rem;"></h3>
+        <p id="action-modal-text" style="margin:0 0 20px;color:#4b5563;font-size:14px;"></p>
+        <div style="display:flex;gap:10px;">
+            <button type="button" class="btn btn-secondary btn-full" onclick="closeActionModal()">{% trans "Cancel" %}</button>
+            <button type="button" id="action-modal-confirm" class="btn btn-full btn-danger" onclick="confirmActionModal()">{% trans "Confirm" %}</button>
+        </div>
+    </div>
+</div>
+<script>
+var actionModalForm = null;
+function openActionModal(btn) {
+    var d = btn.dataset || {};
+    document.getElementById('action-modal-title').textContent = d.title || '';
+    document.getElementById('action-modal-text').textContent = d.text || '';
+    var confirmBtn = document.getElementById('action-modal-confirm');
+    confirmBtn.textContent = d.confirm || 'Confirm';
+    var styles = {
+        danger: ['#fef2f2', '#dc2626', 'btn-danger', 'fa-exclamation-triangle'],
+        success: ['#f0fdf4', '#15803d', 'btn-success', 'fa-check-circle'],
+        info: ['#eff6ff', '#1d4ed8', 'btn-primary', 'fa-info-circle']
+    };
+    var s = styles[d.variant] || styles.danger;
+    var icon = document.getElementById('action-modal-icon');
+    icon.style.background = s[0];
+    icon.style.color = s[1];
+    icon.innerHTML = '<i class="fas ' + s[3] + '"></i>';
+    confirmBtn.className = 'btn btn-full ' + s[2];
+    actionModalForm = document.getElementById(d.form);
+    document.getElementById('action-modal').style.display = 'flex';
+}
+function closeActionModal() {
+    document.getElementById('action-modal').style.display = 'none';
+    actionModalForm = null;
+}
+function confirmActionModal() {
+    if (actionModalForm) actionModalForm.submit();
+}
+(function () {
+    var modal = document.getElementById('action-modal');
+    if (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeActionModal();
+        });
+    }
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeActionModal();
+    });
 })();
 </script>
 </body>

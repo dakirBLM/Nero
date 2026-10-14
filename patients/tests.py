@@ -130,3 +130,37 @@ class PatientPendingAppointmentsTests(TestCase):
         self.assertIn('pending', values)
         filtered = self.client.get(reverse('patient_appointments'), {'status': 'pending'})
         self.assertIn(self.appointment, list(filtered.context['appointments']))
+
+
+class AppointmentActionModalTests(TestCase):
+    """Cancel/pay/delete use the styled in-page modal, never native
+    confirm(); the underlying POSTs still work."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('actor', 'actor@example.com', 'pw-test-12345', user_type='patient')
+        self.patient = Patient.objects.create(user=self.user, full_name='Actor', gender='M', phone='1')
+        _, clinic = _make_clinic('modalclinic')
+        self.record = MedicalRecord.objects.create(
+            patient=self.patient, first_name='Ac', last_name='Tor', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        self.appointment = Appointment.objects.create(
+            patient=self.patient, clinic=clinic, medical_record=self.record,
+        )
+        self.client.force_login(self.user)
+
+    def test_no_native_confirms_and_modal_present(self):
+        response = self.client.get(reverse('patient_appointments'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "confirm('")
+        self.assertContains(response, 'action-modal')
+        self.assertContains(response, 'openActionModal')
+        self.assertContains(response, f'cancel-form-{self.appointment.id}')
+
+    def test_cancel_post_still_works(self):
+        response = self.client.post(reverse('cancel_appointment', args=[self.appointment.id]))
+        self.assertEqual(response.status_code, 302)
+        self.appointment.refresh_from_db()
+        self.assertEqual(self.appointment.status, 'cancelled')

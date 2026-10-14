@@ -389,3 +389,43 @@ class RejectModalTests(TestCase):
         appointment.refresh_from_db()
         self.assertEqual(appointment.status, 'rejected_medical_record')
         self.assertEqual(appointment.medical_rejection_reason, 'capacity_unavailable')
+
+
+class ClinicActionModalTests(TestCase):
+    """Reject-booking / mark-upcoming / status-change use the shared styled
+    in-page modal, never native confirm(); the POSTs still work."""
+
+    def _setup(self, username, status='pending', **overrides):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record,
+            status=status, **overrides,
+        )
+        self.client.force_login(user)
+        return appointment
+
+    def test_no_native_confirms_and_modal_present(self):
+        self._setup('modaluser')
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "confirm('")
+        self.assertContains(resp, 'action-modal')
+        self.assertContains(resp, 'openActionModal')
+
+    def test_mark_upcoming_post_still_works(self):
+        appointment = self._setup('upcominguser', status='paid')
+        resp = self.client.post(reverse('mark_appointment_upcoming', args=[appointment.id]))
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'upcoming')
