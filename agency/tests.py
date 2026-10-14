@@ -30,7 +30,7 @@ def _make_clinic(username):
     return Clinic.objects.create(
         user=user, clinic_name=username.title(), description='d', address='a', city='c',
         state='s', zip_code='1', phone_number='1', contact_email=f'{username}@example.com',
-        specialization='spec', established_date=date(2000, 1, 1),
+        specialization='spec', established_year=2000,
     )
 
 

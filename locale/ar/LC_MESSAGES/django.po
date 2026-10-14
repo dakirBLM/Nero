@@ -969,8 +969,14 @@ msgstr "المعلومات المهنية"
 msgid "Type of Clinic"
 msgstr "نوع العيادة"
 
-msgid "Established Date"
-msgstr "تاريخ التأسيس"
+msgid "Established Year"
+msgstr "سنة التأسيس"
+
+msgid "Enter a valid year (e.g. 2015)."
+msgstr "أدخل سنة صحيحة (مثال: 2015)."
+
+msgid "Enter a year between %(min)s and %(max)s."
+msgstr "أدخل سنة بين %(min)s و%(max)s."
 
 msgid "Languages Spoken"
 msgstr "اللغات المتحدَّث بها"
