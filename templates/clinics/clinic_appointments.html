@@ -1647,7 +1647,7 @@
                                     </form>
 
                                     <!-- Propose alternative dates -->
-                                    <form method="post" action="{% action_url 'facility_propose_dates' appointment.id %}">
+                                    <form method="post" action="{% action_url 'facility_propose_dates' appointment.id %}" id="propose-form-{{ appointment.id }}">
                                         {% csrf_token %}
                                         <div class="form-row-2">
                                             <div class="form-group">
@@ -1686,8 +1686,9 @@
                                                           placeholder="Explain what changed and why…"></textarea>
                                             </div>
                                         </div>
+                                    </form>
                                         <div class="form-row-2" style="margin-bottom:0;">
-                                            <button type="submit" class="btn btn-secondary btn-full">
+                                            <button type="submit" form="propose-form-{{ appointment.id }}" class="btn btn-secondary btn-full">
                                                 <i class="fas fa-exchange-alt"></i> Propose Changes
                                             </button>
                                             <form method="post" action="{% action_url 'facility_reject_booking' appointment.id %}" id="reject-booking-form-{{ appointment.id }}" style="display:contents;">
@@ -1702,7 +1703,6 @@
                                                 </button>
                                             </form>
                                         </div>
-                                    </form>
                                 </div>
 
                                 <!-- 5a. Accepted (agency): email the patient file to the clinic instead of payment -->

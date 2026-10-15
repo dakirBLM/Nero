@@ -429,3 +429,59 @@ class ClinicActionModalTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         appointment.refresh_from_db()
         self.assertEqual(appointment.status, 'upcoming')
+
+    def _setup_with_dates(self, username):
+        # Renders the propose/reject block: pending + medical accepted +
+        # patient dates submitted (otherwise the waiting box shows instead).
+        return self._setup(
+            username, status='pending', medical_record_accepted=True,
+            treatment_start_date=date(2026, 10, 20), treatment_end_date=date(2026, 10, 25),
+            accommodation_type='single_room', needs_accommodation=True,
+        )
+
+    def test_no_nested_forms_and_reject_action_correct(self):
+        from html.parser import HTMLParser
+
+        appointment = self._setup_with_dates('nesteduser')
+
+        class FormDepth(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.depth = 0
+                self.max_depth = 0
+                self.reject_actions = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == 'form':
+                    self.depth += 1
+                    self.max_depth = max(self.max_depth, self.depth)
+                    form_id = dict(attrs).get('id', '')
+                    if form_id.startswith('reject-booking-form-'):
+                        self.reject_actions.append(dict(attrs).get('action', ''))
+
+            def handle_endtag(self, tag):
+                if tag == 'form':
+                    self.depth -= 1
+
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        parser = FormDepth()
+        parser.feed(resp.content.decode())
+        self.assertLessEqual(parser.max_depth, 1)
+        self.assertEqual(len(parser.reject_actions), 1)
+        self.assertIn('facility-reject-booking', parser.reject_actions[0])
+        self.assertIn(str(appointment.id), parser.reject_actions[0])
+
+    def test_propose_post_still_works(self):
+        appointment = self._setup_with_dates('proposer')
+        resp = self.client.post(
+            reverse('facility_propose_dates', args=[appointment.id]),
+            {
+                'proposed_start_date': '2027-01-10',
+                'proposed_end_date': '2027-01-15',
+                'clinic_proposal_note': 'Different dates please.',
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'accepted_record_accommodation_change_requested')
