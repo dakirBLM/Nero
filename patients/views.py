@@ -1087,14 +1087,16 @@ def patient_appointments_view(request):
         treatment_end_date__lte=upcoming_cleanup_date,
     ).delete()
 
-    all_appointments = Appointment.objects.filter(patient=patient).exclude(status='pending').select_related('clinic', 'medical_record').order_by('-appointment_date', '-created_at')
+    all_appointments = Appointment.objects.filter(patient=patient).select_related('clinic', 'medical_record').order_by('-appointment_date', '-created_at')
 
     status_filter = request.GET.get('status', '') or ''
     status_filter = status_filter.strip()
 
     # Build filters from real model statuses so all valid options are always visible.
+    # NOTE: 'pending' must stay included — fresh requests start as pending and the
+    # submit-booking-details form in the template only renders for pending rows.
     status_labels = dict(Appointment.STATUS_CHOICES)
-    choice_order = [choice[0] for choice in Appointment.STATUS_CHOICES if choice[0] != 'pending']
+    choice_order = [choice[0] for choice in Appointment.STATUS_CHOICES]
     status_filters = [
         {
             'value': value,

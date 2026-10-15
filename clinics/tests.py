@@ -7,9 +7,8 @@ from django.urls import reverse
 from accounts.forms import ClinicSignUpForm
 from accounts.models import User
 from clinics.forms import ClinicUpdateForm
-from clinics.models import Clinic, Specialization, get_specialization_choices
-from patients.models import Patient
-from clinics.models import Clinic
+from clinics.models import Clinic, Specialization, Appointment, get_specialization_choices
+from patients.models import Patient, MedicalRecord
 from core.validators import validate_established_year
 
 
@@ -299,6 +298,194 @@ class DynamicSpecializationTests(TestCase):
         context = _base_filter_context(user.patient)
         self.assertIn('Cardiac Rehabilitation', context['clinic_types'])
         self.assertIn('Convalescence', context['clinic_types'])
+class ClinicWaitingBoxTests(TestCase):
+    """The 'waiting for patient booking details' box must only render while
+    the patient still owes details (pending), not after they submitted."""
+
+    def _appointment(self, username, status, **overrides):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record,
+            status=status, **overrides,
+        )
+        return user, appointment
+
+    def _page(self, user):
+        self.client.force_login(user)
+        return self.client.get(reverse('clinic_appointments'))
+
+    def test_waiting_box_shown_while_pending(self):
+        user, _ = self._appointment('waiter', 'pending', medical_record_accepted=True)
+        resp = self._page(user)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Waiting for patient to submit booking details')
+
+    def test_waiting_box_hidden_after_no_accommodation_submit(self):
+        # The exact reported case: submitted with no accommodation (dates stay
+        # None by design) yet the stale box kept rendering.
+        user, _ = self._appointment(
+            'submitted', 'accepted_record_accepted_accommodation',
+            medical_record_accepted=True, accommodation_type='no_accommodation',
+            needs_accommodation=False,
+        )
+        resp = self._page(user)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, 'Waiting for patient to submit booking details')
+        self.assertNotContains(resp, 'Awaiting patient response')
+
+
+class RejectModalTests(TestCase):
+    """Reject-medical uses a styled in-page modal (no native confirm()),
+    requires a reason first, and the form still rejects properly."""
+
+    def _pending(self, username):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record, status='pending',
+        )
+        return user, appointment
+
+    def test_no_native_confirm_and_modal_present(self):
+        user, appointment = self._pending('rejector')
+        self.client.force_login(user)
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "confirm('Reject this medical request?')")
+        self.assertContains(resp, f'reject-modal-{appointment.id}')
+        self.assertContains(resp, f'reject-form-{appointment.id}')
+        self.assertContains(resp, 'openRejectModal')
+
+    def test_reject_with_reason_still_works(self):
+        user, appointment = self._pending('rejector2')
+        self.client.force_login(user)
+        resp = self.client.post(
+            reverse('reject_medical_record', args=[appointment.id]),
+            {'medical_rejection_reason': 'capacity_unavailable'},
+        )
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'rejected_medical_record')
+        self.assertEqual(appointment.medical_rejection_reason, 'capacity_unavailable')
+
+
+class ClinicActionModalTests(TestCase):
+    """Reject-booking / mark-upcoming / status-change use the shared styled
+    in-page modal, never native confirm(); the POSTs still work."""
+
+    def _setup(self, username, status='pending', **overrides):
+        user = _make_user(username)
+        clinic = _make_clinic(user, name=f'{username} clinic')
+        patient_user = _make_user(f'{username}-patient', user_type='patient')
+        patient = Patient.objects.create(
+            user=patient_user, full_name=f'{username} patient', gender='M', phone='1'
+        )
+        record = MedicalRecord.objects.create(
+            patient=patient, first_name='A', last_name='B', gender='M',
+            date_of_birth=date(1990, 1, 1), address='a', country='C',
+            height=170, weight=70, main_diagnosis='dx', injury_date=date(2020, 1, 1),
+            movement_ability='independent',
+        )
+        appointment = Appointment.objects.create(
+            patient=patient, clinic=clinic, medical_record=record,
+            status=status, **overrides,
+        )
+        self.client.force_login(user)
+        return appointment
+
+    def test_no_native_confirms_and_modal_present(self):
+        self._setup('modaluser')
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "confirm('")
+        self.assertContains(resp, 'action-modal')
+        self.assertContains(resp, 'openActionModal')
+
+    def test_mark_upcoming_post_still_works(self):
+        appointment = self._setup('upcominguser', status='paid')
+        resp = self.client.post(reverse('mark_appointment_upcoming', args=[appointment.id]))
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'upcoming')
+
+    def _setup_with_dates(self, username):
+        # Renders the propose/reject block: pending + medical accepted +
+        # patient dates submitted (otherwise the waiting box shows instead).
+        return self._setup(
+            username, status='pending', medical_record_accepted=True,
+            treatment_start_date=date(2026, 10, 20), treatment_end_date=date(2026, 10, 25),
+            accommodation_type='single_room', needs_accommodation=True,
+        )
+
+    def test_no_nested_forms_and_reject_action_correct(self):
+        from html.parser import HTMLParser
+
+        appointment = self._setup_with_dates('nesteduser')
+
+        class FormDepth(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.depth = 0
+                self.max_depth = 0
+                self.reject_actions = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == 'form':
+                    self.depth += 1
+                    self.max_depth = max(self.max_depth, self.depth)
+                    form_id = dict(attrs).get('id', '')
+                    if form_id.startswith('reject-booking-form-'):
+                        self.reject_actions.append(dict(attrs).get('action', ''))
+
+            def handle_endtag(self, tag):
+                if tag == 'form':
+                    self.depth -= 1
+
+        resp = self.client.get(reverse('clinic_appointments'))
+        self.assertEqual(resp.status_code, 200)
+        parser = FormDepth()
+        parser.feed(resp.content.decode())
+        self.assertLessEqual(parser.max_depth, 1)
+        self.assertEqual(len(parser.reject_actions), 1)
+        self.assertIn('facility-reject-booking', parser.reject_actions[0])
+        self.assertIn(str(appointment.id), parser.reject_actions[0])
+
+    def test_propose_post_still_works(self):
+        appointment = self._setup_with_dates('proposer')
+        resp = self.client.post(
+            reverse('facility_propose_dates', args=[appointment.id]),
+            {
+                'proposed_start_date': '2027-01-10',
+                'proposed_end_date': '2027-01-15',
+                'clinic_proposal_note': 'Different dates please.',
+            },
+        )
+        self.assertEqual(resp.status_code, 302)
+        appointment.refresh_from_db()
+        self.assertEqual(appointment.status, 'accepted_record_accommodation_change_requested')
+
+
 class EstablishedYearTests(TestCase):
     """Clinics store an establishment *year* (int), validated to 1000..today."""
 
