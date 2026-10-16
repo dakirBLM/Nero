@@ -29,6 +29,7 @@ local_settings.py
 .coverage
 .coverage.*
 .pytest_cache/
+temp_auto_push.bat
 htmlcov/
 .tox/
 
@@ -42,7 +43,6 @@ htmlcov/
 .Spotlight-V100
 .Trashes
 Thumbs.db
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -61,3 +61,5 @@ static/Hopper*
 static/Hoppers*
 static/Disney*
 static/ -*.jpg
+.gitignore
+branch_structure.json
