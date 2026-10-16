@@ -1,9 +1,11 @@
 from django import forms
 from patients.models import MedicalRecord
 from .compatibility import clinic_compatibility_errors, is_clinic_compatible
-from .models import Appointment, Clinic, ClinicGallery, ClinicService
+from .models import Appointment, Clinic, ClinicGallery, ClinicService, get_specialization_choices, parse_specialization_names
 from accounts.forms import ClinicSignUpForm
-from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
+from core.location_choices import COUNTRY_CHOICES
+from core.phone import InternationalPhoneField, InternationalPhoneInput
+from core.validators import MIN_ESTABLISHED_YEAR
 
 class MedicalRecordChoiceField(forms.ModelChoiceField):
     def __init__(self, *args, **kwargs):
@@ -37,24 +39,15 @@ class ClinicUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    phone_number = InternationalPhoneField(
+        widget=InternationalPhoneInput(attrs={'class': 'form-control'}),
     )
-    clinic_type = forms.MultipleChoiceField(
-        choices=Clinic.CLINIC_TYPE_CHOICES,
-        required=False,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'clinic-type-checkbox'}),
-        help_text="Select one or more clinic types"
-    )
-
     class Meta:
         model = Clinic
         fields = [
             'clinic_name', 'tagline', 'description', 'address', 'city', 'state',
-            'country', 'continent', 'clinic_type', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization',
-            'established_date', 'facilities',
+            'country', 'continent', 'zip_code', 'phone_number', 'contact_email', 'website', 'google_maps_url', 'specialization',
+            'established_year', 'facilities',
             'languages_spoken', 'age_range',
             'profile_picture', 'cover_photo',
             'accepts_heart_problems', 'accepts_permanent_catheter', 'accepts_intermittent_catheter', 'accepts_wheelchair', 'accepts_walker', 'accepts_crutch',
@@ -65,7 +58,7 @@ class ClinicUpdateForm(forms.ModelForm):
             'accepts_tracheostomy_tube', 'accepts_dependent_patients', 'accepts_bedridden_patients',
         ]
         widgets = {
-            'established_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'established_year': forms.NumberInput(attrs={'class': 'form-control', 'min': MIN_ESTABLISHED_YEAR, 'placeholder': 'e.g. 2015'}),
             'age_range': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
@@ -74,7 +67,6 @@ class ClinicUpdateForm(forms.ModelForm):
             'state': forms.TextInput(attrs={'class': 'form-control'}),
             'continent': forms.TextInput(attrs={'class': 'form-control'}),
             'zip_code': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'contact_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'website': forms.URLInput(attrs={'class': 'form-control'}),
             'google_maps_url': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'https://www.google.com/maps/embed?pb=...'}),
@@ -110,42 +102,25 @@ class ClinicUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.clinic_type:
-            selected_types = [t.strip() for t in self.instance.clinic_type.split(',') if t.strip()]
-            self.fields['clinic_type'].initial = selected_types
-
-        if self.instance and self.instance.phone_number:
-            phone_code, local_number = split_phone_number(self.instance.phone_number)
-            self.fields['phone_country_code'].initial = phone_code or '+1'
-            self.fields['phone_number'].initial = local_number
-
         if self.instance and self.instance.country:
             self.fields['country'].initial = self.instance.country
 
-        # Convert specialization field to MultipleChoiceField with CheckboxSelectMultiple widget
+        # Dynamic choices from the DB; keep any legacy values the clinic
+        # already has so saving settings never drops them silently.
+        existing = parse_specialization_names(getattr(self.instance, 'specialization', '') or '')
         self.fields['specialization'] = forms.MultipleChoiceField(
-            choices=Clinic.SPECIALIZATION_CHOICES,
+            choices=get_specialization_choices(extra=existing),
             required=False,
             widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
             help_text="Select one or more specializations"
         )
         # Parse comma-separated specializations into a list for the form
-        if self.instance and self.instance.specialization:
-            specializations = [s.strip() for s in self.instance.specialization.split(',')]
-            self.fields['specialization'].initial = specializations
+        if existing:
+            self.fields['specialization'].initial = existing
     
     def save(self, commit=True):
-        clinic_types = self.cleaned_data.get('clinic_type', [])
-        self.instance.clinic_type = ', '.join(clinic_types) if isinstance(clinic_types, list) else (clinic_types or '')
-        self.instance.phone_number = normalize_phone_number(
-            self.cleaned_data.get('phone_country_code'),
-            self.cleaned_data.get('phone_number'),
-        )
-
-        # Preserve existing specialization if the field is omitted from submitted template.
-        if 'specialization' in self.data:
-            specializations = self.cleaned_data.get('specialization', [])
-            self.instance.specialization = ', '.join(specializations) if isinstance(specializations, list) else specializations
+        specializations = self.cleaned_data.get('specialization', [])
+        self.instance.specialization = ', '.join(specializations) if isinstance(specializations, list) else (specializations or '')
         return super().save(commit=commit)
 
 class ClinicGalleryForm(forms.ModelForm):

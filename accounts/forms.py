@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.utils.translation import gettext_lazy as _
+from datetime import date
 from patients.models import Patient
+from clinics.models import Clinic, get_specialization_choices
 from clinics.models import Clinic
+from core.validators import MIN_ESTABLISHED_YEAR, validate_established_year
 from .models import User
-from core.location_choices import COUNTRY_CHOICES, PHONE_CODE_CHOICES, normalize_phone_number, split_phone_number
+from core.location_choices import COUNTRY_CHOICES
+from core.phone import InternationalPhoneField, InternationalPhoneInput
 
 class PatientSignUpForm(UserCreationForm):
     profile_picture = forms.ImageField(required=False)
@@ -28,22 +32,10 @@ class PatientSignUpForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    phone_number = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your phone number'
-        })
-    )
+    phone_number = InternationalPhoneField(required=True)
     class Meta:
         model = User
-        fields = ['username', 'email', 'full_name', 'date_of_birth', 'gender', 'phone_country_code', 'phone_number', 'profile_picture', 'password1', 'password2']
+        fields = ['username', 'email', 'full_name', 'date_of_birth', 'gender', 'phone_number', 'profile_picture', 'password1', 'password2']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose a username'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter your email'}),
@@ -55,10 +47,6 @@ class PatientSignUpForm(UserCreationForm):
             if field_name not in ['password1', 'password2']:
                 field.widget.attrs.update({'class': 'form-control'})
 
-        if 'phone_country_code' in self.fields and not self.initial.get('phone_country_code'):
-            self.fields['phone_country_code'].initial = '+1'
-                
-            
     
     def save(self, commit=True): 
         user = super().save(commit=False)
@@ -72,10 +60,7 @@ class PatientSignUpForm(UserCreationForm):
             full_name=self.cleaned_data['full_name'],
             date_of_birth=self.cleaned_data['date_of_birth'],
             gender=self.cleaned_data.get('gender'),
-            phone=normalize_phone_number(
-                self.cleaned_data.get('phone_country_code'),
-                self.cleaned_data.get('phone_number'),
-            ),
+            phone=self.cleaned_data['phone_number'],
             profile_picture=self.cleaned_data.get('profile_picture')
         )
         return user
@@ -160,18 +145,9 @@ class ClinicSignUpForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    phone_country_code = forms.ChoiceField(
-        choices=PHONE_CODE_CHOICES,
+    phone_number = InternationalPhoneField(
         required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    phone_number = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Phone number',
-            'class': 'form-control'
-        })
+        widget=InternationalPhoneInput(attrs={'class': 'form-control'}),
     )
     contact_email = forms.EmailField(
         required=True,
@@ -196,26 +172,23 @@ class ClinicSignUpForm(UserCreationForm):
         })
     )
     
-    # Professional Information
-    SPECIALIZATION_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
-    )
-    
+    # Professional Information (choices come from the Specialization table,
+    # populated at runtime so admin-added types appear without a restart)
     specialization = forms.MultipleChoiceField(
-        choices=SPECIALIZATION_CHOICES,
+        choices=(),
         required=True,
         widget=forms.CheckboxSelectMultiple(attrs={
             'class': 'form-check-input'
         })
     )
-    established_date = forms.DateField(
+    established_year = forms.IntegerField(
         required=True,
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'form-control'
+        validators=[validate_established_year],
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g. 2015',
+            'min': MIN_ESTABLISHED_YEAR,
+            'max': date.today().year,
         })
     )
     
@@ -322,6 +295,12 @@ class ClinicSignUpForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         self.existing_user = kwargs.pop('existing_user', None)
         super().__init__(*args, **kwargs)
+        self.fields['specialization'].choices = get_specialization_choices()
+
+        if self.existing_user is not None:
+            # Validate against the existing account so the username/email
+            # uniqueness checks exclude it instead of always failing.
+            self.instance = self.existing_user
 
         if self.existing_user:
             self.fields['username'].required = False
@@ -339,14 +318,6 @@ class ClinicSignUpForm(UserCreationForm):
 
             if not self.initial.get('contact_email'):
                 self.initial['contact_email'] = self.existing_user.email
-
-        if self.initial.get('phone_number'):
-            phone_country_code, phone_local_number = split_phone_number(self.initial.get('phone_number'))
-            self.fields['phone_country_code'].initial = phone_country_code or '+1'
-            self.fields['phone_number'].initial = phone_local_number
-
-        if 'phone_country_code' in self.fields and not self.initial.get('phone_country_code'):
-            self.fields['phone_country_code'].initial = '+1'
 
         # Add Bootstrap classes to default fields
         for field_name in ['username', 'email', 'password1', 'password2']:
@@ -370,8 +341,7 @@ class ClinicSignUpForm(UserCreationForm):
         # Convert list of specializations to comma-separated string
         specializations = self.cleaned_data.get('specialization', [])
         specialization_str = ', '.join(specializations) if isinstance(specializations, list) else specializations
-        clinic_type_value = specializations[0] if isinstance(specializations, list) and specializations else ''
-        
+
         clinic_data = {
             'user': user,
             'clinic_name': self.cleaned_data['clinic_name'],
@@ -383,16 +353,12 @@ class ClinicSignUpForm(UserCreationForm):
             'country': self.cleaned_data['country'],
             'continent': self.cleaned_data['continent'],
             'zip_code': self.cleaned_data['zip_code'],
-            'phone_number': normalize_phone_number(
-                self.cleaned_data.get('phone_country_code'),
-                self.cleaned_data.get('phone_number'),
-            ),
+            'phone_number': self.cleaned_data['phone_number'],
             'contact_email': self.cleaned_data['contact_email'],
             'website': self.cleaned_data.get('website', ''),
             'google_maps_url': self.cleaned_data.get('google_maps_url', ''),
-            'clinic_type': clinic_type_value,
             'specialization': specialization_str,
-            'established_date': self.cleaned_data['established_date'],
+            'established_year': self.cleaned_data['established_year'],
             'facilities': self.cleaned_data.get('facilities', ''),
             'languages_spoken': self.cleaned_data.get('languages_spoken', 'English'),
             'age_range': self.cleaned_data.get('age_range', Clinic.AgeRange.BOTH),
@@ -437,22 +403,13 @@ class ClinicSignUpForm(UserCreationForm):
     
     def clean_contact_email(self):
         contact_email = self.cleaned_data.get('contact_email')
-        if Clinic.objects.filter(contact_email=contact_email).exists():
+        qs = Clinic.objects.filter(contact_email=contact_email)
+        if self.existing_user:
+            # Same owner may reuse their contact email across their own clinics.
+            qs = qs.exclude(user=self.existing_user)
+        if qs.exists():
             raise forms.ValidationError("A clinic with this contact email already exists.")
         return contact_email
-    
-    def clean_phone_number(self):
-        phone_number = (self.cleaned_data.get('phone_number') or '').strip()
-        if not phone_number:
-            raise forms.ValidationError("Please enter a phone number.")
-        return phone_number
-    
-    def clean_established_date(self):
-        established_date = self.cleaned_data.get('established_date')
-        from datetime import date
-        if established_date > date.today():
-            raise forms.ValidationError("Established date cannot be in the future.")
-        return established_date
     
     def clean(self):
         cleaned_data = super().clean()

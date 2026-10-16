@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Clinic • NERO</title>
+    <link rel="icon" type="image/png" href="{% static 'n.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #1a1a1a; background: #f8f9fa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .card { background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 32px; max-width: 640px; width: 100%; }
+        h1 { font-size: 1.5rem; margin-bottom: 6px; }
+        .subtitle { color: #6b7280; margin-bottom: 20px; }
+        .messages { margin-bottom: 16px; }
+        .messages .msg { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
+        .msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .msg.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .msg.info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .clinic-row { display: flex; align-items: center; gap: 14px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+        .clinic-row.current { border-color: #3b82f6; background: #f5f9ff; }
+        .avatar { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .info { flex: 1; min-width: 0; }
+        .info strong { display: block; font-size: 15px; }
+        .info span { color: #6b7280; font-size: 13px; }
+        .badge { display: inline-block; background: #dbeafe; color: #1d4ed8; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-top: 4px; }
+        .btn { border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; font-size: 14px; cursor: pointer; background: #3b82f6; color: #fff; white-space: nowrap; }
+        .btn:hover { background: #2563eb; }
+        .footer-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 14px; }
+        .footer-links a { color: #3b82f6; text-decoration: none; font-weight: 600; }
+        .footer-links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1><i class="fas fa-clinic-medical"></i> Select clinic</h1>
+    <p class="subtitle">Your account manages {{ clinics|length }} clinics. Choose which one to work on — you can switch at any time.</p>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% for clinic in clinics %}
+    <div class="clinic-row {% if active_clinic and active_clinic.id == clinic.id %}current{% endif %}">
+        <div class="avatar">{{ clinic.clinic_name|first|upper }}</div>
+        <div class="info">
+            <strong>{{ clinic.clinic_name }}</strong>
+            <span>{{ clinic.city }}{% if clinic.country %}, {{ clinic.country }}{% endif %}</span>
+            {% if active_clinic and active_clinic.id == clinic.id %}
+            <span class="badge">Current</span>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'clinic_select' %}">
+            {% csrf_token %}
+            <input type="hidden" name="clinic_id" value="{{ clinic.id }}">
+            <button type="submit" class="btn">Manage</button>
+        </form>
+    </div>
+    {% endfor %}
+
+    <div class="footer-links">
+        <a href="{% url 'clinic_signup' %}"><i class="fas fa-plus-circle"></i> Add another clinic</a>
+        {% if active_clinic %}
+        <a href="{% url 'clinic_dashboard' %}">Back to dashboard &rarr;</a>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

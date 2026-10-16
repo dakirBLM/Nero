@@ -26,7 +26,7 @@ def _make_clinic(username, **overrides):
         phone_number='1',
         contact_email=f'{username}@example.com',
         specialization='spec',
-        established_date=date(2000, 1, 1),
+        established_year=2000,
     )
     data.update(overrides)
     return Clinic.objects.create(**data)

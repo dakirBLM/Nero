@@ -20,7 +20,8 @@ def restore_accepts_catheter(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('clinics', '0031_remove_clinic_accepts_electric_wheelchair_and_more'),
+        ('clinics', '0034_specialization'),
+        ('clinics', '0035_remove_clinic_established_date'),
     ]
 
     operations = [

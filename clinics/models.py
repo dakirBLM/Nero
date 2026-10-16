@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from patients.models import MedicalRecord, Patient
-from core.validators import validate_video_extension, validate_video_size
+from core.validators import validate_video_extension, validate_video_size, validate_established_year
 from core.avatars import DEFAULT_AVATAR
 
 
@@ -29,27 +29,72 @@ class Post(models.Model):
 
 
 
+class Specialization(models.Model):
+    """Admin-managed clinic specialization types.
+
+    ``Clinic.specialization`` stays free comma-separated text; the rows
+    here only drive the choice lists shown across the platform (signup,
+    settings, search filters, admin, recommendations). Edits apply
+    immediately — no redeploy or restart needed.
+    """
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+DEFAULT_SPECIALIZATIONS = (
+    'Convalescence',
+    'Weight loss',
+    'Musculoskeletal treatment',
+    'Neurological treatment',
+)
+
+
+def get_specialization_choices(extra=()):
+    """(value, label) choices from the DB, plus any legacy `extra` names.
+
+    `extra` keeps values already stored on a clinic selectable so saving
+    settings never drops them silently when they are not in the DB list.
+    """
+    names = [s.name for s in Specialization.objects.order_by('name')]
+    for name in extra:
+        if name and name not in names:
+            names.append(name)
+    return [(name, name) for name in names]
+
+
+def parse_specialization_names(value):
+    """Split a comma-separated specialization string into clean names."""
+    return [part.strip() for part in (value or '').split(',') if part.strip()]
+
+
+def specialization_in_use(name):
+    """True when any clinic currently stores `name` in its specialization."""
+    target = (name or '').strip().lower()
+    if not target:
+        return False
+    for value in Clinic.objects.exclude(specialization='').values_list('specialization', flat=True):
+        if target in [part.lower() for part in parse_specialization_names(value)]:
+            return True
+    return False
+
+
 class Clinic(models.Model):
     class AgeRange(models.TextChoices):
         ADULTS_ONLY = 'adults_only', _('Adults only')
         CHILDREN_ONLY = 'children_only', _('Children only')
         BOTH = 'both', _('Both adults and children')
 
-    SPECIALIZATION_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='clinics',
+        help_text="Account that owns/manages this clinic. One account may own multiple clinics.",
     )
-
-    CLINIC_TYPE_CHOICES = (
-        ('Convalescence', _('Convalescence')),
-        ('Weight loss', _('Weight loss')),
-        ('Musculoskeletal treatment', _('Musculoskeletal treatment')),
-        ('Neurological treatment', _('Neurological treatment')),
-    )
-    
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     clinic_name = models.CharField(max_length=200)
     tagline = models.CharField(max_length=300, blank=True, help_text="Brief tagline for your clinic")
     description = models.TextField(help_text="Detailed description of your clinic services and approach")
@@ -58,14 +103,16 @@ class Clinic(models.Model):
     state = models.CharField(max_length=100)
     country = models.CharField(max_length=100, blank=True, default='')
     continent = models.CharField(max_length=100, blank=True, default='')
-    clinic_type = models.CharField(max_length=255, blank=True, default='', help_text="Selected clinic types (comma separated)")
     zip_code = models.CharField(max_length=20)
     phone_number = models.CharField(max_length=30)
     contact_email = models.EmailField()
     website = models.URLField(blank=True)
     google_maps_url = models.URLField(max_length=1000, blank=True, help_text="Google Maps embed URL (from Share → Embed a map → Copy src URL)")
     specialization = models.TextField(help_text="Primary specialization(s) (comma separated)")
-    established_date = models.DateField()
+    established_year = models.PositiveIntegerField(
+        validators=[validate_established_year],
+        help_text="Year the clinic was established (e.g. 2015)",
+    )
     facilities = models.CharField(max_length=500, blank=True, help_text="Available facilities (comma separated)")
     languages_spoken = models.CharField(max_length=200, default='English', help_text="Languages spoken (comma separated)")
     profile_picture = models.ImageField(upload_to='clinic_profile_pics/', blank=True, null=True, help_text="Main profile picture of your clinic")
@@ -151,7 +198,7 @@ class Clinic(models.Model):
     @property
     def years_in_operation(self):
         from datetime import date
-        return date.today().year - self.established_date.year
+        return date.today().year - self.established_year
 
 class ClinicGallery(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery_images')

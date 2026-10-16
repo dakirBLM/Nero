@@ -1439,10 +1439,10 @@
                 {% endif %}
                 <div class="clinic-meta">
 
-                    {% if clinic.clinic_type %}
+                    {% if clinic.specialization %}
                     <span class="meta-tag">
                         <i class="fas fa-stethoscope"></i>
-                        {{ clinic.clinic_type }}
+                        {{ clinic.specialization }}
                     </span>
                     {% endif %}
                     <span class="meta-tag">
@@ -1733,10 +1733,10 @@
                         <h3 class="section-title"><i class="fas fa-file-medical-alt"></i> Clinic Information</h3>
                         <div class="detail-list">
 
-                            {% if clinic.clinic_type %}
+                            {% if clinic.specialization %}
                             <div class="detail-item">
-                                <span class="detail-label">Clinic Type:</span>
-                                <span class="detail-value">{{ clinic.clinic_type }}</span>
+                                <span class="detail-label">Specialization:</span>
+                                <span class="detail-value">{{ clinic.specialization }}</span>
                             </div>
                             {% endif %}
                             <div class="detail-item">
@@ -1749,19 +1749,13 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Established:</span>
-                                <span class="detail-value">{{ clinic.established_date|date:"F Y" }}</span>
+                                <span class="detail-value">{{ clinic.established_year }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="content-card">
                         <h3 class="section-title"><i class="fas fa-clipboard-check"></i> Medical Conditions Accepted</h3>
-                        <div class="detail-list">
-                            <div class="detail-item">
-                                <span class="detail-label">{% trans "Catheter:" %}</span>
-                                <span class="detail-value" data-testid="catheter-acceptance">{% if clinic.accepts_permanent_catheter and clinic.accepts_intermittent_catheter %}{% trans "Permanent and intermittent" %}{% elif clinic.accepts_permanent_catheter %}{% trans "Permanent only" %}{% elif clinic.accepts_intermittent_catheter %}{% trans "Intermittent only" %}{% else %}{% trans "Not accepted" %}{% endif %}</span>
-                            </div>
-                        </div>
                         <div class="facilities-grid">
                             {% for field_name, field_label in acceptance_fields %}
                                 {% if forloop.counter <= 6 %}

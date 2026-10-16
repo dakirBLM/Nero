@@ -1519,10 +1519,10 @@
                 {% endif %}
                 <div class="clinic-meta">
 
-                    {% if clinic.clinic_type %}
+                    {% if clinic.specialization %}
                     <span class="meta-tag">
                         <i class="fas fa-stethoscope"></i>
-                        {{ clinic.clinic_type }}
+                        {{ clinic.specialization }}
                     </span>
                     {% endif %}
 
@@ -1848,19 +1848,13 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">{% trans "Established:" %}</span>
-                                <span class="detail-value">{{ clinic.established_date }}</span>
+                                <span class="detail-value">{{ clinic.established_year }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="content-card">
                         <h3 class="section-title"><i class="fas fa-clipboard-check"></i> {% trans "Medical Conditions Accepted" %}</h3>
-                        <div class="detail-list">
-                            <div class="detail-item">
-                                <span class="detail-label">{% trans "Catheter:" %}</span>
-                                <span class="detail-value" data-testid="catheter-acceptance">{% if clinic.accepts_permanent_catheter and clinic.accepts_intermittent_catheter %}{% trans "Permanent and intermittent" %}{% elif clinic.accepts_permanent_catheter %}{% trans "Permanent only" %}{% elif clinic.accepts_intermittent_catheter %}{% trans "Intermittent only" %}{% else %}{% trans "Not accepted" %}{% endif %}</span>
-                            </div>
-                        </div>
                         <div class="facilities-grid">
                             {% for field_name, field_label in acceptance_fields %}
                                 {% if forloop.counter <= 5 %}
