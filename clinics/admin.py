@@ -86,18 +86,31 @@ class ClinicAdmin(admin.ModelAdmin):
 	form = ClinicAdminForm
 	list_display = (
 		"clinic_name", "user", "city", "state", "specialization",
-		"established_year", "age_range", "accepts_heart_problems", "accepts_catheter", "is_verified"
+		"established_year", "age_range", "is_verified",
+		"accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter",
+		"accepts_wheelchair", "accepts_walker", "accepts_crutch",
+		"accepts_bowel_incontinence", "accepts_urine_incontinence",
+		"accepts_medical_condom", "accepts_diapers", "accepts_breathing_issues",
+		"accepts_feeding_tube", "accepts_stool_tube", "accepts_urine_tube",
+		"accepts_bedsores", "accepts_diabetes", "accepts_insulin",
+		"accepts_high_blood_pressure", "accepts_infectious_diseases",
+		"accepts_vein_thrombosis", "accepts_depression",
+		"accepts_tracheostomy_tube", "accepts_dependent_patients", "accepts_bedridden_patients",
 	)
 	search_fields = ("clinic_name", "city", "state", "user__username", "contact_email")
 	list_filter = (
 		SpecializationListFilter,
 		"is_verified",
 		"age_range",
-		"accepts_heart_problems",
-		"accepts_catheter",
-		"accepts_tracheostomy_tube",
-		"accepts_dependent_patients",
-		"accepts_bedridden_patients",
+		"accepts_heart_problems", "accepts_permanent_catheter", "accepts_intermittent_catheter",
+		"accepts_wheelchair", "accepts_walker", "accepts_crutch",
+		"accepts_bowel_incontinence", "accepts_urine_incontinence",
+		"accepts_medical_condom", "accepts_diapers", "accepts_breathing_issues",
+		"accepts_feeding_tube", "accepts_stool_tube", "accepts_urine_tube",
+		"accepts_bedsores", "accepts_diabetes", "accepts_insulin",
+		"accepts_high_blood_pressure", "accepts_infectious_diseases",
+		"accepts_vein_thrombosis", "accepts_depression",
+		"accepts_tracheostomy_tube", "accepts_dependent_patients", "accepts_bedridden_patients",
 	)
 
 @admin.register(ClinicService)

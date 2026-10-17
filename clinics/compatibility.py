@@ -9,7 +9,8 @@ ADULT_AGE = 18
 # A need is signalled when any of the record fields is true.
 CONDITION_RULES = (
     (('has_heart_problems',), 'accepts_heart_problems', _('Clinic does not accept patients with heart problems.')),
-    (('uses_permanent_catheter', 'uses_intermittent_catheter', 'uses_urine_tube'), 'accepts_catheter', _('Clinic does not accept patients using a catheter.')),
+    (('uses_permanent_catheter',), 'accepts_permanent_catheter', _('Clinic does not accept patients using a permanent catheter.')),
+    (('uses_intermittent_catheter',), 'accepts_intermittent_catheter', _('Clinic does not accept patients using an intermittent catheter.')),
     (('uses_wheelchair',), 'accepts_wheelchair', _('Clinic does not accept patients using a wheelchair.')),
     (('uses_walker',), 'accepts_walker', _('Clinic does not accept patients using a walker.')),
     (('uses_crutch',), 'accepts_crutch', _('Clinic does not accept patients using crutches.')),
