@@ -310,6 +310,46 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
+        .login-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+            animation: loginGlow 2.4s ease-in-out infinite;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .login-cta:hover {
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(99, 102, 241, 0.35);
+        }
+
+        .login-cta:focus-visible {
+            outline: 3px solid rgba(59, 130, 246, 0.3);
+            outline-offset: 3px;
+        }
+
+        @keyframes loginGlow {
+            50% {
+                box-shadow: 0 0 16px rgba(99, 102, 241, 0.42);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .login-cta {
+                animation: none;
+            }
+        }
+
         /* Avatar Dropdown */
         .avatar-dropdown {
             display: none;
@@ -1375,6 +1415,7 @@
 
             <!-- User Menu - CLINIC VERSION -->
             <div class="user-menu">
+                {% if request.user.is_authenticated %}
                 <button id="avatarBtn" aria-haspopup="true" aria-expanded="false" style="background:transparent;border:none;padding:0;cursor:pointer;">
                     {% if current_clinic.has_custom_avatar %}
                     <img src="{{ current_clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
@@ -1407,6 +1448,12 @@
                         </li>
                     </ul>
                 </div>
+                {% else %}
+                <a href="{% url 'login' %}" class="login-cta">
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                    <span>{% trans "Login" %}</span>
+                </a>
+                {% endif %}
             </div>
         </div>
     </header>
