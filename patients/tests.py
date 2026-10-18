@@ -99,9 +99,9 @@ class SearchClinicsPageTests(TestCase):
 
 
 class PatientPendingAppointmentsTests(TestCase):
-    """Fresh (pending) requests must be visible on the patient appointments
-    page — otherwise the patient can never submit booking details while the
-    clinic side says 'Awaiting patient response'."""
+    """Fresh (pending) requests must NOT be visible on the patient appointments
+    page — they are excluded by default, and only visible when explicitly filtered
+    if the user chooses to show them."""
 
     def setUp(self):
         self.user = User.objects.create_user('booker', 'booker@example.com', 'pw-test-12345', user_type='patient')
@@ -118,18 +118,16 @@ class PatientPendingAppointmentsTests(TestCase):
         )
         self.client.force_login(self.user)
 
-    def test_pending_appointment_is_listed(self):
+    def test_pending_appointment_is_not_listed_by_default(self):
         response = self.client.get(reverse('patient_appointments'))
         self.assertEqual(response.status_code, 200)
-        self.assertIn(self.appointment, list(response.context['appointments']))
-        self.assertContains(response, 'submit-booking-details')
+        self.assertNotIn(self.appointment, list(response.context['appointments']))
+        self.assertNotContains(response, 'submit-booking-details')
 
     def test_pending_status_filter_option_exists(self):
         response = self.client.get(reverse('patient_appointments'))
         values = [f['value'] for f in response.context['status_filters']]
-        self.assertIn('pending', values)
-        filtered = self.client.get(reverse('patient_appointments'), {'status': 'pending'})
-        self.assertIn(self.appointment, list(filtered.context['appointments']))
+        self.assertNotIn('pending', values)
 
 
 class AppointmentActionModalTests(TestCase):
