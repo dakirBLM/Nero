@@ -312,40 +312,30 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 16px;
-            border: 1px solid rgba(59, 130, 246, 0.35);
+            height: 42px;
+            padding: 0 14px;
             border-radius: 999px;
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            color: white;
+            background: #f8fafc;
+            color: #6b7280;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
+            line-height: 1;
             text-decoration: none;
-            box-shadow: 0 0 0 rgba(59, 130, 246, 0);
-            animation: loginGlow 2.4s ease-in-out infinite;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease-out;
         }
 
         .login-cta:hover {
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 5px 18px rgba(99, 102, 241, 0.35);
+            background: #f3f4f6;
+            color: #3b82f6;
+        }
+
+        .login-cta:active {
+            transform: scale(0.97);
         }
 
         .login-cta:focus-visible {
-            outline: 3px solid rgba(59, 130, 246, 0.3);
-            outline-offset: 3px;
-        }
-
-        @keyframes loginGlow {
-            50% {
-                box-shadow: 0 0 16px rgba(99, 102, 241, 0.42);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .login-cta {
-                animation: none;
-            }
+            outline: 2px solid #93c5fd;
+            outline-offset: 2px;
         }
 
         /* Avatar Dropdown */
