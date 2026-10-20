@@ -146,6 +146,7 @@ class AppointmentActionModalTests(TestCase):
         )
         self.appointment = Appointment.objects.create(
             patient=self.patient, clinic=clinic, medical_record=self.record,
+            status='waiting_for_payment',
         )
         self.client.force_login(self.user)
 
