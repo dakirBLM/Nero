@@ -1,6 +1,4 @@
 # ── Secrets & data — NEVER commit ─────────────────────────────
-.env
-.env.*
 !.env.example
 db.sqlite3
 db.sqlite3-journal
@@ -63,3 +61,5 @@ static/Disney*
 static/ -*.jpg
 .gitignore
 branch_structure.json
+config.bat
+node_modules
