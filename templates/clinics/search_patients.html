@@ -909,6 +909,7 @@
             [dir="rtl"] .user-menu{padding-left:0;padding-right:8px}
         }
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header - Exact Match with Dashboard -->
@@ -1006,7 +1007,7 @@
                     </div>
                     <div class="profile-info">
                         <h3>{% if patient and patient.user.username %}{{ patient.user.username }}{% elif request.user.is_authenticated %}{{ request.user.username }}{% else %}{% trans "NERO User" %}{% endif %}</h3>
-                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient and patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        {% if patient and patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
@@ -1097,13 +1098,7 @@
                                 {% endif %}
                                 <div class="patient-info">
                                     <h3>{{ patient.full_name }}</h3>
-                                    <p>
-                                        <i class="fas fa-user-injured"></i>
-                                        {% trans "Patient" %}
-                                        {% if patient.city %}
-                                            • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}
-                                        {% endif %}
-                                    </p>
+                                    {% if patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                                 </div>
                             </div>
                             
@@ -1171,13 +1166,7 @@
                                 {% endif %}
                                 <div class="patient-info">
                                     <h3>{{ a.patient.full_name }}</h3>
-                                    <p>
-                                        <i class="fas fa-user-injured"></i>
-                                        {% trans "Patient" %}
-                                        {% if a.patient.city %}
-                                            • <i class="fas fa-map-marker-alt"></i> {{ a.patient.city }}
-                                        {% endif %}
-                                    </p>
+                                    {% if a.patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ a.patient.city }}</p>{% endif %}
                                 </div>
                             </div>
                             

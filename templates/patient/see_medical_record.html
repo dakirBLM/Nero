@@ -731,6 +731,7 @@
         [dir="rtl"] .info-value{text-align:left}
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header -->
@@ -752,11 +753,7 @@
                     {% endif %}
                     <div class="profile-info">
                         <h3>{{ patient.full_name }}</h3>
-                        <p>{% trans "Patient" %} • {% trans "Location: Hidden" %}</p>
                     </div>
-                </div>
-                <div style="font-size: 14px; color: #6b7280; line-height: 1.4;">
-                    {{ patient.bio|default:_("Welcome to NERO! Manage your medical records securely.") }}
                 </div>
             </div>
 

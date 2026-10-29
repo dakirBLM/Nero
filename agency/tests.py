@@ -125,10 +125,10 @@ class AgencyDashboardTests(TestCase):
         self.assertNotContains(response, 'Message Patient')
         self.assertContains(response, reverse('agency_update_appointment_status', args=[self.clinic_a.id, self.pending.id]))
 
-    def test_accepted_card_offers_send_details_instead_of_payment(self):
+    def test_accepted_card_offers_send_details_and_payment(self):
         response = self.client.get(reverse('agency_clinic_appointments', args=[self.clinic_b.id]))
         self.assertContains(response, reverse('agency_send_patient_details', args=[self.clinic_b.id, self.accepted.id]))
-        self.assertNotContains(response, reverse('agency_set_payment_amount', args=[self.clinic_b.id, self.accepted.id]))
+        self.assertContains(response, reverse('agency_set_payment_amount', args=[self.clinic_b.id, self.accepted.id]))
         self.assertContains(response, 'value="beta@example.com"')
 
     def test_agency_can_accept_medical_record_for_a_clinic(self):
