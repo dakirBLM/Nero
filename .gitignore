@@ -1,6 +1,4 @@
 # ── Secrets & data — NEVER commit ─────────────────────────────
-.env
-.env.*
 !.env.example
 db.sqlite3
 db.sqlite3-journal
@@ -42,7 +40,6 @@ htmlcov/
 .Spotlight-V100
 .Trashes
 Thumbs.db
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -61,3 +58,5 @@ static/Hopper*
 static/Hoppers*
 static/Disney*
 static/ -*.jpg
+config.bat
+node_modules

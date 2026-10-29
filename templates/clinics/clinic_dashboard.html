@@ -1385,6 +1385,7 @@
         }
         {% include 'includes/search_bar_styles.html' %}
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header - EXACT SAME AS PATIENT DASHBOARD -->
@@ -1853,8 +1854,8 @@
                         {% if patient.has_custom_avatar %}
                             <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}" class="patient-avatar">
                         {% else %}
-                            <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
-                                <i class="fas fa-user"></i>
+                            <div class="patient-avatar">
+                                {{ patient.full_name|first|upper }}
                             </div>
                         {% endif %}
                         <div class="patient-info" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;">
@@ -1878,7 +1879,7 @@
             <!-- Medical Community - EXACT SAME -->
             <div class="community-card">
                 <h3 class="community-title">
-                    <i class="fas fa-heartbeat"></i>
+                    <i class="fas fa-user-group"></i>
                     Active Community
                 </h3>
                 <div class="community-members">
@@ -1889,8 +1890,8 @@
                                 {% if patient.has_custom_avatar %}
                                     <img src="{{ patient.avatar_url }}" class="member-avatar" alt="{{ patient.full_name }}">
                                 {% else %}
-                                    <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                        {{ patient.full_name|slice:":2"|upper }}
+                                    <div class="member-avatar">
+                                        {{ patient.full_name|slice:":1"|upper }}
                                     </div>
                                 {% endif %}
                                 <div class="online-dot"></div>
@@ -1908,8 +1909,8 @@
                                 {% if clinic.has_custom_avatar %}
                                     <img src="{{ clinic.avatar_url }}" class="member-avatar" alt="{{ clinic.clinic_name }}">
                                 {% else %}
-                                    <div class="member-avatar" style="background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                        {{ clinic.clinic_name|slice:":2"|upper }}
+                                    <div class="member-avatar">
+                                        {{ clinic.clinic_name|slice:":1"|upper }}
                                     </div>
                                 {% endif %}
                                 <div class="online-dot"></div>

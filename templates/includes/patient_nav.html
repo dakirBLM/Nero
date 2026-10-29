@@ -22,6 +22,15 @@
 .pnav .nav-icon{width:40px !important;height:40px !important;flex-shrink:0}
 /* menu icon (mobile only, shown when the page has side sections) */
 .pnav .nav-icon.pnav-menu-icon{display:none;border:none;background:#f3f4f6;cursor:pointer;font-family:inherit}
+.pnav .nav-icon.pnav-lang{border:none;background:#f3f4f6;cursor:pointer;color:#3a3a3c;padding:0;font-family:inherit}
+.pnav-lang-wrap{position:relative;display:flex}
+.pnav-lang-mark{font-size:13px;font-weight:650;letter-spacing:-0.06em;line-height:1}
+.pnav-lang-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:168px;margin:0;padding:6px;background:#fff;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.12);z-index:3000}
+.pnav-lang-menu.open{display:block}
+.pnav-lang-menu button{display:flex;align-items:center;width:100%;margin:0;padding:8px 12px;border:0;border-radius:8px;background:transparent;color:#1c1c1e;font-family:inherit;font-size:15px;font-weight:500;letter-spacing:-0.01em;text-align:start;cursor:pointer}
+.pnav-lang-menu button.is-current{color:#007aff;font-weight:600}
+.pnav-lang-menu button:hover{background:#f2f2f7}
+[dir="rtl"] .pnav-lang-menu{right:auto;left:0}
 @media (max-width:1024px){
   .pnav .nav-icon.pnav-menu-icon.has-sidebar{display:flex}
   /* both side sections (left menu + "Clinics You May Like"/"Active Community") hide behind the menu icon */
@@ -58,10 +67,10 @@
 <header class="main-header">
     <div class="header-container pnav">
         <!-- Logo -->
-        <div class="logo-container">
+        <a href="{% url 'patient_dashboard' %}" class="logo-container" title="{% trans 'Home' %}">
             <div class="logo-gradient" role="img" aria-label="NERO Logo"></div>
             <img src="{% static 'logo1.png' %}" class="logo logo-fallback" alt="NERO Logo">
-        </div>
+        </a>
 
         <!-- Search Bar -->
         <div class="search-container">
@@ -79,28 +88,20 @@
             <a href="{% url 'patient_dashboard' %}" class="nav-icon{% if active == 'dashboard' %} active{% endif %}" title="{% trans 'Home' %}">
                 <i class="fas fa-home"></i>
             </a>
-            <a href="{% url 'chat_room_list_patient' %}" class="nav-icon{% if active == 'chat' %} active{% endif %}" title="{% trans 'Messages' %}">
-                <i class="fas fa-comment-alt"></i>
-                {% if total_unread and total_unread > 0 %}<div class="notification-badge">{{ total_unread }}</div>{% endif %}
-            </a>
-            <a href="{% url 'search_clinics' %}" class="nav-icon{% if active == 'search' %} active{% endif %}" title="{% trans 'Find clinics' %}">
-                <i class="fas fa-search"></i>
-            </a>
-            <a href="{% url 'patient_appointments' %}" class="nav-icon{% if active == 'appointments' %} active{% endif %}" title="{% trans 'Appointments' %}">
-                <i class="fas fa-calendar-alt"></i>
-            </a>
             <a href="{% url 'patient_settings' %}" class="nav-icon{% if active == 'settings' %} active{% endif %}" title="{% trans 'Account Settings' %}">
                 <i class="fas fa-cog"></i>
             </a>
-            <a href="{% url 'logout' %}" class="nav-icon" title="{% trans 'Logout' %}">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
             {% get_current_language as LANGUAGE_CODE %}
-            <form action="{% url 'set_language' %}" method="post" style="display:flex;margin:0">{% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                <input type="hidden" name="language" value="{% if LANGUAGE_CODE == 'ar' %}en{% else %}ar{% endif %}">
-                <button type="submit" class="nav-icon pnav-lang" title="{% trans 'Switch language' %}" style="border:none;background:#f3f4f6;cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;color:#374151">{% if LANGUAGE_CODE == 'ar' %}EN{% else %}ع{% endif %}</button>
-            </form>
+            <div class="pnav-lang-wrap">
+                <button type="button" class="nav-icon pnav-lang" id="pnavLangBtn" title="{% trans 'Language' %}" aria-label="{% trans 'Language' %}" aria-haspopup="true" aria-expanded="false">
+                    <span class="pnav-lang-mark" aria-hidden="true">A文</span>
+                </button>
+                <form class="pnav-lang-menu" id="pnavLangMenu" action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" name="language" value="en"{% if LANGUAGE_CODE == 'en' %} class="is-current"{% endif %}>English</button>
+                    <button type="submit" name="language" value="ar"{% if LANGUAGE_CODE == 'ar' %} class="is-current"{% endif %}>العربية</button>
+                </form>
+            </div>
         </div>
     </div>
 </header>
@@ -120,6 +121,27 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+(function(){
+  var btn = document.getElementById('pnavLangBtn');
+  var menu = document.getElementById('pnavLangMenu');
+  if (!btn || !menu) return;
+  function close(){
+    menu.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = !menu.classList.contains('open');
+    menu.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function(e){
+    if (!menu.contains(e.target)) close();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') close();
+  });
 })();
 </script>
 

@@ -1160,6 +1160,7 @@
         .agency-inline-form .form-control { flex: 1; min-width: 0; }
         .agency-inline-form .btn { white-space: nowrap; }
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     {% if agency_mode %}
@@ -1705,8 +1706,9 @@
                                         </div>
                                 </div>
 
-                                <!-- 5a. Accepted (agency): email the patient file to the clinic instead of payment -->
-                                {% elif appointment.status == 'accepted_record_accepted_accommodation' and agency_mode %}
+                                <!-- 5. Accepted: set payment. Agency can also email the patient file. -->
+                                {% elif appointment.status == 'accepted_record_accepted_accommodation' %}
+                                {% if agency_mode %}
                                 <div class="action-section" style="background:#ecfeff;border-color:#67e8f9;">
                                     <div class="action-section-title" style="color:#155e75;">
                                         <span class="action-badge" style="background:#cffafe;color:#155e75;"><i class="fas fa-paper-plane" style="font-size:10px;"></i></span>
@@ -1731,9 +1733,7 @@
                                         </p>
                                     </form>
                                 </div>
-
-                                <!-- 5. Accepted: clinic sets payment amount -->
-                                {% elif appointment.status == 'accepted_record_accepted_accommodation' %}
+                                {% endif %}
                                 <div class="action-section" style="background:#fffbeb;border-color:#fcd34d;">
                                     <div class="action-section-title" style="color:#92400e;">
                                         <span class="action-badge action-badge-warn">$</span>

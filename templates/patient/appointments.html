@@ -1302,6 +1302,7 @@
             [dir="rtl"] .search-bar { padding: 8px 38px 8px 12px; }
         }
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header -->
@@ -1325,7 +1326,7 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        {% if patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">

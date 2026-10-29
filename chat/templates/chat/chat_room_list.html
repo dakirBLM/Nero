@@ -1015,6 +1015,7 @@
         [dir="rtl"] .chat-room-card.unread{border-left:1px solid #f1f5f9;border-right:4px solid #3b82f6}
         [dir="rtl"] .time-ago{margin-left:0;margin-right:auto}
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
@@ -1038,7 +1039,7 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        {% if patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                     </div>
                 </div>
                 <div style="font-size: 14px; color: #6b7280; line-height: 1.4; padding-top: 12px; border-top: 1px solid #f1f5f9;">
@@ -1107,7 +1108,7 @@
             </div>
 
             <!-- Chat Search -->
-            <div style="position: relative;">
+            <div class="chat-search-wrap">
                 <i class="fas fa-search chat-search-icon"></i>
                 <input type="text" class="chat-search" placeholder="{% trans 'Search conversations...' %}" id="chatSearch">
             </div>

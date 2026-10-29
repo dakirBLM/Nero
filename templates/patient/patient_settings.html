@@ -408,6 +408,22 @@
             gap: 8px;
         }
 
+        .settings-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 28px;
+            color: #ff3b30;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+        }
+
+        .settings-logout:hover {
+            color: #d70015;
+        }
+
         .section-heading:first-child {
             margin-top: 0;
         }
@@ -846,6 +862,7 @@
         }
     </style>
     {% include 'includes/intl_phone_assets.html' %}
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header (Identical to Dashboard) -->
@@ -965,7 +982,11 @@
                     </button>
                 </div>
             </form>
-            
+
+            <a class="settings-logout" href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i> {% trans "Log out" %}
+            </a>
+
             <a class="back-link" href="{% url 'patient_dashboard' %}">
                 <i class="fas fa-arrow-left"></i> {% trans "Back to Dashboard" %}
             </a>

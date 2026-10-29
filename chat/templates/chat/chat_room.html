@@ -1127,6 +1127,7 @@
         [dir="rtl"] .message.received .message-content{border-bottom-left-radius:18px;border-bottom-right-radius:4px}
         [dir="rtl"] .message.sent .message-time{text-align:left}
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
     <!-- Main Header - UPDATED TO MATCH DASHBOARD -->
@@ -1157,7 +1158,7 @@
                             </div>
                             <div class="profile-info">
                                 <h3>{{ patient.user.username }}</h3>
-                                <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                                {% if patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                             </div>
                         {% elif request.user.user_type == 'clinic' %}
                             <div class="avatar-wrap">

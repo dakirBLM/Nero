@@ -499,7 +499,7 @@
     .music-toggle.playing .music-icon{ color:white; animation:musicBounce 0.6s ease-in-out infinite; }
     @keyframes musicBounce{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.2);} }
     </style>
-    <link rel="stylesheet" href="/static/styles.css">
+    {% include 'includes/premium_css.html' %}
 </head>
 <body>
     {% block content %}{% endblock %}

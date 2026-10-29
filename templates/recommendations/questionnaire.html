@@ -940,6 +940,7 @@
         [dir="rtl"] .record-card:hover,[dir="rtl"] .results-list li a:hover{transform:translateX(-3px)}
         [dir="rtl"] .btn .fa-arrow-right,[dir="rtl"] .btn .fa-arrow-left{transform:scaleX(-1)}
     </style>
+{% include 'includes/premium_css.html' %}
 </head>
 <body>
 
@@ -963,7 +964,7 @@
                     </div>
                     <div class="profile-info">
                         <h3>{{ patient.user.username }}</h3>
-                        <p><i class="fas fa-user-injured"></i> {% trans "Patient" %}{% if patient.city %} • <i class="fas fa-map-marker-alt"></i> {{ patient.city }}{% endif %}</p>
+                        {% if patient.city %}<p><i class="fas fa-map-marker-alt"></i> {{ patient.city }}</p>{% endif %}
                     </div>
                 </div>
                 <div style="font-size:14px;color:#6b7280;line-height:1.4;padding-top:12px;border-top:1px solid #f1f5f9;">
@@ -1358,7 +1359,6 @@
                                        return { icon:'fas fa-bone',            color:'#f59e0b', bg:'#fffbeb' };
         if (n.includes('cardio') || n.includes('heart'))
                                        return { icon:'fas fa-heart-pulse',     color:'#ef4444', bg:'#fef2f2' };
-        if (n.includes('neuro'))       return { icon:'fas fa-brain',           color:'#8b5cf6', bg:'#f5f3ff' };
         if (n.includes('oncol') || n.includes('cancer'))
                                        return { icon:'fas fa-ribbon',          color:'#ec4899', bg:'#fdf2f8' };
         if (n.includes('dent'))        return { icon:'fas fa-tooth',           color:'#06b6d4', bg:'#ecfeff' };
