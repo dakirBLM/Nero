@@ -2788,6 +2788,36 @@ msgstr ""
 "صِف العلاج الذي تحتاجه — كلما زادت التفاصيل، كانت المطابقة أفضل. ثم اضغط "
 "«البحث عن العيادات المطابقة» وسأتولى الباقي!"
 
+msgid "Upcoming Appointment"
+msgstr "الموعد القادم"
+
+msgid "Coming soon"
+msgstr "قريبًا"
+
+msgid "No appointment scheduled yet."
+msgstr "لا يوجد موعد مجدول بعد."
+
+msgid "Notifications"
+msgstr "الإشعارات"
+
+msgid "New on NERO: track your recovery"
+msgstr "جديد على نيرو: تتبّع تعافيك"
+
+msgid "Note how you feel after each session and watch your progress grow week by week."
+msgstr "دوّن شعورك بعد كل جلسة، وشاهد تقدّمك يزداد أسبوعًا بعد أسبوع."
+
+msgid "Clinic replied to your request"
+msgstr "ردّت العيادة على طلبك"
+
+msgid "A clinic reviewed your case and proposed a first assessment."
+msgstr "راجعت إحدى العيادات حالتك واقترحت تقييمًا أوليًا."
+
+msgid "Session reminder"
+msgstr "تذكير بالجلسة"
+
+msgid "Your next visit will show here once a clinic confirms a date."
+msgstr "ستظهر زيارتك القادمة هنا بعد أن تؤكد العيادة الموعد."
+
 #~ msgid "seconds until home"
 #~ msgstr "ثوانٍ للعودة إلى الصفحة الرئيسية"
 

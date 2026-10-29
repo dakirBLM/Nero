@@ -1,0 +1,1364 @@
+/* Shared premium touch. Loaded last so it sits on top of each page. */
+
+html {
+  color-scheme: light;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+.section-title,
+.feed-title,
+.clinic-info h1 {
+  letter-spacing: -0.022em;
+  line-height: 1.12;
+}
+
+.main-header {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.nav-icon,
+.nav-item,
+.btn,
+button,
+.post-btn,
+.media-btn {
+  transition: transform 100ms ease-out, background-color 100ms ease-out, color 100ms ease-out;
+}
+
+.nav-icon:active,
+.nav-item:active,
+.btn:active,
+button:active,
+.post-btn:active,
+.media-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-icon:focus-visible,
+.nav-item:focus-visible,
+.btn:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+.nav-icon {
+  color: #3a3a3c;
+}
+
+.nav-icon:hover {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.nav-icon.active {
+  background: #007aff !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.nav-icon i,
+.nav-icon .fas,
+.nav-icon .far,
+.nav-icon .fa-solid,
+.nav-item i,
+.nav-item .fas,
+.nav-item .far,
+.sidebar-nav i,
+.btn i,
+button i {
+  display: inline-block;
+  width: 1.15em;
+  font-size: 1em;
+  line-height: 1;
+  text-align: center;
+  vertical-align: -0.08em;
+}
+
+.nav-badge {
+  background: #007aff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .main-header {
+    background: #fff !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-icon:active,
+  .nav-item:active,
+  .btn:active,
+  button:active,
+  .post-btn:active,
+  .media-btn:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .main-header {
+    background: #fff !important;
+    border-bottom: 1px solid #1c1c1e !important;
+  }
+}
+
+/* The rainbow strip and blue banners read as generated chrome. Remove them. */
+
+.page-header::before,
+.form-header::before,
+.profile-card::before,
+.content-card::before,
+.main-content::before,
+.success-header::before,
+.clinic-card::before {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.form-container,
+.filters-container,
+.record-card,
+.step-card,
+.progress-wrap,
+.appointment-card {
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.page-header {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 4px 2px 8px !important;
+}
+
+.page-title,
+.form-header-content h1 {
+  color: #1c1c1e !important;
+  font-size: 34px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.08 !important;
+}
+
+.step-title {
+  color: #1c1c1e !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.022em !important;
+  line-height: 1.15 !important;
+}
+
+.page-subtitle,
+.form-header-content p,
+.step-description {
+  color: #6e6e73 !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.011em !important;
+  line-height: 1.35 !important;
+  opacity: 1 !important;
+}
+
+.form-label,
+.filters-title,
+.step-label {
+  color: #1c1c1e !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.008em !important;
+  line-height: 1.2 !important;
+}
+
+.form-label .required {
+  color: #ff3b30 !important;
+  font-weight: 600 !important;
+}
+
+.form-header {
+  background: #fff !important;
+  color: #1c1c1e !important;
+  padding: 28px 28px 4px !important;
+}
+
+.page-title .icon-box {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: #f2f2f7 !important;
+  color: #007aff !important;
+  font-size: 15px !important;
+}
+
+.form-label > i,
+.step-title > i,
+.page-title > i,
+.filters-title > i {
+  display: none !important;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-content input,
+.form-content select,
+.form-content textarea,
+.step-card input,
+.step-card select,
+.step-card textarea {
+  border: 1px solid #d1d1d6 !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  color: #1c1c1e !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.022em !important;
+  line-height: 1.3 !important;
+  min-height: 44px !important;
+}
+
+.progress-steps::before {
+  background: #e5e5ea !important;
+}
+
+.progress-bar,
+.form-progress .progress-bar {
+  background: #007aff !important;
+}
+
+.step-icon,
+.step-circle {
+  background: #f2f2f7 !important;
+  color: #8e8e93 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.step-icon.active,
+.step-circle.active,
+.progress-step.active .step-circle,
+.progress-step.active .step-icon {
+  background: #007aff !important;
+  color: #fff !important;
+  transform: none !important;
+}
+
+.step-icon.completed,
+.progress-step.done .step-circle {
+  background: #007aff !important;
+  color: #fff !important;
+}
+
+.filter-btn {
+  border: 0 !important;
+  border-radius: 980px !important;
+  background: #f2f2f7 !important;
+  color: #3a3a3c !important;
+  box-shadow: none !important;
+}
+
+.filter-btn:hover {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  border-color: transparent !important;
+  transform: none !important;
+}
+
+.filter-btn.active {
+  background: #007aff !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.action-btn,
+.action-btn.view,
+.action-btn.edit,
+.action-btn.download {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.action-btn:hover,
+.action-btn.view:hover,
+.action-btn.edit:hover,
+.action-btn.download:hover {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  transform: none !important;
+}
+
+.action-btn.delete {
+  background: transparent !important;
+  color: #ff3b30 !important;
+  border: 0 !important;
+}
+
+.action-btn.delete:hover {
+  background: #fff2f1 !important;
+  color: #ff3b30 !important;
+  transform: none !important;
+}
+
+.record-card:hover,
+.chat-room-card:hover,
+.appointment-card:hover {
+  transform: none !important;
+}
+
+/* Sidebar: one definition. Every page copy-pasted this block and drifted
+   (glow rings on some pages, a flat active state on one, a sweep animation
+   on another). Force the same look everywhere. */
+
+.profile-card {
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  padding: 20px !important;
+}
+
+.profile-card > div:has(> .fa-quote-left) {
+  display: none !important;
+}
+
+.avatar-wrap::before,
+.avatar-wrap::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.nav-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 2px 8px !important;
+  padding: 10px 12px !important;
+  border-left: 0 !important;
+  border-radius: 10px !important;
+  color: #3a3a3c !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.nav-item:hover {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  padding-left: 12px !important;
+  transform: none !important;
+}
+
+.nav-item.active,
+.nav-item.smart-rec.active {
+  background: #007aff !important;
+  color: #fff !important;
+  border-left: 0 !important;
+  font-weight: 600 !important;
+}
+
+.nav-item.active::after,
+.nav-item.smart-rec.active::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.nav-item i,
+.nav-item .brain-icon i {
+  color: inherit !important;
+  animation: none !important;
+}
+
+.nav-badge {
+  margin-left: auto !important;
+}
+
+/* Messages: one list, not a stack of gradient cards. */
+
+.chat-rooms-container {
+  gap: 0 !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.chat-room-card,
+.chat-room-card.unread {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.18) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.chat-room-card:hover,
+.chat-room-card.unread:hover {
+  background: #f2f2f7 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.chat-avatar,
+.avatar-placeholder {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.chat-title {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 1px !important;
+  margin: 0 !important;
+  color: #1c1c1e !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.022em !important;
+  line-height: 1.2 !important;
+}
+
+.chat-type,
+.chat-type.patient,
+.chat-type.clinic {
+  display: none !important;
+}
+
+.chat-type i {
+  display: none !important;
+}
+
+.chat-meta,
+.time-ago {
+  color: #8e8e93 !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.006em !important;
+}
+
+.chat-meta i {
+  display: none !important;
+}
+
+.unread-badge {
+  width: auto !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  padding: 0 6px !important;
+  background: #007aff !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  animation: none !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.chat-search {
+  background: rgba(118, 118, 128, 0.12) !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  color: #1c1c1e !important;
+  font-size: 17px !important;
+  letter-spacing: -0.022em !important;
+  box-shadow: none !important;
+}
+
+.chat-search:focus {
+  border: 0 !important;
+  background: rgba(118, 118, 128, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.chat-header::before {
+  display: none !important;
+  content: none !important;
+}
+
+.chat-header {
+  background: rgba(255, 255, 255, 0.86) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.18) !important;
+}
+
+.message-content {
+  box-shadow: none !important;
+  letter-spacing: -0.011em !important;
+  line-height: 1.35 !important;
+}
+
+.message.sent .message-content {
+  background: #007aff !important;
+  color: #fff !important;
+}
+
+.message.received .message-content {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  border: 0 !important;
+}
+
+/* Buttons. Each page still paints its own gradient. One set replaces that. */
+
+.btn-primary,
+.post-btn,
+a.btn-primary,
+button.btn-primary {
+  background: #007aff !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover,
+.post-btn:hover,
+a.btn-primary:hover,
+button.btn-primary:hover {
+  background: #0066d6 !important;
+  color: #fff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:disabled,
+.btn-primary:disabled:hover {
+  background: #d1d1d6 !important;
+  color: #fff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary,
+.btn-ghost {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-secondary:hover,
+.btn-ghost:hover {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-text {
+  background: transparent !important;
+  color: #007aff !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-text:hover {
+  background: transparent !important;
+  color: #0066d6 !important;
+  transform: none !important;
+}
+
+.btn-success {
+  background: #007aff !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-success:hover {
+  background: #0066d6 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-danger,
+.delete-btn {
+  background: transparent !important;
+  color: #ff3b30 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.btn-danger:hover,
+.delete-btn:hover {
+  background: #fff2f1 !important;
+  color: #ff3b30 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.delete-btn.edit-description-toggle {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+}
+
+button[style*="linear-gradient"] {
+  background: #007aff !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Right-rail cards and clinic media. One gray, no gradient tiles. */
+
+.suggestions-title i {
+  color: #007aff !important;
+}
+
+.community-title i {
+  color: #34c759 !important;
+}
+
+.clinic-avatar,
+.patient-avatar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: #e8f2ff !important;
+  color: #007aff !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+
+.member-avatar,
+.update-avatar,
+.user-avatar,
+.profile-avatar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #007aff !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+
+img.clinic-avatar,
+img.member-avatar,
+img.patient-avatar,
+img.update-avatar,
+img.user-avatar,
+img.profile-avatar {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  object-fit: cover !important;
+}
+
+.clinic-card,
+.member-item,
+.patient-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.clinic-card:hover,
+.member-item:hover,
+.patient-card:hover {
+  background: #f2f2f7 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.service-icon {
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  box-shadow: none !important;
+}
+
+.service-icon.has-photo {
+  background: #f2f2f7 !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+}
+
+.gallery-item {
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.gallery-item:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.social-link,
+.social-link.facebook,
+.social-link.instagram,
+.social-link.linkedin,
+.detail-value a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  background: #f2f2f7 !important;
+  color: #1c1c1e !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  text-decoration: none !important;
+}
+
+.social-link:hover,
+.detail-value a:hover {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  transform: none !important;
+}
+
+.update-card,
+.post-card {
+  transition: none !important;
+  animation: none !important;
+}
+
+.update-card:hover,
+.post-card:hover {
+  transform: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  background: #fff !important;
+}
+
+/* Sidebar profile: photo, name, city. Keep it short. */
+.profile-card {
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+}
+
+.profile-header {
+  margin-bottom: 0 !important;
+  gap: 12px !important;
+}
+
+.profile-avatar,
+div.profile-avatar {
+  width: 52px !important;
+  height: 52px !important;
+  font-size: 20px !important;
+}
+
+.profile-info h3 {
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.profile-info p {
+  margin: 2px 0 0 !important;
+  font-size: 12px !important;
+}
+
+/* Messages: the search glyph was centered on the field plus its bottom margin. */
+.chat-search-wrap {
+  position: relative;
+  margin: 0 0 12px;
+}
+
+.chat-search-wrap .chat-search {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 44px !important;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.chat-search-wrap .chat-search-icon {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 14px !important;
+  right: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  transform: none !important;
+}
+
+[dir="rtl"] .chat-search-wrap .chat-search-icon {
+  left: auto !important;
+  right: 14px !important;
+}
+
+/* Find Patients: one list, not a grid of gradient cards. */
+.search-form-container {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.search-form {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+  border-radius: 12px !important;
+  padding: 4px 4px 4px 14px !important;
+}
+
+.search-input {
+  flex: 1 !important;
+  height: 36px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 17px !important;
+  letter-spacing: -0.022em !important;
+  color: #1c1c1e !important;
+}
+
+.search-input:focus {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.search-btn {
+  height: 32px !important;
+  padding: 0 12px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: #007aff !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.search-btn:hover {
+  background: #0071e3 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.patients-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+.patients-grid .patient-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.12) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 12px 16px !important;
+  transform: none !important;
+}
+
+.patients-grid .patient-card:last-child {
+  border-bottom: 0 !important;
+}
+
+.patients-grid .patient-card:hover {
+  background: #f2f2f7 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.patients-grid .patient-header {
+  gap: 12px !important;
+  margin: 0 !important;
+}
+
+.patients-grid .patient-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: 50% !important;
+  border: 0 !important;
+  font-size: 16px !important;
+}
+
+.patients-grid .patient-info h3 {
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.patients-grid .patient-info p {
+  margin: 2px 0 0 !important;
+  font-size: 13px !important;
+  color: #6e6e73 !important;
+}
+
+.patients-grid .patient-details {
+  gap: 2px !important;
+  margin: 0 !important;
+  padding-left: 52px !important;
+  font-size: 13px !important;
+  color: #6e6e73 !important;
+}
+
+.patients-grid .patient-details i,
+.patients-grid .patient-info .fa-user-injured {
+  display: none !important;
+}
+
+.patients-grid .patient-actions {
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 2px 0 0 52px !important;
+  gap: 16px !important;
+}
+
+.patients-grid .btn,
+.patients-grid .btn-chat,
+.patients-grid .btn-secondary {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  color: #007aff !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  transform: none !important;
+}
+
+.patients-grid .btn-secondary {
+  color: #3a3a3c !important;
+}
+
+[dir="rtl"] .patients-grid .patient-details,
+[dir="rtl"] .patients-grid .patient-actions {
+  padding-left: 0 !important;
+  padding-right: 52px !important;
+}
+
+/* Medical records: text actions, not a row of large buttons. */
+.record-card {
+  padding: 16px 18px !important;
+  gap: 8px !important;
+}
+
+.record-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px 16px !important;
+  margin: 0 !important;
+  padding: 2px 0 0 !important;
+  border: 0 !important;
+}
+
+.record-card .action-btn,
+.record-card .action-btn.view,
+.record-card .action-btn.edit,
+.record-card .action-btn.download,
+.record-card .action-btn.delete {
+  flex: none !important;
+  width: auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 2px 0 !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  transform: none !important;
+}
+
+.record-card .action-btn.view,
+.record-card .action-btn.edit,
+.record-card .action-btn.download {
+  color: #007aff !important;
+}
+
+.record-card .action-btn.delete {
+  color: #ff3b30 !important;
+}
+
+.record-card .action-btn:hover,
+.record-card .action-btn.view:hover,
+.record-card .action-btn.edit:hover,
+.record-card .action-btn.download:hover {
+  background: transparent !important;
+  color: #0071e3 !important;
+  transform: none !important;
+}
+
+.record-card .action-btn.delete:hover {
+  background: transparent !important;
+  color: #d70015 !important;
+}
+
+.page-title-container .btn,
+.page-title-container .btn-secondary {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: #007aff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  transform: none !important;
+}
+
+.page-title-container .btn:hover,
+.page-title-container .btn-secondary:hover {
+  background: transparent !important;
+  color: #0071e3 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* King George: same quiet chrome as the rest of the app. */
+.nero-fab {
+  font-family: inherit !important;
+}
+
+.nero-chat-window {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12) !important;
+  font-family: inherit !important;
+}
+
+.nero-chat-header {
+  padding: 12px 12px 12px 14px !important;
+  background: #f2f2f7 !important;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.12) !important;
+}
+
+.header-orb {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 2px !important;
+  background: #fff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.header-text strong {
+  color: #1c1c1e !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.header-status {
+  color: #6e6e73 !important;
+  font-size: 12px !important;
+}
+
+.header-status::before {
+  background: #34c759 !important;
+  box-shadow: none !important;
+}
+
+.close-btn {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+}
+
+.close-btn:hover {
+  background: #d1d1d6 !important;
+}
+
+.nero-chat-msgs {
+  background: #fff !important;
+  padding: 14px 14px 8px !important;
+}
+
+.msg {
+  animation: none !important;
+  font-size: 15px !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: none !important;
+}
+
+.msg.ai,
+.msg.thinking {
+  background: #e5e5ea !important;
+  color: #1c1c1e !important;
+  font-style: normal !important;
+}
+
+.msg.user {
+  background: #007aff !important;
+  color: #fff !important;
+}
+
+.nero-chat-input-row {
+  background: #fff !important;
+  border-top: 1px solid rgba(60, 60, 67, 0.12) !important;
+}
+
+.nero-chat-input {
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+  color: #1c1c1e !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: none !important;
+}
+
+.nero-chat-input:focus {
+  border: 0 !important;
+  background: rgba(118, 118, 128, 0.18) !important;
+  box-shadow: none !important;
+}
+
+.nero-send-btn {
+  background: #007aff !important;
+  box-shadow: none !important;
+}
+
+.nero-send-btn:hover {
+  background: #0071e3 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.nero-fab-ring {
+  display: none !important;
+}
+
+.nero-fab-inner {
+  background: #fff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+.nero-fab-btn:hover .nero-fab-inner {
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+.nero-fab-dot {
+  background: #34c759 !important;
+}
+
+/* Header search results: one list under the field. */
+.search-results {
+  top: calc(100% + 6px) !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12) !important;
+  max-height: 360px !important;
+}
+
+.search-results-container {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 6px 0 !important;
+  display: block !important;
+}
+
+.search-results .results-section-title,
+.search-results h3 {
+  margin: 0 !important;
+  padding: 8px 16px 2px !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #6e6e73 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.search-results .results-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+.search-results .results-list li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.search-results .results-list a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #1c1c1e !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.search-results .results-list a:hover {
+  background: #f2f2f7 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.search-results .result-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  border: 0 !important;
+  background: #007aff !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  object-fit: cover !important;
+  box-shadow: none !important;
+}
+
+.search-results img.result-avatar {
+  background: transparent !important;
+}
+
+.search-results .result-name {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+  color: #1c1c1e !important;
+  line-height: 1.2 !important;
+}
+
+.search-results .no-results {
+  padding: 20px 16px !important;
+  text-align: center !important;
+  color: #6e6e73 !important;
+  font-size: 15px !important;
+}
+
+/* Clinic types and appointments: color belongs on the label, not a painted edge. */
+.ct-card,
+.ct-card:hover,
+.ct-card.selected {
+  border: 1px solid rgba(60, 60, 67, 0.12) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.ct-card::before,
+.ct-card:hover::before,
+.ct-card.selected::before {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+}
+
+.ct-card.selected {
+  background: var(--ct-bg, #f2f2f7) !important;
+}
+
+.ct-name {
+  color: var(--ct-color, #1c1c1e) !important;
+}
+
+.status-stripe {
+  display: none !important;
+}
+
+.appointment-card .card-inner {
+  padding-left: 20px !important;
+}
+
+/* Smart Recommendations: the label stays still. Only the icon breathes. */
+.sidebar-nav a[href*="questionnaire"] .shiny-text {
+  background-image: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: inherit !important;
+  animation: none !important;
+}
+
+.sidebar-nav a[href*="questionnaire"]:not(.active) .fa-brain {
+  color: #007aff !important;
+  -webkit-text-fill-color: #007aff !important;
+  background-image: none !important;
+  animation: recBreath 2.8s ease-in-out infinite !important;
+}
+
+.sidebar-nav a[href*="questionnaire"].active .fa-brain,
+.sidebar-nav a[href*="questionnaire"].smart-rec.active .fa-brain {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+  background-image: none !important;
+  animation: none !important;
+}
+
+@keyframes recBreath {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-nav a[href*="questionnaire"] .fa-brain {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
