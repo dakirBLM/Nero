@@ -1652,11 +1652,11 @@
                                         <div class="form-row-2">
                                             <div class="form-group">
                                                 <label class="form-label">Proposed start date</label>
-                                                <input type="date" name="proposed_start_date" class="form-control">
+                                                {% include 'includes/accessible_date_input.html' with day_name='proposed_start_day' month_name='proposed_start_month' year_name='proposed_start_year' day_id='proposed_start_day' month_id='proposed_start_month' year_id='proposed_start_year' hidden_name='proposed_start_date' hidden_id='proposed_start_date_hidden' required=True %}
                                             </div>
                                             <div class="form-group">
                                                 <label class="form-label">Proposed end date</label>
-                                                <input type="date" name="proposed_end_date" class="form-control">
+                                                {% include 'includes/accessible_date_input.html' with day_name='proposed_end_day' month_name='proposed_end_month' year_name='proposed_end_year' day_id='proposed_end_day' month_id='proposed_end_month' year_id='proposed_end_year' hidden_name='proposed_end_date' hidden_id='proposed_end_date_hidden' required=True %}
                                             </div>
                                         </div>
                                         {% if appointment.accommodation_type != 'no_accommodation' %}
