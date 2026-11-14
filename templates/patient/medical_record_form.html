@@ -1381,7 +1381,7 @@
                                     <label class="form-label" for="id_date_of_birth">
                                         <i class="fas fa-birthday-cake"></i> {% trans "Date of Birth" %} <span class="required">*</span>
                                     </label>
-                                    {{ medical_form.date_of_birth }}
+                                {% include 'includes/accessible_date_input.html' with day_name='dob_day' month_name='dob_month' year_name='dob_year' day_id='dob_day' month_id='dob_month' year_id='dob_year' hidden_name='date_of_birth' hidden_id='date_of_birth_hidden' required=True %}
                                     {% if medical_form.date_of_birth.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.date_of_birth.errors.0 }}</div>
                                     {% endif %}
@@ -1475,7 +1475,7 @@
                                     <label class="form-label" for="id_injury_date">
                                         <i class="fas fa-calendar-alt"></i> {% trans "Injury/Illness Date" %} <span class="required">*</span>
                                     </label>
-                                    {{ medical_form.injury_date }}
+                                {% include 'includes/accessible_date_input.html' with day_name='injury_day' month_name='injury_month' year_name='injury_year' day_id='injury_day' month_id='injury_month' year_id='injury_year' hidden_name='injury_date' hidden_id='injury_date_hidden' required=True %}
                                     {% if medical_form.injury_date.errors %}
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ medical_form.injury_date.errors.0 }}</div>
                                     {% endif %}
@@ -2581,8 +2581,9 @@
 
             // Reveal header on resize or when tab becomes visible
             window.addEventListener('resize', () => { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); });
-            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
-        })();
-    </script>
-</body>
+                document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { header.classList.remove('main-header--hidden'); header.classList.add('main-header--visible'); } });
+            })();
+        </script>
+
+    </body>
 </html>

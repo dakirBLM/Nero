@@ -702,6 +702,23 @@
 
         .step-error.visible { display: flex; }
 
+        /* ===== ACCESSIBLE DATE ROW — Elderly Mobile UX (fixed layout) ===== */
+        .dob-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; align-items: center; width: 100%; }
+        .dob-input.form-control { width: auto !important; padding: 12px 6px !important; }
+        .dob-input {
+            min-height: 48px; font-size: 16px; text-align: center;
+            padding: 16px 12px; border-radius: 12px; border: 2px solid #e2e8f0;
+            box-sizing: border-box; -moz-appearance: textfield; flex: 1 1 0; min-width: 0; width: auto; max-width: none;
+        }
+        .dob-year { flex: 1.4 1 0; }
+        .dob-select.form-control { min-height: 52px; font-size: 16px; text-align: center; padding: 12px 14px; border-radius: 12px; border: 1px solid #d1d5db; background: #fff; box-sizing: border-box; -moz-appearance: textfield; font-family: "Inter", sans-serif; transition: all .25s ease; }
+        .dob-select.form-control:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.15); }
+        .dob-select.form-control::-ms-expand { display: none; }
+        .dob-input::-webkit-outer-spin-button,
+        .dob-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .form-group.full-width { grid-column: 1 / -1; width: 100%; }
+        .form-divider { grid-column: 1 / -1; width: 100%; border: 0; border-top: 2px solid #e5e7eb; margin: 8px 0; }
+
         /* ===== RESULTS (Step 2 of old flow) ===== */
         @keyframes cardEntrance { from{opacity:0;transform:translateY(14px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
         @keyframes dataFlow { 0%{background-position:-100% 0} 100%{background-position:200% 0} }
@@ -1043,8 +1060,6 @@
                     <input type="hidden" name="service" value="{{ form_data.service }}">
                     <input type="hidden" name="accommodation_type" value="{{ form_data.accommodation_type }}">
                     <input type="hidden" name="companions_count" value="{{ form_data.companions_count }}">
-                    <input type="hidden" name="treatment_start_date" value="{{ form_data.treatment_start_date }}">
-                    <input type="hidden" name="treatment_end_date" value="{{ form_data.treatment_end_date }}">
                     {% for country in form_data.countries %}<input type="hidden" name="country" value="{{ country }}">{% endfor %}
                     {% for continent in form_data.continents %}<input type="hidden" name="continent" value="{{ continent }}">{% endfor %}
                     {% for clinic_type in form_data.clinic_types %}<input type="hidden" name="clinic_type" value="{{ clinic_type }}">{% endfor %}
@@ -1257,13 +1272,13 @@
                         </div>
 
                         <div class="form-row-2">
-                            <div class="form-group">
+                            <div class="form-group full-width">
                                 <label class="form-label">{% trans "Treatment start date" %} <span style="color:#ef4444;">*</span></label>
-                                <input type="date" name="treatment_start_date" id="treatment_start_date" class="form-control" required>
+                                {% include 'includes/accessible_date_input.html' with day_name='treatment_start_day' month_name='treatment_start_month' year_name='treatment_start_year' day_id='treatment_start_day' month_id='treatment_start_month' year_id='treatment_start_year' hidden_name='treatment_start_date' hidden_id='treatment_start_date' required=True %}
                             </div>
-                            <div class="form-group">
+                            <div class="form-group full-width">
                                 <label class="form-label">{% trans "Treatment end date" %} <span style="color:#ef4444;">*</span></label>
-                                <input type="date" name="treatment_end_date" id="treatment_end_date" class="form-control" required>
+                                {% include 'includes/accessible_date_input.html' with day_name='treatment_end_day' month_name='treatment_end_month' year_name='treatment_end_year' day_id='treatment_end_day' month_id='treatment_end_month' year_id='treatment_end_year' hidden_name='treatment_end_date' hidden_id='treatment_end_date' required=True %}
                             </div>
                         </div>
 
@@ -1692,15 +1707,27 @@
         if (n === 4) {
             const accType = document.getElementById('accommodation_type');
             const companions = document.getElementById('companions_count');
-            const start = document.getElementById('treatment_start_date');
-            const end = document.getElementById('treatment_end_date');
+            const startDay = document.getElementById('treatment_start_day');
+            const startMonth = document.getElementById('treatment_start_month');
+            const startYear = document.getElementById('treatment_start_year');
+            const endDay = document.getElementById('treatment_end_day');
+            const endMonth = document.getElementById('treatment_end_month');
+            const endYear = document.getElementById('treatment_end_year');
+            const startValid = startDay?.value && startMonth?.value && startYear?.value;
+            const endValid = endDay?.value && endMonth?.value && endYear?.value;
             if (!accType || !accType.value) {
                 document.getElementById('err-4').classList.add('visible');
                 return false;
             }
             if (accType.value !== 'no_accommodation') {
                 // Accommodation needed - validate dates and companions
-                if (!start?.value || !end?.value || end.value < start.value) {
+                if (!startValid || !endValid) {
+                    document.getElementById('err-4').classList.add('visible');
+                    return false;
+                }
+                const startDate = startYear.value + '-' + startMonth.value.padStart(2,'0') + '-' + startDay.value.padStart(2,'0');
+                const endDate = endYear.value + '-' + endMonth.value.padStart(2,'0') + '-' + endDay.value.padStart(2,'0');
+                if (endDate < startDate) {
                     document.getElementById('err-4').classList.add('visible');
                     return false;
                 }
@@ -1710,7 +1737,13 @@
                 }
             } else {
                 // No accommodation - only validate treatment dates still required
-                if (!start?.value || !end?.value || end.value < start.value) {
+                if (!startValid || !endValid) {
+                    document.getElementById('err-4').classList.add('visible');
+                    return false;
+                }
+                const startDate = startYear.value + '-' + startMonth.value.padStart(2,'0') + '-' + startDay.value.padStart(2,'0');
+                const endDate = endYear.value + '-' + endMonth.value.padStart(2,'0') + '-' + endDay.value.padStart(2,'0');
+                if (endDate < startDate) {
                     document.getElementById('err-4').classList.add('visible');
                     return false;
                 }

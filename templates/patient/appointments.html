@@ -1608,11 +1608,11 @@
                                 <div class="form-row-2">
                                     <div class="form-group">
                                         <label class="form-label">{% trans "Treatment start date" %}</label>
-                                        <input type="date" name="treatment_start_date" class="form-control">
+                                        {% include 'includes/accessible_date_input.html' with day_name='treatment_start_day' month_name='treatment_start_month' year_name='treatment_start_year' day_id='treatment_start_day' month_id='treatment_start_month' year_id='treatment_start_year' hidden_name='treatment_start_date' hidden_id='treatment_start_date_hidden' required=True %}
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">{% trans "Treatment end date" %}</label>
-                                        <input type="date" name="treatment_end_date" class="form-control">
+                                        {% include 'includes/accessible_date_input.html' with day_name='treatment_end_day' month_name='treatment_end_month' year_name='treatment_end_year' day_id='treatment_end_day' month_id='treatment_end_month' year_id='treatment_end_year' hidden_name='treatment_end_date' hidden_id='treatment_end_date_hidden' required=True %}
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-full">
