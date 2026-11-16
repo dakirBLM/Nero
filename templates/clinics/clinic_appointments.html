@@ -1253,9 +1253,9 @@
                         </li>
                         {% if request.user.clinics.count >= 1 %}
                         <li>
-                            <a href="{% url 'clinic_select' %}">
+                            <button type="button" onclick="openClinicSwitcher()" style="border:none;background:none;cursor:pointer;width:100%;text-align:left;padding:0;font:inherit;color:inherit;display:flex;align-items:center;">
                                 <i class="fas fa-exchange-alt"></i> Switch clinic
-                            </a>
+                            </button>
                         </li>
                         {% endif %}
                     </ul>
@@ -2395,5 +2395,6 @@
         </div>
     </div>
 </div>
+    {% include 'clinics/clinic_switcher_modal.html' %}
 </body>
 </html>

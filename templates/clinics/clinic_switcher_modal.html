@@ -1,0 +1,284 @@
+{% comment %}
+Clinic switcher modal — small inline design shown in the same page.
+Included on every clinic page that has the "Switch clinic" dropdown item.
+{% endcomment %}
+
+<div id="clinicSwitcherModal" class="clinic-switcher-modal" style="display:none;">
+    <div class="clinic-switcher-backdrop" onclick="closeClinicSwitcher()"></div>
+    <div class="clinic-switcher-card">
+        <div class="clinic-switcher-header">
+            <h3><i class="fas fa-clinic-medical"></i> Switch clinic</h3>
+            <button class="clinic-switcher-close" onclick="closeClinicSwitcher()">&times;</button>
+        </div>
+
+        <p class="clinic-switcher-subtitle">
+            Your account manages {{ request.user.clinics.count }} clinic{{ request.user.clinics.count|pluralize }}.
+            Choose which one to work on.
+        </p>
+
+        {% if messages %}
+        <div class="clinic-switcher-messages">
+            {% for message in messages %}
+            <div class="clinic-switcher-msg {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="clinic-switcher-list">
+            {% for clinic in request.user.clinics.all %}
+            <div class="clinic-switcher-row {% if active_clinic and active_clinic.id == clinic.id %}current{% endif %}">
+                <div class="clinic-switcher-avatar">
+                    {% if clinic.has_custom_avatar %}
+                    <img src="{{ clinic.avatar_url }}" alt="Clinic Profile">
+                    {% else %}
+                    <span>{{ clinic.clinic_name|first|upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="clinic-switcher-info">
+                    <strong>{{ clinic.clinic_name }}</strong>
+                    <span>{{ clinic.city }}{% if clinic.country %}, {{ clinic.country }}{% endif %}</span>
+                    {% if active_clinic and active_clinic.id == clinic.id %}
+                    <span class="clinic-switcher-badge">Current</span>
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'clinic_select' %}" class="clinic-switcher-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="clinic_id" value="{{ clinic.id }}">
+                    <button type="submit" class="clinic-switcher-btn{% if active_clinic and active_clinic.id == clinic.id %} clinic-switcher-btn-active{% endif %}">
+                        {% if active_clinic and active_clinic.id == clinic.id %}Active{% else %}Manage{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% empty %}
+            <div class="clinic-switcher-empty">
+                <p>No clinics found. <a href="{% url 'clinic_signup' %}">Add your first clinic</a>.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="clinic-switcher-footer">
+            <a href="{% url 'clinic_signup' %}" class="clinic-switcher-add">
+                <i class="fas fa-plus-circle"></i> Add another clinic
+            </a>
+            <a href="{% url 'clinic_dashboard' %}" class="clinic-switcher-back" onclick="closeClinicSwitcher()">
+                Back to dashboard &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openClinicSwitcher() {
+    var modal = document.getElementById('clinicSwitcherModal');
+    if (modal) modal.style.display = 'block';
+}
+function closeClinicSwitcher() {
+    var modal = document.getElementById('clinicSwitcherModal');
+    if (modal) modal.style.display = 'none';
+}
+// Close when clicking outside the card
+window.addEventListener('click', function (e) {
+    var modal = document.getElementById('clinicSwitcherModal');
+    if (modal && e.target === modal.querySelector('.clinic-switcher-backdrop')) closeClinicSwitcher();
+});
+// Close on Escape key
+window.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeClinicSwitcher();
+});
+</script>
+
+<style>
+.clinic-switcher-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2000;
+}
+.clinic-switcher-backdrop {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
+}
+.clinic-switcher-card {
+    position: absolute;
+    top: 18vh; left: 50%;
+    transform: translateX(-50%);
+    width: min(520px, 92vw);
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    border: 1px solid #e5e7eb;
+    max-height: 75vh;
+    overflow-y: auto;
+    animation: clinicSwitcherFade 0.22s ease-out;
+}
+@keyframes clinicSwitcherFade {
+    from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.clinic-switcher-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.clinic-switcher-header h3 {
+    margin: 0;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #111827;
+}
+.clinic-switcher-header h3 i {
+    color: #3b82f6;
+}
+.clinic-switcher-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #9ca3af;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+.clinic-switcher-close:hover { color: #111827; }
+.clinic-switcher-subtitle {
+    margin: 16px 22px 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+.clinic-switcher-messages {
+    margin: 12px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.clinic-switcher-msg {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+.clinic-switcher-msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.clinic-switcher-msg.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.clinic-switcher-msg.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.clinic-switcher-list {
+    margin: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.clinic-switcher-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: #fff;
+}
+.clinic-switcher-row.current {
+    border-color: #3b82f6;
+    background: #f5f9ff;
+}
+.clinic-switcher-avatar {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.clinic-switcher-avatar img {
+    width: 100%; height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.clinic-switcher-avatar span {
+    font-size: 18px;
+}
+.clinic-switcher-info {
+    flex: 1;
+    min-width: 0;
+}
+.clinic-switcher-info strong {
+    display: block;
+    font-size: 14.5px;
+    color: #111827;
+}
+.clinic-switcher-info span {
+    font-size: 12.5px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.clinic-switcher-badge {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+.clinic-switcher-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    background: #3b82f6;
+    color: #fff;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.clinic-switcher-btn:hover { background: #2563eb; }
+.clinic-switcher-btn-active {
+    background: #9ca3af;
+}
+.clinic-switcher-btn-active:hover { background: #6b7280; }
+.clinic-switcher-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    border-top: 1px solid #f1f5f9;
+    gap: 12px;
+}
+.clinic-switcher-add {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3b82f6;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.clinic-switcher-add:hover { text-decoration: underline; }
+.clinic-switcher-back {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-decoration: none;
+}
+.clinic-switcher-back:hover { color: #111827; text-decoration: underline; }
+.clinic-switcher-empty {
+    text-align: center;
+    padding: 30px 22px;
+    color: #6b7280;
+}
+.clinic-switcher-empty a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+}
+.clinic-switcher-empty a:hover { text-decoration: underline; }
+</style>

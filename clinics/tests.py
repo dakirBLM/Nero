@@ -324,7 +324,7 @@ class MultiClinicAccountTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp['Location'], reverse('clinic_select'))
 
-    def test_select_page_lists_only_owned_clinics(self):
+    def test_select_page_get_redirects_to_dashboard(self):
         owner = _make_user('owner5')
         other = _make_user('stranger')
         mine = _make_clinic(owner, name='Mine One')
@@ -332,14 +332,8 @@ class MultiClinicAccountTests(TestCase):
         foreign = _make_clinic(other, name='Not Mine')
         self.client.force_login(owner)
         resp = self.client.get(reverse('clinic_select'))
-        self.assertEqual(resp.status_code, 200)
-        content = resp.content.decode()
-        self.assertIn('Mine One', content)
-        self.assertIn('Mine Two', content)
-        self.assertNotIn('Not Mine', content)
-        self.assertNotIn(f'name="clinic_id" value="{foreign.id}"', content)
-        self.assertIn(f'name="clinic_id" value="{mine.id}"', content)
-        self.assertIn(f'name="clinic_id" value="{mine_two.id}"', content)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
 
     def test_switch_to_own_clinic_scopes_views(self):
         user = _make_user('owner6')
@@ -368,16 +362,16 @@ class MultiClinicAccountTests(TestCase):
         self.client.force_login(owner)
         resp = self.client.post(reverse('clinic_select'), {'clinic_id': foreign.id})
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
         self.assertIsNone(self.client.session.get('active_clinic_id'))
 
-    def test_single_clinic_select_shows_select_page(self):
+    def test_single_clinic_select_get_redirects_to_dashboard(self):
         user = _make_user('owner8')
         _make_clinic(user, name='Solo')
         self.client.force_login(user)
         resp = self.client.get(reverse('clinic_select'))
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Solo')
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
 
     def test_add_second_clinic_via_signup_same_account(self):
         user = _make_user('owner9')

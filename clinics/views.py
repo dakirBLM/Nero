@@ -386,10 +386,10 @@ def clinic_signup_view(request):
 
 @login_required
 def clinic_select_view(request):
-    """Choose which owned clinic this session manages.
+    """Switch the active clinic via POST (called from the inline switcher modal).
 
-    All clinic accounts (including single-clinic accounts) see this page so
-    the owner can confirm their active clinic or add another one.
+    GET requests are redirected to the dashboard — the /select/ page itself is
+    no longer shown; the switcher is an inline modal on every clinic page.
     Switching is a POST with the owned clinic id; ids outside the account
     are rejected, so one owner can never jump into another owner's clinic.
     """
@@ -408,15 +408,12 @@ def clinic_select_view(request):
         selected = next((c for c in clinics if c.id == wanted_id), None)
         if selected is None:
             messages.error(request, 'You do not own this clinic.')
-            return redirect('clinic_select')
+            return redirect('clinic_dashboard')
         set_active_clinic(request, selected)
         messages.success(request, f'Now managing {selected.clinic_name}.')
         return redirect('clinic_dashboard')
-    context = {
-        'clinics': clinics,
-        'active_clinic': get_active_clinic(request),
-    }
-    return render(request, 'clinics/select_clinic.html', context)
+    # GET: no standalone page — redirect to dashboard.
+    return redirect('clinic_dashboard')
 from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
