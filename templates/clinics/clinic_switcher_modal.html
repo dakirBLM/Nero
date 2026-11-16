@@ -70,11 +70,16 @@ Included on every clinic page that has the "Switch clinic" dropdown item.
 function openClinicSwitcher(btn) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (!dropdown) return;
-    // Position the dropdown to the left of the clicked button (RTL-friendly)
-    var rect = btn.getBoundingClientRect();
-    dropdown.style.top = (rect.top + window.scrollY) + 'px';
-    dropdown.style.left = (rect.left - dropdown.offsetWidth - 8) + 'px';
+    // Show temporarily to measure width accurately
     dropdown.style.display = 'block';
+    dropdown.style.visibility = 'hidden';
+    var rect = btn.getBoundingClientRect();
+    var left = rect.left - dropdown.offsetWidth - 8;
+    // Prevent going off-screen left edge; fallback to right side
+    if (left < 8) left = rect.right + 8;
+    dropdown.style.top = (rect.top + window.scrollY) + 'px';
+    dropdown.style.left = left + 'px';
+    dropdown.style.visibility = '';
 }
 function closeClinicSwitcher() {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
