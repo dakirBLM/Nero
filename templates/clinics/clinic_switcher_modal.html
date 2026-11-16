@@ -73,10 +73,17 @@ Redesigned with polished clinic cards, better spacing, hover effects, and RTL-fr
 function openClinicSwitcher(btn) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (!dropdown) return;
+    // Toggle: if already open, close it
+    if (dropdown.style.display === 'block') {
+        closeClinicSwitcher();
+        return;
+    }
+    // Show temporarily to measure width accurately
     dropdown.style.display = 'block';
     dropdown.style.visibility = 'hidden';
     var rect = btn.getBoundingClientRect();
     var left = rect.left - dropdown.offsetWidth - 8;
+    // Prevent going off-screen left edge; fallback to right side
     if (left < 8) left = rect.right + 8;
     dropdown.style.top = (rect.top + window.scrollY) + 'px';
     dropdown.style.left = left + 'px';
@@ -86,10 +93,12 @@ function closeClinicSwitcher() {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (dropdown) dropdown.style.display = 'none';
 }
+// Close when clicking outside the dropdown
 window.addEventListener('click', function (e) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
-    var btn = document.querySelector('[onclick="openClinicSwitcher(this)"]');
-    if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+    if (!dropdown || dropdown.style.display === 'none') return;
+    // Close when clicking outside the dropdown
+    if (!dropdown.contains(e.target)) {
         closeClinicSwitcher();
     }
 });
