@@ -78,27 +78,34 @@ function openClinicSwitcher(btn) {
         closeClinicSwitcher();
         return;
     }
-    // Mobile: position at bottom (fixed)
-    if (window.innerWidth <= 768) {
-        dropdown.style.top = 'auto';
-        dropdown.style.bottom = '0';
-        dropdown.style.left = '0';
-        dropdown.style.right = '0';
-        dropdown.style.width = '100vw';
-        dropdown.style.display = 'block';
-        // Mark as just-opened to prevent immediate close
-        dropdown.dataset.justOpened = 'true';
-        setTimeout(function () { delete dropdown.dataset.justOpened; }, 100);
-        return;
-    }
-    // Desktop: show temporarily to measure width accurately
+    // Always position below the clicked button (desktop and mobile)
+    dropdown.style.position = 'absolute';
+    dropdown.style.top = 'auto';
+    dropdown.style.bottom = 'auto';
+    dropdown.style.left = 'auto';
+    dropdown.style.right = 'auto';
+    dropdown.style.width = 'auto';
+    dropdown.style.maxWidth = 'min(440px, 92vw)';
+
+    // Show temporarily to measure width accurately
     dropdown.style.display = 'block';
     dropdown.style.visibility = 'hidden';
     var rect = btn.getBoundingClientRect();
-    var left = rect.left - dropdown.offsetWidth - 8;
-    // Prevent going off-screen left edge; fallback to right side
-    if (left < 8) left = rect.right + 8;
-    dropdown.style.top = (rect.top + window.scrollY) + 'px';
+
+    // Position below the button
+    var top = (rect.bottom + window.scrollY + 8);
+    var left = rect.left + window.scrollX;
+
+    // Prevent going off-screen right edge; align right edge to button right edge if needed
+    var dropdownWidth = dropdown.offsetWidth;
+    var screenWidth = window.innerWidth;
+    if (left + dropdownWidth > screenWidth - 8) {
+        left = screenWidth - dropdownWidth - 8;
+    }
+    // Prevent going off-screen left edge
+    if (left < 8) left = 8;
+
+    dropdown.style.top = top + 'px';
     dropdown.style.left = left + 'px';
     dropdown.style.visibility = '';
     dropdown.dataset.justOpened = 'true';
