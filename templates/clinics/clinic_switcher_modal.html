@@ -1,12 +1,16 @@
 {% comment %}
 Clinic switcher dropdown — small popup shown next to the "Switch clinic" item.
-Included on every clinic page that has the "Switch clinic" dropdown item.
+Redesigned with a polished interior: clean clinic cards, consistent spacing,
+hover states, and an RTL-friendly layout.
 {% endcomment %}
 
 <div id="clinicSwitcherDropdown" class="clinic-switcher-dropdown" style="display:none; position:absolute; z-index:2000;">
     <div class="clinic-switcher-card">
         <div class="clinic-switcher-header">
-            <h3><i class="fas fa-clinic-medical"></i> Switch clinic</h3>
+            <div class="clinic-switcher-title">
+                <i class="fas fa-clinic-medical"></i>
+                <span>Switch clinic</span>
+            </div>
             <button class="clinic-switcher-close" onclick="closeClinicSwitcher()">&times;</button>
         </div>
 
@@ -102,36 +106,44 @@ window.addEventListener('keydown', function (e) {
 <style>
 .clinic-switcher-dropdown {
     position: absolute;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-    border: 1px solid #e5e7eb;
-    width: min(430px, 92vw);
-    max-height: 70vh;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.16);
+    border: 1px solid #f1f5f9;
+    width: min(460px, 94vw);
+    max-height: 72vh;
     overflow-y: auto;
     animation: clinicSwitcherFade 0.18s ease-out;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 @keyframes clinicSwitcherFade {
     from { opacity: 0; transform: translateY(-8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Header */
 .clinic-switcher-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 18px;
+    padding: 16px 20px;
     border-bottom: 1px solid #f1f5f9;
 }
-.clinic-switcher-header h3 {
-    margin: 0;
-    font-size: 16px;
+.clinic-switcher-title {
     display: flex;
     align-items: center;
-    gap: 7px;
-    color: #111827;
+    gap: 8px;
 }
-.clinic-switcher-header h3 i {
+.clinic-switcher-title i {
     color: #3b82f6;
+    width: 20px;
+    text-align: center;
+}
+.clinic-switcher-title span {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.01em;
 }
 .clinic-switcher-close {
     background: transparent;
@@ -140,66 +152,87 @@ window.addEventListener('keydown', function (e) {
     color: #9ca3af;
     cursor: pointer;
     line-height: 1;
-    padding: 0 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
 }
-.clinic-switcher-close:hover { color: #111827; }
+.clinic-switcher-close:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+/* Subtitle */
 .clinic-switcher-subtitle {
-    margin: 12px 18px 0;
-    font-size: 12.5px;
+    margin: 0;
+    padding: 0 20px 16px;
+    font-size: 13px;
     color: #6b7280;
+    line-height: 1.5;
 }
+
+/* Messages */
 .clinic-switcher-messages {
-    margin: 10px 18px;
+    margin: 0 20px 12px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
 }
 .clinic-switcher-msg {
-    padding: 7px 11px;
-    border-radius: 7px;
+    padding: 8px 12px;
+    border-radius: 8px;
     font-size: 12.5px;
+    line-height: 1.4;
 }
 .clinic-switcher-msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .clinic-switcher-msg.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 .clinic-switcher-msg.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+
+/* List */
 .clinic-switcher-list {
-    margin: 12px 18px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
 }
 .clinic-switcher-row {
     display: flex;
     align-items: center;
-    gap: 11px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 9px 14px;
-    background: #fff;
+    gap: 14px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+.clinic-switcher-row:last-child {
+    border-bottom: none;
+}
+.clinic-switcher-row:hover {
+    background: #f8fafc;
 }
 .clinic-switcher-row.current {
-    border-color: #3b82f6;
     background: #f5f9ff;
+    border-left: 3px solid #3b82f6;
+    padding-left: 17px;
 }
 .clinic-switcher-avatar {
-    width: 40px; height: 40px;
-    border-radius: 9px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     color: #fff;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 .clinic-switcher-avatar img {
-    width: 100%; height: 100%;
-    border-radius: 9px;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
     object-fit: cover;
 }
 .clinic-switcher-avatar span {
-    font-size: 17px;
+    font-size: 19px;
 }
 .clinic-switcher-info {
     flex: 1;
@@ -207,11 +240,12 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-info strong {
     display: block;
-    font-size: 14px;
+    font-size: 15px;
     color: #111827;
+    font-weight: 700;
 }
 .clinic-switcher-info span {
-    font-size: 12px;
+    font-size: 12.5px;
     color: #6b7280;
     white-space: nowrap;
     overflow: hidden;
@@ -219,65 +253,84 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-badge {
     display: inline-block;
-    margin-top: 3px;
+    margin-top: 4px;
     font-size: 10.5px;
-    font-weight: 600;
+    font-weight: 700;
     background: #dbeafe;
     color: #1d4ed8;
     border-radius: 16px;
-    padding: 1px 9px;
+    padding: 1px 10px;
+    letter-spacing: 0.02em;
 }
 .clinic-switcher-btn {
     border: none;
-    border-radius: 7px;
-    padding: 6px 14px;
-    font-weight: 600;
-    font-size: 12.5px;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-weight: 700;
+    font-size: 13px;
     cursor: pointer;
     background: #3b82f6;
     color: #fff;
     white-space: nowrap;
     flex-shrink: 0;
+    transition: background 0.15s ease, transform 0.1s ease;
 }
-.clinic-switcher-btn:hover { background: #2563eb; }
+.clinic-switcher-btn:hover {
+    background: #2563eb;
+}
+.clinic-switcher-btn:active {
+    transform: scale(0.97);
+}
 .clinic-switcher-btn-active {
     background: #9ca3af;
 }
-.clinic-switcher-btn-active:hover { background: #6b7280; }
-.clinic-switcher-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 18px;
-    border-top: 1px solid #f1f5f9;
-    gap: 10px;
+.clinic-switcher-btn-active:hover {
+    background: #6b7280;
 }
-.clinic-switcher-add {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #3b82f6;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-.clinic-switcher-add:hover { text-decoration: underline; }
-.clinic-switcher-back {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #6b7280;
-    text-decoration: none;
-}
-.clinic-switcher-back:hover { color: #111827; text-decoration: underline; }
+
+/* Empty state */
 .clinic-switcher-empty {
     text-align: center;
-    padding: 22px 18px;
+    padding: 32px 20px;
     color: #6b7280;
+}
+.clinic-switcher-empty p {
+    margin: 0 0 12px;
+    font-size: 13.5px;
 }
 .clinic-switcher-empty a {
     color: #3b82f6;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 }
 .clinic-switcher-empty a:hover { text-decoration: underline; }
+
+/* Footer */
+.clinic-switcher-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+    background: #fafbfc;
+    border-radius: 0 0 14px 14px;
+    gap: 12px;
+}
+.clinic-switcher-add {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3b82f6;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.clinic-switcher-add:hover { text-decoration: underline; }
+.clinic-switcher-back {
+    font-size: 13px;
+    font-weight: 700;
+    color: #6b7280;
+    text-decoration: none;
+}
+.clinic-switcher-back:hover { color: #111827; text-decoration: underline; }
 </style>
