@@ -1,7 +1,6 @@
 {% comment %}
 Clinic switcher dropdown — small popup shown next to the "Switch clinic" item.
-Redesigned with a polished interior: clean clinic cards, consistent spacing,
-hover states, and an RTL-friendly layout.
+Redesigned with polished clinic cards, better spacing, hover effects, and RTL-friendly layout.
 {% endcomment %}
 
 <div id="clinicSwitcherDropdown" class="clinic-switcher-dropdown" style="display:none; position:absolute; z-index:2000;">
@@ -74,12 +73,10 @@ hover states, and an RTL-friendly layout.
 function openClinicSwitcher(btn) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (!dropdown) return;
-    // Show temporarily to measure width accurately
     dropdown.style.display = 'block';
     dropdown.style.visibility = 'hidden';
     var rect = btn.getBoundingClientRect();
     var left = rect.left - dropdown.offsetWidth - 8;
-    // Prevent going off-screen left edge; fallback to right side
     if (left < 8) left = rect.right + 8;
     dropdown.style.top = (rect.top + window.scrollY) + 'px';
     dropdown.style.left = left + 'px';
@@ -89,7 +86,6 @@ function closeClinicSwitcher() {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (dropdown) dropdown.style.display = 'none';
 }
-// Close when clicking outside the dropdown
 window.addEventListener('click', function (e) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     var btn = document.querySelector('[onclick="openClinicSwitcher(this)"]');
@@ -97,7 +93,6 @@ window.addEventListener('click', function (e) {
         closeClinicSwitcher();
     }
 });
-// Close on Escape key
 window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeClinicSwitcher();
 });
@@ -107,17 +102,17 @@ window.addEventListener('keydown', function (e) {
 .clinic-switcher-dropdown {
     position: absolute;
     background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.16);
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.14);
     border: 1px solid #f1f5f9;
-    width: min(460px, 94vw);
+    width: min(480px, 94vw);
     max-height: 72vh;
     overflow-y: auto;
-    animation: clinicSwitcherFade 0.18s ease-out;
+    animation: clinicSwitcherFade 0.2s ease-out;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 @keyframes clinicSwitcherFade {
-    from { opacity: 0; transform: translateY(-8px); }
+    from { opacity: 0; transform: translateY(-10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -126,21 +121,22 @@ window.addEventListener('keydown', function (e) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 18px 22px;
     border-bottom: 1px solid #f1f5f9;
 }
 .clinic-switcher-title {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 .clinic-switcher-title i {
     color: #3b82f6;
-    width: 20px;
+    width: 22px;
     text-align: center;
+    font-size: 18px;
 }
 .clinic-switcher-title span {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: #111827;
     letter-spacing: -0.01em;
@@ -148,12 +144,12 @@ window.addEventListener('keydown', function (e) {
 .clinic-switcher-close {
     background: transparent;
     border: none;
-    font-size: 22px;
+    font-size: 24px;
     color: #9ca3af;
     cursor: pointer;
     line-height: 1;
-    padding: 2px 6px;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border-radius: 8px;
 }
 .clinic-switcher-close:hover {
     background: #f3f4f6;
@@ -163,24 +159,24 @@ window.addEventListener('keydown', function (e) {
 /* Subtitle */
 .clinic-switcher-subtitle {
     margin: 0;
-    padding: 0 20px 16px;
-    font-size: 13px;
+    padding: 0 22px 18px;
+    font-size: 13.5px;
     color: #6b7280;
     line-height: 1.5;
 }
 
 /* Messages */
 .clinic-switcher-messages {
-    margin: 0 20px 12px;
+    margin: 0 22px 14px;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 .clinic-switcher-msg {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12.5px;
-    line-height: 1.4;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
 }
 .clinic-switcher-msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .clinic-switcher-msg.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
@@ -195,10 +191,10 @@ window.addEventListener('keydown', function (e) {
 .clinic-switcher-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 20px;
+    gap: 16px;
+    padding: 14px 22px;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
     border-bottom: 1px solid #f3f4f6;
 }
 .clinic-switcher-row:last-child {
@@ -208,31 +204,32 @@ window.addEventListener('keydown', function (e) {
     background: #f8fafc;
 }
 .clinic-switcher-row.current {
-    background: #f5f9ff;
-    border-left: 3px solid #3b82f6;
-    padding-left: 17px;
+    background: #f0f7ff;
+    border-left: 4px solid #3b82f6;
+    padding-left: 18px;
 }
 .clinic-switcher-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     color: #fff;
-    font-weight: 700;
-    font-size: 19px;
+    font-weight: 800;
+    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 .clinic-switcher-avatar img {
     width: 100%;
     height: 100%;
-    border-radius: 10px;
+    border-radius: 12px;
     object-fit: cover;
 }
 .clinic-switcher-avatar span {
-    font-size: 19px;
+    font-size: 20px;
 }
 .clinic-switcher-info {
     flex: 1;
@@ -240,12 +237,13 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-info strong {
     display: block;
-    font-size: 15px;
+    font-size: 15.5px;
     color: #111827;
     font-weight: 700;
+    letter-spacing: -0.01em;
 }
 .clinic-switcher-info span {
-    font-size: 12.5px;
+    font-size: 13px;
     color: #6b7280;
     white-space: nowrap;
     overflow: hidden;
@@ -253,19 +251,20 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-badge {
     display: inline-block;
-    margin-top: 4px;
+    margin-top: 5px;
     font-size: 10.5px;
-    font-weight: 700;
+    font-weight: 800;
     background: #dbeafe;
     color: #1d4ed8;
-    border-radius: 16px;
-    padding: 1px 10px;
-    letter-spacing: 0.02em;
+    border-radius: 20px;
+    padding: 2px 12px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 .clinic-switcher-btn {
     border: none;
-    border-radius: 8px;
-    padding: 7px 16px;
+    border-radius: 10px;
+    padding: 8px 20px;
     font-weight: 700;
     font-size: 13px;
     cursor: pointer;
@@ -273,30 +272,34 @@ window.addEventListener('keydown', function (e) {
     color: #fff;
     white-space: nowrap;
     flex-shrink: 0;
-    transition: background 0.15s ease, transform 0.1s ease;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
 }
 .clinic-switcher-btn:hover {
     background: #2563eb;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 .clinic-switcher-btn:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
 }
 .clinic-switcher-btn-active {
-    background: #9ca3af;
+    background: #e5e7eb;
+    color: #374151;
+    box-shadow: none;
 }
 .clinic-switcher-btn-active:hover {
-    background: #6b7280;
+    background: #d1d5db;
 }
 
 /* Empty state */
 .clinic-switcher-empty {
     text-align: center;
-    padding: 32px 20px;
+    padding: 36px 22px;
     color: #6b7280;
 }
 .clinic-switcher-empty p {
-    margin: 0 0 12px;
-    font-size: 13.5px;
+    margin: 0 0 14px;
+    font-size: 14px;
 }
 .clinic-switcher-empty a {
     color: #3b82f6;
@@ -310,24 +313,24 @@ window.addEventListener('keydown', function (e) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 20px;
+    padding: 16px 22px;
     border-top: 1px solid #f1f5f9;
     background: #fafbfc;
-    border-radius: 0 0 14px 14px;
+    border-radius: 0 0 16px 16px;
     gap: 12px;
 }
 .clinic-switcher-add {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #3b82f6;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
 }
 .clinic-switcher-add:hover { text-decoration: underline; }
 .clinic-switcher-back {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
     color: #6b7280;
     text-decoration: none;
