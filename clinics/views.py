@@ -388,7 +388,8 @@ def clinic_signup_view(request):
 def clinic_select_view(request):
     """Choose which owned clinic this session manages.
 
-    Single-clinic accounts skip this page (redirected to the dashboard).
+    All clinic accounts (including single-clinic accounts) see this page so
+    the owner can confirm their active clinic or add another one.
     Switching is a POST with the owned clinic id; ids outside the account
     are rejected, so one owner can never jump into another owner's clinic.
     """
@@ -399,9 +400,6 @@ def clinic_select_view(request):
     if not clinics:
         messages.info(request, 'Please complete your clinic profile to continue.')
         return redirect('clinic_signup')
-    if len(clinics) == 1:
-        set_active_clinic(request, clinics[0])
-        return redirect('clinic_dashboard')
     if request.method == 'POST':
         try:
             wanted_id = int((request.POST.get('clinic_id') or '').strip())

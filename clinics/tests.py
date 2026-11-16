@@ -371,13 +371,13 @@ class MultiClinicAccountTests(TestCase):
         self.assertEqual(resp['Location'], reverse('clinic_select'))
         self.assertIsNone(self.client.session.get('active_clinic_id'))
 
-    def test_single_clinic_select_shortcuts_to_dashboard(self):
+    def test_single_clinic_select_shows_select_page(self):
         user = _make_user('owner8')
         _make_clinic(user, name='Solo')
         self.client.force_login(user)
         resp = self.client.get(reverse('clinic_select'))
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Solo')
 
     def test_add_second_clinic_via_signup_same_account(self):
         user = _make_user('owner9')
