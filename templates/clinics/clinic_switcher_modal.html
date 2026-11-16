@@ -78,7 +78,20 @@ function openClinicSwitcher(btn) {
         closeClinicSwitcher();
         return;
     }
-    // Show temporarily to measure width accurately
+    // Mobile: position at bottom (fixed)
+    if (window.innerWidth <= 768) {
+        dropdown.style.top = 'auto';
+        dropdown.style.bottom = '0';
+        dropdown.style.left = '0';
+        dropdown.style.right = '0';
+        dropdown.style.width = '100vw';
+        dropdown.style.display = 'block';
+        // Mark as just-opened to prevent immediate close
+        dropdown.dataset.justOpened = 'true';
+        setTimeout(function () { delete dropdown.dataset.justOpened; }, 100);
+        return;
+    }
+    // Desktop: show temporarily to measure width accurately
     dropdown.style.display = 'block';
     dropdown.style.visibility = 'hidden';
     var rect = btn.getBoundingClientRect();
@@ -88,6 +101,8 @@ function openClinicSwitcher(btn) {
     dropdown.style.top = (rect.top + window.scrollY) + 'px';
     dropdown.style.left = left + 'px';
     dropdown.style.visibility = '';
+    dropdown.dataset.justOpened = 'true';
+    setTimeout(function () { delete dropdown.dataset.justOpened; }, 100);
 }
 function closeClinicSwitcher() {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
@@ -97,6 +112,8 @@ function closeClinicSwitcher() {
 window.addEventListener('click', function (e) {
     var dropdown = document.getElementById('clinicSwitcherDropdown');
     if (!dropdown || dropdown.style.display === 'none') return;
+    // Ignore clicks that just opened the dropdown
+    if (dropdown.dataset.justOpened === 'true') return;
     // Close when clicking outside the dropdown
     if (!dropdown.contains(e.target)) {
         closeClinicSwitcher();
@@ -119,6 +136,52 @@ window.addEventListener('keydown', function (e) {
     overflow-y: auto;
     animation: clinicSwitcherFade 0.2s ease-out;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .clinic-switcher-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        max-height: 50vh;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        border-top: 1px solid #f1f5f9;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+        z-index: 2000;
+    }
+    .clinic-switcher-card {
+        border-radius: 16px 16px 0 0;
+    }
+    .clinic-switcher-footer {
+        border-radius: 0 0 16px 16px;
+    }
+    .clinic-switcher-row {
+        padding: 14px 20px;
+    }
+    .clinic-switcher-btn {
+        padding: 9px 20px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .clinic-switcher-dropdown {
+        max-height: 55vh;
+    }
+    .clinic-switcher-title span {
+        font-size: 17px;
+    }
+    .clinic-switcher-info strong {
+        font-size: 15px;
+    }
+    .clinic-switcher-info span {
+        font-size: 12.5px;
+    }
 }
 @keyframes clinicSwitcherFade {
     from { opacity: 0; transform: translateY(-10px); }
