@@ -1232,7 +1232,7 @@
                         </li>
                         {% if request.user.clinics.count >= 1 %}
                         <li>
-                            <a href="#" onclick="openClinicSwitcher(); return false;">
+                            <a href="#" onclick="openClinicSwitcher(this); return false;">
                                 <i class="fas fa-exchange-alt"></i> Switch clinic
                             </a>
                         </li>

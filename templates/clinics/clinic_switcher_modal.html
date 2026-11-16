@@ -1,10 +1,9 @@
 {% comment %}
-Clinic switcher modal — small inline design shown in the same page.
+Clinic switcher dropdown — small popup shown next to the "Switch clinic" item.
 Included on every clinic page that has the "Switch clinic" dropdown item.
 {% endcomment %}
 
-<div id="clinicSwitcherModal" class="clinic-switcher-modal" style="display:none;">
-    <div class="clinic-switcher-backdrop" onclick="closeClinicSwitcher()"></div>
+<div id="clinicSwitcherDropdown" class="clinic-switcher-dropdown" style="display:none; position:absolute; z-index:2000;">
     <div class="clinic-switcher-card">
         <div class="clinic-switcher-header">
             <h3><i class="fas fa-clinic-medical"></i> Switch clinic</h3>
@@ -68,18 +67,26 @@ Included on every clinic page that has the "Switch clinic" dropdown item.
 </div>
 
 <script>
-function openClinicSwitcher() {
-    var modal = document.getElementById('clinicSwitcherModal');
-    if (modal) modal.style.display = 'block';
+function openClinicSwitcher(btn) {
+    var dropdown = document.getElementById('clinicSwitcherDropdown');
+    if (!dropdown) return;
+    // Position the dropdown right below the clicked button
+    var rect = btn.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + window.scrollY + 6) + 'px';
+    dropdown.style.left = (rect.left + window.scrollX) + 'px';
+    dropdown.style.display = 'block';
 }
 function closeClinicSwitcher() {
-    var modal = document.getElementById('clinicSwitcherModal');
-    if (modal) modal.style.display = 'none';
+    var dropdown = document.getElementById('clinicSwitcherDropdown');
+    if (dropdown) dropdown.style.display = 'none';
 }
-// Close when clicking outside the card
+// Close when clicking outside the dropdown
 window.addEventListener('click', function (e) {
-    var modal = document.getElementById('clinicSwitcherModal');
-    if (modal && e.target === modal.querySelector('.clinic-switcher-backdrop')) closeClinicSwitcher();
+    var dropdown = document.getElementById('clinicSwitcherDropdown');
+    var btn = document.querySelector('[onclick="openClinicSwitcher(this)"]');
+    if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        closeClinicSwitcher();
+    }
 });
 // Close on Escape key
 window.addEventListener('keydown', function (e) {
@@ -88,47 +95,34 @@ window.addEventListener('keydown', function (e) {
 </script>
 
 <style>
-.clinic-switcher-modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 2000;
-}
-.clinic-switcher-backdrop {
+.clinic-switcher-dropdown {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(2px);
-}
-.clinic-switcher-card {
-    position: absolute;
-    top: 18vh; left: 50%;
-    transform: translateX(-50%);
-    width: min(520px, 92vw);
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
     border: 1px solid #e5e7eb;
-    max-height: 75vh;
+    width: min(430px, 92vw);
+    max-height: 70vh;
     overflow-y: auto;
-    animation: clinicSwitcherFade 0.22s ease-out;
+    animation: clinicSwitcherFade 0.18s ease-out;
 }
 @keyframes clinicSwitcherFade {
-    from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 .clinic-switcher-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 22px;
+    padding: 14px 18px;
     border-bottom: 1px solid #f1f5f9;
 }
 .clinic-switcher-header h3 {
     margin: 0;
-    font-size: 17px;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     color: #111827;
 }
 .clinic-switcher-header h3 i {
@@ -137,7 +131,7 @@ window.addEventListener('keydown', function (e) {
 .clinic-switcher-close {
     background: transparent;
     border: none;
-    font-size: 24px;
+    font-size: 22px;
     color: #9ca3af;
     cursor: pointer;
     line-height: 1;
@@ -145,37 +139,37 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-close:hover { color: #111827; }
 .clinic-switcher-subtitle {
-    margin: 16px 22px 0;
-    font-size: 13px;
+    margin: 12px 18px 0;
+    font-size: 12.5px;
     color: #6b7280;
 }
 .clinic-switcher-messages {
-    margin: 12px 22px;
+    margin: 10px 18px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
 }
 .clinic-switcher-msg {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 7px 11px;
+    border-radius: 7px;
+    font-size: 12.5px;
 }
 .clinic-switcher-msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 .clinic-switcher-msg.error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 .clinic-switcher-msg.info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 .clinic-switcher-list {
-    margin: 16px 22px;
+    margin: 12px 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 .clinic-switcher-row {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 11px;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 9px 14px;
     background: #fff;
 }
 .clinic-switcher-row.current {
@@ -183,12 +177,12 @@ window.addEventListener('keydown', function (e) {
     background: #f5f9ff;
 }
 .clinic-switcher-avatar {
-    width: 44px; height: 44px;
-    border-radius: 10px;
+    width: 40px; height: 40px;
+    border-radius: 9px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     color: #fff;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 17px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -196,11 +190,11 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-avatar img {
     width: 100%; height: 100%;
-    border-radius: 10px;
+    border-radius: 9px;
     object-fit: cover;
 }
 .clinic-switcher-avatar span {
-    font-size: 18px;
+    font-size: 17px;
 }
 .clinic-switcher-info {
     flex: 1;
@@ -208,11 +202,11 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-info strong {
     display: block;
-    font-size: 14.5px;
+    font-size: 14px;
     color: #111827;
 }
 .clinic-switcher-info span {
-    font-size: 12.5px;
+    font-size: 12px;
     color: #6b7280;
     white-space: nowrap;
     overflow: hidden;
@@ -220,20 +214,20 @@ window.addEventListener('keydown', function (e) {
 }
 .clinic-switcher-badge {
     display: inline-block;
-    margin-top: 4px;
-    font-size: 11px;
+    margin-top: 3px;
+    font-size: 10.5px;
     font-weight: 600;
     background: #dbeafe;
     color: #1d4ed8;
-    border-radius: 20px;
-    padding: 2px 10px;
+    border-radius: 16px;
+    padding: 1px 9px;
 }
 .clinic-switcher-btn {
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 7px;
+    padding: 6px 14px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     background: #3b82f6;
     color: #fff;
@@ -249,22 +243,22 @@ window.addEventListener('keydown', function (e) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 22px;
+    padding: 12px 18px;
     border-top: 1px solid #f1f5f9;
-    gap: 12px;
+    gap: 10px;
 }
 .clinic-switcher-add {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     color: #3b82f6;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 .clinic-switcher-add:hover { text-decoration: underline; }
 .clinic-switcher-back {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     color: #6b7280;
     text-decoration: none;
@@ -272,7 +266,7 @@ window.addEventListener('keydown', function (e) {
 .clinic-switcher-back:hover { color: #111827; text-decoration: underline; }
 .clinic-switcher-empty {
     text-align: center;
-    padding: 30px 22px;
+    padding: 22px 18px;
     color: #6b7280;
 }
 .clinic-switcher-empty a {
