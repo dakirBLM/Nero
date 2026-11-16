@@ -304,25 +304,28 @@ class MultiClinicAccountTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp['Location'], '/clinics/dashboard/')
 
-    def test_multi_clinic_login_goes_to_select(self):
+    def test_multi_clinic_login_goes_to_default_clinic(self):
         user = _make_user('owner3')
-        _make_clinic(user, name='Clinic A')
+        clinic_a = _make_clinic(user, name='Clinic A')
         _make_clinic(user, name='Clinic B')
         resp = self.client.post(
             reverse('login'),
             {'identifier': 'owner3', 'password': 'Testpass123!'},
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
+        # First clinic should be auto-selected as active.
+        self.assertEqual(self.client.session.get('active_clinic_id'), clinic_a.id)
 
-    def test_dashboard_without_selection_redirects_to_select(self):
+    def test_dashboard_without_selection_auto_selects_first_clinic(self):
         user = _make_user('owner4')
-        _make_clinic(user, name='Clinic A')
+        clinic_a = _make_clinic(user, name='Clinic A')
         _make_clinic(user, name='Clinic B')
         self.client.force_login(user)
         resp = self.client.get(reverse('clinic_dashboard'))
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp.status_code, 200)
+        # First clinic should be auto-selected as active.
+        self.assertEqual(self.client.session.get('active_clinic_id'), clinic_a.id)
 
     def test_select_page_get_redirects_to_dashboard(self):
         owner = _make_user('owner5')

@@ -108,12 +108,21 @@ def active_clinic_or_redirect(request):
         clinic, _redirect = active_clinic_or_redirect(request)
         if _redirect is not None:
             return _redirect
+
+    When the account owns clinics but none is active in the session, the
+    first (default/oldest) clinic is selected automatically so the user lands
+    straight on the dashboard instead of a separate selection page.
     """
     clinic = get_active_clinic(request)
     if clinic is not None:
         return clinic, None
     user = getattr(request, 'user', None)
     if user_has_clinic(user):
-        return None, redirect('clinic_select')
+        # Auto-select the first (default) clinic instead of redirecting to select page.
+        clinics = list(owned_clinics(user))
+        if clinics:
+            set_active_clinic(request, clinics[0])
+            return clinics[0], None
+        return None, redirect('clinic_signup')
     messages.info(request, 'Please complete your clinic profile to continue.')
     return None, redirect('clinic_signup')

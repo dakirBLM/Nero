@@ -8,6 +8,8 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.urls import reverse
 
+from clinics.active import set_active_clinic
+
 
 def _sync_user_type_from_profile(user):
     """Keep user_type aligned with the concrete profile attached to the user."""
@@ -168,9 +170,10 @@ class CustomLoginView(LoginView):
                 messages.info(self.request, 'Please complete your clinic profile to finish registration.')
                 return '/clinics/signup/?from_google=1'
             from clinics.models import Clinic
-            if Clinic.objects.filter(user=user).count() > 1:
-                # Multi-clinic account: pick which clinic this session manages.
-                return reverse('clinic_select')
+            clinics_qs = Clinic.objects.filter(user=user)
+            if clinics_qs.count() > 1:
+                # Auto-select the first (default) clinic for multi-clinic accounts
+                set_active_clinic(self.request, clinics_qs.first())
             return '/clinics/dashboard/'
         # Fallback to concrete profile if user_type is empty/unknown.
         if has_clinic_profile:
