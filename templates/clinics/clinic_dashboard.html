@@ -198,7 +198,7 @@
             cursor: pointer;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
             transition: all 0.3s ease;
         }
 
@@ -562,7 +562,7 @@
             object-fit: cover;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
         }
 
         .update-info h4 {
@@ -952,7 +952,7 @@
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1151,7 +1151,7 @@
 
         /* Utility Classes - EXACT SAME */
         .text-gradient {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1432,7 +1432,7 @@
                     {% if clinic.has_custom_avatar %}
                     <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
                     {% else %}
-                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                    <div class="user-avatar" id="avatarImg" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ clinic.clinic_name|first|upper }}
                     </div>
                     {% endif %}
@@ -1474,7 +1474,7 @@
                             {% if clinic.has_custom_avatar %}
                                 <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="profile-avatar">
                             {% else %}
-                                <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                <div class="profile-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                     {{ clinic.clinic_name|first|upper }}
                                 </div>
                             {% endif %}
@@ -1611,7 +1611,7 @@
                                         {% if post.author.patient.has_custom_avatar %}
                                             <img src="{{ post.author.patient.avatar_url }}" alt="{{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username }}" class="update-avatar">
                                         {% else %}
-                                            <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                            <div class="update-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                                 {{ post.author.patient.user.username|default:post.author.get_full_name|default:post.author.username|first|upper }}
                                             </div>
                                         {% endif %}
@@ -1621,7 +1621,7 @@
                                         {% if post.clinic.has_custom_avatar %}
                                             <img src="{{ post.clinic.avatar_url }}" alt="{{ post.clinic.clinic_name }}" class="update-avatar">
                                         {% else %}
-                                            <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                            <div class="update-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                                 {{ post.clinic.clinic_name|first|upper }}
                                             </div>
                                         {% endif %}
@@ -1796,7 +1796,7 @@
                                 {% if assignment.patient.has_custom_avatar %}
                                 <img src="{{ assignment.patient.avatar_url }}" alt="{{ assignment.patient.full_name }}" class="update-avatar">
                                 {% else %}
-                                <div class="update-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+                                <div class="update-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
                                     {{ assignment.patient.full_name|first|upper }}
                                 </div>
                                 {% endif %}

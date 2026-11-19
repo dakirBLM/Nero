@@ -220,7 +220,7 @@
             cursor: pointer;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
             transition: all 0.3s ease;
         }
 
@@ -541,7 +541,7 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1214,7 +1214,7 @@
                     {% if clinic.has_custom_avatar %}
                     <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="user-avatar" id="avatarImg">
                     {% else %}
-                    <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                    <div class="user-avatar" id="avatarImg" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                         {{ clinic.clinic_name|first|upper }}
                     </div>
                     {% endif %}
@@ -1254,7 +1254,7 @@
                         {% if clinic.has_custom_avatar %}
                             <img src="{{ clinic.avatar_url }}" alt="Clinic Profile" class="profile-avatar">
                         {% else %}
-                            <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                            <div class="profile-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                 {{ clinic.clinic_name|first|upper }}
                             </div>
                         {% endif %}

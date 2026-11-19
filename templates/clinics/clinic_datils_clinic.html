@@ -301,7 +301,7 @@
             cursor: pointer;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
             transition: all 0.3s ease;
         }
 
@@ -948,7 +948,7 @@
             object-fit: cover;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
         }
 
         .review-rating {
@@ -1121,7 +1121,7 @@
             font-size: 48px;
             margin-bottom: 16px;
             opacity: 0.5;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1274,7 +1274,7 @@
 
         /* ===== UTILITY CLASSES ===== */
         .text-gradient {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1615,7 +1615,7 @@
                                 {% if review.patient.has_custom_avatar %}
                                 <img src="{{ review.patient.avatar_url }}" alt="{{ review.patient.full_name }}" class="review-avatar">
                                 {% else %}
-                                <div class="review-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                <div class="review-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
                                     {{ review.patient.full_name|first|upper }}
                                 </div>
                                 {% endif %}
