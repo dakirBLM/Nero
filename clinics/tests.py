@@ -304,27 +304,30 @@ class MultiClinicAccountTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp['Location'], '/clinics/dashboard/')
 
-    def test_multi_clinic_login_goes_to_select(self):
+    def test_multi_clinic_login_goes_to_default_clinic(self):
         user = _make_user('owner3')
-        _make_clinic(user, name='Clinic A')
+        clinic_a = _make_clinic(user, name='Clinic A')
         _make_clinic(user, name='Clinic B')
         resp = self.client.post(
             reverse('login'),
             {'identifier': 'owner3', 'password': 'Testpass123!'},
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
+        # First clinic should be auto-selected as active.
+        self.assertEqual(self.client.session.get('active_clinic_id'), clinic_a.id)
 
-    def test_dashboard_without_selection_redirects_to_select(self):
+    def test_dashboard_without_selection_auto_selects_first_clinic(self):
         user = _make_user('owner4')
-        _make_clinic(user, name='Clinic A')
+        clinic_a = _make_clinic(user, name='Clinic A')
         _make_clinic(user, name='Clinic B')
         self.client.force_login(user)
         resp = self.client.get(reverse('clinic_dashboard'))
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp.status_code, 200)
+        # First clinic should be auto-selected as active.
+        self.assertEqual(self.client.session.get('active_clinic_id'), clinic_a.id)
 
-    def test_select_page_lists_only_owned_clinics(self):
+    def test_select_page_get_redirects_to_dashboard(self):
         owner = _make_user('owner5')
         other = _make_user('stranger')
         mine = _make_clinic(owner, name='Mine One')
@@ -332,14 +335,8 @@ class MultiClinicAccountTests(TestCase):
         foreign = _make_clinic(other, name='Not Mine')
         self.client.force_login(owner)
         resp = self.client.get(reverse('clinic_select'))
-        self.assertEqual(resp.status_code, 200)
-        content = resp.content.decode()
-        self.assertIn('Mine One', content)
-        self.assertIn('Mine Two', content)
-        self.assertNotIn('Not Mine', content)
-        self.assertNotIn(f'name="clinic_id" value="{foreign.id}"', content)
-        self.assertIn(f'name="clinic_id" value="{mine.id}"', content)
-        self.assertIn(f'name="clinic_id" value="{mine_two.id}"', content)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
 
     def test_switch_to_own_clinic_scopes_views(self):
         user = _make_user('owner6')
@@ -368,10 +365,10 @@ class MultiClinicAccountTests(TestCase):
         self.client.force_login(owner)
         resp = self.client.post(reverse('clinic_select'), {'clinic_id': foreign.id})
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp['Location'], reverse('clinic_select'))
+        self.assertEqual(resp['Location'], reverse('clinic_dashboard'))
         self.assertIsNone(self.client.session.get('active_clinic_id'))
 
-    def test_single_clinic_select_shortcuts_to_dashboard(self):
+    def test_single_clinic_select_get_redirects_to_dashboard(self):
         user = _make_user('owner8')
         _make_clinic(user, name='Solo')
         self.client.force_login(user)

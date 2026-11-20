@@ -1449,6 +1449,13 @@
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
                         </li>
+                        {% if request.user.clinics.count >= 1 %}
+                        <li>
+                            <a href="#" onclick="openClinicSwitcher(this); return false;">
+                                <i class="fas fa-exchange-alt"></i> Switch clinic
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -1539,16 +1546,6 @@
                 <a href="{% url 'clinic_my_posts' %}" class="nav-item">
                     <i class="fas fa-newspaper"></i>
                     My Posts
-                </a>
-                {% if request.user.clinics.count > 1 %}
-                <a href="{% url 'clinic_select' %}" class="nav-item">
-                    <i class="fas fa-exchange-alt"></i>
-                    Switch clinic
-                </a>
-                {% endif %}
-                <a href="{% url 'clinic_signup' %}" class="nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    Add clinic
                 </a>
             </nav>
         </aside>
@@ -2541,5 +2538,6 @@
             window.addEventListener('resize', toggleListener);
         })();
     </script>
+    {% include 'clinics/clinic_switcher_modal.html' %}
 </body>
 </html>

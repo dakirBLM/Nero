@@ -1049,6 +1049,13 @@
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
                         </li>
+                        {% if request.user.clinics.count >= 1 %}
+                        <li>
+                            <a href="#" onclick="openClinicSwitcher(this); return false;">
+                                <i class="fas fa-exchange-alt"></i> Switch clinic
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -1568,5 +1575,6 @@
             window.addEventListener('resize', toggleListener);
         })();
     </script>
+    {% include 'clinics/clinic_switcher_modal.html' %}
 </body>
 </html>
