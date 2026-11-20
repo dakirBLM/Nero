@@ -209,7 +209,7 @@
             cursor: pointer;
             border: 2px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
             transition: all 0.3s ease;
         }
 
@@ -556,7 +556,7 @@
             object-fit: cover;
             border: 3px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+                        #3b82f6 border-box;
         }
 
         .patient-info h3 {
@@ -858,7 +858,7 @@
 
         /* Utility Classes - Matching Dashboard */
         .text-gradient {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: #3b82f6;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -962,11 +962,11 @@
                     {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
                         <img src="{{ request.user.patient.avatar_url }}" alt="{% trans 'Profile' %}" class="user-avatar" id="avatarImg">
                     {% elif request.user.is_authenticated %}
-                        <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        <div class="user-avatar" id="avatarImg" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
                             {{ request.user.username|first|upper }}
                         </div>
                     {% else %}
-                        <div class="user-avatar" id="avatarImg" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">N</div>
+                        <div class="user-avatar" id="avatarImg" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">N</div>
                     {% endif %}
                 </button>
 
@@ -1000,7 +1000,7 @@
                     {% elif request.user.is_authenticated and request.user.patient and request.user.patient.has_custom_avatar %}
                         <img src="{{ request.user.patient.avatar_url }}" alt="{% trans 'Profile' %}" class="profile-avatar">
                     {% else %}
-                        <div class="profile-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                        <div class="profile-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                             {% if patient and patient.user.username %}{{ patient.user.username|first|upper }}{% elif request.user.is_authenticated %}{{ request.user.username|first|upper }}{% else %}N{% endif %}
                         </div>
                     {% endif %}
@@ -1092,7 +1092,7 @@
                                 {% if patient.has_custom_avatar %}
                                     <img src="{{ patient.avatar_url }}" alt="{{ patient.full_name }}" class="patient-avatar">
                                 {% else %}
-                                    <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                    <div class="patient-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ patient.full_name|first|upper }}
                                     </div>
                                 {% endif %}
@@ -1160,7 +1160,7 @@
                                 {% if a.patient.has_custom_avatar %}
                                     <img src="{{ a.patient.avatar_url }}" alt="{{ a.patient.full_name }}" class="patient-avatar">
                                 {% else %}
-                                    <div class="patient-avatar" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
+                                    <div class="patient-avatar" style="background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">
                                         {{ a.patient.full_name|first|upper }}
                                     </div>
                                 {% endif %}
